@@ -1,0 +1,14 @@
+{
+    "challenge_module": "Challenge",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Certified.regts_sevenster_converse",
+        "Certified.regts_sevenster_deligne_only",
+        "Certified.regts_sevenster_quant_deligne_only",
+        "Certified.edgeRankBounded_of_mixedBounded",
+        "Certified.regts_sevenster_iff",
+        "Certified.regts_sevenster_quant_roundtrip"
+    ],
+    "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+    "enable_nanoda": false
+}

@@ -1,0 +1,7 @@
+.lake/
+.claude/
+# CI-replication artifacts (see .github/workflows/ci.yml)
+/comparator/
+/lean4export/
+build.log
+cert.log

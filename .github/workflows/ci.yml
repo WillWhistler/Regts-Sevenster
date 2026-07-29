@@ -1,0 +1,96 @@
+# Build, lint and certify the development.
+#
+# Three layers of checking, in one job so the build is shared:
+#
+#  1. `lake build` — the whole tree, including the `#guard_msgs`-pinned
+#     statement and axiom audits, with zero warnings.
+#  2. `lake exe runLinter RS` — the Batteries environment-linter suite.
+#  3. comparator (github.com/leanprover/comparator) — builds the
+#     sorried `Challenge` and the proving `Solution` separately,
+#     confirms at the kernel-export level that the six theorems of
+#     record match their pinned statements, checks the axiom
+#     whitelist, and replays the proofs through the kernel.
+#
+# Comparator's landrun sandbox exists to contain an *adversarial*
+# solution; here challenge and solution come from the same tree, so
+# the sandbox adds nothing and the development shim
+# (scripts/fake-landrun.sh) is used instead.  The kernel-export
+# comparison and kernel replay — the certification content — are
+# unaffected by that substitution.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache the project build
+        uses: actions/cache@v4
+        with:
+          path: .lake/build
+          key: lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Fetch the Mathlib cache
+        run: lake exe cache get
+
+      - name: Build the tree and its audits, zero warnings
+        run: |
+          lake build --no-ansi 2>&1 | tee build.log
+          if grep -q "warning:" build.log; then
+            echo "The default build must be warning-free."
+            exit 1
+          fi
+
+      - name: Run the environment linters
+        run: lake exe runLinter RS
+
+      - name: Build the certification modules
+        # Challenge carries the challenge format's deliberate sorry
+        # warnings; Solution builds warning-free.
+        run: |
+          lake build Challenge Solution --no-ansi 2>&1 | tee cert.log
+          if grep "warning:" cert.log | grep -v "Challenge.lean"; then
+            echo "Solution must be warning-free."
+            exit 1
+          fi
+
+      - name: Check out comparator
+        uses: actions/checkout@v4
+        with:
+          repository: leanprover/comparator
+          ref: 68a064109f01c08f47c8edc9f51d6a2bbffaa188
+          path: comparator
+
+      - name: Check out lean4export (v4.31.0, matching the toolchain)
+        uses: actions/checkout@v4
+        with:
+          repository: leanprover/lean4export
+          ref: 8554815c2dc6b7abe99ec1f08849c9759ba77947
+          path: lean4export
+
+      - name: Build comparator and lean4export
+        run: |
+          (cd comparator && lake build comparator)
+          (cd lean4export && lake build)
+
+      - name: Certify the theorems of record
+        run: |
+          COMPARATOR_LANDRUN="$PWD/comparator/scripts/fake-landrun.sh" \
+          COMPARATOR_LEAN4EXPORT="$PWD/lean4export/.lake/build/bin/lean4export" \
+          lake env ./comparator/.lake/build/bin/comparator comparator-config.json

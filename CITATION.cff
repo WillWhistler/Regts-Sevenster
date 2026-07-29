@@ -1,0 +1,58 @@
+cff-version: 1.2.0
+title: >-
+  A proof of the Regts–Sevenster conjecture, formalized: a Lean 4
+  development
+message: >-
+  If you use this formalization, please cite both the software and
+  the accompanying paper.
+type: software
+authors:
+  - given-names: William
+    family-names: Whistler
+    email: will@whistler.uk
+license: Apache-2.0
+repository-code: https://github.com/WillWhistler/Regts-Sevenster
+abstract: >-
+  A Lean 4 formalization of both directions of the Regts–Sevenster
+  conjecture: a complex-valued graph parameter normalized at the
+  empty graph has exponentially bounded edge-connection rank if and
+  only if it is a mixed partition function, with the model's numbers
+  of even and odd colours bounded by ⌊2eR⌋. The forward direction is
+  proved conditional on Deligne's theorem on tensor categories
+  alone; the converse is proved outright. The development carries no
+  sorry, no custom axiom and no native_decide, and pins the axiom set
+  of every main theorem to [propext, Classical.choice, Quot.sound].
+keywords:
+  - Lean 4
+  - Mathlib
+  - formalization
+  - graph parameter
+  - connection matrix
+  - mixed partition function
+  - edge-colouring model
+  - symmetric tensor category
+  - super vector space
+  - fibre functor
+references:
+  - type: article
+    title: "Mixed partition functions are exactly the graph parameters
+      of exponentially bounded edge-connection rank"
+    authors:
+      - given-names: William
+        family-names: Whistler
+        email: will@whistler.uk
+    url: https://arxiv.org/abs/XXXX.XXXXX
+  - type: article
+    title: "Mixed partition functions and exponentially bounded
+      edge-connection rank"
+    authors:
+      - given-names: Guus
+        family-names: Regts
+      - given-names: Bart
+        family-names: Sevenster
+    journal: Annales de l'Institut Henri Poincaré D
+    volume: 8
+    start: 179
+    end: 200
+    year: 2021
+    doi: 10.4171/aihpd/100

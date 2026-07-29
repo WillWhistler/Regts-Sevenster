@@ -1,0 +1,56 @@
+import RS.Classical.CatTheory.TensorPow
+import RS.Classical.CatTheory.LengthBound
+
+/-!
+# Moderate growth of tensor powers
+
+The two ways of asking that the tensor powers of every object grow
+at most exponentially: by the dimension of their endomorphism
+algebras, and by their composition length.  In a semisimple category
+with finite-dimensional Hom-spaces the first implies the second,
+because length is bounded by the endomorphism dimension.
+
+Length is the measure Deligne's theorem states its growth
+hypothesis in; the endomorphism dimension is the measure the
+envelope's rank bound supplies directly.
+-/
+
+namespace RS
+
+open CategoryTheory CategoryTheory.Limits MonoidalCategory
+
+universe v u
+
+variable (A : Type u) [Category.{v} A] [MonoidalCategory A]
+
+/-- Every object has moderate tensor-power growth, measured by
+endomorphism dimensions. -/
+def ModerateEndGrowth [Preadditive A] [Linear ℂ A] : Prop :=
+  ∀ Y : A, ∃ C c : ℕ, ∀ N : ℕ,
+    Module.finrank ℂ (tensorPow A Y N ⟶ tensorPow A Y N) ≤
+      C * c ^ N
+
+/-- Every object has moderate tensor-power growth, measured by
+composition length. -/
+def ModerateLengthGrowth : Prop :=
+  ∀ Y : A, ∃ C c : ℕ, ∀ N : ℕ, LengthLE (tensorPow A Y N) (C * c ^ N)
+
+-- The preadditive and abelian structures are supplied
+-- independently, as they are for the envelope; `lengthLE_finrank_end`
+-- reconciles them.
+set_option linter.overlappingInstances false in
+/-- **Endomorphism growth bounds length growth** in a semisimple
+category with finite-dimensional Hom-spaces: the length of an object
+is at most the dimension of its endomorphism algebra, so an
+exponential bound on the latter is one on the former. -/
+theorem moderateLengthGrowth_of_endGrowth [Preadditive A]
+    [Linear ℂ A] [Abelian A] [HasFiniteBiproducts A]
+    (hss : IsSemisimple A)
+    (hfd : HasFinDimHom A) (hgrow : ModerateEndGrowth A) :
+    ModerateLengthGrowth A := by
+  intro Y
+  obtain ⟨C, c, hC⟩ := hgrow Y
+  exact ⟨C, c, fun N =>
+    (lengthLE_finrank_end hss hfd (tensorPow A Y N)).mono (hC N)⟩
+
+end RS

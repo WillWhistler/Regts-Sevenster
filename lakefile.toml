@@ -1,0 +1,21 @@
+name = "rs-formal"
+defaultTargets = ["RS"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f" # Mathlib release tag v4.31.0
+
+[[lean_lib]]
+name = "RS"
+
+# The certification surface (comparator-config.json): `Challenge`
+# states the six theorems of record with `sorry`, `Solution` proves
+# them by reference.  Neither is a default target — the challenge
+# format requires `sorry` in `Challenge`, and the default build
+# stays warning-free.
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"
