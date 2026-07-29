@@ -1,14 +1,16 @@
+import RS.Definitions
 import RS.Novel.Skein.Composition
 
 /-!
 # Isomorphism theory of fragments
 
-An equivalence of fragments `Fragment.Equiv W₁ W₂` is a pair of
-type equivalences on flags and vertices that commute with attachment,
-pairing, and boundary-flag data, and preserve the circle count.
-The equivalences form a groupoid (refl, symm, trans) and are
-congruences for the fragment operations: relabelling, disjoint union,
-and single-pair gluing.
+An equivalence of fragments `Fragment.Equiv W₁ W₂` (defined in
+`RS/Definitions.lean`) is a pair of type equivalences on flags and
+vertices commuting with attachment, pairing, and boundary-flag
+data, preserving the circle count.  This module proves the
+equivalences form a groupoid (refl, symm, trans) and are
+congruences for the fragment operations: relabelling, disjoint
+union, and single-pair gluing.
 -/
 
 namespace RS
@@ -16,23 +18,6 @@ namespace RS
 namespace Fragment
 
 variable {α β : Type}
-
-/-- An equivalence of fragments: a pair of type equivalences on
-flags and vertices commuting with attachment, pairing, and
-boundary-flag data, preserving the circle count. -/
-structure Equiv (W₁ W₂ : Fragment α) where
-  /-- The equivalence of flag types. -/
-  flagEquiv : W₁.Flag ≃ W₂.Flag
-  /-- The equivalence of vertex types. -/
-  vertexEquiv : W₁.Vertex ≃ W₂.Vertex
-  /-- The flag equivalence commutes with attachment. -/
-  attach_comm : ∀ f, W₂.attach (flagEquiv f) =
-    (W₁.attach f).map vertexEquiv id
-  /-- The flag equivalence commutes with pairing. -/
-  pairing_comm : ∀ f, flagEquiv (W₁.pairing f) =
-    W₂.pairing (flagEquiv f)
-  /-- The circle counts agree. -/
-  circles_eq : W₁.circles = W₂.circles
 
 namespace Equiv
 

@@ -16,7 +16,7 @@ below).
 
 One statement is deliberately excluded from the survey:
 `DeligneTheoremStatement`
-([RS/Classical/Interfaces/DeligneTheorem.lean](RS/Classical/Interfaces/DeligneTheorem.lean))
+([RS/Definitions.lean](RS/Definitions.lean))
 — Deligne's theorem on tensor categories, the single *cited* input
 (Deligne 2002, Théorème 0.6 with §0.1; Ostrik, Thm 2.3).  It is
 consumed as an interface rather than proved.
@@ -75,9 +75,9 @@ point of substance is that a finite-dimensional space of functions
 is separated by finitely many coordinates, which is what makes the
 row rank visible on a single finite submatrix.
 
-**Files.**  `RS/Novel/Skein/` foundations:
-[FlagGraph.lean](RS/Novel/Skein/FlagGraph.lean),
-[Composition.lean](RS/Novel/Skein/Composition.lean),
+**Files.**  The flag model, gluing and composition are defined in
+[RS/Definitions.lean](RS/Definitions.lean); the skein category is
+built on them in `RS/Novel/Skein/`:
 [HomSpaces.lean](RS/Novel/Skein/HomSpaces.lean), the monoidal stack
 ([MonoidalInstance.lean](RS/Novel/Skein/MonoidalInstance.lean),
 [BraidedInstance.lean](RS/Novel/Skein/BraidedInstance.lean)), rigidity
@@ -201,10 +201,11 @@ which the product over an unordered cycle type does not typecheck
 ([Trace.lean](RS/Classical/CatTheory/Trace.lean),
 [PartialTrace.lean](RS/Classical/CatTheory/PartialTrace.lean),
 [UnitEnd.lean](RS/Classical/CatTheory/UnitEnd.lean)).  The same
-layer carries the bounded-length notion and the bound of length by
-the endomorphism dimension that §5 below needs
-([Length.lean](RS/Classical/CatTheory/Length.lean),
-[LengthBound.lean](RS/Classical/CatTheory/LengthBound.lean)).
+layer carries the bounded-length notion (`LengthLE`, defined in
+[RS/Definitions.lean](RS/Definitions.lean) with its API in
+[Length.lean](RS/Classical/CatTheory/Length.lean)) and the bound of
+length by the endomorphism dimension that §5 below needs
+([LengthBound.lean](RS/Classical/CatTheory/LengthBound.lean)).
 
 **Method and provenance.**  Newton's identities relating power
 sums to complete homogeneous functions are classical; the
@@ -523,8 +524,9 @@ knowing on sight:
 
 ## 10. Reading order
 
-[RS/Glossary.lean](RS/Glossary.lean) glosses the vocabulary;
-`README.md` states the theorems.
+[RS/Definitions.lean](RS/Definitions.lean) defines everything the
+theorems say; [RS/Glossary.lean](RS/Glossary.lean) glosses the
+vocabulary; `README.md` states the theorems.
 
 
 ## References

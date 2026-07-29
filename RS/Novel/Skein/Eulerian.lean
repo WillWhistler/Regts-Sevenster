@@ -1,35 +1,21 @@
+import RS.Definitions
 import RS.Common.PermCongr
 import RS.Novel.Skein.ConnectionRank
 
 /-!
 # Eulerian edge subsets and circuit data
 
-The combinatorial substrate of the mixed partition function
-(Regts–Sevenster arXiv:1807.04494, Definition 5) on the flag model:
-pairing-closed flag subsets (edge subsets), vertex degrees within a
-subset, the Eulerian condition, and circuit data.
-
-Circuit data is encoded by a second involution: a *transition
-system* on an edge subset `F` is a fixed-point-free involution `κ`
-of the flags of `F` matching flags at common vertices.  Together
-with the edge pairing `σ` this generates the circuit walks; the
-walk permutation is the composition `κ ∘ σ`, each geometric circuit
-of `n` edges carries exactly two `(κ ∘ σ)`-cycles of length `n`
-(its two directions), and the circuit count of Definition 5 is half
-the number of cycles of the walk permutation.
+The combinatorial substrate of the mixed partition function —
+edge subsets, vertex degrees, the Eulerian condition, transition
+systems and the circuit count — is defined in
+`RS/Definitions.lean`.  This module carries its transport theory:
+edge subsets, the Eulerian condition, transition systems and the
+circuit count all transport along fragment equivalences.
 -/
 
 namespace RS
 
 variable {α : Type}
-
-/-- An edge subset of a fragment: a flag set closed under the edge
-pairing. -/
-structure EdgeSubset (W : Fragment α) where
-  /-- The participating flags. -/
-  flags : Finset W.Flag
-  /-- The set is closed under the edge pairing. -/
-  pairing_mem : ∀ f ∈ flags, W.pairing f ∈ flags
 
 namespace EdgeSubset
 
@@ -40,84 +26,6 @@ variable {W : Fragment α}
 theorem ext {F₁ F₂ : EdgeSubset W} (h : F₁.flags = F₂.flags) :
     F₁ = F₂ := by
   cases F₁; cases F₂; simpa using h
-
-/-- The degree of a vertex within an edge subset: the number of
-participating flags attached to it. -/
-noncomputable def deg (F : EdgeSubset W) (v : W.Vertex) : ℕ :=
-  letI := Classical.decEq (W.Vertex ⊕ α)
-  (F.flags.filter (fun f => W.attach f = Sum.inl v)).card
-
-/-- An edge subset is Eulerian when every vertex has even degree
-within it. -/
-def Eulerian (F : EdgeSubset W) : Prop :=
-  ∀ v : W.Vertex, Even (F.deg v)
-
-/-- A transition system on an edge subset: a fixed-point-free
-involution of its flags matching flags at a common internal
-vertex.  This is the local pairing data `κ` of Definition 5. -/
-structure TransitionSystem (F : EdgeSubset W) where
-  /-- The matching. -/
-  match_ : W.Flag → W.Flag
-  /-- The matching is an involution on the participating flags. -/
-  match_invol : ∀ f ∈ F.flags, match_ (match_ f) = f
-  /-- The matching has no fixed points on the participating flags. -/
-  match_ne : ∀ f ∈ F.flags, match_ f ≠ f
-  /-- The matching stays within the participating flags. -/
-  match_mem : ∀ f ∈ F.flags, match_ f ∈ F.flags
-  /-- Matched flags share an internal vertex. -/
-  match_vertex : ∀ f ∈ F.flags, ∀ v : W.Vertex,
-    W.attach f = Sum.inl v → W.attach (match_ f) = Sum.inl v
-  /-- Only internally attached flags participate. -/
-  attach_internal : ∀ f ∈ F.flags, ∃ v : W.Vertex,
-    W.attach f = Sum.inl v
-
-/-- The walk map of a transition system: follow the edge to the
-partner flag, then the matching at its vertex. -/
-def TransitionSystem.walk {F : EdgeSubset W} (κ : TransitionSystem F)
-    (f : W.Flag) : W.Flag :=
-  κ.match_ (W.pairing f)
-
-/-- The walk map preserves the participating flags. -/
-theorem TransitionSystem.walk_mem {F : EdgeSubset W}
-    (κ : TransitionSystem F) {f : W.Flag} (hf : f ∈ F.flags) :
-    κ.walk f ∈ F.flags :=
-  κ.match_mem _ (F.pairing_mem f hf)
-
-/-- The walk map is injective on the participating flags. -/
-theorem TransitionSystem.walk_injOn {F : EdgeSubset W}
-    (κ : TransitionSystem F) {f g : W.Flag} (hf : f ∈ F.flags)
-    (hg : g ∈ F.flags) (h : κ.walk f = κ.walk g) : f = g := by
-  have hpf : W.pairing f ∈ F.flags := F.pairing_mem f hf
-  have hpg : W.pairing g ∈ F.flags := F.pairing_mem g hg
-  have hm : W.pairing f = W.pairing g := by
-    have h1 := κ.match_invol _ hpf
-    have h2 := κ.match_invol _ hpg
-    have h' : κ.match_ (W.pairing f) = κ.match_ (W.pairing g) := h
-    calc W.pairing f = κ.match_ (κ.match_ (W.pairing f)) := h1.symm
-      _ = κ.match_ (κ.match_ (W.pairing g)) := by rw [h']
-      _ = W.pairing g := h2
-  calc f = W.pairing (W.pairing f) := (W.pairing_invol f).symm
-    _ = W.pairing (W.pairing g) := by rw [hm]
-    _ = g := W.pairing_invol g
-
-/-- The walk permutation of a transition system: the walk map as a
-permutation of the participating flags. -/
-noncomputable def TransitionSystem.walkPerm {F : EdgeSubset W}
-    (κ : TransitionSystem F) : Equiv.Perm {f : W.Flag // f ∈ F.flags} :=
-  Equiv.ofBijective
-    (fun f => ⟨κ.walk f.val, κ.walk_mem f.prop⟩)
-    (Finite.injective_iff_bijective.mp
-      (fun f g h => Subtype.ext
-        (κ.walk_injOn f.prop g.prop (congrArg Subtype.val h))))
-
-/-- The circuit count of a transition system: each geometric circuit
-of `n` edges carries two walk-cycles of length `n` when `n ≥ 2` and
-two walk fixed points when `n = 1`, so the count is half the total
-number of orbits. -/
-noncomputable def TransitionSystem.circuitCount {F : EdgeSubset W}
-    (κ : TransitionSystem F) : ℕ :=
-  (κ.walkPerm.cycleType.card +
-    Fintype.card (Function.fixedPoints κ.walkPerm)) / 2
 
 /-- Transport of edge subsets along a fragment equivalence. -/
 noncomputable def transport {W₁ W₂ : Fragment α} (e : W₁.Equiv W₂) :

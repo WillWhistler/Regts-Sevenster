@@ -1,6 +1,6 @@
 import RS.Novel.Coordinates.ReindexHeart
 import RS.Novel.Envelope.EnvDelignePackage
-import RS.StatementForward
+import RS.Definitions
 import RS.Classical.SchurTheory.Package
 
 /-!

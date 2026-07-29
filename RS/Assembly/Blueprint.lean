@@ -138,7 +138,7 @@ import RS.Novel.Skein.CloseUnion
 import RS.Novel.Skein.ComposeRelabel
 import RS.Novel.Skein.PartialCloseCompose
 import RS.Novel.Skein.ScalarClass
-import RS.StatementForward
+import RS.Definitions
 import RS.Novel.Extraction.CircleValue
 import RS.Novel.Extraction.CoordIso
 import RS.Novel.Extraction.Coordinates

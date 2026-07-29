@@ -1,35 +1,19 @@
+import RS.Definitions
 import RS.Common.ListSign
 import RS.Novel.Skein.Eulerian
 
 /-!
 # Mixed partition functions: the vertex functional
 
-The data of a mixed partition function (Regts–Sevenster
-arXiv:1807.04494, Definition 5) in elementary coordinates: a
-`(k, 2ℓ)`-functional assigns a complex value to a multiset of even
-colours together with a *set* of odd colours; the alternating
-evaluation on an ordered list of odd colours is recovered by the
-inversion sign, vanishing on repetitions.
-
-Representing the odd part by its value on sets makes the
-antisymmetry a theorem of the evaluator rather than a condition on
-the data: reordering an odd list changes `evalOdd` by the sign of
-the permutation, and lists with repeated colours evaluate to zero.
+The mixed partition function (Regts–Sevenster arXiv:1807.04494,
+Definition 5) is defined in `RS/Definitions.lean`.  This module
+proves the evaluator's antisymmetry — reordering an odd list
+changes `evalOdd` by the sign of the permutation, and lists with
+repeated colours evaluate to zero — and the transport of the
+Definition 5 summand along fragment equivalences.
 -/
 
 namespace RS
-
-/-- The data of a `(k, 2ℓ)` mixed vertex functional: a value for
-each multiset of even colours and set of odd colours. -/
-def MixedFunctional (k ℓ : ℕ) : Type :=
-  Multiset (Fin k) → Finset (Fin (2 * ℓ)) → ℂ
-
-/-- The alternating evaluation of a mixed functional on an ordered
-list of odd colours: zero on repetitions, otherwise the sorting
-sign times the value on the underlying set. -/
-def MixedFunctional.evalOdd {k ℓ : ℕ} (h : MixedFunctional k ℓ)
-    (μ : Multiset (Fin k)) (w : List (Fin (2 * ℓ))) : ℂ :=
-  if w.Nodup then (sortSign w : ℂ) * h μ w.toFinset else 0
 
 /-- Evaluation on a list with a repetition vanishes. -/
 theorem MixedFunctional.evalOdd_of_not_nodup {k ℓ : ℕ}
@@ -136,18 +120,6 @@ theorem MixedFunctional.evalOdd_flatMap_perm {k ℓ : ℕ}
     intro pre
     exact (ih₁ pre).trans (ih₂ pre)
 
-/-- The odd-colour index pairing of the standard symplectic basis:
-the partner of colour `c` is `c + ℓ` when `c < ℓ` and `c − ℓ`
-otherwise. -/
-def oddPartner (ℓ : ℕ) (c : Fin (2 * ℓ)) : Fin (2 * ℓ) :=
-  if h : c.val < ℓ then ⟨c.val + ℓ, by omega⟩
-  else ⟨c.val - ℓ, by omega⟩
-
-/-- The sign of the odd-colour pairing: `g_c = −f_{c+ℓ}` for
-`c < ℓ` and `g_c = f_{c−ℓ}` otherwise. -/
-def oddPartnerSign (ℓ : ℕ) (c : Fin (2 * ℓ)) : ℤ :=
-  if c.val < ℓ then -1 else 1
-
 /-- The odd-colour pairing is an involution. -/
 theorem oddPartner_invol (ℓ : ℕ) (c : Fin (2 * ℓ)) :
     oddPartner ℓ (oddPartner ℓ c) = c := by
@@ -159,157 +131,9 @@ theorem oddPartner_invol (ℓ : ℕ) (c : Fin (2 * ℓ)) :
     rw [dif_neg h, dif_pos (show c.val - ℓ < ℓ by omega)]
     exact Fin.ext (by show c.val - ℓ + ℓ = c.val; omega)
 
-/-- An orientation compatible with a transition system: an in/out
-designation of the participating flags, flipped both by the vertex
-matching and by the edge pairing (so circuits are traversed
-consistently). -/
-structure EdgeSubset.TransitionSystem.Orientation {α : Type}
-    {W : Fragment α} {F : EdgeSubset W}
-    (κ : F.TransitionSystem) where
-  /-- Whether a flag is an outgoing end. -/
-  isOut : W.Flag → Bool
-  /-- The vertex matching pairs incoming with outgoing flags. -/
-  match_flip : ∀ f ∈ F.flags, isOut (κ.match_ f) = !isOut f
-  /-- Each edge has one outgoing and one incoming end. -/
-  pairing_flip : ∀ f ∈ F.flags, isOut (W.pairing f) = !isOut f
-
--- Deliberately semireducible: the order is an enumeration artefact,
--- only ever supplied explicitly via `letI`, never by instance search.
-set_option warn.classDefReducibility false in
-/-- An arbitrary but fixed linear order on the flags of a fragment,
-transported from an enumeration.  Used only to enumerate vertex
-pairings; the evaluated summands are independent of the choice
-because pair blocks move by even permutations. -/
-noncomputable def Fragment.flagOrder {α : Type} (W : Fragment α) :
-    LinearOrder W.Flag :=
-  LinearOrder.lift' (Fintype.equivFin W.Flag)
-    (Fintype.equivFin W.Flag).injective
-
-/-- The incoming participating flags at a vertex, in the fixed flag
-order. -/
-noncomputable def EdgeSubset.inFlagsAt {α : Type} {W : Fragment α}
-    (F : EdgeSubset W) {κ : F.TransitionSystem}
-    (o : κ.Orientation) (v : W.Vertex) : List W.Flag :=
-  letI := W.flagOrder
-  letI := Classical.dec
-  (F.flags.filter
-      (fun f => W.attach f = Sum.inl v ∧ o.isOut f = false)).sort (· ≤ ·)
-
-section Summand
+section Transport
 
 variable {α : Type} {W : Fragment α}
-
-/-- The complement of an edge subset is closed under the pairing. -/
-theorem EdgeSubset.pairing_not_mem (F : EdgeSubset W) {f : W.Flag}
-    (hf : f ∉ F.flags) : W.pairing f ∉ F.flags := fun hmem => by
-  have := F.pairing_mem _ hmem
-  rw [W.pairing_invol] at this
-  exact hf this
-
-/-- Even colourings of the non-participating edges: pairing-constant
-colours on the flags outside the subset. -/
-def EdgeSubset.EvenColouring (F : EdgeSubset W) (k : ℕ) : Type :=
-  {ψ : {f : W.Flag // f ∉ F.flags} → Fin k //
-    ∀ f : {f : W.Flag // f ∉ F.flags},
-      ψ ⟨W.pairing f.val, F.pairing_not_mem f.prop⟩ = ψ f}
-
-/-- Odd colourings of the participating edges: pairing-constant
-colours on the flags of the subset. -/
-def EdgeSubset.OddColouring (F : EdgeSubset W) (ℓ : ℕ) : Type :=
-  {φ : {f : W.Flag // f ∈ F.flags} → Fin (2 * ℓ) //
-    ∀ f : {f : W.Flag // f ∈ F.flags},
-      φ ⟨W.pairing f.val, F.pairing_mem _ f.prop⟩ = φ f}
-
-open Classical in
-/-- Even colourings are finite in number. -/
-noncomputable instance EdgeSubset.EvenColouring.instFintype
-    (F : EdgeSubset W) (k : ℕ) : Fintype (F.EvenColouring k) := by
-  unfold EdgeSubset.EvenColouring
-  infer_instance
-
-open Classical in
-/-- And so are odd ones, so Definition 5's sum is finite. -/
-noncomputable instance EdgeSubset.OddColouring.instFintype
-    (F : EdgeSubset W) (ℓ : ℕ) : Fintype (F.OddColouring ℓ) := by
-  unfold EdgeSubset.OddColouring
-  infer_instance
-
-open Classical in
-/-- The even-colour multiset at a vertex: the colours of the
-non-participating flags attached to it. -/
-noncomputable def EdgeSubset.evenColoursAt (F : EdgeSubset W) {k : ℕ}
-    (ψ : F.EvenColouring k) (v : W.Vertex) : Multiset (Fin k) :=
-  ((Finset.univ.filter
-      (fun f : {f : W.Flag // f ∉ F.flags} =>
-        W.attach f.val = Sum.inl v)).val).map ψ.val
-
-/-- Every in-flag at a vertex participates in the edge subset. -/
-theorem EdgeSubset.mem_of_mem_inFlagsAt {F : EdgeSubset W}
-    {κ : F.TransitionSystem} {o : κ.Orientation} {v : W.Vertex}
-    {f : W.Flag} (hf : f ∈ F.inFlagsAt o v) : f ∈ F.flags := by
-  letI := W.flagOrder
-  letI := Classical.dec
-  unfold EdgeSubset.inFlagsAt at hf
-  exact (Finset.mem_filter.mp ((Finset.mem_sort _).mp hf)).1
-
-open Classical in
-/-- The odd pair contributed by an incoming participating flag: its
-edge colour followed by the partner index of its matched outgoing
-flag's edge colour. -/
-noncomputable def EdgeSubset.oddPairFn (F : EdgeSubset W) {ℓ : ℕ}
-    (κ : F.TransitionSystem) (φ : F.OddColouring ℓ)
-    (f : {f : W.Flag // f ∈ F.flags}) : List (Fin (2 * ℓ)) :=
-  [φ.val f, oddPartner ℓ (φ.val ⟨κ.match_ f.val, κ.match_mem _ f.prop⟩)]
-
-open Classical in
-/-- The odd-pairing sign contributed by an incoming participating
-flag: the partner sign of its matched outgoing flag's colour. -/
-noncomputable def EdgeSubset.oddSignFn (F : EdgeSubset W) {ℓ : ℕ}
-    (κ : F.TransitionSystem) (φ : F.OddColouring ℓ)
-    (f : {f : W.Flag // f ∈ F.flags}) : ℤ :=
-  oddPartnerSign ℓ (φ.val ⟨κ.match_ f.val, κ.match_mem _ f.prop⟩)
-
-open Classical in
-/-- The odd-colour list at a vertex: the odd pairs of the incoming
-flags in the fixed order. -/
-noncomputable def EdgeSubset.oddListAt (F : EdgeSubset W) {ℓ : ℕ}
-    {κ : F.TransitionSystem} (o : κ.Orientation)
-    (φ : F.OddColouring ℓ) (v : W.Vertex) : List (Fin (2 * ℓ)) :=
-  ((F.inFlagsAt o v).attachWith (· ∈ F.flags)
-      (fun _ hf => F.mem_of_mem_inFlagsAt hf)).flatMap (F.oddPairFn κ φ)
-
-open Classical in
-/-- The odd-pairing sign at a vertex: the product of the partner
-signs of the outgoing colours. -/
-noncomputable def EdgeSubset.oddSignAt (F : EdgeSubset W) {ℓ : ℕ}
-    {κ : F.TransitionSystem} (o : κ.Orientation)
-    (φ : F.OddColouring ℓ) (v : W.Vertex) : ℤ :=
-  (((F.inFlagsAt o v).attachWith (· ∈ F.flags)
-      (fun _ hf => F.mem_of_mem_inFlagsAt hf)).map (F.oddSignFn κ φ)).prod
-
-open Classical in
-/-- The Definition 5 summand of an Eulerian edge subset with chosen
-transition system and orientation: the circuit sign times the
-colouring sum of the vertex values. -/
-noncomputable def EdgeSubset.mixedSummand (F : EdgeSubset W)
-    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
-    {κ : F.TransitionSystem} (o : κ.Orientation) : ℂ :=
-  ((-1 : ℂ) ^ κ.circuitCount) *
-    ∑ ψ : F.EvenColouring k, ∑ φ : F.OddColouring ℓ,
-      ∏ v : W.Vertex,
-        ((F.oddSignAt o φ v : ℂ) *
-          h.evalOdd (F.evenColoursAt ψ v) (F.oddListAt o φ v))
-
-open Classical in
-/-- The Definition 5 value of an edge subset: the summand for a
-choice of transition system and orientation, zero when none
-exists.  (Every Eulerian subset admits one; the value is
-independent of the choice by the Eulerian-independence input.) -/
-noncomputable def EdgeSubset.mixedValue (F : EdgeSubset W)
-    {k ℓ : ℕ} (h : MixedFunctional k ℓ) : ℂ :=
-  if hne : Nonempty ((κ : F.TransitionSystem) × κ.Orientation) then
-    F.mixedSummand h (Classical.choice hne).2
-  else 0
 
 /-- Transport of an orientation along a fragment equivalence. -/
 noncomputable def EdgeSubset.TransitionSystem.Orientation.transport
@@ -654,21 +478,7 @@ theorem EdgeSubset.mixedSummand_transport {W₁ W₂ : Fragment α}
     EdgeSubset.oddSignAt_transport, EdgeSubset.evenColoursAt_transport,
     EdgeSubset.evalOdd_oddListAt_transport]
 
-end Summand
-
-open Classical in
-/-- **The mixed partition function** (Regts–Sevenster Definition 5)
-of a fragment: the free-circle factor times the sum over Eulerian
-edge subsets of their circuit-signed colouring sums. -/
-noncomputable def mixedPartition {α : Type} {k ℓ : ℕ}
-    (h : MixedFunctional k ℓ) (W : Fragment α) : ℂ :=
-  ((k : ℂ) - 2 * ℓ) ^ W.circles *
-    ∑ s : Finset W.Flag,
-      if hc : ∀ f ∈ s, W.pairing f ∈ s then
-        if (EdgeSubset.mk s hc).Eulerian then
-          (EdgeSubset.mk s hc).mixedValue h
-        else 0
-      else 0
+end Transport
 
 section CirclesOnly
 
@@ -679,12 +489,6 @@ private instance (c : ℕ) : IsEmpty (Fragment.circlesOnly c).Vertex :=
   inferInstanceAs (IsEmpty Empty)
 
 end CirclesOnly
-
-/-- A parameter on closed fragments is a mixed partition function
-when it is the Definition 5 value of some mixed functional. -/
-def IsMixedPartitionFunction (f : ClosedFragment → ℂ) : Prop :=
-  ∃ (k ℓ : ℕ) (h : MixedFunctional k ℓ),
-    ∀ W : ClosedFragment, f W = mixedPartition h W
 
 /-- The partner sign flips across the pairing. -/
 theorem oddPartnerSign_oddPartner (ℓ : ℕ) (i : Fin (2 * ℓ)) :

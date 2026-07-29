@@ -1,8 +1,7 @@
 import RS.Common
 import RS.Classical
 import RS.Novel
-import RS.StatementForward
-import RS.StatementQuant
+import RS.Definitions
 import RS.StatementConverse
 import RS.TheoremForward
 import RS.TheoremQuant

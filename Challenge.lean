@@ -1,25 +1,33 @@
-import RS.StatementForward
-import RS.StatementQuant
-import RS.StatementConverse
-import RS.Classical.Interfaces.DeligneTheorem
+import RS.Definitions
 
 /-!
 # The certification challenge
 
-The six theorems of record, stated with `sorry`, for verification
-by [comparator](https://github.com/leanprover/comparator): the
-checker builds this module and `Solution.lean` separately, confirms
-at the kernel-export level that each theorem below is proved in
-`Solution` with an identical statement, checks the proofs against
-the axiom whitelist `[propext, Classical.choice, Quot.sound]`
-(`comparator-config.json`), and replays the result through the
-kernel.  The statements are phrased in the same vocabulary the
-statement surface pins (`RS/Assembly/BlueprintStatement.lean`);
-this module imports the statement modules only, none of the proofs.
+The trusted half of an independently checkable certificate for the
+six theorems of record, in the format of
+[comparator](https://github.com/leanprover/comparator).  This
+module imports `RS/Definitions.lean` — the self-contained statement
+surface, whose only import is the Mathlib funnel — and states the
+six theorems with `sorry`.  `Solution.lean` proves each by the
+theorem of record of the same name.
+
+Comparator builds this module and `Solution.lean` separately,
+exports both environments at the kernel level, and checks that each
+theorem below is proved in the solution with an identical
+statement, about identical definitions; that the proofs use no
+axiom outside `[propext, Classical.choice, Quot.sound]`
+(`comparator-config.json`); and that the kernel replays them.
+Reading `RS/Definitions.lean` and this file — against Mathlib
+alone — therefore determines exactly what is being certified.
 
 This module deliberately contains `sorry` — that is the challenge
 format — so it is not part of the default build target.
 -/
+
+/-! ## 12. The six theorems of record
+
+Stated with `sorry`; `Solution.lean` proves each by the theorem of
+record of the same name, and comparator certifies the match. -/
 
 namespace Certified
 

@@ -1,5 +1,5 @@
 import RS.TheoremForward
-import RS.StatementQuant
+import RS.Definitions
 import RS.Novel.Envelope.SuperKill
 
 /-!

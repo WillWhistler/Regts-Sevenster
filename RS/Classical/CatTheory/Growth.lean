@@ -1,3 +1,4 @@
+import RS.Definitions
 import RS.Classical.CatTheory.TensorPow
 import RS.Classical.CatTheory.LengthBound
 
@@ -6,9 +7,11 @@ import RS.Classical.CatTheory.LengthBound
 
 The two ways of asking that the tensor powers of every object grow
 at most exponentially: by the dimension of their endomorphism
-algebras, and by their composition length.  In a semisimple category
-with finite-dimensional Hom-spaces the first implies the second,
-because length is bounded by the endomorphism dimension.
+algebras (`ModerateEndGrowth`, here), and by their composition
+length (`ModerateLengthGrowth`, defined in `RS/Definitions.lean`).
+In a semisimple category with finite-dimensional Hom-spaces the
+first implies the second, because length is bounded by the
+endomorphism dimension.
 
 Length is the measure Deligne's theorem states its growth
 hypothesis in; the endomorphism dimension is the measure the
@@ -29,11 +32,6 @@ def ModerateEndGrowth [Preadditive A] [Linear ℂ A] : Prop :=
   ∀ Y : A, ∃ C c : ℕ, ∀ N : ℕ,
     Module.finrank ℂ (tensorPow A Y N ⟶ tensorPow A Y N) ≤
       C * c ^ N
-
-/-- Every object has moderate tensor-power growth, measured by
-composition length. -/
-def ModerateLengthGrowth : Prop :=
-  ∀ Y : A, ∃ C c : ℕ, ∀ N : ℕ, LengthLE (tensorPow A Y N) (C * c ^ N)
 
 -- The preadditive and abelian structures are supplied
 -- independently, as they are for the envelope; `lengthLE_finrank_end`

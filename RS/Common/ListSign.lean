@@ -1,25 +1,17 @@
+import RS.Definitions
 import RS.Common.MathlibDeps
 
 /-!
 # Inversions and the sorting sign
 
-The inversion count of a list over a linear order and its parity,
-the sorting sign.  The sign is antisymmetric under adjacent
-transpositions of distinct elements: this is the combinatorial
-engine of the alternating evaluation of mixed vertex functionals.
+The calculus of the sorting sign (`inversions` and `sortSign` are
+defined in `RS/Definitions.lean`): the sign is antisymmetric under
+adjacent transpositions of distinct elements, which is the
+combinatorial engine of the alternating evaluation of mixed vertex
+functionals.
 -/
 
 namespace RS
-
-/-- The number of inversions of a list over a linear order. -/
-def inversions {α : Type} [LinearOrder α] : List α → ℕ
-  | [] => 0
-  | a :: l => (l.filter (fun b => b < a)).length + inversions l
-
-/-- The sorting sign of a list: `(−1)` to the number of
-inversions. -/
-def sortSign {α : Type} [LinearOrder α] (l : List α) : ℤ :=
-  (-1) ^ inversions l
 
 /-- Sorted lists have no inversions. -/
 theorem inversions_eq_zero_of_sorted {α : Type} [LinearOrder α] :

@@ -112,7 +112,14 @@ automation:
         data and re-proved in Lean; nothing found by search was
         trusted."
   spend_usd: "subscription-based usage; no metered API spend"
-  notes: ""
+  notes: "Beyond the in-tree audits, the six theorems of record are
+    certified in CI with leanprover/comparator: Challenge.lean imports
+    the self-contained statement surface RS/Definitions.lean and
+    states them with sorry, Solution.lean proves each by the theorem
+    of record of the same name, and comparator checks at the
+    kernel-export level that the statements and their definitions
+    agree, that the proofs use no axiom outside the whitelist, and
+    that the kernel replays them."
 
 fidelity:
   divergences: >-
@@ -224,7 +231,7 @@ alignment:
         back to the skein category."
     - source: "Theorem 4.8 (Deligne's theorem) itself"
       lean: "RS.DeligneTheoremStatement"
-      module: "RS/Classical/Interfaces/DeligneTheorem.lean"
+      module: "RS/Definitions.lean"
       status: "literature-dependency"
       note: "The single cited input of the development, carrying
         Deligne's own hypotheses. One direction of his equivalence is
@@ -254,7 +261,7 @@ alignment:
         citations. See ClassicalOverview.md §2."
     - source: "Definition 5 of Regts–Sevenster"
       lean: "RS.mixedPartition, RS.IsMixedPartitionFunction"
-      module: "RS/Novel/Skein/MixedPartition.lean"
+      module: "RS/Definitions.lean"
       status: "proved"
       note: "A definition, on the flag model; see fidelity above."
     - source: "§2.3, the edge-connection rank hypothesis (H2)"
@@ -262,7 +269,8 @@ alignment:
       module: "RS/Novel/Skein/ConnectionRank.lean"
       status: "proved"
       note: "The row-span reading, proved equivalent to the paper's
-        finite-submatrix reading."
+        finite-submatrix reading; the hypothesis itself is defined in
+        RS/Definitions.lean."
 
 acknowledgements: >-
   Built on Mathlib. The mathematics formalized rests on Regts and

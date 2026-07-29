@@ -1,18 +1,18 @@
+import RS.Definitions
 import RS.Common.MathlibDeps
 
 /-!
 # Bounded length for objects of an abelian category
 
-A lightweight, bound-shaped notion of composition length: an object
-`Y` satisfies `LengthLE Y k` when its subobject order admits no
-strictly increasing chain of `k + 2` terms.  This is exactly the
-predicate needed to state growth hypotheses, without committing to a
+A lightweight, bound-shaped notion of composition length
+(`LengthLE`, defined with the subquotient relation
+`IsSubquotientOf` in `RS/Definitions.lean`): an object `Y`
+satisfies `LengthLE Y k` when its subobject order admits no
+strictly increasing chain of `k + 2` terms — exactly the predicate
+needed to state growth hypotheses, without committing to a
 composition-series formalism.
 
-It also carries the subquotient relation, which lives at the same
-level of the subobject structure.
-
-The elementary API: the bound is monotone, the predicate transfers
+The elementary API, proved here: the bound is monotone, the predicate transfers
 along isomorphisms of the ambient object, zero objects have length
 at most `0`, simple objects have length at most `1`, and the bound
 is subadditive over binary biproducts.
@@ -25,29 +25,6 @@ open CategoryTheory CategoryTheory.Limits
 universe v u
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
-
-omit [Abelian C] in
-/-- **`Y` is a subquotient of `Z`**: a quotient of a subobject of
-`Z`.  This is the relation Deligne's tensor-generation hypothesis is
-stated with. -/
-def IsSubquotientOf (Y Z : C) : Prop :=
-  ∃ (S : C) (i : S ⟶ Z) (p : S ⟶ Y), Mono i ∧ Epi p
-
-omit [Abelian C] in
-/-- A retract is in particular a subquotient: a splitting makes the
-inclusion a mono, and the object is a quotient of itself. -/
-theorem isSubquotientOf_of_retract {Y Z : C} (i : Y ⟶ Z) (r : Z ⟶ Y)
-    (h : i ≫ r = 𝟙 Y) : IsSubquotientOf Y Z := by
-  haveI : IsSplitMono i := ⟨⟨r, h⟩⟩
-  exact ⟨Y, i, 𝟙 Y, inferInstance, inferInstance⟩
-
-omit [Abelian C] in
-/-- `LengthLE Y k` states that the subobject order of `Y` contains
-no strictly increasing chain of `k + 2` subobjects; equivalently,
-every chain `0 = Y₀ < ⋯ < Y_ℓ = Y` has `ℓ ≤ k`, so the composition
-length of `Y` is at most `k`. -/
-def LengthLE (Y : C) (k : ℕ) : Prop :=
-  ∀ f : Fin (k + 2) → Subobject Y, ¬ StrictMono f
 
 omit [Abelian C] in
 /-- The length bound is monotone: a bound at `k` is a bound at any

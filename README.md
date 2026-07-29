@@ -41,7 +41,7 @@ extensively in the development and preparation of this work.
 quantitative form, conditional on Deligne's theorem alone:
 
     theorem regts_sevenster_quant_deligne_only
-        (hDeligne : DeligneTheoremStatement.{1}) :
+        (hDeligne : DeligneTheoremStatement.{1, 1}) :
         RegtsSevensterStatementQuant
 
 The converse — every mixed partition function has exponentially
@@ -55,37 +55,42 @@ so the characterization of the Main Theorem, and its quantitative
 round trip, rest on Deligne alone:
 
     theorem regts_sevenster_iff
-        (hDeligne : DeligneTheoremStatement.{1})
+        (hDeligne : DeligneTheoremStatement.{1, 1})
         (f : ClosedFragment → ℂ)
         (hempty : f emptyClosedFragment = 1)
         (hiso : ∀ W₁ W₂, W₁.Equiv W₂ → f W₁ = f W₂) :
         (∃ R : ℕ, EdgeRankBounded f R) ↔ IsMixedPartitionFunction f
 
-## The statements
+## The definitions
 
-`RS/StatementForward.lean` states the forward direction as a single
-`Prop`:
+Everything the theorems say is defined in one self-contained module,
+[`RS/Definitions.lean`](RS/Definitions.lean), whose only import is
+the tree's Mathlib funnel (`RS/Common/MathlibDeps.lean`, an import
+list with no content). Reading that one file against Mathlib
+determines the meaning of every summit; the rest of the tree
+imports its definitions from there rather than restating them.
+
+It defines the flag model of multigraph fragments with its gluing,
+isomorphism and composition; the edge-rank hypothesis class
+(`EdgeRankParameter` — normalized at the empty graph,
+isomorphism-invariant, connection pairings of rank at most `R ^ t`
+at every arity); Definition 5 of Regts–Sevenster on the flag model
+(`IsMixedPartitionFunction` — the sum over Eulerian edge subsets of
+circuit-signed colouring sums against a `(k, 2ℓ)` vertex
+functional, with the `(k − 2ℓ)^{circles}` free-circle convention);
+the named statements, of which the first is
 
     RegtsSevensterStatement : Prop :=
       ∀ (R : ℕ) (f : EdgeRankParameter R), IsMixedPartitionFunction f.val
 
-`EdgeRankParameter` (`RS/Novel/Skein/ConnectionRank.lean`)
-packages the hypothesis class — a parameter on closed fragments,
-normalized at the empty graph, isomorphism-invariant, with
-connection pairings of rank at most `R ^ t` at every arity.
-`IsMixedPartitionFunction` (`RS/Novel/Skein/MixedPartition.lean`)
-is Definition 5 of Regts–Sevenster on the flag model: the sum
-over Eulerian edge subsets of circuit-signed colouring sums
-against a `(k, 2ℓ)` vertex functional, with the
-`(k − 2ℓ)^{circles}` free-circle convention.
-`RS/StatementQuant.lean` adds the dimension bound of
-Corollary 4.10, and `RS/StatementConverse.lean` states the
-converse.
+the quantitative form (the dimension bound of Corollary 4.10) and
+the converse being the other two; the category of super vector
+spaces; and the one assumed statement.
 
 ## Assumed and proved
 
 The forward direction is conditional on exactly one cited input,
-a single declaration in `RS/Classical/Interfaces/`:
+a single declaration of the statement surface:
 
 * `DeligneTheoremStatement` — Deligne's theorem on tensor
   categories (Catégories tensorielles, Moscow Math. J. 2 (2002),
@@ -152,7 +157,7 @@ The dependency-exhibiting two-input form remains available:
 
     theorem regts_sevenster_conditional
         (hSchur   : Nonempty SchurPackage.{1})
-        (hDeligne : DeligneTheoremStatement.{1}) :
+        (hDeligne : DeligneTheoremStatement.{1, 1}) :
         RegtsSevensterStatement
 
 ## Correspondence with the paper
@@ -213,11 +218,6 @@ Six things differ from the paper's presentation, each deliberately:
   the one the tree builds for which Deligne's hypotheses are
   discharged.
 
-`RS/Glossary.lean` glosses the recurring vocabulary — fragments,
-transition systems, walk permutations, canonical frames — and
-`ClassicalOverview.md` surveys the classical layer: the
-literature results proved in the tree and the methods used.
-
 ## The converse route
 
 The converse rests on one displayed identity, the closing display
@@ -272,89 +272,51 @@ alone, the pairing-fibre holonomy being trivial).
 
 ## Auditing
 
-Five kinds of front-door file carry the semantic and trust
-surface — what the theorems say, and what they rest on:
+The audit surface is small. What the theorems *mean* is
+[`RS/Definitions.lean`](RS/Definitions.lean), self-contained over
+Mathlib as above; what they *say* is the three theorems-of-record
+files — `RS/TheoremForward.lean`, `RS/TheoremQuant.lean`,
+`RS/TheoremConverse.lean` — each a statement and a few lines.
+(`RS/Glossary.lean` glosses the vocabulary, and
+`ClassicalOverview.md` surveys the classical layer.)
 
-* **The statements** — `RS/StatementForward.lean` (the forward
-  direction), `RS/StatementQuant.lean` (its quantitative form),
-  `RS/StatementConverse.lean` (the converse).
-* **The vocabulary** — `RS/Glossary.lean`, and
-  `ClassicalOverview.md` for the classical layer.
-* **The theorems of record** — `RS/TheoremForward.lean`,
-  `RS/TheoremQuant.lean`, `RS/TheoremConverse.lean`: each summit is a
-  statement and a few lines.
-* **The statement surface** —
-  `RS/Assembly/BlueprintStatement.lean` collects every definition
-  the summits are phrased in and pins its type, then pins the type
-  of every theorem of record.
-* **The axiom audits** — `RS/Assembly/Blueprint.lean` and its two
-  parts.
+The `RS/Assembly/` audits then pin that surface.
+`BlueprintStatement.lean` pins the type of every definition the
+summits are phrased in and of every theorem of record with
+`#guard_msgs`-guarded `#check` lines; `Blueprint.lean` and its two
+parts pin every main theorem's axiom set to
+`[propext, Classical.choice, Quot.sound]` with guarded
+`#print axioms` lines. Drift in either is a compile error, and both
+audits are part of the default `lake build`.
 
-The definitions those statements rest on are `Fragment` and
-`Fragment.Equiv` (`RS/Novel/Skein/FlagGraph.lean`),
-`ClosedFragment`, `emptyClosedFragment`, `EdgeRankBounded` and
-`EdgeRankParameter` (`RS/Novel/Skein/ConnectionRank.lean`),
-`MixedFunctional`, `mixedPartition` and
-`IsMixedPartitionFunction` (`RS/Novel/Skein/MixedPartition.lean`),
-`IsMixedPartitionFunctionBounded` (`RS/StatementQuant.lean`), and
-the one cited input `DeligneTheoremStatement` together with the
-`DeligneFibreFunctor` its conclusion names
-(`RS/Classical/Interfaces/DeligneTheorem.lean`) — twelve in all.
-`BlueprintStatement.lean` pins those twelve together with the three
-named statements they are assembled into (`RegtsSevensterStatement`,
-`RegtsSevensterStatementQuant`, `RegtsSevensterConverseStatement`),
-fifteen types in all, and then the type of each of the six theorems
-of record.
-
-`RS/Assembly/Blueprint.lean` and its two parts pin the axiom set
-of every main theorem with `#guard_msgs`-guarded `#print axioms`
-lines, so drift from `[propext, Classical.choice, Quot.sound]` is
-a compile error rather than a reading exercise. Both kinds of
-audit are part of the default `lake build` target.
-
-What the statement pins catch, for the development's own
-definitions, is a change of *type*: a definition entering or leaving
-a summit statement, or a theorem of record concluding something
-else. A definition can still be rewritten while keeping its type.
-
-One of them carries conventions a type cannot see —
-`mixedPartition`, which reads the circuit sign, the Eulerian
-condition, a loop's two incidences at its vertex, the difference
-between a loop and a free circle, and the `η`-convention through
-which distinct odd colourings reach a common basis vector. That
-definition is pinned by a *value* as well. The paper's worked
-example fixes the functional `h(θ)` whose mixed partition function
-is `det(θ I − A_G)` on graphs without free circles; the one-vertex
-one-loop graph has `A_L = (2)`, so it must evaluate to `θ − 2`, and
-`mixedPartition_loopGraph` (`RS/Novel/Skein/LoopExample.lean`)
-proves that it does. A sign error in any one of the five would
-change the number.
-
-The one statement the development *assumes* is pinned by content
-instead — `DeligneTheoremStatement` unfolded, together with the
-definition of every predicate its hypothesis list is phrased in
-(`HasScalarUnit`, `TensorGeneratedBy` and the `IsSubquotientOf` and
-`mixedPow` it is built from, `ModerateLengthGrowth` and its
-`LengthLE`, and the `DeligneFibreFunctor` it concludes with). An
-auditor compares that block with Deligne's Théorème 0.6 and §0.1,
-and any drift in it is a compile error.
+Two pins go beyond types. `mixedPartition` carries conventions a
+type cannot see — the circuit sign, the Eulerian condition, a
+loop's two incidences, the loop/free-circle distinction, the
+`η`-convention — so it is also pinned by *value*: the paper's
+worked example must evaluate to `θ − 2` on the loop graph and to
+`0` with a free circle adjoined, and
+`RS/Novel/Skein/LoopExample.lean` proves that it does. And the one
+statement the development *assumes* is pinned by *content*:
+`DeligneTheoremStatement` unfolded, with the definition of every
+predicate its hypothesis list is phrased in, for comparison against
+Deligne's Théorème 0.6 and §0.1.
 
 ## Certification
 
-Beyond the in-tree audits, the repository carries an independent
-certification surface for
-[comparator](https://github.com/leanprover/comparator):
-`Challenge.lean` states the six theorems of record with `sorry`,
-importing only the statement modules; `Solution.lean` proves each by
-the theorem of record of the same name; and
+Beyond the in-tree audits, the six theorems of record are certified
+with [comparator](https://github.com/leanprover/comparator).
+`Challenge.lean` imports `RS/Definitions.lean` and nothing else of
+the tree and states the six theorems with `sorry`; `Solution.lean`
+proves each by the theorem of record of the same name;
 `comparator-config.json` lists the six names and the axiom
-whitelist. Comparator builds the two modules separately, confirms
-at the kernel-export level — independently of the elaborator — that
-each solution proves exactly the challenged statement, checks the
-proofs against `[propext, Classical.choice, Quot.sound]`, and
-replays them through the kernel. The CI workflow
-(`.github/workflows/ci.yml`) runs the build, the audits, the
-environment linters and the certification on every push.
+whitelist. Comparator builds the two modules separately, exports
+both environments at the kernel level — independently of the
+elaborator — and checks that each theorem is proved with an
+identical statement about identical definitions, that the proofs
+use no axiom outside the whitelist, and that the kernel replays
+them. The CI workflow (`.github/workflows/ci.yml`) runs the build,
+the audits, the environment linters and the certification on every
+push.
 
 ## Building
 
@@ -366,7 +328,7 @@ tag, so it builds from a clean clone:
 
 Budget around 12 GB of disk: roughly 8.5 GB for Mathlib and its
 dependencies, source and oleans, and 3 GB for this tree's own build
-products. Once the cache is in place, a clean build of all 476
+products. Once the cache is in place, a clean build of all 477
 modules of the tree takes about five minutes on 128 hardware
 threads; the wall time is dominated by the longest import chain, so
 expect appreciably more on a small machine. Verifying the audits and
@@ -398,5 +360,4 @@ citation metadata.
 
 Apache License 2.0; see [LICENSE](LICENSE). The paper in
 `Paper/` is distributed under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), not
-the repository licence.
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

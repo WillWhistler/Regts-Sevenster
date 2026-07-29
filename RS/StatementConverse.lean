@@ -1,8 +1,8 @@
-import RS.StatementForward
+import RS.Definitions
 import RS.Classical.Interfaces.EulerianIndependence
 
 /-!
-# The converse statement surface
+# The converse statement, assembled
 
 The converse of the Regts–Sevenster theorem: every mixed partition
 function has exponentially bounded edge-connection rank, with base
@@ -116,14 +116,6 @@ theorem mixedPartition_empty {k ℓ : ℕ} (h : MixedFunctional k ℓ) :
   ring
 
 /-! ## The converse statement -/
-
-/-- **THE CONVERSE STATEMENT**: every mixed partition function is
-an edge-rank-bounded parameter with base `max 1 (k + 2ℓ)`
-(Regts–Sevenster, arXiv:1807.04494, Theorem 6). -/
-def RegtsSevensterConverseStatement : Prop :=
-  ∀ (k ℓ : ℕ) (h : MixedFunctional k ℓ),
-    ∃ g : EdgeRankParameter (max 1 (k + 2 * ℓ)),
-      ∀ W : ClosedFragment, g.val W = mixedPartition h W
 
 /-- **Assembly of the converse** from the Eulerian-independence
 input and the connection-rank bound. -/

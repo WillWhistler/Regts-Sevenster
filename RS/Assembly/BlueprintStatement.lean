@@ -29,15 +29,9 @@ input is pinned by content, and so is every predicate its hypothesis
 list is phrased in.  `Blueprint.lean` and its parts then pin what
 the summits depend on.
 
-The definitions live in
-`RS/Novel/Skein/FlagGraph.lean` (`Fragment`, `Fragment.Equiv`),
-`RS/Novel/Skein/ConnectionRank.lean` (`ClosedFragment`,
-`emptyClosedFragment`, `EdgeRankBounded`, `EdgeRankParameter`),
-`RS/Novel/Skein/MixedPartition.lean` (`MixedFunctional`,
-`mixedPartition`, `IsMixedPartitionFunction`),
-`RS/StatementQuant.lean` (`IsMixedPartitionFunctionBounded`) and
-`RS/Classical/Interfaces/DeligneTheorem.lean`
-(`DeligneTheoremStatement`, `DeligneFibreFunctor`).
+The definitions all live in `RS/Definitions.lean`, the
+self-contained statement surface that the comparator certification
+trusts and the rest of the tree imports.
 -/
 
 namespace RS
