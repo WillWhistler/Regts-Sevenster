@@ -10,7 +10,7 @@ sources:
   - title: "Mixed partition functions are exactly the graph parameters
       of exponentially bounded edge-connection rank"
     authors: ["William Whistler"]
-    id: ""                     # arXiv ID pending
+    id: "arXiv:2607.27198"
     type: "preprint"
     license: "CC-BY-4.0"
     author_contacted: "n/a"    # the paper's author is this project's author

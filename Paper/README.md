@@ -4,7 +4,7 @@
 
 > W. Whistler, *Mixed partition functions are exactly the graph
 > parameters of exponentially bounded edge-connection rank*,
-> [arXiv:XXXX.XXXXXv1](https://arxiv.org/abs/XXXX.XXXXXv1),
+> [arXiv:2607.27198v1](https://arxiv.org/abs/2607.27198v1),
 
 the exact version whose numbering the formalization's statements
 and documentation match. The paper's canonical home is its arXiv

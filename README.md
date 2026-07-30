@@ -6,11 +6,11 @@ A Lean 4 formalization of the accompanying paper
 
 > W. Whistler, *Mixed partition functions are exactly the graph
 > parameters of exponentially bounded edge-connection rank*,
-> [arXiv:XXXX.XXXXX](https://arxiv.org/abs/XXXX.XXXXX).
+> [arXiv:2607.27198](https://arxiv.org/abs/2607.27198).
 
 A copy is included at [`Paper/rstheorem.pdf`](Paper/rstheorem.pdf)
 — the exact version whose numbering this tree matches
-([arXiv:XXXX.XXXXXv1](https://arxiv.org/abs/XXXX.XXXXXv1)); the
+([arXiv:2607.27198v1](https://arxiv.org/abs/2607.27198v1)); the
 arXiv page above is the paper's canonical home.
 
 The paper proves a conjecture of Regts and Sevenster

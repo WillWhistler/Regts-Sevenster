@@ -41,7 +41,7 @@ references:
       - given-names: William
         family-names: Whistler
         email: will@whistler.uk
-    url: https://arxiv.org/abs/XXXX.XXXXX
+    url: https://arxiv.org/abs/2607.27198
   - type: article
     title: "Mixed partition functions and exponentially bounded
       edge-connection rank"
