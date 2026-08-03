@@ -23,14 +23,14 @@ variable {k ℓ : ℕ}
 /-- **The evaluation is the standard form on transported odd
 pairs.** -/
 theorem evFormOdd
-    (e : SuperVect.Hom (stdSuper k ℓ) (P.ω.obj (SkeinObj.mk 1)))
+    (e : SuperVect.Hom (stdSuperPair k ℓ) (P.ω.obj (SkeinObj.mk 1)))
     (hform :
       letI := P.braided
       SuperVect.Hom.comp
         (μ P.ω (SkeinObj.mk 1) (SkeinObj.mk 1) ≫
           P.ω.map (ε_ (SkeinObj.mk 1) (SkeinObj.mk 1)) ≫ η P.ω)
         (SuperVect.tensorHom e e) = stdForm k ℓ)
-    (x y : (stdSuper k ℓ).odd) :
+    (x y : (stdSuperPair k ℓ).odd) :
     letI := P.braided
     omegaFun f P (ε_ (SkeinObj.mk 1) (SkeinObj.mk 1))
         (((μ P.ω (SkeinObj.mk 1) (SkeinObj.mk 1)) :
@@ -39,7 +39,7 @@ theorem evFormOdd
       (stdForm k ℓ).evenMap (oddPair x y) := by
   letI := P.braided
   have h := congrArg (fun z : SuperVect.Hom
-      (SuperVect.tensorObj (stdSuper k ℓ) (stdSuper k ℓ))
+      (SuperVect.tensorObj (stdSuperPair k ℓ) (stdSuperPair k ℓ))
       SuperVect.tensorUnit => z.evenMap (oddPair x y)) hform
   refine Eq.trans ?_ h
   show omegaFun f P (ε_ (SkeinObj.mk 1) (SkeinObj.mk 1))

@@ -17,20 +17,20 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 -- Raised budget: multiplicativity is checked by unfolding the
 -- transport, the merge and the tensor of the two functionals.
 set_option maxHeartbeats 1000000 in
 /-- **The split cap is multiplicative over the merge.** -/
 theorem omegaFun_capTensor_merge (m : ℕ)
-    (x : (superPow (stdSuper k ℓ) (m + m)).even)
-    (y : (superPow (stdSuper k ℓ) 2).even) :
+    (x : (superPow (stdSuperPair k ℓ) (m + m)).even)
+    (y : (superPow (stdSuperPair k ℓ) 2).even) :
     omegaFun f P (HomSpace.tensor f (m + m) 0 2 0
         (bundleCapClass f m) (evClass f))
       (((stdToOmega f P e ((m + m) + 2)) :
         SuperVect.Hom _ _).evenMap
-        (((powMerge (stdSuper k ℓ) (m + m) 2) :
+        (((powMerge (stdSuperPair k ℓ) (m + m) 2) :
           SuperVect.Hom _ _).evenMap (evenPair x y))) =
       capVal f P e m x *
         omegaFun f P (evClass f)
@@ -40,8 +40,8 @@ theorem omegaFun_capTensor_merge (m : ℕ)
   -- The transported merge is the structure-map image of the
   -- blockwise transports.
   have hmerge := congrArg (fun z :
-      (superPow (stdSuper k ℓ) (m + m) ⊗
-        superPow (stdSuper k ℓ) 2 ⟶
+      (superPow (stdSuperPair k ℓ) (m + m) ⊗
+        superPow (stdSuperPair k ℓ) 2 ⟶
         P.ω.obj (SkeinObj.mk ((m + m) + 2))) =>
     (z : SuperVect.Hom _ _).evenMap (evenPair x y))
     (stdToOmega_merge f P e (m + m) 2)

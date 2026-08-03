@@ -1,5 +1,4 @@
 import RS.Definitions
-import RS.Common.MathlibDeps
 
 /-!
 # Inversions and the sorting sign

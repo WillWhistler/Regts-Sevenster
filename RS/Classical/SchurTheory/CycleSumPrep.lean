@@ -1,5 +1,4 @@
 import RS.Classical.SchurTheory.CycleFactor
-import RS.Classical.SchurTheory.FibreCard
 
 /-!
 # Preparation for the cycle-sum identity

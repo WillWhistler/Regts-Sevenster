@@ -1,6 +1,4 @@
 import RS.Novel.Skein.GluePathMatch
-import RS.Novel.Skein.CanonicalFrame
-import RS.Novel.Skein.StateFlipSet
 import RS.Novel.Skein.GlueCrossDelta
 import RS.Novel.Skein.ConverseDischarge
 import RS.Novel.Skein.PropThreeOpen

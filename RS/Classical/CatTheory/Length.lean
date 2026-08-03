@@ -1,5 +1,4 @@
 import RS.Definitions
-import RS.Common.MathlibDeps
 
 /-!
 # Bounded length for objects of an abelian category

@@ -18,8 +18,8 @@ open Classical
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 -- Raised budget: the termwise identity assembles the star
 -- coordinates, the cap pairing and every sign family into one
@@ -30,7 +30,7 @@ flipped data colouring is the Definition 5 term. -/
 theorem masterSummand_colouringOfFlip
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (W : ClosedFragment)
     (F : EdgeSubset W) {κ : F.TransitionSystem}
     (o : κ.Orientation) (ψ : F.EvenColouring k)
@@ -187,7 +187,7 @@ and the termwise value identity. -/
 theorem fibreSum_eq
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (W : ClosedFragment)
     (s : Finset W.Flag) :
     (∑ c ∈ Finset.univ.filter
@@ -275,7 +275,7 @@ theorem fibreSum_eq
 theorem parameter_eq_mixedPartition (W : ClosedFragment)
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (hform :
       letI := P.braided
       SuperVect.Hom.comp

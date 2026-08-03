@@ -7,7 +7,7 @@
 #  2. `lake exe runLinter RS` — the Batteries environment-linter suite.
 #  3. comparator (github.com/leanprover/comparator) — builds the
 #     sorried `Challenge` and the proving `Solution` separately,
-#     confirms at the kernel-export level that the six theorems of
+#     confirms at the kernel-export level that the theorems of
 #     record match their pinned statements, checks the axiom
 #     whitelist, and replays the proofs through the kernel.
 #

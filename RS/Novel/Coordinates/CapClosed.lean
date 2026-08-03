@@ -24,7 +24,7 @@ variable {k ℓ : ℕ}
 set_option maxHeartbeats 4000000 in
 /-- **The cap closed form.** -/
 theorem capVal_closed
-    (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+    (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
     (hform :
       letI := P.braided
       SuperVect.Hom.comp
@@ -50,7 +50,7 @@ theorem capVal_closed
     have hterm : ∀ c' :
         {c' : MixedColouring k ℓ ((m + m) + 2) // c'.IsEven},
         coordOf (((modelPermMap (capPeelPerm m) ≫
-            eqToHom (congrArg (superPow (stdSuper k ℓ))
+            eqToHom (congrArg (superPow (stdSuperPair k ℓ))
               (capPeelArity m))) :
           SuperVect.Hom _ _).evenMap
           (evenBasisVec (⟨c, hc⟩ :
@@ -62,16 +62,16 @@ theorem capVal_closed
               ⇑(capPeelPerm m) = c then (1 : ℂ) else 0) := by
       intro c'
       rw [show (((modelPermMap (capPeelPerm m) ≫
-          eqToHom (congrArg (superPow (stdSuper k ℓ))
+          eqToHom (congrArg (superPow (stdSuperPair k ℓ))
             (capPeelArity m))) :
         SuperVect.Hom _ _).evenMap
         (evenBasisVec (⟨c, hc⟩ :
           {c : MixedColouring k ℓ
             ((m + 1) + (m + 1)) // c.IsEven}))) =
-        (((eqToHom (congrArg (superPow (stdSuper k ℓ))
+        (((eqToHom (congrArg (superPow (stdSuperPair k ℓ))
             (capPeelArity m)) :
-          superPow (stdSuper k ℓ) ((m + 1) + (m + 1)) ⟶
-            superPow (stdSuper k ℓ) ((m + m) + 2)) :
+          superPow (stdSuperPair k ℓ) ((m + 1) + (m + 1)) ⟶
+            superPow (stdSuperPair k ℓ) ((m + m) + 2)) :
           SuperVect.Hom _ _).evenMap
           (((modelPermMap (capPeelPerm m)) :
             SuperVect.Hom _ _).evenMap
@@ -109,7 +109,7 @@ theorem capVal_closed
             (⟨peelColour m c, peelColour_isEven m hc⟩ :
               {c' : MixedColouring k ℓ
                 ((m + m) + 2) // c'.IsEven}) =
-          ((powMerge (stdSuper k ℓ) (m + m) 2) :
+          ((powMerge (stdSuperPair k ℓ) (m + m) 2) :
             SuperVect.Hom _ _).evenMap
             (evenPair
               (evenBasisVec ⟨MixedColouring.firstHalf
@@ -131,11 +131,11 @@ theorem capVal_closed
             (⟨peelColour m c, peelColour_isEven m hc⟩ :
               {c' : MixedColouring k ℓ
                 ((m + m) + 2) // c'.IsEven}) =
-          ((powMerge (stdSuper k ℓ) (m + m) 2) :
+          ((powMerge (stdSuperPair k ℓ) (m + m) 2) :
             SuperVect.Hom _ _).evenMap
-            (((0 : (superPow (stdSuper k ℓ)
+            (((0 : (superPow (stdSuperPair k ℓ)
                 (m + m)).even ⊗[ℂ]
-                (superPow (stdSuper k ℓ) 2).even),
+                (superPow (stdSuperPair k ℓ) 2).even),
               oddBasisVec ⟨MixedColouring.firstHalf
                 (peelColour m c), hfh⟩ ⊗ₜ[ℂ]
                 oddBasisVec ⟨MixedColouring.secondHalf
@@ -143,8 +143,8 @@ theorem capVal_closed
                   (peelColour m c).secondHalf_not_isEven'
                     (peelColour_isEven m hc) hfh⟩) :
               (SuperVect.tensorObj
-                (superPow (stdSuper k ℓ) (m + m))
-                (superPow (stdSuper k ℓ) 2)).even) from by
+                (superPow (stdSuperPair k ℓ) (m + m))
+                (superPow (stdSuperPair k ℓ) 2)).even) from by
           rw [evenBasisVec_split (peelColour m c)
             (peelColour_isEven m hc), dif_neg hfh]]
         rw [splitCapVal_oddMerge]

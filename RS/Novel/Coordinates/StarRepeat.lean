@@ -15,8 +15,8 @@ open CategoryTheory Finset
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- The adjacent swap has exactly the both-odd inversion. -/
 theorem oddInversions_adjacent {n : ℕ} (i : ℕ)
@@ -188,7 +188,7 @@ theorem oddInversions_adjacent {n : ℕ} (i : ℕ)
 theorem starCoord_adjacent_repeat
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     {d : ℕ} (i : ℕ) (h2 : i + 1 < d)
     (c : MixedColouring k ℓ d)
     (hodd : (c ⟨i, by omega⟩).isRight)
@@ -222,7 +222,7 @@ theorem starCoord_adjacent_repeat
 theorem starCoord_repeat_zero
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     {d : ℕ} (c : MixedColouring k ℓ d) (i j : Fin d)
     (hij : i.val < j.val)
     (hodd : (c i).isRight) (heq : c i = c j) :

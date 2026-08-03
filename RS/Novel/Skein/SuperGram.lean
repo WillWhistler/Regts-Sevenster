@@ -1,6 +1,5 @@
 import RS.Novel.Skein.GramRank
 import RS.Novel.Skein.SuperSpace
-import RS.Novel.Skein.DirMatching
 
 /-!
 # The super form on boundary states, and the rank it bounds

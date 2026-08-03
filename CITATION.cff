@@ -11,15 +11,19 @@ authors:
     family-names: Whistler
     email: will@whistler.uk
 license: Apache-2.0
+version: "0.3"
+date-released: "2026-08-03"
+url: https://github.com/WillWhistler/Regts-Sevenster
 repository-code: https://github.com/WillWhistler/Regts-Sevenster
 abstract: >-
   A Lean 4 formalization of both directions of the Regts–Sevenster
   conjecture: a complex-valued graph parameter normalized at the
   empty graph has exponentially bounded edge-connection rank if and
   only if it is a mixed partition function, with the model's numbers
-  of even and odd colours bounded by ⌊2eR⌋. The forward direction is
-  proved conditional on Deligne's theorem on tensor categories
-  alone; the converse is proved outright. The development carries no
+  of even and odd colours bounded by ⌊2eR⌋. Both directions are
+  proved outright, and so is the fibre-functor form of Deligne's
+  theorem on tensor categories,
+  on which the forward direction rests. The development carries no
   sorry, no custom axiom and no native_decide, and pins the axiom set
   of every main theorem to [propext, Classical.choice, Quot.sound].
 keywords:

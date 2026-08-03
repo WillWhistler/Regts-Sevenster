@@ -1,5 +1,4 @@
 import RS.Classical.SchurTheory.SignResolve
-import RS.Common.YoungDiagrams
 
 /-!
 # The natural dimension identity and square staircases

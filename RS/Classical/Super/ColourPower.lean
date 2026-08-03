@@ -4,7 +4,7 @@ import RS.Novel.Extraction.StdSuper
 # The colouring model of tensor powers
 
 The `d`-th tensor power of the standard super space
-`stdSuper k ℓ` in the pair-component model is an exponentially
+`stdSuperPair k ℓ` in the pair-component model is an exponentially
 nested product.  The colouring model flattens it: a basis vector
 of the power is a *mixed colouring* — each of the `d` positions
 carries an even colour in `Fin k` or an odd colour in
@@ -282,7 +282,7 @@ noncomputable def colourPowerZero (k ℓ : ℕ) :
 the standard space extends the colourings by one position. -/
 noncomputable def colourPowerStep (k ℓ d : ℕ) :
     SuperLinearEquiv
-      (SuperVect.tensorObj (colourPower k ℓ d) (stdSuper k ℓ))
+      (SuperVect.tensorObj (colourPower k ℓ d) (stdSuperPair k ℓ))
       (colourPower k ℓ (d + 1)) :=
   ⟨(LinearEquiv.prodCongr
       (funTensorFun {c : MixedColouring k ℓ d // c.IsEven}
@@ -307,12 +307,12 @@ noncomputable def colourPowerStep (k ℓ d : ℕ) :
 monoidal power of the standard super space is the colouring
 model. -/
 noncomputable def colourPowerEquiv (k ℓ : ℕ) : (d : ℕ) →
-    SuperLinearEquiv (superPow (stdSuper k ℓ) d)
+    SuperLinearEquiv (superPow (stdSuperPair k ℓ) d)
       (colourPower k ℓ d)
   | 0 => colourPowerZero k ℓ
   | d + 1 =>
       (SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ d)
-        (SuperLinearEquiv.refl (stdSuper k ℓ))).trans
+        (SuperLinearEquiv.refl (stdSuperPair k ℓ))).trans
         (colourPowerStep k ℓ d)
 
 end RS

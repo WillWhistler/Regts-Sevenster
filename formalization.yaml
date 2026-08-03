@@ -32,48 +32,48 @@ status:
     the empty graph has exponentially bounded edge-connection rank
     if and only if it is a mixed partition function, together with
     the dimension bound k, 2ℓ ≤ ⌊2eR⌋ and the appendix's
-    quantitative trace-zeta theorem. The forward direction is
-    conditional on Deligne's theorem on tensor categories, which is
-    consumed as an interface; every hypothesis of that theorem is
-    discharged in the development for the concretely constructed
+    quantitative trace-zeta theorem. Nothing is assumed: Deligne's
+    theorem on tensor categories, on which the forward direction
+    rests, is itself proved here as `RS.deligne_theorem`, in the
+    fibre-functor form that is the substance of his own proof, and every
+    hypothesis of it is discharged for the concretely constructed
     envelope. The converse rests on nothing. The classical
     symmetric-group input is a theorem of the development, not an
-    assumption.
+    assumption. The conditional forms of the summit theorems are
+    retained alongside the unconditional ones, to exhibit the
+    dependency structure.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
   main_results:
-    - declaration: "RS.regts_sevenster_iff"
-      file: "RS/TheoremConverse.lean"
+    - declaration: "RS.regts_sevenster"
+      file: "RS/Summit.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
-      literature_dependencies:
-        - statement: "Deligne's theorem on tensor categories: an
-            essentially small abelian ℂ-linear rigid symmetric monoidal
-            category with ℂ-bilinear tensor product, End 1 = ℂ, a finite
-            tensor generator and moderate growth of the lengths of its
-            tensor powers admits an exact faithful ℂ-linear symmetric
-            monoidal fibre functor to finite-dimensional super vector
-            spaces (Thm 0.6, with 0.1 for the definitions; Ostrik Thm
-            2.3). Taken as `RS.DeligneTheoremStatement`, carrying
-            Deligne's own hypotheses. Two things are taken from the
-            theorem rather than all of it, each weakening the
-            assumption: one direction of his equivalence, and its
-            conclusion in fibre-functor form rather than the
-            tensor-equivalence with the representations of an affine
-            supergroup scheme. Exactness and faithfulness are retained
-            in `RS.DeligneFibreFunctor` and forgotten only afterwards,
-            by `RS.DeligneFibreFunctor.toPackage`, at the point of use."
-          source: "Deligne, Catégories tensorielles, Mosc. Math.
-            J. 2 (2002), 227–248"
-    - declaration: "RS.regts_sevenster_quant_deligne_only"
-      file: "RS/TheoremQuant.lean"
+      literature_dependencies: []
+      # Deligne's theorem, in fibre-functor form, is
+      # `RS.deligne_theorem`, proved here.
+    - declaration: "RS.regts_sevenster_characterisation"
+      file: "RS/Summit.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
-      literature_dependencies:
-        - statement: "Deligne's theorem, as above."
-          source: "Deligne, Catégories tensorielles, Mosc. Math.
-            J. 2 (2002), 227–248"
+      literature_dependencies: []
+    - declaration: "RS.deligne_theorem"
+      file: "RS/Classical/Deligne/DeligneAssembly.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+      # Deligne, Catégories tensorielles, Mosc. Math. J. 2 (2002),
+      # 227-248, Théorème 0.6, proved rather than cited. The route is
+      # not Deligne's own: his section 4 descent is replaced by
+      # splitting the tensor generator alone and passing to a simple
+      # quotient, after Coulembier, Tannakian categories in positive
+      # characteristic, Duke Math. J. 169 (2020), Lemma 3.3.2(ii).
+    - declaration: "RS.regts_sevenster_quant"
+      file: "RS/Summit.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
     - declaration: "RS.regts_sevenster_converse"
       file: "RS/TheoremConverse.lean"
       sorry_count: 0
@@ -97,11 +97,12 @@ automation:
         `#guard_msgs`-pinned `#print axioms`, `#check` and `#print`
         audits are part of the default build target, so a change to the
         axiom set, to the type of any definition a summit is phrased in
-        or of any theorem of record, or to the content of the cited
-        input and of every predicate its hypothesis list is phrased in,
-        is a compile error rather than a review task."
+        or of any theorem of record, or to the content of
+        `DeligneTheoremStatement` and of every predicate its hypothesis
+        list is phrased in, is a compile error rather than a review
+        task."
       cost:
-        wall_time: "~12 days"
+        wall_time: "~15 days"
         spend_usd: "Max 20x subscriptions"
         hardware: "one workstation"
       prompting_notes: "Subagent tasks were written as Lean statements
@@ -112,7 +113,7 @@ automation:
         data and re-proved in Lean; nothing found by search was
         trusted."
   spend_usd: "subscription-based usage; no metered API spend"
-  notes: "Beyond the in-tree audits, the six theorems of record are
+  notes: "Beyond the in-tree audits, the theorems of record are
     certified in CI with leanprover/comparator: Challenge.lean imports
     the self-contained statement surface RS/Definitions.lean and
     states them with sorry, Solution.lean proves each by the theorem
@@ -123,7 +124,7 @@ automation:
 
 fidelity:
   divergences: >-
-    Six deliberate divergences from the paper's presentation, each
+    Seven deliberate divergences from the paper's presentation, each
     recorded in the repository.
 
     (1) Connection rank. The paper defines the rank of the infinite
@@ -166,6 +167,21 @@ fidelity:
     Both are Cauchy completions of 𝒞_f, hence equivalent; the
     hypotheses are discharged for the one the tree builds.
 
+    (7) The route to the super symmetric power. The paper factors the
+    functional β_d(T_d, −) through Sym_s^d V by combining the
+    S_d-invariance of the pairing (Lemma 5.1(b)) with the invariance
+    of the star tensor. The tree works on coordinates instead: the
+    star class absorbs any relabelling of its legs
+    (RS.vertexStarClass_perm, RS/Novel/Coordinates/StarSymm.lean),
+    the model permutation acts on coordinates by the odd-inversion
+    sign (RS.coordOf_modelPermMap',
+    RS/Novel/Coordinates/ModelPermCoord.lean), and the two combine
+    into the sign rule RS.starCoord_perm
+    (RS/Novel/Coordinates/StarPerm.lean), which over ℂ is already the
+    statement that the coordinate functional lives on Sym_s^d V.
+    Lemma 5.1(b) is proved (RS.betaColour_perm',
+    RS/Classical/Super/ColourPairingSymm.lean) but is not consumed.
+
     Two machine-checked findings sharpened the paper rather than
     diverging from it: the odd-sector parity of the square
     specialization forces the supertrace argument to run at side
@@ -182,17 +198,22 @@ alignment:
   namespace: "RS"
   statements:
     - source: "Theorem 1.1 (Main Theorem), both directions"
-      lean: "RS.regts_sevenster_iff"
-      module: "RS/TheoremConverse.lean"
+      lean: "RS.regts_sevenster_characterisation"
+      module: "RS/Summit.lean"
       status: "proved"
-      note: "Conditional on RS.DeligneTheoremStatement alone."
+      note: "No hypothesis. The form taking RS.DeligneTheoremStatement
+        as an argument, RS.regts_sevenster_iff
+        (RS/TheoremConverse.lean), is retained to exhibit the
+        dependency structure."
     - source: "Theorem 1.1, forward direction"
-      lean: "RS.regts_sevenster_deligne_only"
-      module: "RS/TheoremForward.lean"
+      lean: "RS.regts_sevenster"
+      module: "RS/Summit.lean"
       status: "proved"
+      note: "No hypothesis; likewise RS.regts_sevenster_deligne_only
+        (RS/TheoremForward.lean) for the dependency structure."
     - source: "Corollary 4.10 (the dimension bound k, 2ℓ ≤ ⌊2eR⌋)"
-      lean: "RS.regts_sevenster_quant_deligne_only"
-      module: "RS/TheoremQuant.lean"
+      lean: "RS.regts_sevenster_quant"
+      module: "RS/Summit.lean"
       status: "proved"
     - source: "Regts–Sevenster Theorem 6 (the converse)"
       lean: "RS.regts_sevenster_converse"
@@ -230,13 +251,17 @@ alignment:
         (Karoubi (SkeinObj f))); the fibre functor is then restricted
         back to the skein category."
     - source: "Theorem 4.8 (Deligne's theorem) itself"
-      lean: "RS.DeligneTheoremStatement"
-      module: "RS/Definitions.lean"
-      status: "literature-dependency"
-      note: "The single cited input of the development, carrying
-        Deligne's own hypotheses. One direction of his equivalence is
-        assumed, and its conclusion in fibre-functor form
-        (RS.DeligneFibreFunctor); both weaken the assumption."
+      lean: "RS.deligne_theorem"
+      module: "RS/Classical/Deligne/DeligneAssembly.lean"
+      status: "proved"
+      note: "RS.DeligneTheoremStatement (RS/Definitions.lean) carries
+        Deligne's own hypotheses; it is weaker than what Deligne proves
+        in two ways, being one direction of his equivalence and taking
+        the conclusion in fibre-functor form (RS.DeligneFibreFunctor).
+        The route is not Deligne's: his section 4 descent along a
+        faithfully flat Isom-tensor torsor is replaced by splitting the
+        tensor generator alone and passing to a quotient by a maximal
+        ideal, after Coulembier. See ClassicalOverview.md section 6."
     - source: "Regts–Sevenster Proposition 3, closed sector"
       lean: "RS.eulerianIndependence"
       module: "RS/Novel/Skein/AllInternalAgreement.lean"
@@ -264,6 +289,14 @@ alignment:
       module: "RS/Definitions.lean"
       status: "proved"
       note: "A definition, on the flag model; see fidelity above."
+    - source: "Lemma 5.1, the Koszul sign of a rearrangement"
+      lean: "RS.betaDiag_eq_betaColour, RS.betaColour_perm'"
+      module: "RS/Novel/Coordinates/BetaDiagForm.lean,
+        RS/Classical/Super/ColourPairingSymm.lean"
+      status: "proved"
+      note: "Part (a), the interleaved evaluation, is what the tree
+        consumes. Part (b), the S_d-invariance of the pairing, is
+        proved but unused; see divergence (7) above."
     - source: "§2.3, the edge-connection rank hypothesis (H2)"
       lean: "RS.EdgeRankBounded, RS.edgeRankBounded_iff_submatrixRank"
       module: "RS/Novel/Skein/ConnectionRank.lean"
@@ -275,5 +308,8 @@ alignment:
 acknowledgements: >-
   Built on Mathlib. The mathematics formalized rests on Regts and
   Sevenster's conjecture and their §4 argument, on Deligne's theorem
-  on tensor categories and Ostrik's exposition of it, and on the
-  connection-matrix framework of Freedman, Lovász and Schrijver.
+  on tensor categories and Ostrik's exposition of it, on Coulembier's
+  route to it through simple algebras in the ind-completion (Tannakian
+  categories in positive characteristic, Duke Math. J. 169 (2020)),
+  and on the connection-matrix framework of Freedman, Lovász and
+  Schrijver.

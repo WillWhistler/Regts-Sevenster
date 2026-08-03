@@ -101,7 +101,7 @@ theorem skein_associator_inv_collapse (n : ℕ) :
 
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 -- Raised budget: the intertwining is proved by recursion on the
 -- arity with a top and a lower case, each unfolding the transport
@@ -114,7 +114,7 @@ theorem stdToOmega_powBraid :
     ∀ (n i : ℕ) (h : i + 2 ≤ n),
       letI := P.braided
       stdToOmega f P e n ≫ P.ω.map (skeinPowBraid f n i h) =
-        powBraid (stdSuper k ℓ) n i h ≫ stdToOmega f P e n
+        powBraid (stdSuperPair k ℓ) n i h ≫ stdToOmega f P e n
   | 0, _, h => absurd h (by omega)
   | 1, _, h => absurd h (by omega)
   | n + 2, i, h => by
@@ -125,8 +125,8 @@ theorem stdToOmega_powBraid :
           (SkeinObj.mk n : SkeinObj f) ◁
             (β_ (SkeinObj.mk 1 : SkeinObj f)
               (SkeinObj.mk 1)).hom from dif_pos hi]
-      rw [show powBraid (stdSuper k ℓ) (n + 2) i h =
-          topBraid (stdSuper k ℓ) n from dif_pos hi]
+      rw [show powBraid (stdSuperPair k ℓ) (n + 2) i h =
+          topBraid (stdSuperPair k ℓ) n from dif_pos hi]
       have hcollapse :
           ((SkeinObj.mk n : SkeinObj f) ◁
             (β_ (SkeinObj.mk 1 : SkeinObj f)
@@ -155,15 +155,15 @@ theorem stdToOmega_powBraid :
       rw [show skeinPowBraid f (n + 2) i h =
           (skeinPowBraid f (n + 1) i hle) ▷ SkeinObj.mk 1 from
         dif_neg hi]
-      rw [show powBraid (stdSuper k ℓ) (n + 2) i h =
-          (powBraid (stdSuper k ℓ) (n + 1) i hle) ▷
-            stdSuper k ℓ from dif_neg hi]
+      rw [show powBraid (stdSuperPair k ℓ) (n + 2) i h =
+          (powBraid (stdSuperPair k ℓ) (n + 1) i hle) ▷
+            stdSuperPair k ℓ from dif_neg hi]
       show ((stdToOmega f P e (n + 1) ⊗ₘ e) ≫
           μ P.ω (SkeinObj.mk (n + 1)) (SkeinObj.mk 1)) ≫
         P.ω.map ((skeinPowBraid f (n + 1) i hle) ▷
           SkeinObj.mk 1) =
-        (powBraid (stdSuper k ℓ) (n + 1) i hle ▷
-          stdSuper k ℓ) ≫ stdToOmega f P e (n + 2)
+        (powBraid (stdSuperPair k ℓ) (n + 1) i hle ▷
+          stdSuperPair k ℓ) ≫ stdToOmega f P e (n + 2)
       refine (Category.assoc _ _ _).trans ?_
       refine (congrArg (fun z =>
         (stdToOmega f P e (n + 1) ⊗ₘ e) ≫ z)
@@ -187,10 +187,10 @@ theorem stdToOmega_powBraid :
         (stdToOmega_powBraid (n + 1) i hle)).trans ?_
       refine (congrArg (fun z => z ≫
         μ P.ω (SkeinObj.mk (n + 1)) (SkeinObj.mk 1)) (show
-          ((powBraid (stdSuper k ℓ) (n + 1) i hle ≫
+          ((powBraid (stdSuperPair k ℓ) (n + 1) i hle ≫
             stdToOmega f P e (n + 1)) ⊗ₘ e) =
-          (powBraid (stdSuper k ℓ) (n + 1) i hle ▷
-            stdSuper k ℓ) ≫ (stdToOmega f P e (n + 1) ⊗ₘ e)
+          (powBraid (stdSuperPair k ℓ) (n + 1) i hle ▷
+            stdSuperPair k ℓ) ≫ (stdToOmega f P e (n + 1) ⊗ₘ e)
           from by
         rw [← MonoidalCategory.tensorHom_id,
           MonoidalCategory.tensorHom_comp_tensorHom,

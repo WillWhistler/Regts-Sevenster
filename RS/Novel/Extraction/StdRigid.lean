@@ -4,8 +4,8 @@ import RS.Novel.Extraction.StdDuality
 # Self-duality of the standard super space
 
 The copairing `C = Σ e_i ⊗ e_i + Σ f_i ⊗ g_i` as a morphism
-`𝟙 ⟶ stdSuper ⊗ stdSuper`, and the snake identities pairing it
-against the standard form: `stdSuper` is exactly self-dual in
+`𝟙 ⟶ stdSuperPair ⊗ stdSuperPair`, and the snake identities pairing it
+against the standard form: `stdSuperPair` is exactly self-dual in
 SuperVect.  This is the categorical form of the §5.2 conventions —
 the contraction identities `L_C = id` distributed over the graded
 blocks.
@@ -42,10 +42,10 @@ private lemma equiv_zero {M N : Type*} [AddCommMonoid M] [Module ℂ M]
   map_zero e
 
 /-- The standard copairing as an even morphism
-`𝟙 ⟶ stdSuper ⊗ stdSuper`. -/
+`𝟙 ⟶ stdSuperPair ⊗ stdSuperPair`. -/
 noncomputable def stdCopair (k ℓ : ℕ) :
     SuperVect.Hom SuperVect.tensorUnit
-      (SuperVect.tensorObj (stdSuper k ℓ) (stdSuper k ℓ)) := by
+      (SuperVect.tensorObj (stdSuperPair k ℓ) (stdSuperPair k ℓ)) := by
   refine ⟨?_, ?_⟩
   · change ℂ →ₗ[ℂ]
       ((Fin k → ℂ) ⊗[ℂ] (Fin k → ℂ)) ×
@@ -63,12 +63,12 @@ set_option maxHeartbeats 1600000 in
 open MonoidalCategory in
 /-- The first snake identity for the standard pairing. -/
 private theorem std_coev_ev (k ℓ : ℕ) :
-    stdSuper k ℓ ◁ (show 𝟙_ SuperVect ⟶ stdSuper k ℓ ⊗ stdSuper k ℓ
+    stdSuperPair k ℓ ◁ (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ
       from stdCopair k ℓ) ≫
-      (α_ (stdSuper k ℓ) (stdSuper k ℓ) (stdSuper k ℓ)).inv ≫
-      (show stdSuper k ℓ ⊗ stdSuper k ℓ ⟶ 𝟙_ SuperVect from stdForm k ℓ) ▷
-        stdSuper k ℓ =
-    (ρ_ (stdSuper k ℓ)).hom ≫ (λ_ (stdSuper k ℓ)).inv := by
+      (α_ (stdSuperPair k ℓ) (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv ≫
+      (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect from stdForm k ℓ) ▷
+        stdSuperPair k ℓ =
+    (ρ_ (stdSuperPair k ℓ)).hom ≫ (λ_ (stdSuperPair k ℓ)).inv := by
   apply SuperVect.Hom.ext
   · change
       (LinearMap.prodMap
@@ -168,12 +168,12 @@ set_option maxHeartbeats 1600000 in
 open MonoidalCategory in
 /-- The second snake identity for the standard pairing. -/
 private theorem std_ev_coev (k ℓ : ℕ) :
-    (show 𝟙_ SuperVect ⟶ stdSuper k ℓ ⊗ stdSuper k ℓ from stdCopair k ℓ) ▷
-      stdSuper k ℓ ≫
-      (α_ (stdSuper k ℓ) (stdSuper k ℓ) (stdSuper k ℓ)).hom ≫
-      stdSuper k ℓ ◁ (show stdSuper k ℓ ⊗ stdSuper k ℓ ⟶ 𝟙_ SuperVect
+    (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ from stdCopair k ℓ) ▷
+      stdSuperPair k ℓ ≫
+      (α_ (stdSuperPair k ℓ) (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom ≫
+      stdSuperPair k ℓ ◁ (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect
         from stdForm k ℓ) =
-    (λ_ (stdSuper k ℓ)).hom ≫ (ρ_ (stdSuper k ℓ)).inv := by
+    (λ_ (stdSuperPair k ℓ)).hom ≫ (ρ_ (stdSuperPair k ℓ)).inv := by
   apply SuperVect.Hom.ext
   · change
       (LinearMap.prodMap
@@ -270,7 +270,7 @@ private theorem std_ev_coev (k ℓ : ℕ) :
 /-- **Self-duality of the standard super space**: the standard form
 and copairing are an exact pairing. -/
 noncomputable instance stdExactPairing (k ℓ : ℕ) :
-    ExactPairing (stdSuper k ℓ) (stdSuper k ℓ) where
+    ExactPairing (stdSuperPair k ℓ) (stdSuperPair k ℓ) where
   coevaluation' := stdCopair k ℓ
   evaluation' := stdForm k ℓ
   coevaluation_evaluation' := std_coev_ev k ℓ

@@ -3,7 +3,7 @@ import RS
 /-!
 # The certification solution
 
-The six theorems of `Challenge.lean`, each proved by the theorem of
+The theorems of `Challenge.lean`, each proved by the theorem of
 record of the same name.  Comparator confirms at the kernel-export
 level that the statements match the challenge's, that the proofs
 use no axiom outside `[propext, Classical.choice, Quot.sound]`, and
@@ -20,20 +20,6 @@ edge-rank-bounded parameter, with base `max 1 (k + 2ℓ)`. -/
 theorem regts_sevenster_converse : RegtsSevensterConverseStatement :=
   RS.regts_sevenster_converse
 
-/-- **The forward direction**, conditional on Deligne's theorem
-alone. -/
-theorem regts_sevenster_deligne_only
-    (hDeligne : DeligneTheoremStatement.{1, 1}) :
-    RegtsSevensterStatement :=
-  RS.regts_sevenster_deligne_only hDeligne
-
-/-- **The quantitative forward direction**, conditional on
-Deligne's theorem alone: both dimensions at most `⌊2eR⌋`. -/
-theorem regts_sevenster_quant_deligne_only
-    (hDeligne : DeligneTheoremStatement.{1, 1}) :
-    RegtsSevensterStatementQuant :=
-  RS.regts_sevenster_quant_deligne_only hDeligne
-
 /-- **The rank bound from a bounded mixed partition function.** -/
 theorem edgeRankBounded_of_mixedBounded
     {f : ClosedFragment → ℂ} {B : ℕ}
@@ -41,22 +27,36 @@ theorem edgeRankBounded_of_mixedBounded
     EdgeRankBounded f (max 1 (2 * B)) :=
   RS.edgeRankBounded_of_mixedBounded hf
 
-/-- **The characterization**, conditional on Deligne alone: a
-fragment parameter has bounded edge rank exactly when it is a mixed
-partition function. -/
-theorem regts_sevenster_iff
-    (hDeligne : DeligneTheoremStatement.{1, 1})
+/-- **Deligne's theorem** on tensor categories: every essentially
+small abelian ℂ-linear rigid symmetric monoidal category with
+ℂ-bilinear tensor product, scalar unit endomorphisms, a finite
+tensor generator and moderate growth of the lengths of its tensor
+powers admits an exact faithful ℂ-linear symmetric monoidal fibre
+functor to finite-dimensional super vector spaces. -/
+theorem deligne_theorem : DeligneTheoremStatement.{1, 1} :=
+  RS.deligne_theorem
+
+/-- **The forward direction**, with no hypothesis. -/
+theorem regts_sevenster : RegtsSevensterStatement :=
+  RS.regts_sevenster
+
+/-- **The quantitative forward direction**, with no hypothesis:
+both dimensions at most `⌊2eR⌋`. -/
+theorem regts_sevenster_quant : RegtsSevensterStatementQuant :=
+  RS.regts_sevenster_quant
+
+/-- **The characterisation**: a fragment parameter has bounded edge
+rank exactly when it is a mixed partition function. -/
+theorem regts_sevenster_characterisation
     (f : ClosedFragment → ℂ)
     (hempty : f emptyClosedFragment = 1)
     (hiso : ∀ W₁ W₂ : ClosedFragment, W₁.Equiv W₂ → f W₁ = f W₂) :
     (∃ R : ℕ, EdgeRankBounded f R) ↔ IsMixedPartitionFunction f :=
-  RS.regts_sevenster_iff hDeligne f hempty hiso
+  RS.regts_sevenster_characterisation f hempty hiso
 
-/-- **The quantitative round trip**, conditional on Deligne alone:
-edge rank `R` gives dimension `⌊2eR⌋`, and dimension `B` gives edge
-rank base `max 1 (2B)`. -/
-theorem regts_sevenster_quant_roundtrip
-    (hDeligne : DeligneTheoremStatement.{1, 1})
+/-- **The quantitative round trip**: edge rank `R` gives dimension
+`⌊2eR⌋`, and dimension `B` gives edge rank base `max 1 (2B)`. -/
+theorem regts_sevenster_quant_characterisation
     (f : ClosedFragment → ℂ)
     (hempty : f emptyClosedFragment = 1)
     (hiso : ∀ W₁ W₂ : ClosedFragment, W₁.Equiv W₂ → f W₁ = f W₂) :
@@ -65,6 +65,6 @@ theorem regts_sevenster_quant_roundtrip
         ⌊2 * Real.exp 1 * (R : ℝ)⌋₊) ∧
     (∀ B, IsMixedPartitionFunctionBounded f B →
       EdgeRankBounded f (max 1 (2 * B))) :=
-  RS.regts_sevenster_quant_roundtrip hDeligne f hempty hiso
+  RS.regts_sevenster_quant_characterisation f hempty hiso
 
 end Certified

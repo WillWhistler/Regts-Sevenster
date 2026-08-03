@@ -20,21 +20,21 @@ the colouring model is the Koszul-signed adjacent swap. -/
 theorem toColour_powBraid :
     ∀ (n i : ℕ) (h : i + 2 ≤ n),
       toColour (k := k) (ℓ := ℓ) n
-          (powBraid (stdSuper k ℓ) n i h) =
+          (powBraid (stdSuperPair k ℓ) n i h) =
         colourSwap k ℓ n i h
   | 0, _, h => absurd h (by omega)
   | 1, _, h => absurd h (by omega)
   | n + 2, i, h => by
     by_cases hi : i = n
-    · rw [show powBraid (stdSuper k ℓ) (n + 2) i h =
-          topBraid (stdSuper k ℓ) n from dif_pos hi]
+    · rw [show powBraid (stdSuperPair k ℓ) (n + 2) i h =
+          topBraid (stdSuperPair k ℓ) n from dif_pos hi]
       rw [toColour_topBraid]
       subst hi
       rfl
     · have hle : i + 2 ≤ n + 1 := by omega
-      rw [show powBraid (stdSuper k ℓ) (n + 2) i h =
-          (powBraid (stdSuper k ℓ) (n + 1) i hle) ▷
-            stdSuper k ℓ from dif_neg hi]
+      rw [show powBraid (stdSuperPair k ℓ) (n + 2) i h =
+          (powBraid (stdSuperPair k ℓ) (n + 1) i hle) ▷
+            stdSuperPair k ℓ from dif_neg hi]
       rw [toColour_whisker]
       rw [toColour_powBraid (n + 1) i hle]
       rw [colourExtend_colourSwap]
@@ -42,13 +42,13 @@ theorem toColour_powBraid :
 /-- **The wordwise colour action.** -/
 theorem toColour_powBraidWord {n : ℕ} (w : List (Fin n)) :
     toColour (k := k) (ℓ := ℓ) (n + 1)
-        (powBraidWord (stdSuper k ℓ) w) =
+        (powBraidWord (stdSuperPair k ℓ) w) =
       colourSwapWord k ℓ w := by
   induction w with
   | nil => exact toColour_id (n + 1)
   | cons i w ih =>
-    show toColour (n + 1) (powBraidWord (stdSuper k ℓ) w ≫
-      powBraid (stdSuper k ℓ) (n + 1) i.val (by omega)) = _
+    show toColour (n + 1) (powBraidWord (stdSuperPair k ℓ) w ≫
+      powBraid (stdSuperPair k ℓ) (n + 1) i.val (by omega)) = _
     rw [toColour_comp, ih, toColour_powBraid]
     rfl
 

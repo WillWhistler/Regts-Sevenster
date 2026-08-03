@@ -13,11 +13,11 @@ namespace RS
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 /-- **The cap value in coordinates.** -/
 theorem capVal_expansion (m : ℕ)
-    (v : (superPow (stdSuper k ℓ) (m + m)).even) :
+    (v : (superPow (stdSuperPair k ℓ) (m + m)).even) :
     capVal f P e m v =
       ∑ c : {c : MixedColouring k ℓ (m + m) // c.IsEven},
         coordOf v c.val * capVal f P e m (evenBasisVec c) := by

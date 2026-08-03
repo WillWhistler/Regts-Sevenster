@@ -1,5 +1,3 @@
-import RS.Novel.Skein.ChordLabels
-import RS.Novel.Skein.InvolutionCard
 import RS.Novel.Skein.GlueCrossDelta
 
 /-!

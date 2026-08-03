@@ -1,6 +1,4 @@
 import RS.Classical.Interfaces.OmegaPerm
-import RS.Classical.Interfaces.DelignePackage
-import RS.Classical.Interfaces.FibreTransport
 import RS.Classical.Super.ColourPower
 
 /-!

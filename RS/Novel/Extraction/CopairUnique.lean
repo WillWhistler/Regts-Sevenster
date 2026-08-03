@@ -218,20 +218,20 @@ copairing satisfying the snake identities against the standard
 form is the standard copairing. -/
 theorem stdCopair_unique (k ℓ : ℕ)
     (C' : SuperVect.Hom SuperVect.tensorUnit
-      (SuperVect.tensorObj (stdSuper k ℓ) (stdSuper k ℓ)))
-    (h1 : stdSuper k ℓ ◁
-        (show 𝟙_ SuperVect ⟶ stdSuper k ℓ ⊗ stdSuper k ℓ from C') ≫
-        (α_ (stdSuper k ℓ) (stdSuper k ℓ) (stdSuper k ℓ)).inv ≫
-        (show stdSuper k ℓ ⊗ stdSuper k ℓ ⟶ 𝟙_ SuperVect from
-          stdForm k ℓ) ▷ stdSuper k ℓ =
-        (ρ_ (stdSuper k ℓ)).hom ≫ (λ_ (stdSuper k ℓ)).inv)
-    (h2 : (show 𝟙_ SuperVect ⟶ stdSuper k ℓ ⊗ stdSuper k ℓ from C') ▷
-        stdSuper k ℓ ≫
-        (α_ (stdSuper k ℓ) (stdSuper k ℓ) (stdSuper k ℓ)).hom ≫
-        stdSuper k ℓ ◁
-        (show stdSuper k ℓ ⊗ stdSuper k ℓ ⟶ 𝟙_ SuperVect from
+      (SuperVect.tensorObj (stdSuperPair k ℓ) (stdSuperPair k ℓ)))
+    (h1 : stdSuperPair k ℓ ◁
+        (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ from C') ≫
+        (α_ (stdSuperPair k ℓ) (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv ≫
+        (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect from
+          stdForm k ℓ) ▷ stdSuperPair k ℓ =
+        (ρ_ (stdSuperPair k ℓ)).hom ≫ (λ_ (stdSuperPair k ℓ)).inv)
+    (h2 : (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ from C') ▷
+        stdSuperPair k ℓ ≫
+        (α_ (stdSuperPair k ℓ) (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom ≫
+        stdSuperPair k ℓ ◁
+        (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect from
           stdForm k ℓ) =
-        (λ_ (stdSuper k ℓ)).hom ≫ (ρ_ (stdSuper k ℓ)).inv) :
+        (λ_ (stdSuperPair k ℓ)).hom ≫ (ρ_ (stdSuperPair k ℓ)).inv) :
     C' = stdCopair k ℓ := by
   obtain ⟨S, T, hS, hT, hi, _, hiii, _⟩ :=
     exists_contraction_families (stdForm k ℓ) C' h1 h2

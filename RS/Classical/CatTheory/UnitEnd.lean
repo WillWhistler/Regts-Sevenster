@@ -55,4 +55,12 @@ instance endUnitCommMonoid : CommMonoid (End (𝟙_ C)) :=
   { (inferInstance : Monoid (End (𝟙_ C))) with
     mul_comm := fun f g => unit_comp_comm g f }
 
+/-- The unit braids trivially with itself. -/
+theorem braiding_unit_self [BraidedCategory C] :
+    (β_ (𝟙_ C) (𝟙_ C)).hom = 𝟙 (𝟙_ C ⊗ 𝟙_ C) := by
+  have h := braiding_leftUnitor (C := C) (𝟙_ C)
+  rw [unitors_equal] at h
+  refine (cancel_mono (ρ_ (𝟙_ C)).hom).mp ?_
+  rw [h, Category.id_comp]
+
 end RS

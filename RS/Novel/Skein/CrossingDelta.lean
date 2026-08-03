@@ -1,4 +1,3 @@
-import RS.Novel.Skein.PairingSwap
 import RS.Novel.Skein.ChordLabels
 
 /-!

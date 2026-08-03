@@ -47,7 +47,7 @@ def exactPairingOfSnake {V : SuperVect}
 
 /-- **The complete standard model** (accompanying paper §5.1–5.2): a
 super vector space with a supersymmetric form and a rigid
-copairing is isomorphic to a standard model `stdSuper k ℓ`, by an
+copairing is isomorphic to a standard model `stdSuperPair k ℓ`, by an
 isomorphism carrying the form to the standard form and the
 copairing to the standard copairing. -/
 theorem exists_std_model {V : SuperVect}
@@ -62,9 +62,9 @@ theorem exists_std_model {V : SuperVect}
         (α_ V V V).hom ≫
         V ◁ (show V ⊗ V ⟶ 𝟙_ SuperVect from b) =
         (λ_ V).hom ≫ (ρ_ V).inv) :
-    ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuper k ℓ) V)
-      (e' : SuperVect.Hom V (stdSuper k ℓ)),
-      SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuper k ℓ) ∧
+    ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuperPair k ℓ) V)
+      (e' : SuperVect.Hom V (stdSuperPair k ℓ)),
+      SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuperPair k ℓ) ∧
       SuperVect.Hom.comp e e' = SuperVect.Hom.id V ∧
       SuperVect.Hom.comp b (SuperVect.tensorHom e e) = stdForm k ℓ ∧
       SuperVect.Hom.comp (SuperVect.tensorHom e' e') C =
@@ -72,23 +72,23 @@ theorem exists_std_model {V : SuperVect}
   obtain ⟨k, ℓ, e, e', hinv1, hinv2, hform⟩ :=
     exists_std_iso b C hb h1 h2
   refine ⟨k, ℓ, e, e', hinv1, hinv2, hform, ?_⟩
-  let eIso : stdSuper k ℓ ≅ V :=
+  let eIso : stdSuperPair k ℓ ≅ V :=
     ⟨e, e', hinv1, hinv2⟩
   letI EPV : ExactPairing V V := exactPairingOfSnake b C h1 h2
-  letI EP : ExactPairing (stdSuper k ℓ) (stdSuper k ℓ) :=
+  letI EP : ExactPairing (stdSuperPair k ℓ) (stdSuperPair k ℓ) :=
     exactPairingCongr eIso eIso
-  have hev : (ε_ (stdSuper k ℓ) (stdSuper k ℓ)) =
-      (show stdSuper k ℓ ⊗ stdSuper k ℓ ⟶ 𝟙_ SuperVect from
+  have hev : (ε_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)) =
+      (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect from
         stdForm k ℓ) := by
-    show stdSuper k ℓ ◁ eIso.hom ≫
+    show stdSuperPair k ℓ ◁ eIso.hom ≫
         (eIso.hom ▷ V ≫ (show V ⊗ V ⟶ 𝟙_ SuperVect from b)) = _
     rw [← Category.assoc, ← tensorHom_def' eIso.hom eIso.hom]
     exact hform
-  have hcoev : (η_ (stdSuper k ℓ) (stdSuper k ℓ)) =
-      (show 𝟙_ SuperVect ⟶ stdSuper k ℓ ⊗ stdSuper k ℓ from
+  have hcoev : (η_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)) =
+      (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ from
         SuperVect.Hom.comp (SuperVect.tensorHom e' e') C) := by
     show ((show 𝟙_ SuperVect ⟶ V ⊗ V from C) ≫ V ◁ eIso.inv) ≫
-        eIso.inv ▷ stdSuper k ℓ = _
+        eIso.inv ▷ stdSuperPair k ℓ = _
     rw [Category.assoc, ← tensorHom_def' eIso.inv eIso.inv]
     rfl
   refine stdCopair_unique k ℓ

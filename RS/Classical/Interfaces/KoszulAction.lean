@@ -1,5 +1,4 @@
 import RS.Classical.Interfaces.OmegaTensorPower
-import RS.Classical.SchurTheory.SignedTensor
 
 /-!
 # The even-component restriction of the super permutation action

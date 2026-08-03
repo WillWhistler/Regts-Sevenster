@@ -281,92 +281,92 @@ theorem cps_odd_at_inr {k ℓ d : ℕ}
 
 /-- The associator inverse on a pure ee tensor. -/
 private theorem assoc_inv_ee_tmul {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₁ : (superPow (stdSuper k ℓ) b).even)
-    (x₁ : (stdSuper k ℓ).even) :
-    (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-        (stdSuper k ℓ)).inv : SuperVect.Hom _ _).evenMap
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₁ : (superPow (stdSuperPair k ℓ) b).even)
+    (x₁ : (stdSuperPair k ℓ).even) :
+    (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+        (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).evenMap
       (evenPair v ((w₁ ⊗ₜ[ℂ] x₁,
-        (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ] (stdSuper k ℓ).odd)) :
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even)))
+        (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ] (stdSuperPair k ℓ).odd)) :
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even)))
           =
     (((evenPair v w₁) ⊗ₜ[ℂ] x₁,
-      (0 : ((SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)).odd ⊗[ℂ] (stdSuper k ℓ).odd))) :
-      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)) (stdSuper k ℓ)).even) := by
+      (0 : ((SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)).odd ⊗[ℂ] (stdSuperPair k ℓ).odd))) :
+      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)) (stdSuperPair k ℓ)).even) := by
   show (SuperVect.assocAux _ _ _ _ _ _).symm
       ((v ⊗ₜ[ℂ] ((w₁ ⊗ₜ[ℂ] x₁, (0 : _)) : _), (0 : _)) : _) = _
   exact SuperVect.assocAux_symm_ee v w₁ x₁
 
 /-- The associator inverse on a pure eo tensor. -/
 private theorem assoc_inv_eo_tmul {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₂ : (superPow (stdSuper k ℓ) b).odd)
-    (x₂ : (stdSuper k ℓ).odd) :
-    (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-        (stdSuper k ℓ)).inv : SuperVect.Hom _ _).evenMap
-      (evenPair v (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-        (stdSuper k ℓ).even), w₂ ⊗ₜ[ℂ] x₂) :
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even)))
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₂ : (superPow (stdSuperPair k ℓ) b).odd)
+    (x₂ : (stdSuperPair k ℓ).odd) :
+    (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+        (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).evenMap
+      (evenPair v (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+        (stdSuperPair k ℓ).even), w₂ ⊗ₜ[ℂ] x₂) :
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even)))
           =
-    (((0 : (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)).even ⊗[ℂ] (stdSuper k ℓ).even),
-      ((v ⊗ₜ[ℂ] w₂, (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-        (superPow (stdSuper k ℓ) b).even)) ⊗ₜ[ℂ] x₂)) :
-      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)) (stdSuper k ℓ)).even) := by
+    (((0 : (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)).even ⊗[ℂ] (stdSuperPair k ℓ).even),
+      ((v ⊗ₜ[ℂ] w₂, (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+        (superPow (stdSuperPair k ℓ) b).even)) ⊗ₜ[ℂ] x₂)) :
+      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)) (stdSuperPair k ℓ)).even) := by
   show (SuperVect.assocAux _ _ _ _ _ _).symm
       ((v ⊗ₜ[ℂ] (((0 : _), w₂ ⊗ₜ[ℂ] x₂) : _), (0 : _)) : _) = _
   exact SuperVect.assocAux_symm_eo v w₂ x₂
 
 /-- The associator inverse oddMap on a pure eo tensor. -/
 private theorem assoc_inv_odd_eo_tmul {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₂ : (superPow (stdSuper k ℓ) b).even)
-    (x₂ : (stdSuper k ℓ).odd) :
-    (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-        (stdSuper k ℓ)).inv : SuperVect.Hom _ _).oddMap
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₂ : (superPow (stdSuperPair k ℓ) b).even)
+    (x₂ : (stdSuperPair k ℓ).odd) :
+    (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+        (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).oddMap
       ((v ⊗ₜ[ℂ] ((w₂ ⊗ₜ[ℂ] x₂,
-        (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ] (stdSuper k ℓ).even)) :
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd),
-      (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even))
+        (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ] (stdSuperPair k ℓ).even)) :
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd),
+      (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even))
           :
-      (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ))).odd))
+      (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ))).odd))
           =
     (((evenPair v w₂) ⊗ₜ[ℂ] x₂,
-      (0 : (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)).odd ⊗[ℂ] (stdSuper k ℓ).even)) :
-      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)) (stdSuper k ℓ)).odd) := by
+      (0 : (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)).odd ⊗[ℂ] (stdSuperPair k ℓ).even)) :
+      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)) (stdSuperPair k ℓ)).odd) := by
   show (SuperVect.assocAux _ _ _ _ _ _).symm
       ((v ⊗ₜ[ℂ] ((w₂ ⊗ₜ[ℂ] x₂, (0 : _)) : _), (0 : _)) : _) = _
   exact SuperVect.assocAux_symm_ee v w₂ x₂
 
 /-- The associator inverse oddMap on a pure oe tensor. -/
 private theorem assoc_inv_odd_oe_tmul {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₁ : (superPow (stdSuper k ℓ) b).odd)
-    (x₁ : (stdSuper k ℓ).even) :
-    (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-        (stdSuper k ℓ)).inv : SuperVect.Hom _ _).oddMap
-      ((v ⊗ₜ[ℂ] (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-          (stdSuper k ℓ).odd), w₁ ⊗ₜ[ℂ] x₁) :
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd),
-      (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even))
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₁ : (superPow (stdSuperPair k ℓ) b).odd)
+    (x₁ : (stdSuperPair k ℓ).even) :
+    (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+        (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).oddMap
+      ((v ⊗ₜ[ℂ] (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd), w₁ ⊗ₜ[ℂ] x₁) :
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd),
+      (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even))
           :
-      (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (SuperVect.tensorObj (superPow (stdSuper k ℓ) b) (stdSuper k ℓ))).odd))
+      (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ))).odd))
           =
-    (((0 : (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)).even ⊗[ℂ] (stdSuper k ℓ).odd),
-      ((v ⊗ₜ[ℂ] w₁, (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-        (superPow (stdSuper k ℓ) b).even)) ⊗ₜ[ℂ] x₁)) :
-      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b)) (stdSuper k ℓ)).odd) := by
+    (((0 : (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)).even ⊗[ℂ] (stdSuperPair k ℓ).odd),
+      ((v ⊗ₜ[ℂ] w₁, (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+        (superPow (stdSuperPair k ℓ) b).even)) ⊗ₜ[ℂ] x₁)) :
+      (SuperVect.tensorObj (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b)) (stdSuperPair k ℓ)).odd) := by
   show (SuperVect.assocAux _ _ _ _ _ _).symm
       ((v ⊗ₜ[ℂ] (((0 : _), w₁ ⊗ₜ[ℂ] x₁) : _), (0 : _)) : _) = _
   exact SuperVect.assocAux_symm_eo v w₁ x₁
@@ -380,20 +380,20 @@ set_option maxHeartbeats 4000000 in
 /-- The full chain on a pure ee tensor: the LHS of the inductive
 step reduces to `cps` applied to the IH tensor. -/
 private theorem chain_even_ee {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₁ : (superPow (stdSuper k ℓ) b).even)
-    (x₁ : (stdSuper k ℓ).even) :
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₁ : (superPow (stdSuperPair k ℓ) b).even)
+    (x₁ : (stdSuperPair k ℓ).even) :
     (colourPowerEquiv k ℓ (a + (b + 1))).evenEquiv
-        (((powMerge (stdSuper k ℓ) a (b + 1) :
+        (((powMerge (stdSuperPair k ℓ) a (b + 1) :
           SuperVect.Hom _ _).evenMap
           (evenPair v ((w₁ ⊗ₜ[ℂ] x₁,
-            (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-              (stdSuper k ℓ).odd)) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-              (stdSuper k ℓ)).even)))) =
+            (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+              (stdSuperPair k ℓ).odd)) :
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+              (stdSuperPair k ℓ)).even)))) =
       (colourPowerStep k ℓ (a + b)).evenEquiv
         (((colourPowerEquiv k ℓ (a + b)).evenEquiv
-            (((powMerge (stdSuper k ℓ) a b :
+            (((powMerge (stdSuperPair k ℓ) a b :
               SuperVect.Hom _ _).evenMap
               (evenPair v w₁))) ⊗ₜ[ℂ] x₁,
           (0 : ({c : MixedColouring k ℓ (a + b) // ¬ c.IsEven} → ℂ)
@@ -401,15 +401,15 @@ private theorem chain_even_ee {k ℓ a b : ℕ}
   -- Unfold cpe(a+(b+1)) = cps ∘ tc and pm(a,b+1) = (pm ▷ V) ∘ α⁻¹
   show (colourPowerStep k ℓ (a + b)).evenEquiv
       ((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ (a + b))
-          (SuperLinearEquiv.refl (stdSuper k ℓ))).evenEquiv
-        ((powMerge (stdSuper k ℓ) a b ▷ stdSuper k ℓ :
+          (SuperLinearEquiv.refl (stdSuperPair k ℓ))).evenEquiv
+        ((powMerge (stdSuperPair k ℓ) a b ▷ stdSuperPair k ℓ :
           SuperVect.Hom _ _).evenMap
-          (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).inv : SuperVect.Hom _ _).evenMap
+          (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).evenMap
             (evenPair v ((w₁ ⊗ₜ[ℂ] x₁, (0 : _)) : _))))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).evenEquiv ?_
   rw [assoc_inv_ee_tmul v w₁ x₁]
-  have hid_e : (SuperVect.Hom.id (stdSuper k ℓ)).evenMap = LinearMap.id := rfl
+  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap = LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_evenMap, hid_e]
   show LinearEquiv.prodCongr
@@ -417,7 +417,7 @@ private theorem chain_even_ee {k ℓ a b : ℕ}
       (LinearEquiv.refl ℂ _))
     (TensorProduct.congr (colourPowerEquiv k ℓ (a + b)).oddEquiv
       (LinearEquiv.refl ℂ _))
-    (((powMerge (stdSuper k ℓ) a b : SuperVect.Hom _ _).evenMap
+    (((powMerge (stdSuperPair k ℓ) a b : SuperVect.Hom _ _).evenMap
         (evenPair v w₁) ⊗ₜ[ℂ] x₁, (0 : _))) = _
   simp only [LinearEquiv.prodCongr_apply, TensorProduct.congr_tmul,
     LinearEquiv.refl_apply, map_zero]
@@ -428,41 +428,41 @@ set_option maxHeartbeats 4000000 in
 /-- The full chain on a pure eo tensor: the LHS reduces to `cps`
 applied to the odd-IH tensor. -/
 private theorem chain_even_eo {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₂ : (superPow (stdSuper k ℓ) b).odd)
-    (x₂ : (stdSuper k ℓ).odd) :
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₂ : (superPow (stdSuperPair k ℓ) b).odd)
+    (x₂ : (stdSuperPair k ℓ).odd) :
     (colourPowerEquiv k ℓ (a + (b + 1))).evenEquiv
-        (((powMerge (stdSuper k ℓ) a (b + 1) :
+        (((powMerge (stdSuperPair k ℓ) a (b + 1) :
           SuperVect.Hom _ _).evenMap
-          (evenPair v (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-              (stdSuper k ℓ).even),
+          (evenPair v (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+              (stdSuperPair k ℓ).even),
             w₂ ⊗ₜ[ℂ] x₂) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-              (stdSuper k ℓ)).even)))) =
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+              (stdSuperPair k ℓ)).even)))) =
       (colourPowerStep k ℓ (a + b)).evenEquiv
         (((0 : ({c : MixedColouring k ℓ (a + b) // c.IsEven} → ℂ)
             ⊗[ℂ] (Fin k → ℂ)),
           (colourPowerEquiv k ℓ (a + b)).oddEquiv
-            (((powMerge (stdSuper k ℓ) a b :
+            (((powMerge (stdSuperPair k ℓ) a b :
               SuperVect.Hom _ _).oddMap
               ((v ⊗ₜ[ℂ] w₂,
-                (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-                  (superPow (stdSuper k ℓ) b).even)) :
-                (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-                  (superPow (stdSuper k ℓ) b)).odd))
+                (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+                  (superPow (stdSuperPair k ℓ) b).even)) :
+                (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+                  (superPow (stdSuperPair k ℓ) b)).odd))
               ) ⊗ₜ[ℂ] x₂)) := by
   -- Unfold cpe(a+(b+1)) = cps ∘ tc and pm(a,b+1) = (pm ▷ V) ∘ α⁻¹
   show (colourPowerStep k ℓ (a + b)).evenEquiv
       ((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ (a + b))
-          (SuperLinearEquiv.refl (stdSuper k ℓ))).evenEquiv
-        ((powMerge (stdSuper k ℓ) a b ▷ stdSuper k ℓ :
+          (SuperLinearEquiv.refl (stdSuperPair k ℓ))).evenEquiv
+        ((powMerge (stdSuperPair k ℓ) a b ▷ stdSuperPair k ℓ :
           SuperVect.Hom _ _).evenMap
-          (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).inv : SuperVect.Hom _ _).evenMap
+          (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).evenMap
             (evenPair v (((0 : _), w₂ ⊗ₜ[ℂ] x₂) : _))))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).evenEquiv ?_
   rw [assoc_inv_eo_tmul v w₂ x₂]
-  have hid_o : (SuperVect.Hom.id (stdSuper k ℓ)).oddMap = LinearMap.id := rfl
+  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap = LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_evenMap, hid_o]
   show LinearEquiv.prodCongr
@@ -471,7 +471,7 @@ private theorem chain_even_eo {k ℓ a b : ℕ}
     (TensorProduct.congr (colourPowerEquiv k ℓ (a + b)).oddEquiv
       (LinearEquiv.refl ℂ _))
     (((0 : _),
-      ((powMerge (stdSuper k ℓ) a b : SuperVect.Hom _ _).oddMap
+      ((powMerge (stdSuperPair k ℓ) a b : SuperVect.Hom _ _).oddMap
         ((v ⊗ₜ[ℂ] w₂, (0 : _)) : _)) ⊗ₜ[ℂ] x₂)) = _
   simp only [LinearEquiv.prodCongr_apply, TensorProduct.congr_tmul,
     LinearEquiv.refl_apply, map_zero]
@@ -480,14 +480,14 @@ private theorem chain_even_eo {k ℓ a b : ℕ}
 /-- The RHS chain on a pure ee tensor: `cpe(b+1)` on `(t ⊗ₜ x, 0)`
 reduces to `cps` applied to the transported tensor. -/
 theorem rhs_even_ee {k ℓ b : ℕ}
-    (w₁ : (superPow (stdSuper k ℓ) b).even)
-    (x₁ : (stdSuper k ℓ).even) :
+    (w₁ : (superPow (stdSuperPair k ℓ) b).even)
+    (x₁ : (stdSuperPair k ℓ).even) :
     (colourPowerEquiv k ℓ (b + 1)).evenEquiv
         ((w₁ ⊗ₜ[ℂ] x₁,
-          (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-            (stdSuper k ℓ).odd)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).even) =
+          (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+            (stdSuperPair k ℓ).odd)) :
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).even) =
       (colourPowerStep k ℓ b).evenEquiv
         (((colourPowerEquiv k ℓ b).evenEquiv w₁ ⊗ₜ[ℂ] x₁,
           (0 : ({c : MixedColouring k ℓ b // ¬ c.IsEven} → ℂ)
@@ -507,14 +507,14 @@ theorem rhs_even_ee {k ℓ b : ℕ}
 /-- The RHS chain on a pure oo tensor: `cpe(b+1)` on `(0, s ⊗ₜ x)`
 reduces to `cps` applied to the transported tensor. -/
 theorem rhs_even_oo {k ℓ b : ℕ}
-    (w₂ : (superPow (stdSuper k ℓ) b).odd)
-    (x₂ : (stdSuper k ℓ).odd) :
+    (w₂ : (superPow (stdSuperPair k ℓ) b).odd)
+    (x₂ : (stdSuperPair k ℓ).odd) :
     (colourPowerEquiv k ℓ (b + 1)).evenEquiv
-        (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-            (stdSuper k ℓ).even),
+        (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+            (stdSuperPair k ℓ).even),
           w₂ ⊗ₜ[ℂ] x₂) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).even) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).even) =
       (colourPowerStep k ℓ b).evenEquiv
         (((0 : ({c : MixedColouring k ℓ b // c.IsEven} → ℂ)
             ⊗[ℂ] (Fin k → ℂ)),
@@ -536,51 +536,51 @@ set_option maxHeartbeats 4000000 in
 /-- Full chain (odd, eo generator): the LHS on a pure `(t ⊗ x, 0)` odd tensor
 reduces to `cps ∘ cpe ∘ powMerge` on the even pair. -/
 private theorem chain_odd_eo {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₂ : (superPow (stdSuper k ℓ) b).even)
-    (x₂ : (stdSuper k ℓ).odd) :
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₂ : (superPow (stdSuperPair k ℓ) b).even)
+    (x₂ : (stdSuperPair k ℓ).odd) :
     (colourPowerEquiv k ℓ (a + (b + 1))).oddEquiv
-        (((powMerge (stdSuper k ℓ) a (b + 1) :
+        (((powMerge (stdSuperPair k ℓ) a (b + 1) :
           SuperVect.Hom _ _).oddMap
           ((v ⊗ₜ[ℂ] ((w₂ ⊗ₜ[ℂ] x₂,
-            (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-              (stdSuper k ℓ).even)) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-              (stdSuper k ℓ)).odd),
-          (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-              (stdSuper k ℓ)).even)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-            (superPow (stdSuper k ℓ) (b + 1))).odd))) =
+            (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+              (stdSuperPair k ℓ).even)) :
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+              (stdSuperPair k ℓ)).odd),
+          (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+              (stdSuperPair k ℓ)).even)) :
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+            (superPow (stdSuperPair k ℓ) (b + 1))).odd))) =
       (colourPowerStep k ℓ (a + b)).oddEquiv
         (((colourPowerEquiv k ℓ (a + b)).evenEquiv
-            (((powMerge (stdSuper k ℓ) a b :
+            (((powMerge (stdSuperPair k ℓ) a b :
               SuperVect.Hom _ _).evenMap
               (evenPair v w₂))) ⊗ₜ[ℂ] x₂,
           (0 : ({c : MixedColouring k ℓ (a + b) // ¬ c.IsEven} → ℂ)
             ⊗[ℂ] (Fin k → ℂ)))) := by
   show (colourPowerStep k ℓ (a + b)).oddEquiv
       ((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ (a + b))
-          (SuperLinearEquiv.refl (stdSuper k ℓ))).oddEquiv
-        ((powMerge (stdSuper k ℓ) a b ▷ stdSuper k ℓ :
+          (SuperLinearEquiv.refl (stdSuperPair k ℓ))).oddEquiv
+        ((powMerge (stdSuperPair k ℓ) a b ▷ stdSuperPair k ℓ :
           SuperVect.Hom _ _).oddMap
-          (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).inv : SuperVect.Hom _ _).oddMap
+          (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).oddMap
             ((v ⊗ₜ[ℂ] ((w₂ ⊗ₜ[ℂ] x₂,
-              (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-                (stdSuper k ℓ).even)) :
-              (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-                (stdSuper k ℓ)).odd),
-            (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-              (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-                (stdSuper k ℓ)).even)) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-                (stdSuper k ℓ))).odd)))) = _
+              (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+                (stdSuperPair k ℓ).even)) :
+              (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+                (stdSuperPair k ℓ)).odd),
+            (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+              (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+                (stdSuperPair k ℓ)).even)) :
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+                (stdSuperPair k ℓ))).odd)))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).oddEquiv ?_
   erw [assoc_inv_odd_eo_tmul v w₂ x₂]
-  have hid_o : (SuperVect.Hom.id (stdSuper k ℓ)).oddMap = LinearMap.id := rfl
-  have hid_e : (SuperVect.Hom.id (stdSuper k ℓ)).evenMap = LinearMap.id := rfl
+  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap = LinearMap.id := rfl
+  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap = LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_oddMap, hid_o, hid_e]
   show LinearEquiv.prodCongr
@@ -588,7 +588,7 @@ private theorem chain_odd_eo {k ℓ a b : ℕ}
       (LinearEquiv.refl ℂ _))
     (TensorProduct.congr (colourPowerEquiv k ℓ (a + b)).oddEquiv
       (LinearEquiv.refl ℂ _))
-    (((powMerge (stdSuper k ℓ) a b : SuperVect.Hom _ _).evenMap
+    (((powMerge (stdSuperPair k ℓ) a b : SuperVect.Hom _ _).evenMap
         (evenPair v w₂) ⊗ₜ[ℂ] x₂, (0 : _))) = _
   simp only [LinearEquiv.prodCongr_apply, TensorProduct.congr_tmul,
     LinearEquiv.refl_apply, map_zero]
@@ -599,56 +599,56 @@ set_option maxHeartbeats 4000000 in
 /-- Full chain (odd, oe generator): the LHS on a pure `(0, s ⊗ x)` odd tensor
 reduces to `cps ∘ cpe ∘ powMerge` on the odd pair. -/
 private theorem chain_odd_oe {k ℓ a b : ℕ}
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w₁ : (superPow (stdSuper k ℓ) b).odd)
-    (x₁ : (stdSuper k ℓ).even) :
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w₁ : (superPow (stdSuperPair k ℓ) b).odd)
+    (x₁ : (stdSuperPair k ℓ).even) :
     (colourPowerEquiv k ℓ (a + (b + 1))).oddEquiv
-        (((powMerge (stdSuper k ℓ) a (b + 1) :
+        (((powMerge (stdSuperPair k ℓ) a (b + 1) :
           SuperVect.Hom _ _).oddMap
-          ((v ⊗ₜ[ℂ] (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-              (stdSuper k ℓ).odd),
+          ((v ⊗ₜ[ℂ] (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+              (stdSuperPair k ℓ).odd),
             w₁ ⊗ₜ[ℂ] x₁) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-              (stdSuper k ℓ)).odd),
-          (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-              (stdSuper k ℓ)).even)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-            (superPow (stdSuper k ℓ) (b + 1))).odd))) =
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+              (stdSuperPair k ℓ)).odd),
+          (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+              (stdSuperPair k ℓ)).even)) :
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+            (superPow (stdSuperPair k ℓ) (b + 1))).odd))) =
       (colourPowerStep k ℓ (a + b)).oddEquiv
         (((0 : ({c : MixedColouring k ℓ (a + b) // c.IsEven} → ℂ)
             ⊗[ℂ] (Fin (2 * ℓ) → ℂ)),
           (colourPowerEquiv k ℓ (a + b)).oddEquiv
-            (((powMerge (stdSuper k ℓ) a b :
+            (((powMerge (stdSuperPair k ℓ) a b :
               SuperVect.Hom _ _).oddMap
               ((v ⊗ₜ[ℂ] w₁,
-                (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-                  (superPow (stdSuper k ℓ) b).even)) :
-                (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-                  (superPow (stdSuper k ℓ) b)).odd)))
+                (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+                  (superPow (stdSuperPair k ℓ) b).even)) :
+                (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+                  (superPow (stdSuperPair k ℓ) b)).odd)))
             ⊗ₜ[ℂ] x₁)) := by
   show (colourPowerStep k ℓ (a + b)).oddEquiv
       ((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ (a + b))
-          (SuperLinearEquiv.refl (stdSuper k ℓ))).oddEquiv
-        ((powMerge (stdSuper k ℓ) a b ▷ stdSuper k ℓ :
+          (SuperLinearEquiv.refl (stdSuperPair k ℓ))).oddEquiv
+        ((powMerge (stdSuperPair k ℓ) a b ▷ stdSuperPair k ℓ :
           SuperVect.Hom _ _).oddMap
-          (((α_ (superPow (stdSuper k ℓ) a) (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).inv : SuperVect.Hom _ _).oddMap
-            ((v ⊗ₜ[ℂ] (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-                (stdSuper k ℓ).odd),
+          (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).oddMap
+            ((v ⊗ₜ[ℂ] (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+                (stdSuperPair k ℓ).odd),
               w₁ ⊗ₜ[ℂ] x₁) :
-              (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-                (stdSuper k ℓ)).odd),
-            (0 : (superPow (stdSuper k ℓ) a).odd ⊗[ℂ]
-              (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-                (stdSuper k ℓ)).even)) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-                (stdSuper k ℓ))).odd)))) = _
+              (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+                (stdSuperPair k ℓ)).odd),
+            (0 : (superPow (stdSuperPair k ℓ) a).odd ⊗[ℂ]
+              (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+                (stdSuperPair k ℓ)).even)) :
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+                (stdSuperPair k ℓ))).odd)))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).oddEquiv ?_
   erw [assoc_inv_odd_oe_tmul v w₁ x₁]
-  have hid_o : (SuperVect.Hom.id (stdSuper k ℓ)).oddMap = LinearMap.id := rfl
-  have hid_e : (SuperVect.Hom.id (stdSuper k ℓ)).evenMap = LinearMap.id := rfl
+  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap = LinearMap.id := rfl
+  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap = LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_oddMap, hid_o, hid_e]
   show LinearEquiv.prodCongr
@@ -657,7 +657,7 @@ private theorem chain_odd_oe {k ℓ a b : ℕ}
     (TensorProduct.congr (colourPowerEquiv k ℓ (a + b)).oddEquiv
       (LinearEquiv.refl ℂ _))
     (((0 : _),
-      ((powMerge (stdSuper k ℓ) a b : SuperVect.Hom _ _).oddMap
+      ((powMerge (stdSuperPair k ℓ) a b : SuperVect.Hom _ _).oddMap
         ((v ⊗ₜ[ℂ] w₁, (0 : _)) : _)) ⊗ₜ[ℂ] x₁)) = _
   simp only [LinearEquiv.prodCongr_apply, TensorProduct.congr_tmul,
     LinearEquiv.refl_apply, map_zero]
@@ -666,14 +666,14 @@ private theorem chain_odd_oe {k ℓ a b : ℕ}
 /-- The RHS chain on a pure eo tensor (odd part): `cpe(b+1)` on
 `(t ⊗ₜ x, 0)` reduces to `cps` applied to the transported tensor. -/
 theorem rhs_odd_eo {k ℓ b : ℕ}
-    (w₂ : (superPow (stdSuper k ℓ) b).even)
-    (x₂ : (stdSuper k ℓ).odd) :
+    (w₂ : (superPow (stdSuperPair k ℓ) b).even)
+    (x₂ : (stdSuperPair k ℓ).odd) :
     (colourPowerEquiv k ℓ (b + 1)).oddEquiv
         ((w₂ ⊗ₜ[ℂ] x₂,
-          (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-            (stdSuper k ℓ).even)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).odd) =
+          (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+            (stdSuperPair k ℓ).even)) :
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).odd) =
       (colourPowerStep k ℓ b).oddEquiv
         (((colourPowerEquiv k ℓ b).evenEquiv w₂ ⊗ₜ[ℂ] x₂,
           (0 : ({c : MixedColouring k ℓ b // ¬ c.IsEven} → ℂ)
@@ -693,14 +693,14 @@ theorem rhs_odd_eo {k ℓ b : ℕ}
 /-- The RHS chain on a pure oe tensor (odd part): `cpe(b+1)` on
 `(0, s ⊗ₜ x)` reduces to `cps` applied to the transported tensor. -/
 theorem rhs_odd_oe {k ℓ b : ℕ}
-    (w₁ : (superPow (stdSuper k ℓ) b).odd)
-    (x₁ : (stdSuper k ℓ).even) :
+    (w₁ : (superPow (stdSuperPair k ℓ) b).odd)
+    (x₁ : (stdSuperPair k ℓ).even) :
     (colourPowerEquiv k ℓ (b + 1)).oddEquiv
-        (((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-            (stdSuper k ℓ).odd),
+        (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+            (stdSuperPair k ℓ).odd),
           w₁ ⊗ₜ[ℂ] x₁) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) b)
-            (stdSuper k ℓ)).odd) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).odd) =
       (colourPowerStep k ℓ b).oddEquiv
         (((0 : ({c : MixedColouring k ℓ b // c.IsEven} → ℂ)
             ⊗[ℂ] (Fin (2 * ℓ) → ℂ)),
@@ -726,12 +726,12 @@ set_option maxHeartbeats 8000000 in
 /-- Combined even and odd merge coordinate formulas, proved by
 mutual induction on `b`. -/
 private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
-    (v : (superPow (stdSuper k ℓ) a).even) :
+    (v : (superPow (stdSuperPair k ℓ) a).even) :
     ∀ (b : ℕ),
-    (∀ (w : (superPow (stdSuper k ℓ) b).even)
+    (∀ (w : (superPow (stdSuperPair k ℓ) b).even)
         (c : MixedColouring k ℓ (a + b)) (hc : c.IsEven),
         (colourPowerEquiv k ℓ (a + b)).evenEquiv
-            (((powMerge (stdSuper k ℓ) a b) :
+            (((powMerge (stdSuperPair k ℓ) a b) :
               SuperVect.Hom _ _).evenMap (evenPair v w)) ⟨c, hc⟩ =
           if h : MixedColouring.IsEven c.firstHalf then
             (colourPowerEquiv k ℓ a).evenEquiv v ⟨c.firstHalf, h⟩ *
@@ -739,14 +739,14 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
               c.secondHalf_isEven hc h⟩
           else 0)
     ∧
-    (∀ (u : (superPow (stdSuper k ℓ) b).odd)
+    (∀ (u : (superPow (stdSuperPair k ℓ) b).odd)
         (c : MixedColouring k ℓ (a + b)) (hc : ¬ c.IsEven),
         (colourPowerEquiv k ℓ (a + b)).oddEquiv
-            (((powMerge (stdSuper k ℓ) a b) :
+            (((powMerge (stdSuperPair k ℓ) a b) :
               SuperVect.Hom _ _).oddMap
               ((v ⊗ₜ[ℂ] u, 0) :
-                (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-                  (superPow (stdSuper k ℓ) b)).odd))
+                (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+                  (superPow (stdSuperPair k ℓ) b)).odd))
             ⟨c, hc⟩ =
           if h : MixedColouring.IsEven c.firstHalf then
             (colourPowerEquiv k ℓ a).evenEquiv v ⟨c.firstHalf, h⟩ *
@@ -758,10 +758,10 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
     · -- ═══════ b = 0, EVEN COMPONENT ═══════
       intro w c hc
       set w' : ℂ := w with hw'
-      have hpow : ((powMerge (stdSuper k ℓ) a 0 :
+      have hpow : ((powMerge (stdSuperPair k ℓ) a 0 :
           SuperVect.Hom _ _).evenMap (evenPair v w')) = w' • v := by
         change ((SuperVect.rightUnitor
-            (superPow (stdSuper k ℓ) a)).hom).evenMap
+            (superPow (stdSuperPair k ℓ) a)).hom).evenMap
           (v ⊗ₜ[ℂ] w', 0) = _
         rw [SuperVect.rightUnitor_hom_evenMap]
         change (TensorProduct.rid ℂ _) (v ⊗ₜ[ℂ] w') = w' • v
@@ -790,13 +790,13 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
       have hfe : ¬ c.firstHalf.IsEven := c.firstHalf_zero ▸ hc
       simp only [dif_neg hfe]
       -- pm(a,0) = right unitor; its oddMap sends (v ⊗ₜ u, 0) to 0
-      have hzero : ((powMerge (stdSuper k ℓ) a 0 :
+      have hzero : ((powMerge (stdSuperPair k ℓ) a 0 :
           SuperVect.Hom _ _).oddMap
           ((v ⊗ₜ[ℂ] u, 0) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (superPow (stdSuper k ℓ) 0)).odd)) = 0 := by
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (superPow (stdSuperPair k ℓ) 0)).odd)) = 0 := by
         change ((SuperVect.rightUnitor
-            (superPow (stdSuper k ℓ) a)).hom).oddMap
+            (superPow (stdSuperPair k ℓ) a)).hom).oddMap
           (v ⊗ₜ[ℂ] u, 0) = 0
         rw [SuperVect.rightUnitor_hom_oddMap]; rfl
       rw [hzero, map_zero]; rfl
@@ -809,19 +809,19 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
       -- Both sides are additive in w; decompose and reduce to generators.
       -- Helper: evenPair distributes over addition
       have ep_add : ∀ (w₁ w₂ : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even),
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even),
           evenPair v (w₁ + w₂) = evenPair v w₁ + evenPair v w₂ :=
         fun w₁ w₂ => Prod.ext (TensorProduct.tmul_add v w₁ w₂)
           (add_zero 0).symm
       -- Helper for zero pair
       have ep_zero : evenPair v (0 : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even) = (0 : _) :=
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even) = (0 : _) :=
         Prod.ext (TensorProduct.tmul_zero _ v) rfl
       -- Abbreviate the goal predicate for w
       set Goal := fun (w : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even) =>
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even) =>
         (colourPowerEquiv k ℓ (a + (b + 1))).evenEquiv
-            (((powMerge (stdSuper k ℓ) a (b + 1) :
+            (((powMerge (stdSuperPair k ℓ) a (b + 1) :
               SuperVect.Hom _ _).evenMap (evenPair v w))) ⟨c, hc⟩ =
           if h : MixedColouring.IsEven c.firstHalf then
             (colourPowerEquiv k ℓ a).evenEquiv v ⟨c.firstHalf, h⟩ *
@@ -839,8 +839,8 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
           erw [LinearEquiv.map_add, Pi.add_apply]
         · exact add_zero 0
       -- Prove for (t, 0) by TensorProduct.induction_on
-      have h_ee : ∀ t, Goal (t, (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-          (stdSuper k ℓ).odd)) := by
+      have h_ee : ∀ t, Goal (t, (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)) := by
         intro t; induction t using TensorProduct.induction_on with
         | zero =>
           simp only [hGoal]
@@ -886,13 +886,13 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
             · rfl
         | add t₁ t₂ ih₁ ih₂ =>
           have : ((t₁ + t₂, (0 : _)) : (SuperVect.tensorObj
-              (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even) =
+              (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even) =
             ((t₁, (0 : _)) : _) + ((t₂, (0 : _)) : _) :=
             Prod.ext rfl (add_zero 0).symm
           rw [this]; exact Goal_add _ _ ih₁ ih₂
       -- Prove for (0, s) by TensorProduct.induction_on
-      have h_oo : ∀ s, Goal ((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-          (stdSuper k ℓ).even), s) := by
+      have h_oo : ∀ s, Goal ((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even), s) := by
         intro s; induction s using TensorProduct.induction_on with
         | zero =>
           simp only [hGoal]
@@ -938,13 +938,13 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
               simp [zero_mul]
         | add s₁ s₂ ih₁ ih₂ =>
           have : (((0 : _), s₁ + s₂) : (SuperVect.tensorObj
-              (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even) =
+              (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even) =
             (((0 : _), s₁) : _) + (((0 : _), s₂) : _) :=
             Prod.ext (add_zero 0).symm rfl
           rw [this]; exact Goal_add _ _ ih₁ ih₂
       -- Combine: (w_ee, w_oo) = (w_ee, 0) + (0, w_oo)
       have hw : ((w_ee, w_oo) : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).even) =
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).even) =
         ((w_ee, (0 : _)) : _) + (((0 : _), w_oo) : _) :=
         Prod.ext (add_zero w_ee).symm (zero_add w_oo).symm
       rw [hw]; exact Goal_add _ _ (h_ee w_ee) (h_oo w_oo)
@@ -954,28 +954,28 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
       -- Both sides are additive in u; decompose and reduce to generators.
       -- Helper: (v ⊗ₜ ·, 0) distributes over addition
       have op_add : ∀ (u₁ u₂ : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd),
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd),
           ((v ⊗ₜ[ℂ] (u₁ + u₂), (0 : _)) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (superPow (stdSuper k ℓ) (b + 1))).odd) =
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (superPow (stdSuperPair k ℓ) (b + 1))).odd) =
           ((v ⊗ₜ[ℂ] u₁, (0 : _)) : _) + ((v ⊗ₜ[ℂ] u₂, (0 : _)) : _) :=
         fun u₁ u₂ => Prod.ext (TensorProduct.tmul_add v u₁ u₂)
           (add_zero 0).symm
       -- Helper for zero pair
       have op_zero : ((v ⊗ₜ[ℂ] (0 : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd), (0 : _)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-            (superPow (stdSuper k ℓ) (b + 1))).odd) = (0 : _) :=
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd), (0 : _)) :
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+            (superPow (stdSuperPair k ℓ) (b + 1))).odd) = (0 : _) :=
         Prod.ext (TensorProduct.tmul_zero _ v) rfl
       -- Abbreviate the goal predicate for u
       set Goal := fun (u : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd) =>
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd) =>
         (colourPowerEquiv k ℓ (a + (b + 1))).oddEquiv
-            (((powMerge (stdSuper k ℓ) a (b + 1) :
+            (((powMerge (stdSuperPair k ℓ) a (b + 1) :
               SuperVect.Hom _ _).oddMap
               ((v ⊗ₜ[ℂ] u, 0) :
-                (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-                  (superPow (stdSuper k ℓ) (b + 1))).odd)))
+                (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+                  (superPow (stdSuperPair k ℓ) (b + 1))).odd)))
             ⟨c, hc⟩ =
           if h : MixedColouring.IsEven c.firstHalf then
             (colourPowerEquiv k ℓ a).evenEquiv v ⟨c.firstHalf, h⟩ *
@@ -993,8 +993,8 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
           erw [LinearEquiv.map_add, Pi.add_apply]
         · exact add_zero 0
       -- Prove for (t, 0) by TensorProduct.induction_on
-      have h_eo : ∀ t, Goal (t, (0 : (superPow (stdSuper k ℓ) b).odd ⊗[ℂ]
-          (stdSuper k ℓ).even)) := by
+      have h_eo : ∀ t, Goal (t, (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even)) := by
         intro t; induction t using TensorProduct.induction_on with
         | zero =>
           simp only [hGoal]
@@ -1038,13 +1038,13 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
             · simp [zero_mul]
         | add t₁ t₂ ih₁ ih₂ =>
           have : ((t₁ + t₂, (0 : _)) : (SuperVect.tensorObj
-              (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd) =
+              (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd) =
             ((t₁, (0 : _)) : _) + ((t₂, (0 : _)) : _) :=
             Prod.ext rfl (add_zero 0).symm
           rw [this]; exact Goal_add _ _ ih₁ ih₂
       -- Prove for (0, s) by TensorProduct.induction_on
-      have h_oe : ∀ s, Goal ((0 : (superPow (stdSuper k ℓ) b).even ⊗[ℂ]
-          (stdSuper k ℓ).odd), s) := by
+      have h_oe : ∀ s, Goal ((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd), s) := by
         intro s; induction s using TensorProduct.induction_on with
         | zero =>
           simp only [hGoal]
@@ -1087,13 +1087,13 @@ private theorem colourMerge_pair {k ℓ : ℕ} (a : ℕ)
             · rfl
         | add s₁ s₂ ih₁ ih₂ =>
           have : (((0 : _), s₁ + s₂) : (SuperVect.tensorObj
-              (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd) =
+              (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd) =
             (((0 : _), s₁) : _) + (((0 : _), s₂) : _) :=
             Prod.ext (add_zero 0).symm rfl
           rw [this]; exact Goal_add _ _ ih₁ ih₂
       -- Combine: (u_eo, u_oe) = (u_eo, 0) + (0, u_oe)
       have hu : ((u_eo, u_oe) : (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).odd) =
+          (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd) =
         ((u_eo, (0 : _)) : _) + (((0 : _), u_oe) : _) :=
         Prod.ext (add_zero u_eo).symm (zero_add u_oe).symm
       rw [hu]; exact Goal_add _ _ (h_eo u_eo) (h_oe u_oe)
@@ -1105,11 +1105,11 @@ set_option maxHeartbeats 1000000 in
 merged even pair multiply over the halves, vanishing when the
 halves are odd. -/
 theorem colourMerge_coord {k ℓ : ℕ} (a b : ℕ)
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (w : (superPow (stdSuper k ℓ) b).even)
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (w : (superPow (stdSuperPair k ℓ) b).even)
     (c : MixedColouring k ℓ (a + b)) (hc : c.IsEven) :
     (colourPowerEquiv k ℓ (a + b)).evenEquiv
-        (((powMerge (stdSuper k ℓ) a b) :
+        (((powMerge (stdSuperPair k ℓ) a b) :
           SuperVect.Hom _ _).evenMap (evenPair v w)) ⟨c, hc⟩ =
       if h : MixedColouring.IsEven c.firstHalf then
         (colourPowerEquiv k ℓ a).evenEquiv v ⟨c.firstHalf, h⟩ *
@@ -1122,15 +1122,15 @@ theorem colourMerge_coord {k ℓ : ℕ} (a b : ℕ)
 coordinates of a merged even-odd pair multiply over the halves,
 supported on even first halves. -/
 theorem colourMerge_coord_evenOdd {k ℓ : ℕ} (a b : ℕ)
-    (v : (superPow (stdSuper k ℓ) a).even)
-    (u : (superPow (stdSuper k ℓ) b).odd)
+    (v : (superPow (stdSuperPair k ℓ) a).even)
+    (u : (superPow (stdSuperPair k ℓ) b).odd)
     (c : MixedColouring k ℓ (a + b)) (hc : ¬ c.IsEven) :
     (colourPowerEquiv k ℓ (a + b)).oddEquiv
-        (((powMerge (stdSuper k ℓ) a b) :
+        (((powMerge (stdSuperPair k ℓ) a b) :
           SuperVect.Hom _ _).oddMap
           ((v ⊗ₜ[ℂ] u, 0) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (superPow (stdSuper k ℓ) b)).odd))
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (superPow (stdSuperPair k ℓ) b)).odd))
         ⟨c, hc⟩ =
       if h : MixedColouring.IsEven c.firstHalf then
         (colourPowerEquiv k ℓ a).evenEquiv v ⟨c.firstHalf, h⟩ *

@@ -6,7 +6,7 @@ import RS.Novel.Extraction.StdSuper
 
 The §5.1 conventions at the categorical level: the orthosymplectic
 form on the standard super space is an even morphism
-`stdSuper ⊗ stdSuper ⟶ 𝟙` in SuperVect, and it is supersymmetric —
+`stdSuperPair ⊗ stdSuperPair ⟶ 𝟙` in SuperVect, and it is supersymmetric —
 composing with the Koszul braiding returns the form.  The even
 block is symmetric; the odd block is antisymmetric, and the Koszul
 sign of the braiding on the odd⊗odd summand exactly compensates.
@@ -77,10 +77,10 @@ noncomputable def stdFormOddBilin (ℓ : ℕ) :
         ring))
 
 /-- The standard form as an even morphism
-`stdSuper ⊗ stdSuper ⟶ 𝟙` of super vector spaces. -/
+`stdSuperPair ⊗ stdSuperPair ⟶ 𝟙` of super vector spaces. -/
 noncomputable def stdForm (k ℓ : ℕ) :
     SuperVect.Hom
-      (SuperVect.tensorObj (stdSuper k ℓ) (stdSuper k ℓ))
+      (SuperVect.tensorObj (stdSuperPair k ℓ) (stdSuperPair k ℓ))
       SuperVect.tensorUnit := by
   refine ⟨?_, ?_⟩
   · change ((Fin k → ℂ) ⊗[ℂ] (Fin k → ℂ)) ×

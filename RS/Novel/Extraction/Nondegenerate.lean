@@ -1,4 +1,3 @@
-import RS.Common.ProdSum
 import RS.Novel.Extraction.Coordinates
 
 /-!

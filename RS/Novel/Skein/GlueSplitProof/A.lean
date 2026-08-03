@@ -1,5 +1,4 @@
 import RS.Novel.Skein.GlueCircuitDelta
-import RS.Novel.Skein.ThroughValue
 
 /-!
 # The single-pair gluing infrastructure

@@ -6,6 +6,7 @@ import RS.Classical.CatTheory.PartialTrace
 import RS.Classical.CatTheory.TensorPow
 import RS.Classical.CatTheory.Trace
 import RS.Classical.CatTheory.UnitEnd
+import RS.Classical.CatTheory.WhiskerAdditive
 import RS.Classical.Interfaces.DeligneBridge
 import RS.Classical.Interfaces.DelignePackage
 import RS.Classical.Interfaces.DelignePackageRestrict

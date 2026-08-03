@@ -1,6 +1,5 @@
 import RS.Novel.Coordinates.CanonColour
 import RS.Classical.Super.ColourFormMatch
-import RS.Novel.Extraction.StdRigid
 
 /-!
 # The Regts–Sevenster functional
@@ -17,7 +16,7 @@ namespace RS
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- The star coordinate: the vertex star vector transported to
 the colouring model, read at a colouring; zero on odd-parity

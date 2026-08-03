@@ -18,7 +18,7 @@ open scoped TensorProduct
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 /-- **The one-strand transport is the unitor composite.** -/
 theorem stdToOmega_one :
@@ -48,7 +48,7 @@ theorem stdToOmega_one :
 set_option maxHeartbeats 1000000 in
 /-- The even evaluation of the one-strand transport on a
 unit-padded even vector. -/
-theorem stdToOmega_one_even (x : (stdSuper k ℓ).even) :
+theorem stdToOmega_one_even (x : (stdSuperPair k ℓ).even) :
     letI := P.braided
     ((stdToOmega f P e 1) : SuperVect.Hom _ _).evenMap
         (evenPair (1 : ℂ) x) =
@@ -83,7 +83,7 @@ def oddUnitPad {V : SuperVect} (y : V.odd) :
 set_option maxHeartbeats 1000000 in
 /-- The odd evaluation of the one-strand transport on a
 unit-padded odd vector. -/
-theorem stdToOmega_one_odd (y : (stdSuper k ℓ).odd) :
+theorem stdToOmega_one_odd (y : (stdSuperPair k ℓ).odd) :
     letI := P.braided
     ((stdToOmega f P e 1) : SuperVect.Hom _ _).oddMap
         (oddUnitPad y) =

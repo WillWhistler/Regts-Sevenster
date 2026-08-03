@@ -44,10 +44,10 @@ standard copairing. -/
 theorem braided_std_model (ω : A ⥤ SuperVect) [ω.Braided]
     (X : A) [ExactPairing X X]
     (hsym : (β_ X X).hom ≫ ε_ X X = ε_ X X) :
-    ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuper k ℓ) (ω.obj X))
-      (e' : SuperVect.Hom (ω.obj X) (stdSuper k ℓ)),
+    ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuperPair k ℓ) (ω.obj X))
+      (e' : SuperVect.Hom (ω.obj X) (stdSuperPair k ℓ)),
       SuperVect.Hom.comp e' e =
-        SuperVect.Hom.id (stdSuper k ℓ) ∧
+        SuperVect.Hom.id (stdSuperPair k ℓ) ∧
       SuperVect.Hom.comp e e' = SuperVect.Hom.id (ω.obj X) ∧
       SuperVect.Hom.comp (μ ω X X ≫ ω.map (ε_ X X) ≫ η ω)
         (SuperVect.tensorHom e e) = stdForm k ℓ ∧

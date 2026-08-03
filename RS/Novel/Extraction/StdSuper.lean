@@ -1,4 +1,3 @@
-import RS.Classical.Super.SuperVect
 import RS.Novel.Skein.MixedPartition
 
 /-!
@@ -25,7 +24,7 @@ open scoped BigOperators
 
 /-- The standard super vector space with even dimension `k` and
 odd dimension `2ℓ`. -/
-noncomputable def stdSuper (k ℓ : ℕ) : SuperVect where
+noncomputable def stdSuperPair (k ℓ : ℕ) : SuperVect where
   even := Fin k → ℂ
   odd := Fin (2 * ℓ) → ℂ
 

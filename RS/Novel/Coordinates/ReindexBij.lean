@@ -15,7 +15,7 @@ open Classical
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- Closed patterns force purity. -/
 theorem pairPure_of_pattern_closed (W : ClosedFragment)

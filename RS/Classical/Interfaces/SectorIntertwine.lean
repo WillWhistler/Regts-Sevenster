@@ -1,20 +1,19 @@
 import RS.Classical.Interfaces.KoszulAction
 import RS.Classical.SchurTheory.TensorNonvanishing
 import RS.Novel.Coordinates.ModelPermCoord
-import RS.Novel.Extraction.StdSuper
 
 /-!
 # Sector intertwining for the standard model
 
 The even and odd sector trace functionals for the standard model
-`stdSuper k ℓ`, and their character formulas: the intertwining that
+`stdSuperPair k ℓ`, and their character formulas: the intertwining that
 carries the abstract `superPermAction` kernel containment of
 `KoszulAction.lean` to concrete characters.
 
 ## Main definitions
 
 * `evenSectorTr k ℓ n` — the partial trace on the all-even colour
-  block of `(superPow (stdSuper k ℓ) n).even`
+  block of `(superPow (stdSuperPair k ℓ) n).even`
 * `oddSectorTr k ℓ n` — the partial trace on the all-odd colour
   block (in the even component when `n` is even)
 
@@ -29,13 +28,13 @@ carries the abstract `superPermAction` kernel containment of
 
 ## The transport to an abstract package
 
-The transport from `stdSuper k ℓ` to `strandImage f P` (for an
-abstract Deligne package with `strandImage ≅ stdSuper k ℓ`) requires
+The transport from `stdSuperPair k ℓ` to `strandImage f P` (for an
+abstract Deligne package with `strandImage ≅ stdSuperPair k ℓ`) requires
 conjugating `evenSectorTr` / `oddSectorTr` by the induced
 `LinearEquiv` on `(superPow V n).even`.  Concretely: given a super
 iso pair `(e, e')` with `e' ∘ e = id` and `e ∘ e' = id`, the
 functoriality of `superPow` (tensorHom iterated) gives
-  `superPowIso : superPow (stdSuper k ℓ) n ≅ superPow (strandImage f P) n`
+  `superPowIso : superPow (stdSuperPair k ℓ) n ≅ superPow (strandImage f P) n`
 and
   `evenSectorTr k ℓ n ∘ (conjugate by superPowIso.even) = evenSectorTr' f P n`
 intertwines `modelPermMap` with `evenPermRep`.  The kernel containment
@@ -102,7 +101,7 @@ theorem oddInversions_allEvenEmb (k ℓ n : ℕ)
 /-- A basis vector of the even colour model at an even colouring. -/
 private noncomputable def evenBasis (k ℓ n : ℕ)
     (c : {c : MixedColouring k ℓ n // c.IsEven}) :
-    (superPow (stdSuper k ℓ) n).even :=
+    (superPow (stdSuperPair k ℓ) n).even :=
   (colourPowerEquiv k ℓ n).evenEquiv.symm
     (show (colourPower k ℓ n).even from Pi.single c 1)
 
@@ -144,10 +143,10 @@ private theorem coordOf_basis_allEven (k ℓ n : ℕ)
 /-! ## The even sector trace -/
 
 /-- The even sector trace functional: the partial trace of an
-endomorphism of `(superPow (stdSuper k ℓ) n).even` restricted to
+endomorphism of `(superPow (stdSuperPair k ℓ) n).even` restricted to
 the all-even colour block. -/
 noncomputable def evenSectorTr (k ℓ n : ℕ) :
-    Module.End ℂ (superPow (stdSuper k ℓ) n).even →ₗ[ℂ] ℂ where
+    Module.End ℂ (superPow (stdSuperPair k ℓ) n).even →ₗ[ℂ] ℂ where
   toFun T := ∑ f : Fin n → Fin k,
     (colourPowerEquiv k ℓ n).evenEquiv
       (T (evenBasis k ℓ n
@@ -211,8 +210,8 @@ theorem fixedCount_eq_cycleProd (n m : ℕ) (σ : Equiv.Perm (Fin n)) :
 theorem evenSectorTr_perm (k ℓ n : ℕ) (σ : Equiv.Perm (Fin n)) :
     evenSectorTr k ℓ n
       ((modelPermMap σ :
-        SuperVect.Hom (superPow (stdSuper k ℓ) n)
-          (superPow (stdSuper k ℓ) n)).evenMap) =
+        SuperVect.Hom (superPow (stdSuperPair k ℓ) n)
+          (superPow (stdSuperPair k ℓ) n)).evenMap) =
       cycleProd (fun _ => (k : ℂ)) σ := by
   -- Unfold evenSectorTr
   show ∑ f : Fin n → Fin k,
@@ -387,9 +386,9 @@ theorem neg_one_pow_oddInversions_allOdd' (n : ℕ)
 
 /-- The odd sector trace functional (for even `n`): the partial
 trace on the all-odd colour block of
-`(superPow (stdSuper k ℓ) n).even`. -/
+`(superPow (stdSuperPair k ℓ) n).even`. -/
 noncomputable def oddSectorTr (k ℓ n : ℕ) (hn : Even n) :
-    Module.End ℂ (superPow (stdSuper k ℓ) n).even →ₗ[ℂ] ℂ where
+    Module.End ℂ (superPow (stdSuperPair k ℓ) n).even →ₗ[ℂ] ℂ where
   toFun T := ∑ g : Fin n → Fin (2 * ℓ),
     (colourPowerEquiv k ℓ n).evenEquiv
       (T (evenBasis k ℓ n
@@ -448,8 +447,8 @@ theorem oddSectorTr_perm (k ℓ n : ℕ) (hn : Even n)
     (σ : Equiv.Perm (Fin n)) :
     oddSectorTr k ℓ n hn
       ((modelPermMap σ :
-        SuperVect.Hom (superPow (stdSuper k ℓ) n)
-          (superPow (stdSuper k ℓ) n)).evenMap) =
+        SuperVect.Hom (superPow (stdSuperPair k ℓ) n)
+          (superPow (stdSuperPair k ℓ) n)).evenMap) =
       ((Equiv.Perm.sign σ : ℤ) : ℂ) *
         cycleProd (fun _ => ((2 * ℓ : ℕ) : ℂ)) σ := by
   -- Unfold

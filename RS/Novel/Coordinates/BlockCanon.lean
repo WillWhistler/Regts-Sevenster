@@ -276,7 +276,7 @@ theorem oddListOf_blockRestrict_nodup_iff (W : ClosedFragment)
 /-- The cast rule for star coordinates. -/
 theorem starCoord_cast {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
-    (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+    (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
     {d₁ d₂ : ℕ} (h : d₁ = d₂)
     (c : MixedColouring k ℓ d₂) :
     starCoord f P e' d₁ (c ∘ finCongr h) =

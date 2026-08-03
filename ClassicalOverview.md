@@ -14,30 +14,42 @@ audit — part of the default `lake build` target — and
 [RS/Glossary.lean](RS/Glossary.lean) for the vocabulary used
 below).
 
-One statement is deliberately excluded from the survey:
-`DeligneTheoremStatement`
-([RS/Definitions.lean](RS/Definitions.lean))
-— Deligne's theorem on tensor categories, the single *cited* input
-(Deligne 2002, Théorème 0.6 with §0.1; Ostrik, Thm 2.3).  It is
-consumed as an interface rather than proved.
+Nothing is cited.  `DeligneTheoremStatement`
+([RS/Definitions.lean](RS/Definitions.lean)) — Deligne's theorem on
+tensor categories (Deligne 2002, Théorème 0.6 with §0.1; Ostrik,
+Thm 2.3) — is proved in the tree as `RS.deligne_theorem`
+([RS/Classical/Deligne/DeligneAssembly.lean](RS/Classical/Deligne/DeligneAssembly.lean)).
 
 It carries Deligne's own hypotheses: essentially small, abelian,
 ℂ-linear and rigid symmetric with ℂ-bilinear tensor product,
 `End 𝟙 = ℂ`, finitely ⊗-generated, and of moderate growth in the
-length of the tensor powers.  Two things are taken from the theorem
-rather than all of it, each weakening the assumption: one direction
-of Deligne's equivalence, and its conclusion in fibre-functor form
-rather than the ⊗-equivalence with the representations of an affine
-supergroup scheme.  The development then consumes less again — only
-the symmetric monoidal ℂ-linear functor, as `DelignePackage`.
+length of the tensor powers.  Its conclusion is taken in
+fibre-functor form rather than as the ⊗-equivalence with the
+representations of an affine supergroup scheme, which yields the
+functor by composing with the forgetful functor; the development
+then consumes less again — only the symmetric monoidal ℂ-linear
+functor, as `DelignePackage`.
 
-Everything on the far side is proved: the hypotheses are discharged
-for the concrete envelope (§5 below), and so is each step between
-what
-the theorem provides and what is used — forgetting exactness and
-faithfulness, and reading the growth hypothesis by composition
-length where the envelope's rank bound gives endomorphism
-dimension.
+The route is not Deligne's own.  His §4 descends the fibre functor
+along a faithfully flat `Isom⊗` torsor, which calls on fppf descent
+of finite presentation, EGA IV₃ 11.2.6.1, descent along transitive
+groupoids, and the tensor product of abelian categories.  Here the
+⊗-generator alone is split and one passes to a quotient by a maximal
+ideal: over a simple algebra the regular module and its twist by the
+odd line are simple objects of the module category, so a free mixed
+module is semisimple of finite length, and the objects the algebra
+splits are closed under subquotients as well as sums, tensor
+products and duals.  Finite ⊗-generation then reaches every object,
+the section data of Deligne's 2.10 comes free from semisimplicity,
+and the scalars are a field of countable dimension over ℂ, hence ℂ.
+This is the pattern of Coulembier's Lemma 3.3.2(ii), with his
+Lemmas 1.2.10 and 1.5.2 (see the references).
+
+Each step between what the theorem provides and what is used is also
+proved: forgetting exactness and faithfulness, and reading the
+growth hypothesis by composition length where the envelope's rank
+bound gives endomorphism dimension.  The hypotheses themselves are
+discharged for the concrete envelope (§5 below).
 
 Everything else below is a theorem of the tree.
 
@@ -60,7 +72,7 @@ skein/partition-category tradition (Brauer 1937 onward, Deligne's
 interpolation categories).  The flag presentation with a linearly
 ordered label alphabet — every relabeling in the development is
 order-preserving, which is load-bearing for the open-sector signs
-of §7 below — is an arrangement of this formalization.
+of §8 below — is an arrangement of this formalization.
 
 The rank of a connection matrix is a rank of an infinite matrix,
 and the literature reads it as the supremum of the ranks of the
@@ -327,18 +339,99 @@ Ostrik.  Three proof arrangements are of this formalization:
 ambient arity ([BlockTower.lean](RS/Novel/Envelope/BlockTower.lean)).
 
 
-## 6. Extraction and reconstruction
+## 6. Deligne's theorem
+
+**Statement.**  `RS.deligne_theorem : DeligneTheoremStatement`: an
+essentially small abelian ℂ-linear rigid symmetric monoidal category
+with ℂ-bilinear tensor product, `End 𝟙 = ℂ`, a finite tensor
+generator and moderate growth of the lengths of its tensor powers
+admits an exact faithful ℂ-linear symmetric monoidal fibre functor
+to finite-dimensional super vector spaces.
+
+**Method and provenance.**  The statement quantifies over essentially
+small categories, and `deligneTheoremStatement_of_small` reduces it
+to a genuinely small one by transporting every structure across
+`Monoidal.Transported (equivSmallModel A)`.  A tensor category need
+not contain an odd line, so the small category is replaced by its
+ℤ/2-graded doubling, whose ind-completion carries one, and the fibre
+functor is restricted back along the even embedding at the end.
+
+Over the doubling, §2's Schur layer supplies the growth dichotomy:
+moderate length growth forces every object to be killed by a Schur
+functor.  Deligne's §2 then produces, for a single object, an algebra
+in the ind-completion over which that object becomes a mixed sum of
+copies of the unit and of the odd line, and the countable descent
+replaces it by a countably presented one.  Passing to the quotient by
+a maximal ideal — Zorn over the ideals of an algebra object, whose
+chain condition holds because the unit is a compact object of the
+ind-completion — makes it simple.
+
+Simplicity is what carries the splitting from one object to all of
+them.  A simple algebra is a simple object of its own module
+category, and so is its twist by the odd line, the odd line being
+invertible; so a free mixed module is semisimple of finite length,
+and every subobject, quotient and subquotient of one is again free
+mixed.  The objects the algebra splits are therefore closed under
+subquotients, and also under sums, tensor products and duals, so a
+finite tensor generator drags the whole category into the class.
+The locally split short exact sequences of Deligne's 2.10 come free
+from the same semisimplicity: an epimorphism out of a semisimple
+object splits.
+
+The scalars are then read off.  The even part of the Γ-algebra of a
+simple algebra is a field — multiplication by a nonzero scalar has
+an ideal for its kernel and an ideal for its image, so simplicity
+makes it invertible — and the odd part vanishes, an odd element
+squaring to zero.  The algebra is a quotient of a countably presented
+one, so that field has countable dimension over ℂ, hence is ℂ.  The
+fibre functor therefore lands in super ℂ-vector spaces with no base
+change to arrange, and (2.11.1)'s comparison map makes it symmetric
+monoidal, exactness and faithfulness following from the freeness.
+
+**Divergence from the source.**  Deligne's §4 obtains the passage
+from an arbitrary nonzero algebra to ℂ by descent along a faithfully
+flat `Isom⊗` torsor, which needs fppf descent of finite
+presentation, EGA IV₃ 11.2.6.1, descent along transitive groupoids
+and the tensor product of abelian categories.  None of that appears
+here.  Two facts rule out the shortcuts one might try instead: the
+category may have uncountably many isomorphism classes of objects
+(`Rep(𝔾_a²)` satisfies every hypothesis, and pairs of commuting
+nilpotent matrices have moduli), so an index family running over all
+objects gives no dimension bound on the scalars; and finite tensor
+generation is generation by *subquotients* only — for the Borel in
+`SL₂`, the weight `+1` subobject of the standard representation is a
+quotient of no sum of tensor powers, because the heads of those sums
+carry only weights `≤ 0`.  Splitting one object and passing to a
+simple quotient avoids both.  This is the pattern of Coulembier's
+Lemma 3.3.2(ii), with his Lemmas 1.2.10 and 1.5.2.
+
+Proposition 2.1 is also available in the form Deligne states it,
+for a category whose ind-completion need not carry an odd line:
+`RS.exists_fibre_functor_general`
+([Prop21General.lean](RS/Classical/Deligne/Prop21General.lean))
+produces the algebra of the doubling together with a fibre functor
+that is strong monoidal, exact and faithful over it, before any
+question of the scalars arises.
+
+**Files.**  `RS/Classical/Deligne/`, behind the umbrella
+[RS/Classical/Deligne.lean](RS/Classical/Deligne.lean); the assembly
+in
+[DeligneAssembly.lean](RS/Classical/Deligne/DeligneAssembly.lean).
+
+
+## 7. Extraction and reconstruction
 
 **Statement.**  From the restricted fibre functor: the standard
 super model `stdSuper k ℓ`, the contraction identities the snake
 relations supply (`exists_contraction_families`), the star
 factorization of vertex functionals, and the reconstruction of
 Definition 5's `mixedPartition` from the categorical scalar (the
-paper's Theorem 6.1) — assembling `regts_sevenster_deligne_only`
-and its quantitative form.
+paper's Theorem 6.1) — assembling `regts_sevenster` and its
+quantitative form.
 
 **Method and provenance.**  The extraction follows the paper's
-§5–§6, with two departures, both machine-checked findings.
+§5–§6, with three departures: two machine-checked findings, and one
+difference of route.
 
 The circuit-sign computation avoids circuit decompositions, the
 consecutive-pairing choice, and the per-circuit `(−1)^{n−1}`
@@ -360,6 +453,21 @@ the sorted-canonical ordering is the correct witness; the twist is
 an artefact of the wedge-ordering convention, absorbed entirely by
 the choice of canonical ordering.
 
+The super symmetric power is reached on coordinates.  The paper
+factors `β_d(T_d, −)` through `Sym_s^d V` from the invariance of
+the pairing under the super `S_d`-action (its Lemma 5.1(b)) together
+with the invariance of the star tensor.  The tree takes the
+invariance one level earlier and geometrically: all legs of a vertex
+star meet the one vertex, so the star class absorbs any relabelling
+of them (`vertexStarClass_perm`), and the model permutation acts on
+coordinates by the odd-inversion sign (`coordOf_modelPermMap'`).
+Their combination `starCoord_perm` is already, over `ℂ`, the
+statement that the coordinate functional lives on `Sym_s^d V`:
+symmetric in the even letters, alternating in the odd ones.  No
+quotient argument is interposed, and no property of the pairing is
+needed.  Lemma 5.1(b) is proved (`betaColour_perm'`) but unused;
+5.1(a) (`betaDiag_eq_betaColour`) is consumed.
+
 **Files.**  `RS/Novel/Extraction/` (the standard super model, its
 self-duality and the snake identities), `RS/Classical/Super/` (the
 colouring model), and
@@ -371,7 +479,7 @@ ledgers: [RegroupSign.lean](RS/Novel/Coordinates/RegroupSign.lean),
 [RS/TheoremQuant.lean](RS/TheoremQuant.lean).
 
 
-## 7. Proposition 3, both sectors
+## 8. Proposition 3, both sectors
 
 **Statement.**  Regts–Sevenster's Proposition 3 (independence of
 the Definition 5 summand from the transition system), proved
@@ -440,7 +548,7 @@ supporting files), the closed sector in
 [AllInternalAgreement.lean](RS/Novel/Skein/AllInternalAgreement.lean).
 
 
-## 8. The converse machinery
+## 9. The converse machinery
 
 **Statement.**  Every mixed partition function has exponentially
 bounded connection rank — Regts–Sevenster's Theorem 6, which the
@@ -492,7 +600,7 @@ per-cut engine underneath:
 [ClosedCutDispatch.lean](RS/Novel/Skein/ClosedCutDispatch.lean).
 
 
-## 9. Recurring techniques
+## 10. Recurring techniques
 
 A few mathematical devices appear throughout and are worth
 knowing on sight:
@@ -522,7 +630,7 @@ knowing on sight:
   the factorization.
 
 
-## 10. Reading order
+## 11. Reading order
 
 [RS/Definitions.lean](RS/Definitions.lean) defines everything the
 theorems say; [RS/Glossary.lean](RS/Glossary.lean) glosses the
@@ -538,6 +646,8 @@ vocabulary; `README.md` states the theorems.
   227–248.
 * V. Ostrik, *Tensor categories (after P. Deligne)*,
   arXiv:math/0401347.
+* K. Coulembier, *Tannakian categories in positive characteristic*,
+  Duke Math. J. 169 (2020), 3167–3219; arXiv:1812.02452.
 * M. Freedman, L. Lovász, A. Schrijver, *Reflection positivity,
   rank connectivity, and homomorphism of graphs*, J. Amer. Math.
   Soc. 20 (2007), 37–51.

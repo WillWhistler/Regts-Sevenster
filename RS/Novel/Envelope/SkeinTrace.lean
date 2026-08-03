@@ -1,6 +1,5 @@
 import RS.Novel.Envelope.SkeinTower
 import RS.Novel.Skein.MonoidalInstance
-import RS.Novel.Skein.ComposeRelabel
 import RS.Novel.Skein.CloseUnion
 import RS.Novel.Skein.ScalarFunctional
 

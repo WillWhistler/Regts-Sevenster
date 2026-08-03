@@ -120,19 +120,33 @@ Recurring vocabulary of the development, for auditors.
 * **Bounded length** (`LengthLE Y k`) — the subobject order of `Y`
   has no strictly increasing chain of `k + 2` terms; equivalently
   the composition length of `Y` is at most `k`.
-* **Inputs** — `DeligneTheoremStatement` (Deligne 2002,
-  Théorème 0.6, the single cited input, carrying Deligne's own
-  hypotheses: essentially small, abelian, ℂ-linear, rigid
-  symmetric, `End 𝟙 = ℂ`, finitely ⊗-generated, of moderate length
-  growth.  Those are discharged for the concrete envelope.  Two
-  things are taken from the theorem rather than all of it, each
-  weakening the assumption: one direction of Deligne's equivalence,
-  and its conclusion in fibre-functor form (`DeligneFibreFunctor`)
-  rather than the ⊗-equivalence with the representations of a
-  supergroup — and of that functor only the symmetric monoidal
-  ℂ-linear part is consumed, as `DelignePackage`).
-  `SchurPackage` and `EulerianIndependence` also name statements,
-  but both are theorems of this tree (`schurPackage`,
-  `eulerianIndependence`), and the converse
-  (`regts_sevenster_converse`) rests on no input at all.
+* **The odd line** (`OddLine`) — an object squaring to the unit
+  whose self-braiding is `−1`; `L.mix p q` is the biproduct of `p`
+  copies of the unit and `q` of the line.
+* **The free module and the fibre** (`freeMod`, `fibreFun`,
+  `gammaAlgebra`) — base change along an algebra object of the
+  ind-completion, and the pair `(Hom(𝟙, −), Hom(L, −))` on it,
+  which is the super algebra of scalars and the fibre functor over
+  it.
+* **Splitting** (`IsSplit`, `SplitsOn`) — an object is split by an
+  algebra when its free module is a mixed sum; `SplitsOn` says every
+  object in the image of a functor is.
+* **Ideals of an algebra object** (`IsIdeal`) — a subobject
+  absorbing multiplication; an algebra is simple when it has no
+  others than the two trivial ones.
+* **Countably presented** (`CountablyPresented`) — a countable
+  filtered colimit of embedded objects; the property that bounds the
+  dimension of the scalars.
+* **Statements named as inputs** — `DeligneTheoremStatement`
+  (Deligne 2002, Théorème 0.6, carrying Deligne's own hypotheses:
+  essentially small, abelian, ℂ-linear, rigid symmetric,
+  `End 𝟙 = ℂ`, finitely ⊗-generated, of moderate length growth), of
+  which the conclusion is taken in fibre-functor form
+  (`DeligneFibreFunctor`) rather than as the ⊗-equivalence with the
+  representations of a supergroup, and of that functor only the
+  symmetric monoidal ℂ-linear part is consumed, as
+  `DelignePackage`.  It is a theorem of this tree
+  (`deligne_theorem`), as are `SchurPackage` (`schurPackage`) and
+  `EulerianIndependence` (`eulerianIndependence`); nothing is
+  assumed.
 -/

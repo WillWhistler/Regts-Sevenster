@@ -34,7 +34,7 @@ noncomputable def powBraidWord (V : SuperVect) {n : ℕ} :
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 /-- **The word intertwining**: the image of the word's product
 bundle map conjugates into the model braiding word. -/
@@ -43,7 +43,7 @@ theorem stdToOmega_bmc_word {n : ℕ} (w : List (Fin n)) :
     stdToOmega f P e (n + 1) ≫ P.ω.map (bundleMapClass f
         (((w.map adjTrans).prod : _root_.Equiv.Perm
           (Fin (n + 1))) : Fin (n + 1) ≃ Fin (n + 1))) =
-      powBraidWord (stdSuper k ℓ) w ≫
+      powBraidWord (stdSuperPair k ℓ) w ≫
         stdToOmega f P e (n + 1) := by
   letI := P.braided
   induction w with
@@ -107,7 +107,7 @@ theorem stdToOmega_bmc_word {n : ℕ} (w : List (Fin n)) :
       (skeinPowBraid f (n + 1) i.val (by omega))) ih).trans ?_
     refine (Category.assoc _ _ _).trans ?_
     refine (congrArg (fun z =>
-      powBraidWord (stdSuper k ℓ) w ≫ z)
+      powBraidWord (stdSuperPair k ℓ) w ≫ z)
       (stdToOmega_powBraid f P e (n + 1) i.val
         (by omega))).trans ?_
     exact (Category.assoc _ _ _).symm
@@ -120,7 +120,7 @@ theorem stdToOmega_bmc_perm {n : ℕ}
     letI := P.braided
     stdToOmega f P e (n + 1) ≫ P.ω.map (bundleMapClass f
         (σ : Fin (n + 1) ≃ Fin (n + 1))) =
-      powBraidWord (stdSuper k ℓ) (adjWord σ) ≫
+      powBraidWord (stdSuperPair k ℓ) (adjWord σ) ≫
         stdToOmega f P e (n + 1) := by
   letI := P.braided
   have h := stdToOmega_bmc_word f P e (adjWord σ)

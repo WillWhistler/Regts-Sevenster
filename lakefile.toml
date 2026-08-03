@@ -10,7 +10,7 @@ rev = "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f" # Mathlib release tag v4.31.0
 name = "RS"
 
 # The certification surface (comparator-config.json): `Challenge`
-# states the six theorems of record with `sorry`, `Solution` proves
+# states the theorems of record with `sorry`, `Solution` proves
 # them by reference.  Neither is a default target — the challenge
 # format requires `sorry` in `Challenge`, and the default build
 # stays warning-free.

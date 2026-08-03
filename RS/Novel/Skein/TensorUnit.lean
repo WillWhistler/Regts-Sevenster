@@ -1,5 +1,4 @@
 import RS.Novel.Skein.TensorFragment
-import RS.Novel.Skein.Multiplicativity
 
 /-!
 # Units of the fragment tensor

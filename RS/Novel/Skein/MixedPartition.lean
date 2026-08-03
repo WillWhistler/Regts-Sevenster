@@ -1,4 +1,3 @@
-import RS.Definitions
 import RS.Common.ListSign
 import RS.Novel.Skein.Eulerian
 

@@ -18,20 +18,20 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- The assembled star vector, in the model. -/
 noncomputable def modelStarVec :
-    (ds : List ℕ) → (superPow (stdSuper k ℓ) ds.sum).even
+    (ds : List ℕ) → (superPow (stdSuperPair k ℓ) ds.sum).even
   | [] => (1 : ℂ)
   | d :: ds =>
-      ((eqToHom (congrArg (superPow (stdSuper k ℓ))
+      ((eqToHom (congrArg (superPow (stdSuperPair k ℓ))
         (List.sum_cons.symm : d + ds.sum = (d :: ds).sum)) :
-        superPow (stdSuper k ℓ) (d + ds.sum) ⟶
-          superPow (stdSuper k ℓ) ((d :: ds).sum)) :
+        superPow (stdSuperPair k ℓ) (d + ds.sum) ⟶
+          superPow (stdSuperPair k ℓ) ((d :: ds).sum)) :
         SuperVect.Hom _ _).evenMap
-      (((powMerge (stdSuper k ℓ) d ds.sum) :
+      (((powMerge (stdSuperPair k ℓ) d ds.sum) :
         SuperVect.Hom _ _).evenMap
         (evenPair
           (((stdFromOmega f P e' d) :
@@ -66,10 +66,10 @@ theorem stdToOmega_modelStarVec
     have hcast := stdToOmega_bmc_cast f P e
       (List.sum_cons.symm : d + ds.sum = (d :: ds).sum)
     have hcast' := congrArg (fun z :
-        (superPow (stdSuper k ℓ) (d + ds.sum) ⟶
+        (superPow (stdSuperPair k ℓ) (d + ds.sum) ⟶
           P.ω.obj (SkeinObj.mk ((d :: ds).sum))) =>
       (z : SuperVect.Hom _ _).evenMap
-        (((powMerge (stdSuper k ℓ) d ds.sum) :
+        (((powMerge (stdSuperPair k ℓ) d ds.sum) :
           SuperVect.Hom _ _).evenMap
           (evenPair
             (((stdFromOmega f P e' d) :
@@ -80,8 +80,8 @@ theorem stdToOmega_modelStarVec
     · -- Now push the merge through the block transport.
       have hmerge := stdToOmega_merge f P e d ds.sum
       have hmerge' := congrArg (fun z :
-          (superPow (stdSuper k ℓ) d ⊗
-            superPow (stdSuper k ℓ) ds.sum ⟶
+          (superPow (stdSuperPair k ℓ) d ⊗
+            superPow (stdSuperPair k ℓ) ds.sum ⟶
             P.ω.obj (SkeinObj.mk (d + ds.sum))) =>
         (P.ω.map (bundleMapClass f (finCongr
           (List.sum_cons.symm :

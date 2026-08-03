@@ -87,8 +87,8 @@ set_option maxHeartbeats 1000000 in
 /-- **The circle value is the superdimension** `k − 2ℓ` under any
 standard-model identification. -/
 theorem circleVal_model {k ℓ : ℕ}
-    (e : SuperVect.Hom (stdSuper k ℓ) (P.ω.obj (SkeinObj.mk 1)))
-    (e' : SuperVect.Hom (P.ω.obj (SkeinObj.mk 1)) (stdSuper k ℓ))
+    (e : SuperVect.Hom (stdSuperPair k ℓ) (P.ω.obj (SkeinObj.mk 1)))
+    (e' : SuperVect.Hom (P.ω.obj (SkeinObj.mk 1)) (stdSuperPair k ℓ))
     (hee' : SuperVect.Hom.comp e e' =
       SuperVect.Hom.id (P.ω.obj (SkeinObj.mk 1)))
     (hform :

@@ -12,3 +12,6 @@ import RS.Assembly.BlueprintStatement
 import RS.Assembly.Blueprint
 import RS.Assembly.BlueprintConverse
 import RS.Assembly.BlueprintSchur
+import RS.Classical.Deligne
+import RS.Summit
+import RS.Assembly.BlueprintDeligne

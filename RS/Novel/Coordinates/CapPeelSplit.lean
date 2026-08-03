@@ -19,7 +19,7 @@ open scoped TensorProduct
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 /-- The peel arity identity, pinned. -/
 theorem capPeelArity (m : ℕ) :
@@ -28,7 +28,7 @@ theorem capPeelArity (m : ℕ) :
 /-- **The split cap value**: the smaller cap tensored with one
 evaluation, on a transported vector. -/
 noncomputable def splitCapVal (m : ℕ)
-    (w : (superPow (stdSuper k ℓ) ((m + m) + 2)).even) : ℂ :=
+    (w : (superPow (stdSuperPair k ℓ) ((m + m) + 2)).even) : ℂ :=
   letI := P.braided
   omegaFun f P (HomSpace.tensor f (m + m) 0 2 0
       (bundleCapClass f m) (evClass f))
@@ -37,7 +37,7 @@ noncomputable def splitCapVal (m : ℕ)
 
 /-- The split cap value is additive over finite sums. -/
 theorem splitCapVal_sum {ι : Type*} (m : ℕ) (s : Finset ι)
-    (g : ι → (superPow (stdSuper k ℓ) ((m + m) + 2)).even) :
+    (g : ι → (superPow (stdSuperPair k ℓ) ((m + m) + 2)).even) :
     splitCapVal f P e m (∑ i ∈ s, g i) =
       ∑ i ∈ s, splitCapVal f P e m (g i) := by
   unfold splitCapVal
@@ -45,7 +45,7 @@ theorem splitCapVal_sum {ι : Type*} (m : ℕ) (s : Finset ι)
 
 /-- The split cap value is homogeneous. -/
 theorem splitCapVal_smul (m : ℕ) (r : ℂ)
-    (w : (superPow (stdSuper k ℓ) ((m + m) + 2)).even) :
+    (w : (superPow (stdSuperPair k ℓ) ((m + m) + 2)).even) :
     splitCapVal f P e m (r • w) =
       r * splitCapVal f P e m w := by
   unfold splitCapVal
@@ -53,7 +53,7 @@ theorem splitCapVal_smul (m : ℕ) (r : ℂ)
 
 /-- **The split cap value in coordinates.** -/
 theorem splitCapVal_expansion (m : ℕ)
-    (w : (superPow (stdSuper k ℓ) ((m + m) + 2)).even) :
+    (w : (superPow (stdSuperPair k ℓ) ((m + m) + 2)).even) :
     splitCapVal f P e m w =
       ∑ c : {c : MixedColouring k ℓ ((m + m) + 2) // c.IsEven},
         coordOf w c.val *
@@ -70,11 +70,11 @@ theorem splitCapVal_expansion (m : ℕ)
 
 /-- The split cap value on merges: `CapSplit` restated. -/
 theorem splitCapVal_merge (m : ℕ)
-    (x : (superPow (stdSuper k ℓ) (m + m)).even)
-    (y : (superPow (stdSuper k ℓ) 2).even) :
+    (x : (superPow (stdSuperPair k ℓ) (m + m)).even)
+    (y : (superPow (stdSuperPair k ℓ) 2).even) :
     letI := P.braided
     splitCapVal f P e m
-        (((powMerge (stdSuper k ℓ) (m + m) 2) :
+        (((powMerge (stdSuperPair k ℓ) (m + m) 2) :
           SuperVect.Hom _ _).evenMap (evenPair x y)) =
       capVal f P e m x *
         omegaFun f P (evClass f)
@@ -87,29 +87,29 @@ theorem splitCapVal_merge (m : ℕ)
 set_option maxHeartbeats 1000000 in
 /-- **The split cap value vanishes on odd merges.** -/
 theorem splitCapVal_oddMerge (m : ℕ)
-    (x : (superPow (stdSuper k ℓ) (m + m)).odd)
-    (y : (superPow (stdSuper k ℓ) 2).odd) :
+    (x : (superPow (stdSuperPair k ℓ) (m + m)).odd)
+    (y : (superPow (stdSuperPair k ℓ) 2).odd) :
     splitCapVal f P e m
-        (((powMerge (stdSuper k ℓ) (m + m) 2) :
+        (((powMerge (stdSuperPair k ℓ) (m + m) 2) :
           SuperVect.Hom _ _).evenMap
-          (((0 : (superPow (stdSuper k ℓ) (m + m)).even ⊗[ℂ]
-              (superPow (stdSuper k ℓ) 2).even),
+          (((0 : (superPow (stdSuperPair k ℓ) (m + m)).even ⊗[ℂ]
+              (superPow (stdSuperPair k ℓ) 2).even),
             x ⊗ₜ[ℂ] y) :
             (SuperVect.tensorObj
-              (superPow (stdSuper k ℓ) (m + m))
-              (superPow (stdSuper k ℓ) 2)).even)) = 0 := by
+              (superPow (stdSuperPair k ℓ) (m + m))
+              (superPow (stdSuperPair k ℓ) 2)).even)) = 0 := by
   letI := P.braided
   have hmerge := congrArg (fun z :
-      (superPow (stdSuper k ℓ) (m + m) ⊗
-        superPow (stdSuper k ℓ) 2 ⟶
+      (superPow (stdSuperPair k ℓ) (m + m) ⊗
+        superPow (stdSuperPair k ℓ) 2 ⟶
         P.ω.obj (SkeinObj.mk ((m + m) + 2))) =>
     (z : SuperVect.Hom _ _).evenMap
-      (((0 : (superPow (stdSuper k ℓ) (m + m)).even ⊗[ℂ]
-          (superPow (stdSuper k ℓ) 2).even),
+      (((0 : (superPow (stdSuperPair k ℓ) (m + m)).even ⊗[ℂ]
+          (superPow (stdSuperPair k ℓ) 2).even),
         x ⊗ₜ[ℂ] y) :
         (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) (m + m))
-          (superPow (stdSuper k ℓ) 2)).even))
+          (superPow (stdSuperPair k ℓ) (m + m))
+          (superPow (stdSuperPair k ℓ) 2)).even))
     (stdToOmega_merge f P e (m + m) 2)
   refine Eq.trans (congrArg (omegaFun f P
     (HomSpace.tensor f (m + m) 0 2 0
@@ -120,20 +120,20 @@ theorem splitCapVal_oddMerge (m : ℕ)
       SuperVect.Hom _ _).evenMap
       (((stdToOmega f P e (m + m) ⊗ₘ stdToOmega f P e 2) :
         SuperVect.Hom _ _).evenMap
-        (((0 : (superPow (stdSuper k ℓ) (m + m)).even ⊗[ℂ]
-            (superPow (stdSuper k ℓ) 2).even),
+        (((0 : (superPow (stdSuperPair k ℓ) (m + m)).even ⊗[ℂ]
+            (superPow (stdSuperPair k ℓ) 2).even),
           x ⊗ₜ[ℂ] y) :
           (SuperVect.tensorObj
-            (superPow (stdSuper k ℓ) (m + m))
-            (superPow (stdSuper k ℓ) 2)).even))) = 0
+            (superPow (stdSuperPair k ℓ) (m + m))
+            (superPow (stdSuperPair k ℓ) 2)).even))) = 0
   rw [show ((stdToOmega f P e (m + m) ⊗ₘ stdToOmega f P e 2) :
       SuperVect.Hom _ _).evenMap
-      (((0 : (superPow (stdSuper k ℓ) (m + m)).even ⊗[ℂ]
-          (superPow (stdSuper k ℓ) 2).even),
+      (((0 : (superPow (stdSuperPair k ℓ) (m + m)).even ⊗[ℂ]
+          (superPow (stdSuperPair k ℓ) 2).even),
         x ⊗ₜ[ℂ] y) :
         (SuperVect.tensorObj
-          (superPow (stdSuper k ℓ) (m + m))
-          (superPow (stdSuper k ℓ) 2)).even) =
+          (superPow (stdSuperPair k ℓ) (m + m))
+          (superPow (stdSuperPair k ℓ) 2)).even) =
     oddPair
       ((stdToOmega f P e (m + m) :
         SuperVect.Hom _ _).oddMap x)
@@ -148,18 +148,18 @@ theorem splitCapVal_oddMerge (m : ℕ)
 set_option maxHeartbeats 1000000 in
 /-- **The cap value successor law in model form.** -/
 theorem capVal_succ (m : ℕ)
-    (v : (superPow (stdSuper k ℓ) ((m + 1) + (m + 1))).even) :
+    (v : (superPow (stdSuperPair k ℓ) ((m + 1) + (m + 1))).even) :
     capVal f P e (m + 1) v =
       splitCapVal f P e m
         (((modelPermMap (capPeelPerm m) ≫
-            eqToHom (congrArg (superPow (stdSuper k ℓ))
+            eqToHom (congrArg (superPow (stdSuperPair k ℓ))
               (capPeelArity m))) :
           SuperVect.Hom _ _).evenMap v) := by
   letI := P.braided
   have hchain : stdToOmega f P e ((m + 1) + (m + 1)) ≫
       P.ω.map (bundleMapClass f (capPeelRotation m)) =
     (modelPermMap (capPeelPerm m) ≫
-        eqToHom (congrArg (superPow (stdSuper k ℓ))
+        eqToHom (congrArg (superPow (stdSuperPair k ℓ))
           (capPeelArity m))) ≫
       stdToOmega f P e ((m + m) + 2) := by
     have hmap : P.ω.map (bundleMapClass f (capPeelRotation m)) =
@@ -180,7 +180,7 @@ theorem capVal_succ (m : ℕ)
     (((stdToOmega f P e ((m + 1) + (m + 1))) :
       SuperVect.Hom _ _).evenMap v)) ?_
   have hval := congrArg (fun z :
-      (superPow (stdSuper k ℓ) ((m + 1) + (m + 1)) ⟶
+      (superPow (stdSuperPair k ℓ) ((m + 1) + (m + 1)) ⟶
         P.ω.obj (SkeinObj.mk ((m + m) + 2))) =>
     (z : SuperVect.Hom _ _).evenMap v) hchain
   exact congrArg (omegaFun f P

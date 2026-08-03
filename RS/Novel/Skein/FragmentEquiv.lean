@@ -1,4 +1,3 @@
-import RS.Definitions
 import RS.Novel.Skein.Composition
 
 /-!

@@ -5,7 +5,7 @@ import RS.Novel.Extraction.Nondegenerate
 
 The morphism-level packaging of the coordinate identification: a
 super vector space carrying a supersymmetric form with a rigid
-copairing is isomorphic to a standard model `stdSuper k ℓ`, by an
+copairing is isomorphic to a standard model `stdSuperPair k ℓ`, by an
 isomorphism pulling the form back to the standard form
 (`exists_std_iso`).  This is the full statement of the §5.1
 coordinate conventions: every self-dual object of SuperVect *is*
@@ -24,7 +24,7 @@ super vector spaces. -/
 def coordHom {V : SuperVect} {k ℓ : ℕ}
     (eE : (Fin k → ℂ) ≃ₗ[ℂ] V.even)
     (eO : (Fin (2 * ℓ) → ℂ) ≃ₗ[ℂ] V.odd) :
-    SuperVect.Hom (stdSuper k ℓ) V := by
+    SuperVect.Hom (stdSuperPair k ℓ) V := by
   refine ⟨?_, ?_⟩
   · change (Fin k → ℂ) →ₗ[ℂ] V.even
     exact eE.toLinearMap
@@ -35,7 +35,7 @@ def coordHom {V : SuperVect} {k ℓ : ℕ}
 def coordInv {V : SuperVect} {k ℓ : ℕ}
     (eE : (Fin k → ℂ) ≃ₗ[ℂ] V.even)
     (eO : (Fin (2 * ℓ) → ℂ) ≃ₗ[ℂ] V.odd) :
-    SuperVect.Hom V (stdSuper k ℓ) := by
+    SuperVect.Hom V (stdSuperPair k ℓ) := by
   refine ⟨?_, ?_⟩
   · change V.even →ₗ[ℂ] (Fin k → ℂ)
     exact eE.symm.toLinearMap
@@ -48,7 +48,7 @@ theorem coordInv_comp_coordHom {V : SuperVect} {k ℓ : ℕ}
     (eE : (Fin k → ℂ) ≃ₗ[ℂ] V.even)
     (eO : (Fin (2 * ℓ) → ℂ) ≃ₗ[ℂ] V.odd) :
     SuperVect.Hom.comp (coordInv eE eO) (coordHom eE eO) =
-      SuperVect.Hom.id (stdSuper k ℓ) := by
+      SuperVect.Hom.id (stdSuperPair k ℓ) := by
   apply SuperVect.Hom.ext
   · change eE.symm.toLinearMap.comp eE.toLinearMap = LinearMap.id
     exact LinearMap.ext fun z => eE.symm_apply_apply z
@@ -118,9 +118,9 @@ theorem exists_std_iso {V : SuperVect}
         (α_ V V V).hom ≫
         V ◁ (show V ⊗ V ⟶ 𝟙_ SuperVect from b) =
         (λ_ V).hom ≫ (ρ_ V).inv) :
-    ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuper k ℓ) V)
-      (e' : SuperVect.Hom V (stdSuper k ℓ)),
-      SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuper k ℓ) ∧
+    ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuperPair k ℓ) V)
+      (e' : SuperVect.Hom V (stdSuperPair k ℓ)),
+      SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuperPair k ℓ) ∧
       SuperVect.Hom.comp e e' = SuperVect.Hom.id V ∧
       SuperVect.Hom.comp b (SuperVect.tensorHom e e) = stdForm k ℓ := by
   obtain ⟨k, ℓ, eE, eO, hE, hO⟩ :=

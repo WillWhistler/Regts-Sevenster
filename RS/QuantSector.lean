@@ -1,5 +1,4 @@
 import RS.TheoremForward
-import RS.Definitions
 import RS.Novel.Envelope.SuperKill
 
 /-!
@@ -27,9 +26,9 @@ side.  Discharged as `squareSectorBound_of_detPos` in
 def SquareSectorBound : Prop :=
   ∀ {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f)) (k l s : ℕ), 1 ≤ s →
-    ∀ (e : SuperVect.Hom (stdSuper k l) (P.ω.obj (SkeinObj.mk 1)))
-    (e' : SuperVect.Hom (P.ω.obj (SkeinObj.mk 1)) (stdSuper k l)),
-    SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuper k l) →
+    ∀ (e : SuperVect.Hom (stdSuperPair k l) (P.ω.obj (SkeinObj.mk 1)))
+    (e' : SuperVect.Hom (P.ω.obj (SkeinObj.mk 1)) (stdSuperPair k l)),
+    SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuperPair k l) →
     SuperVect.Hom.comp e e' =
       SuperVect.Hom.id (P.ω.obj (SkeinObj.mk 1)) →
     (∀ s' : ℕ, s ≤ s' →

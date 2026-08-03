@@ -95,7 +95,7 @@ normalized, isomorphism-invariant parameter with that bound. -/
 #guard_msgs in
 #check @EdgeRankParameter
 
-/-! ## The statements and the one cited input -/
+/-! ## The statements and Deligne's theorem -/
 
 /-- info: RegtsSevensterStatement : Prop -/
 #guard_msgs in
@@ -113,13 +113,15 @@ normalized, isomorphism-invariant parameter with that bound. -/
 #guard_msgs in
 #check @DeligneTheoremStatement
 
-/-! ### The cited input, unfolded
+/-! ### Deligne's theorem, unfolded
 
-A type is not a meaning, so the one statement the development
-assumes is pinned by content as well as by name: its hypothesis
-list, and the definition of every predicate that list is phrased in.
-An auditor compares what follows with Deligne's Théorème 0.6 and
-§0.1; a change to any of it is a compile error.
+A type is not a meaning, so `DeligneTheoremStatement` is pinned by
+content as well as by name: its hypothesis list, and the definition
+of every predicate that list is phrased in.  An auditor compares
+what follows with Deligne's Théorème 0.6 and §0.1; a change to any
+of it is a compile error.  The statement is proved in
+`RS/Classical/Deligne/`, so the pin fixes the meaning of a theorem
+of this tree rather than of an assumption.
 -/
 
 set_option pp.funBinderTypes true in

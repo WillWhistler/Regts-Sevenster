@@ -1,5 +1,3 @@
-import RS.Definitions
-import RS.Classical.CatTheory.TensorPow
 import RS.Classical.CatTheory.LengthBound
 
 /-!

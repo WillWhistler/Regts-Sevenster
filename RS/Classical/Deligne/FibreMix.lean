@@ -1,0 +1,50 @@
+import RS.Classical.Deligne.FibreAdditive
+import RS.Classical.Deligne.FibreEps
+import RS.Classical.Deligne.GammaShift
+
+/-!
+# The fibre functor of a mixed sum
+
+A mixed sum of `p` copies of the unit and `q` copies of the odd line
+has for its fibre the free super module of rank `(p | q)`: the unit
+contributes the algebra and the line contributes its parity shift,
+and the fibre functor is additive.
+-/
+
+namespace RS
+
+open CategoryTheory MonoidalCategory Limits
+
+universe v u
+
+section
+
+variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
+variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
+variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+
+attribute [local instance] CategoryTheory.ModObj.regular
+
+/-- **The free super module of rank `(p | q)`.** -/
+noncomputable def superFree (p q : ℕ) : (gammaAlgebra D L R).Mod :=
+  ⨁ fun i : Fin p ⊕ Fin q =>
+    Sum.elim (fun _ => (gammaAlgebra D L R).unitMod)
+      (fun _ => SuperCommAlgebra.Mod.shift
+        (gammaAlgebra D L R).unitMod) i
+
+/-- **The fibre of a mixed sum is free of the corresponding
+rank.** -/
+noncomputable def fibreMixIso (p q : ℕ) :
+    (fibreFun L R).obj (L.mix p q) ≅ superFree L R p q :=
+  fibreFunBiproduct L R
+      (fun i : Fin p ⊕ Fin q =>
+        Sum.elim (fun _ => 𝟙_ D) (fun _ => L.obj) i) ≪≫
+    biproduct.mapIso fun i =>
+      match i with
+      | Sum.inl _ => (fibreEpsIso L R).symm
+      | Sum.inr _ => gammaShiftIso L R
+
+end
+
+end RS

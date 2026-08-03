@@ -16,8 +16,8 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- **The star vector is permutation-invariant.** -/
 theorem starVec_perm (d : ℕ) (σ : _root_.Equiv.Perm (Fin d)) :
@@ -31,11 +31,11 @@ theorem starVec_perm (d : ℕ) (σ : _root_.Equiv.Perm (Fin d)) :
 theorem stdFromOmega_perm
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (d : ℕ) (σ : _root_.Equiv.Perm (Fin d)) :
     letI := P.braided
     (stdFromOmega f P e' d ≫ modelPermMap σ :
-      P.ω.obj (SkeinObj.mk d) ⟶ superPow (stdSuper k ℓ) d) =
+      P.ω.obj (SkeinObj.mk d) ⟶ superPow (stdSuperPair k ℓ) d) =
       P.ω.map (bundleMapClass f (σ : Fin d ≃ Fin d)) ≫
         stdFromOmega f P e' d := by
   letI := P.braided
@@ -44,7 +44,7 @@ theorem stdFromOmega_perm
         P.ω.map (bundleMapClass f (σ : Fin d ≃ Fin d)) ≫
         stdFromOmega f P e' d := by
     have h2 := congrArg (fun z :
-        (superPow (stdSuper k ℓ) d ⟶
+        (superPow (stdSuperPair k ℓ) d ⟶
           P.ω.obj (SkeinObj.mk d)) =>
       z ≫ stdFromOmega f P e' d)
       (stdToOmega_bmc_perm_all f P e d σ)
@@ -76,7 +76,7 @@ multiplies by the odd-inversion sign. -/
 theorem starCoord_perm
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (d : ℕ) (σ : _root_.Equiv.Perm (Fin d))
     (c : MixedColouring k ℓ d) :
     starCoord f P e' d (c ∘ σ) =
@@ -89,7 +89,7 @@ theorem starCoord_perm
         SuperVect.Hom _ _).evenMap (starVec f P d) := by
     have h := congrArg (fun z :
         (P.ω.obj (SkeinObj.mk d) ⟶
-          superPow (stdSuper k ℓ) d) =>
+          superPow (stdSuperPair k ℓ) d) =>
       (z : SuperVect.Hom _ _).evenMap (starVec f P d))
       (stdFromOmega_perm f P e e' hee' he'e d σ)
     refine Eq.trans h ?_

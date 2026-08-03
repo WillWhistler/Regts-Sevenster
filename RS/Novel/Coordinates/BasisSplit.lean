@@ -19,13 +19,13 @@ variable {k ℓ : ℕ}
 /-- The even coordinate basis vector at a colouring. -/
 noncomputable def evenBasisVec {n : ℕ}
     (c : {c : MixedColouring k ℓ n // c.IsEven}) :
-    (superPow (stdSuper k ℓ) n).even :=
+    (superPow (stdSuperPair k ℓ) n).even :=
   (colourPowerEquiv k ℓ n).evenEquiv.symm (Pi.single c 1)
 
 /-- The odd coordinate basis vector at a colouring. -/
 noncomputable def oddBasisVec {n : ℕ}
     (c : {c : MixedColouring k ℓ n // ¬ c.IsEven}) :
-    (superPow (stdSuper k ℓ) n).odd :=
+    (superPow (stdSuperPair k ℓ) n).odd :=
   (colourPowerEquiv k ℓ n).oddEquiv.symm (Pi.single c 1)
 
 /-- Colourings are determined by their halves. -/
@@ -46,21 +46,21 @@ theorem evenBasisVec_split {a b : ℕ}
     evenBasisVec (⟨c, hc⟩ :
       {c : MixedColouring k ℓ (a + b) // c.IsEven}) =
       if h : MixedColouring.IsEven c.firstHalf then
-        ((powMerge (stdSuper k ℓ) a b) :
+        ((powMerge (stdSuperPair k ℓ) a b) :
           SuperVect.Hom _ _).evenMap
           (evenPair (evenBasisVec ⟨c.firstHalf, h⟩)
             (evenBasisVec ⟨c.secondHalf,
               c.secondHalf_isEven hc h⟩))
       else
-        ((powMerge (stdSuper k ℓ) a b) :
+        ((powMerge (stdSuperPair k ℓ) a b) :
           SuperVect.Hom _ _).evenMap
-          (((0 : (superPow (stdSuper k ℓ) a).even ⊗[ℂ]
-              (superPow (stdSuper k ℓ) b).even),
+          (((0 : (superPow (stdSuperPair k ℓ) a).even ⊗[ℂ]
+              (superPow (stdSuperPair k ℓ) b).even),
             oddBasisVec ⟨c.firstHalf, h⟩ ⊗ₜ[ℂ]
               oddBasisVec ⟨c.secondHalf,
                 c.secondHalf_not_isEven' hc h⟩) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (superPow (stdSuper k ℓ) b)).even) := by
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (superPow (stdSuperPair k ℓ) b)).even) := by
   apply (colourPowerEquiv k ℓ (a + b)).evenEquiv.injective
   rw [show (colourPowerEquiv k ℓ (a + b)).evenEquiv
       (evenBasisVec (⟨c, hc⟩ :
@@ -74,7 +74,7 @@ theorem evenBasisVec_split {a b : ℕ}
   by_cases h : MixedColouring.IsEven c.firstHalf
   · rw [dif_pos h]
     rw [show ((colourPowerEquiv k ℓ (a + b)).evenEquiv
-        (((powMerge (stdSuper k ℓ) a b) :
+        (((powMerge (stdSuperPair k ℓ) a b) :
           SuperVect.Hom _ _).evenMap
           (evenPair (evenBasisVec ⟨c.firstHalf, h⟩)
             (evenBasisVec ⟨c.secondHalf,
@@ -125,15 +125,15 @@ theorem evenBasisVec_split {a b : ℕ}
       rw [single_val_ne ⟨c, hc⟩ ⟨c', hc'⟩ hne]
   · rw [dif_neg h]
     rw [show ((colourPowerEquiv k ℓ (a + b)).evenEquiv
-        (((powMerge (stdSuper k ℓ) a b) :
+        (((powMerge (stdSuperPair k ℓ) a b) :
           SuperVect.Hom _ _).evenMap
-          (((0 : (superPow (stdSuper k ℓ) a).even ⊗[ℂ]
-              (superPow (stdSuper k ℓ) b).even),
+          (((0 : (superPow (stdSuperPair k ℓ) a).even ⊗[ℂ]
+              (superPow (stdSuperPair k ℓ) b).even),
             oddBasisVec ⟨c.firstHalf, h⟩ ⊗ₜ[ℂ]
               oddBasisVec ⟨c.secondHalf,
                 c.secondHalf_not_isEven' hc h⟩) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) a)
-              (superPow (stdSuper k ℓ) b)).even))) ⟨c', hc'⟩ =
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
+              (superPow (stdSuperPair k ℓ) b)).even))) ⟨c', hc'⟩ =
       (if h' : MixedColouring.IsEven c'.firstHalf then 0
       else
         (colourPowerEquiv k ℓ a).oddEquiv

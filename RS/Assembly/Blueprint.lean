@@ -993,6 +993,10 @@ turns the sum into Definition 5.
 #guard_msgs in
 #print axioms RS.betaDiag_eq_betaColour
 
+/-- info: 'RS.betaColour_perm'' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.betaColour_perm'
+
 /-- info: 'RS.masterSummand_vanish_of_impure' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms RS.masterSummand_vanish_of_impure

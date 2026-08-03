@@ -22,13 +22,13 @@ variable {k ℓ : ℕ}
 
 section Transport
 
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- The model transport: iterated strand identifications
 assembled left-nested through the structure maps. -/
 noncomputable def stdToOmega :
-    (m : ℕ) → (superPow (stdSuper k ℓ) m ⟶
+    (m : ℕ) → (superPow (stdSuperPair k ℓ) m ⟶
       P.ω.obj (SkeinObj.mk m))
   | 0 =>
       letI := P.braided
@@ -43,7 +43,7 @@ noncomputable def stdToOmega :
 /-- The reverse model transport. -/
 noncomputable def stdFromOmega :
     (m : ℕ) → (P.ω.obj (SkeinObj.mk m) ⟶
-      superPow (stdSuper k ℓ) m)
+      superPow (stdSuperPair k ℓ) m)
   | 0 =>
       letI := P.braided
       (η P.ω : P.ω.obj (SkeinObj.mk 0) ⟶ SuperVect.tensorUnit)
@@ -86,12 +86,12 @@ theorem stdFromOmega_stdToOmega
 
 /-- The transports are inverse on the model side. -/
 theorem stdToOmega_stdFromOmega
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _) :
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _) :
     ∀ m : ℕ,
       (stdToOmega f P e m ≫ stdFromOmega f P e' m :
-        superPow (stdSuper k ℓ) m ⟶
-          superPow (stdSuper k ℓ) m) =
-        𝟙 (superPow (stdSuper k ℓ) m)
+        superPow (stdSuperPair k ℓ) m ⟶
+          superPow (stdSuperPair k ℓ) m) =
+        𝟙 (superPow (stdSuperPair k ℓ) m)
   | 0 => by
     letI := P.braided
     show (ε P.ω ≫ η P.ω : SuperVect.tensorUnit ⟶

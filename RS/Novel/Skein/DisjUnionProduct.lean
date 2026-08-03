@@ -1,8 +1,6 @@
 import RS.TheoremQuant
-import RS.Novel.Skein.RelabelInvariance
 import RS.Novel.Skein.InterfaceOrderIso
 import RS.Novel.Skein.DisjUnionFactor
-import RS.Novel.Skein.MixedPartition
 import RS.StatementConverse
 import RS.Novel.Skein.ThroughEdgeCut
 import RS.Novel.Skein.ClosedCutDispatch

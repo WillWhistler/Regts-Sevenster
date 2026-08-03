@@ -35,7 +35,7 @@ theorem wordPerm_adjWord {n : ℕ}
 /-- **The permutation transport in coordinates.** -/
 theorem coordOf_modelPermMap {n : ℕ}
     (σ : _root_.Equiv.Perm (Fin (n + 1)))
-    (v : (superPow (stdSuper k ℓ) (n + 1)).even)
+    (v : (superPow (stdSuperPair k ℓ) (n + 1)).even)
     (c : MixedColouring k ℓ (n + 1)) :
     coordOf (((modelPermMap σ) :
         SuperVect.Hom _ _).evenMap v) c =
@@ -49,7 +49,7 @@ theorem coordOf_modelPermMap {n : ℕ}
       unfold coordOf; rw [dif_pos hc]]
     rw [← toColour_apply]
     rw [show modelPermMap σ =
-      powBraidWord (stdSuper k ℓ) (adjWord σ) from rfl]
+      powBraidWord (stdSuperPair k ℓ) (adjWord σ) from rfl]
     rw [toColour_powBraidWord]
     rw [colourSwapWord_evenMap]
     rw [wordPerm_adjWord]
@@ -73,7 +73,7 @@ form**: the sign is the odd-inversion sign, valid at every arity
 including zero. -/
 theorem coordOf_modelPermMap' {n : ℕ}
     (σ : _root_.Equiv.Perm (Fin n))
-    (v : (superPow (stdSuper k ℓ) n).even)
+    (v : (superPow (stdSuperPair k ℓ) n).even)
     (c : MixedColouring k ℓ n) :
     coordOf (((modelPermMap σ) :
         SuperVect.Hom _ _).evenMap v) c =
@@ -83,9 +83,9 @@ theorem coordOf_modelPermMap' {n : ℕ}
     rw [show σ = (1 : _root_.Equiv.Perm (Fin 0)) from
       Subsingleton.elim _ _]
     rw [show modelPermMap (1 : _root_.Equiv.Perm (Fin 0)) =
-      𝟙 (superPow (stdSuper k ℓ) 0) from rfl]
-    rw [show (((𝟙 (superPow (stdSuper k ℓ) 0) :
-        superPow (stdSuper k ℓ) 0 ⟶ _)) :
+      𝟙 (superPow (stdSuperPair k ℓ) 0) from rfl]
+    rw [show (((𝟙 (superPow (stdSuperPair k ℓ) 0) :
+        superPow (stdSuperPair k ℓ) 0 ⟶ _)) :
       SuperVect.Hom _ _).evenMap v = v from rfl]
     rw [show oddInversions (1 : _root_.Equiv.Perm (Fin 0)) c =
       0 from by simp [oddInversions]]

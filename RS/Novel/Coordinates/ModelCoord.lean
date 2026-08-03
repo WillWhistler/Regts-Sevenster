@@ -48,7 +48,7 @@ theorem blockRestrict_cons_tail (d : ℕ) (ds : List ℕ)
 
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 -- Raised budget: the coordinate factorisation is proved by
 -- recursion on the degree list, carrying the merge equivalence at
@@ -74,7 +74,7 @@ theorem coordOf_modelStarVec :
   | d :: ds, c, hc => by
     -- Push through the cast.
     have hcast : coordOf (modelStarVec f P e' (d :: ds)) c =
-        coordOf (((powMerge (stdSuper k ℓ) d ds.sum) :
+        coordOf (((powMerge (stdSuperPair k ℓ) d ds.sum) :
           SuperVect.Hom _ _).evenMap
           (evenPair
             (((stdFromOmega f P e' d) :

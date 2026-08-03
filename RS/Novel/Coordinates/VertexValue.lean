@@ -18,8 +18,8 @@ open Classical
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- Sorting signs square to one over ℂ. -/
 theorem sortSign_sq {α : Type} [LinearOrder α] (l : List α) :
@@ -39,7 +39,7 @@ sign-normalised Definition 5 vertex factor. -/
 theorem starCoord_block_flip_nodup
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (W : ClosedFragment) (F : EdgeSubset W)
     {κ : F.TransitionSystem} (o : κ.Orientation)
     (ψ : F.EvenColouring k) (φ : F.OddColouring ℓ)
@@ -137,7 +137,7 @@ value kills the block's star coordinate. -/
 theorem starCoord_block_flip_not_nodup
     (hee' : (e' ≫ e : P.ω.obj (SkeinObj.mk 1) ⟶
       P.ω.obj (SkeinObj.mk 1)) = 𝟙 _)
-    (he'e : (e ≫ e' : stdSuper k ℓ ⟶ stdSuper k ℓ) = 𝟙 _)
+    (he'e : (e ≫ e' : stdSuperPair k ℓ ⟶ stdSuperPair k ℓ) = 𝟙 _)
     (W : ClosedFragment) (F : EdgeSubset W)
     {κ : F.TransitionSystem} (o : κ.Orientation)
     (ψ : F.EvenColouring k) (φ : F.OddColouring ℓ)

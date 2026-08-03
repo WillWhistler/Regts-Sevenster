@@ -18,7 +18,7 @@ variable {k ℓ : ℕ}
 
 /-- Conjugating a power endomorphism into the colouring model. -/
 noncomputable def toColour (n : ℕ)
-    (g : superPow (stdSuper k ℓ) n ⟶ superPow (stdSuper k ℓ) n) :
+    (g : superPow (stdSuperPair k ℓ) n ⟶ superPow (stdSuperPair k ℓ) n) :
     colourPower k ℓ n ⟶ colourPower k ℓ n where
   evenMap := (colourPowerEquiv k ℓ n).evenEquiv.toLinearMap ∘ₗ
     ((g : SuperVect.Hom _ _).evenMap ∘ₗ
@@ -33,24 +33,24 @@ noncomputable def colourExtend (n : ℕ)
     (T : colourPower k ℓ n ⟶ colourPower k ℓ n) :
     colourPower k ℓ (n + 1) ⟶ colourPower k ℓ (n + 1) where
   evenMap := (colourPowerStep k ℓ n).evenEquiv.toLinearMap ∘ₗ
-    (((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuper k ℓ)) :
+    (((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuperPair k ℓ)) :
         SuperVect.tensorObj (colourPower k ℓ n)
-          (stdSuper k ℓ) ⟶
+          (stdSuperPair k ℓ) ⟶
         SuperVect.tensorObj (colourPower k ℓ n)
-          (stdSuper k ℓ)) : SuperVect.Hom _ _).evenMap ∘ₗ
+          (stdSuperPair k ℓ)) : SuperVect.Hom _ _).evenMap ∘ₗ
       (colourPowerStep k ℓ n).evenEquiv.symm.toLinearMap)
   oddMap := (colourPowerStep k ℓ n).oddEquiv.toLinearMap ∘ₗ
-    (((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuper k ℓ)) :
+    (((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuperPair k ℓ)) :
         SuperVect.tensorObj (colourPower k ℓ n)
-          (stdSuper k ℓ) ⟶
+          (stdSuperPair k ℓ) ⟶
         SuperVect.tensorObj (colourPower k ℓ n)
-          (stdSuper k ℓ)) : SuperVect.Hom _ _).oddMap ∘ₗ
+          (stdSuperPair k ℓ)) : SuperVect.Hom _ _).oddMap ∘ₗ
       (colourPowerStep k ℓ n).oddEquiv.symm.toLinearMap)
 
 /-- Conjugation preserves composition. -/
 theorem toColour_comp (n : ℕ)
-    (g₁ g₂ : superPow (stdSuper k ℓ) n ⟶
-      superPow (stdSuper k ℓ) n) :
+    (g₁ g₂ : superPow (stdSuperPair k ℓ) n ⟶
+      superPow (stdSuperPair k ℓ) n) :
     toColour n (g₁ ≫ g₂) =
       toColour n g₁ ≫ toColour n g₂ := by
   refine SuperVect.Hom.ext ?_ ?_

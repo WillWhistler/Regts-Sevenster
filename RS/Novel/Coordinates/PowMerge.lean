@@ -26,7 +26,7 @@ noncomputable def powMerge (V : SuperVect) :
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 -- Raised budget: the block transport is proved by recursion on the
 -- second arity, carrying the tensorator and both unitors at every
@@ -39,9 +39,9 @@ theorem stdToOmega_merge :
       letI := P.braided
       ((stdToOmega f P e a ⊗ₘ stdToOmega f P e b) ≫
         μ P.ω (SkeinObj.mk a) (SkeinObj.mk b) :
-        superPow (stdSuper k ℓ) a ⊗ superPow (stdSuper k ℓ) b ⟶
+        superPow (stdSuperPair k ℓ) a ⊗ superPow (stdSuperPair k ℓ) b ⟶
           P.ω.obj (SkeinObj.mk (a + b))) =
-      powMerge (stdSuper k ℓ) a b ≫ stdToOmega f P e (a + b)
+      powMerge (stdSuperPair k ℓ) a b ≫ stdToOmega f P e (a + b)
   -- ═══════ b = 0: THE RIGHT UNITOR ═══════
   | a, 0 => by
     letI := P.braided
@@ -65,7 +65,7 @@ theorem stdToOmega_merge :
       exact h0.symm
     show (stdToOmega f P e a ⊗ₘ ε P.ω) ≫
       μ P.ω (SkeinObj.mk a) (SkeinObj.mk 0) =
-      (ρ_ (superPow (stdSuper k ℓ) a)).hom ≫
+      (ρ_ (superPow (stdSuperPair k ℓ) a)).hom ≫
         stdToOmega f P e a
     rw [MonoidalCategory.tensorHom_def]
     rw [Category.assoc, hru]
@@ -78,9 +78,9 @@ theorem stdToOmega_merge :
         ((stdToOmega f P e b ⊗ₘ e) ≫
           μ P.ω (SkeinObj.mk b) (SkeinObj.mk 1))) ≫
       μ P.ω (SkeinObj.mk a) (SkeinObj.mk (b + 1)) =
-      ((α_ (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).inv ≫
-        ((powMerge (stdSuper k ℓ) a b) ▷ stdSuper k ℓ)) ≫
+      ((α_ (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).inv ≫
+        ((powMerge (stdSuperPair k ℓ) a b) ▷ stdSuperPair k ℓ)) ≫
         stdToOmega f P e (a + (b + 1))
     -- Split the nested tensor.
     rw [show (stdToOmega f P e a ⊗ₘ
@@ -132,8 +132,8 @@ theorem stdToOmega_merge :
       (μ P.ω (SkeinObj.mk a) (SkeinObj.mk b) ▷
         P.ω.obj (SkeinObj.mk 1)) ≫
       μ P.ω (SkeinObj.mk (a + b)) (SkeinObj.mk 1)) =
-      (α_ (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).inv ≫
+      (α_ (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).inv ≫
       (((stdToOmega f P e a ⊗ₘ stdToOmega f P e b) ⊗ₘ e) ≫
       (μ P.ω (SkeinObj.mk a) (SkeinObj.mk b) ▷
         P.ω.obj (SkeinObj.mk 1)) ≫
@@ -147,7 +147,7 @@ theorem stdToOmega_merge :
         (μ P.ω (SkeinObj.mk a) (SkeinObj.mk b) ▷
           P.ω.obj (SkeinObj.mk 1)) ≫
         μ P.ω (SkeinObj.mk (a + b)) (SkeinObj.mk 1) =
-        (powMerge (stdSuper k ℓ) a b ▷ stdSuper k ℓ) ≫
+        (powMerge (stdSuperPair k ℓ) a b ▷ stdSuperPair k ℓ) ≫
           stdToOmega f P e (a + (b + 1)) := by
       refine ((Category.assoc _ _ _).symm).trans ?_
       refine (congrArg (fun z => z ≫
@@ -166,17 +166,17 @@ theorem stdToOmega_merge :
         (stdToOmega_merge a b)).trans ?_
       refine (congrArg (fun z => z ≫
         μ P.ω (SkeinObj.mk (a + b)) (SkeinObj.mk 1)) (show
-          ((powMerge (stdSuper k ℓ) a b ≫
+          ((powMerge (stdSuperPair k ℓ) a b ≫
             stdToOmega f P e (a + b)) ⊗ₘ e) =
-          (powMerge (stdSuper k ℓ) a b ▷ stdSuper k ℓ) ≫
+          (powMerge (stdSuperPair k ℓ) a b ▷ stdSuperPair k ℓ) ≫
             (stdToOmega f P e (a + b) ⊗ₘ e) from by
         rw [← MonoidalCategory.tensorHom_id,
           MonoidalCategory.tensorHom_comp_tensorHom,
           Category.id_comp])).trans ?_
       exact Category.assoc _ _ _
     refine (congrArg (fun z =>
-      (α_ (superPow (stdSuper k ℓ) a)
-        (superPow (stdSuper k ℓ) b) (stdSuper k ℓ)).inv ≫ z)
+      (α_ (superPow (stdSuperPair k ℓ) a)
+        (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).inv ≫ z)
       htail).trans ?_
     exact (Category.assoc _ _ _).symm
 

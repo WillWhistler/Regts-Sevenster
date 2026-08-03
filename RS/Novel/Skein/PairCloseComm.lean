@@ -1,4 +1,3 @@
-import RS.Novel.Skein.ConnectionRank
 import RS.Novel.Skein.ComposeAssoc
 
 /-!

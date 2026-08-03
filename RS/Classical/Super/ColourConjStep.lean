@@ -44,23 +44,23 @@ set_option maxHeartbeats 1600000 in
 /-- **The step compatibility**: conjugating a whiskered
 endomorphism into the colouring model extends the conjugate. -/
 theorem toColour_whisker {k ℓ : ℕ} (n : ℕ)
-    (g : superPow (stdSuper k ℓ) n ⟶ superPow (stdSuper k ℓ) n) :
-    toColour (n + 1) (g ▷ stdSuper k ℓ) =
+    (g : superPow (stdSuperPair k ℓ) n ⟶ superPow (stdSuperPair k ℓ) n) :
+    toColour (n + 1) (g ▷ stdSuperPair k ℓ) =
       colourExtend n (toColour n g) := by
   refine SuperVect.Hom.ext ?_ ?_
   · -- Even component
     refine LinearMap.ext (fun x => ?_)
     -- Expand colourPowerEquiv (n+1) = (tensorCongr CPE refl).trans step
     show ((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ n)
-            (SuperLinearEquiv.refl (stdSuper k ℓ))).evenEquiv.trans
+            (SuperLinearEquiv.refl (stdSuperPair k ℓ))).evenEquiv.trans
           (colourPowerStep k ℓ n).evenEquiv)
-        ((g ▷ stdSuper k ℓ : SuperVect.Hom _ _).evenMap
+        ((g ▷ stdSuperPair k ℓ : SuperVect.Hom _ _).evenMap
           (((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ n)
-              (SuperLinearEquiv.refl (stdSuper k ℓ))).evenEquiv.trans
+              (SuperLinearEquiv.refl (stdSuperPair k ℓ))).evenEquiv.trans
             (colourPowerStep k ℓ n).evenEquiv).symm x)) =
       (colourPowerStep k ℓ n).evenEquiv
         ((SuperVect.tensorHom (toColour n g)
-            (SuperVect.Hom.id (stdSuper k ℓ)) :
+            (SuperVect.Hom.id (stdSuperPair k ℓ)) :
           SuperVect.Hom _ _).evenMap
           ((colourPowerStep k ℓ n).evenEquiv.symm x))
     rw [LinearEquiv.trans_apply, LinearEquiv.symm_trans_apply]
@@ -76,15 +76,15 @@ theorem toColour_whisker {k ℓ : ℕ} (n : ℕ)
   · -- Odd component (symmetric)
     refine LinearMap.ext (fun x => ?_)
     show ((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ n)
-            (SuperLinearEquiv.refl (stdSuper k ℓ))).oddEquiv.trans
+            (SuperLinearEquiv.refl (stdSuperPair k ℓ))).oddEquiv.trans
           (colourPowerStep k ℓ n).oddEquiv)
-        ((g ▷ stdSuper k ℓ : SuperVect.Hom _ _).oddMap
+        ((g ▷ stdSuperPair k ℓ : SuperVect.Hom _ _).oddMap
           (((SuperLinearEquiv.tensorCongr (colourPowerEquiv k ℓ n)
-              (SuperLinearEquiv.refl (stdSuper k ℓ))).oddEquiv.trans
+              (SuperLinearEquiv.refl (stdSuperPair k ℓ))).oddEquiv.trans
             (colourPowerStep k ℓ n).oddEquiv).symm x)) =
       (colourPowerStep k ℓ n).oddEquiv
         ((SuperVect.tensorHom (toColour n g)
-            (SuperVect.Hom.id (stdSuper k ℓ)) :
+            (SuperVect.Hom.id (stdSuperPair k ℓ)) :
           SuperVect.Hom _ _).oddMap
           ((colourPowerStep k ℓ n).oddEquiv.symm x))
     rw [LinearEquiv.trans_apply, LinearEquiv.symm_trans_apply]

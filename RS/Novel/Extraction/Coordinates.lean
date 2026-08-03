@@ -8,7 +8,7 @@ import RS.Novel.Extraction.StdDuality
 The coordinate-identification step of §5.1: a super vector space `V`
 carrying a supersymmetric nondegenerate form `b : V ⊗ V ⟶ 𝟙` is
 isomorphic, as a graded space with form, to the standard model
-`stdSuper k ℓ` with the standard form.
+`stdSuperPair k ℓ` with the standard form.
 
 The route:
 
@@ -225,7 +225,7 @@ theorem exists_odd_coordinates {V : Type} [AddCommGroup V]
 /-- **Standard orthosymplectic coordinates** (accompanying paper §5.1): a
 super vector space with a supersymmetric form whose blocks are
 nondegenerate admits graded coordinates carrying the blocks to
-the standard forms of `stdSuper k ℓ`. -/
+the standard forms of `stdSuperPair k ℓ`. -/
 theorem exists_coordinates {V : SuperVect}
     (b : SuperVect.Hom (SuperVect.tensorObj V V) SuperVect.tensorUnit)
     (hb : SuperVect.Hom.comp b (SuperVect.koszulBraiding V V) = b)

@@ -1,6 +1,4 @@
-import RS.Novel.Skein.GlueSplit
 import RS.Novel.Skein.VertexOddSign
-import RS.Novel.Skein.ThroughValue
 
 /-!
 # Orientation invariance of the constrained summand: circuit flips

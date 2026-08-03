@@ -1,5 +1,4 @@
 import RS.Definitions
-import RS.Common.MathlibDeps
 
 /-!
 # Conditions on a ℂ-linear category

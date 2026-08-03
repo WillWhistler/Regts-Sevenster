@@ -79,12 +79,12 @@ standard copairing. -/
 theorem skein_std_model :
     letI := P.braided
     ∃ (k ℓ : ℕ)
-      (e : SuperVect.Hom (stdSuper k ℓ)
+      (e : SuperVect.Hom (stdSuperPair k ℓ)
         (P.ω.obj (SkeinObj.mk 1)))
       (e' : SuperVect.Hom (P.ω.obj (SkeinObj.mk 1))
-        (stdSuper k ℓ)),
+        (stdSuperPair k ℓ)),
       SuperVect.Hom.comp e' e =
-        SuperVect.Hom.id (stdSuper k ℓ) ∧
+        SuperVect.Hom.id (stdSuperPair k ℓ) ∧
       SuperVect.Hom.comp e e' =
         SuperVect.Hom.id (P.ω.obj (SkeinObj.mk 1)) ∧
       SuperVect.Hom.comp

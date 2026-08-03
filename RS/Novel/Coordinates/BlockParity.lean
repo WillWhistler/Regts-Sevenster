@@ -223,7 +223,7 @@ absorbs the zero. -/
 theorem masterSummand_vanish_of_block_odd
     {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
-    (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+    (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
     (W : ClosedFragment)
     (c : MixedColouring k ℓ (edgeCount W + edgeCount W))
     (v : Fin (degList (starAssignEnum W)).length)

@@ -16,14 +16,14 @@ variable {k ℓ : ℕ}
 
 /-- The coordinate of a model vector at a colouring. -/
 noncomputable def coordOf {n : ℕ}
-    (v : (superPow (stdSuper k ℓ) n).even)
+    (v : (superPow (stdSuperPair k ℓ) n).even)
     (c : MixedColouring k ℓ n) : ℂ :=
   if hc : c.IsEven then
     (colourPowerEquiv k ℓ n).evenEquiv v ⟨c, hc⟩ else 0
 
 /-- Coordinates vanish on odd parity. -/
 theorem coordOf_odd {n : ℕ}
-    (v : (superPow (stdSuper k ℓ) n).even)
+    (v : (superPow (stdSuperPair k ℓ) n).even)
     (c : MixedColouring k ℓ n) (hc : ¬ c.IsEven) :
     coordOf v c = 0 :=
   dif_neg hc
@@ -31,12 +31,12 @@ theorem coordOf_odd {n : ℕ}
 /-- The cast rule: coordinates of a recast vector read the
 recast colouring. -/
 theorem coordOf_cast {n₁ n₂ : ℕ} (h : n₁ = n₂)
-    (v : (superPow (stdSuper k ℓ) n₁).even)
+    (v : (superPow (stdSuperPair k ℓ) n₁).even)
     (c : MixedColouring k ℓ n₂) :
     coordOf (((CategoryTheory.eqToHom
-        (congrArg (superPow (stdSuper k ℓ)) h) :
-      superPow (stdSuper k ℓ) n₁ ⟶
-        superPow (stdSuper k ℓ) n₂) :
+        (congrArg (superPow (stdSuperPair k ℓ)) h) :
+      superPow (stdSuperPair k ℓ) n₁ ⟶
+        superPow (stdSuperPair k ℓ) n₂) :
       SuperVect.Hom _ _).evenMap v) c =
     coordOf v (c ∘ finCongr h) := by
   subst h
@@ -45,8 +45,8 @@ theorem coordOf_cast {n₁ n₂ : ℕ} (h : n₁ = n₂)
 /-- The conjugation transfer: colour-model conjugates act on
 coordinate functions. -/
 theorem toColour_apply {n : ℕ}
-    (g : superPow (stdSuper k ℓ) n ⟶ superPow (stdSuper k ℓ) n)
-    (v : (superPow (stdSuper k ℓ) n).even) :
+    (g : superPow (stdSuperPair k ℓ) n ⟶ superPow (stdSuperPair k ℓ) n)
+    (v : (superPow (stdSuperPair k ℓ) n).even) :
     ((toColour n g) : SuperVect.Hom _ _).evenMap
         ((colourPowerEquiv k ℓ n).evenEquiv v) =
       (colourPowerEquiv k ℓ n).evenEquiv
@@ -59,7 +59,7 @@ theorem toColour_apply {n : ℕ}
 
 /-- The basis expansion of a model vector by its coordinates. -/
 theorem coord_expansion {n : ℕ}
-    (v : (superPow (stdSuper k ℓ) n).even) :
+    (v : (superPow (stdSuperPair k ℓ) n).even) :
     v = ∑ c : {c : MixedColouring k ℓ n // c.IsEven},
       ((colourPowerEquiv k ℓ n).evenEquiv v c) •
         (colourPowerEquiv k ℓ n).evenEquiv.symm

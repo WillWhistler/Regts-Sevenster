@@ -10,11 +10,11 @@ binomial Toeplitz determinant for `squareDiagram s` at `−m` is nonzero
 whenever `1 ≤ s ≤ m`), we discharge `SquareSectorBound`: when the
 super permutation action kills the square-block idempotent at every
 side `s' ≥ s`, both sector dimensions `k` (even) and `2l` (odd) of the
-standard model `stdSuper k l` lie strictly below `s`.
+standard model `stdSuperPair k l` lie strictly below `s`.
 
 The proof transports the abstract `superPermAction` on
 `superPow (strandImage f P) n` to the model action `modelPermMap` on
-`superPow (stdSuper k l) n` via the iterated iso built from the
+`superPow (stdSuperPair k l) n` via the iterated iso built from the
 standard-model extraction `(e, e')`, then feeds the sector traces
 `evenSectorTr` / `oddSectorTr` through `sector_bound_of_dead` /
 `sector_bound_of_dead_signed`.
@@ -51,9 +51,9 @@ iso equals the model permutation map.  The chain:
 private theorem transport_perm_eq {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
     {k l : ℕ}
-    (e : SuperVect.Hom (stdSuper k l) (strandImage f P))
-    (e' : SuperVect.Hom (strandImage f P) (stdSuper k l))
-    (he'e : SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuper k l))
+    (e : SuperVect.Hom (stdSuperPair k l) (strandImage f P))
+    (e' : SuperVect.Hom (strandImage f P) (stdSuperPair k l))
+    (he'e : SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuperPair k l))
     (_hee' : SuperVect.Hom.comp e e' =
       SuperVect.Hom.id (strandImage f P))
     (n : ℕ) (σ : Equiv.Perm (Fin n)) :
@@ -102,16 +102,16 @@ private theorem transport_perm_eq {R : ℕ} (f : EdgeRankParameter R)
 
 /-- The conjugation of an even-part endomorphism through the
 transport: sends `Module.End ℂ (strandImage power).even` to
-`Module.End ℂ (stdSuper power).even`. -/
+`Module.End ℂ (stdSuperPair power).even`. -/
 private def evenConjTransport {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
     {k l : ℕ}
-    (e : SuperVect.Hom (stdSuper k l) (strandImage f P))
-    (e' : SuperVect.Hom (strandImage f P) (stdSuper k l))
+    (e : SuperVect.Hom (stdSuperPair k l) (strandImage f P))
+    (e' : SuperVect.Hom (strandImage f P) (stdSuperPair k l))
     (n : ℕ) :
     letI := P.braided
     Module.End ℂ (superPow (strandImage f P) n).even →ₗ[ℂ]
-      Module.End ℂ (superPow (stdSuper k l) n).even := by
+      Module.End ℂ (superPow (stdSuperPair k l) n).even := by
   letI := P.braided
   exact {
     toFun := fun T =>
@@ -131,8 +131,8 @@ composes conjugation-by-transport with `evenSectorTr`. -/
 private def evenSectorTrTransport {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
     {k l : ℕ}
-    (e : SuperVect.Hom (stdSuper k l) (strandImage f P))
-    (e' : SuperVect.Hom (strandImage f P) (stdSuper k l))
+    (e : SuperVect.Hom (stdSuperPair k l) (strandImage f P))
+    (e' : SuperVect.Hom (strandImage f P) (stdSuperPair k l))
     (n : ℕ) :
     letI := P.braided
     Module.End ℂ (superPow (strandImage f P) n).even →ₗ[ℂ] ℂ := by
@@ -144,8 +144,8 @@ private def evenSectorTrTransport {R : ℕ} (f : EdgeRankParameter R)
 private def oddSectorTrTransport {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
     {k l : ℕ}
-    (e : SuperVect.Hom (stdSuper k l) (strandImage f P))
-    (e' : SuperVect.Hom (strandImage f P) (stdSuper k l))
+    (e : SuperVect.Hom (stdSuperPair k l) (strandImage f P))
+    (e' : SuperVect.Hom (strandImage f P) (stdSuperPair k l))
     (n : ℕ) (hn : Even n) :
     letI := P.braided
     Module.End ℂ (superPow (strandImage f P) n).even →ₗ[ℂ] ℂ := by
@@ -159,9 +159,9 @@ private theorem evenSectorTrTransport_perm
     {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
     {k l : ℕ}
-    (e : SuperVect.Hom (stdSuper k l) (strandImage f P))
-    (e' : SuperVect.Hom (strandImage f P) (stdSuper k l))
-    (he'e : SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuper k l))
+    (e : SuperVect.Hom (stdSuperPair k l) (strandImage f P))
+    (e' : SuperVect.Hom (strandImage f P) (stdSuperPair k l))
+    (he'e : SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuperPair k l))
     (hee' : SuperVect.Hom.comp e e' =
       SuperVect.Hom.id (strandImage f P))
     (n : ℕ) (σ : Equiv.Perm (Fin n)) :
@@ -180,7 +180,7 @@ private theorem evenSectorTrTransport_perm
   have hkey : evenConjTransport f P e e' n
       (evenPermRep f P n (MonoidAlgebra.of ℂ _ σ)) =
       ((modelPermMap σ : SuperVect.Hom
-        (superPow (stdSuper k l) n) (superPow (stdSuper k l) n))).evenMap :=
+        (superPow (stdSuperPair k l) n) (superPow (stdSuperPair k l) n))).evenMap :=
     congrArg SuperVect.Hom.evenMap
       (transport_perm_eq f P e e' he'e hee' n σ)
   rw [hkey]
@@ -193,9 +193,9 @@ private theorem oddSectorTrTransport_perm
     {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
     {k l : ℕ}
-    (e : SuperVect.Hom (stdSuper k l) (strandImage f P))
-    (e' : SuperVect.Hom (strandImage f P) (stdSuper k l))
-    (he'e : SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuper k l))
+    (e : SuperVect.Hom (stdSuperPair k l) (strandImage f P))
+    (e' : SuperVect.Hom (strandImage f P) (stdSuperPair k l))
+    (he'e : SuperVect.Hom.comp e' e = SuperVect.Hom.id (stdSuperPair k l))
     (hee' : SuperVect.Hom.comp e e' =
       SuperVect.Hom.id (strandImage f P))
     (n : ℕ) (hn : Even n)
@@ -214,7 +214,7 @@ private theorem oddSectorTrTransport_perm
   have hkey : evenConjTransport f P e e' n
       (evenPermRep f P n (MonoidAlgebra.of ℂ _ σ)) =
       ((modelPermMap σ : SuperVect.Hom
-        (superPow (stdSuper k l) n) (superPow (stdSuper k l) n))).evenMap :=
+        (superPow (stdSuperPair k l) n) (superPow (stdSuperPair k l) n))).evenMap :=
     congrArg SuperVect.Hom.evenMap
       (transport_perm_eq f P e e' he'e hee' n σ)
   rw [hkey]

@@ -17,7 +17,7 @@ open Classical
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- **Non-Eulerian vanishing**: a colouring whose pattern is a
 closed non-Eulerian subset has vanishing master summand. -/
@@ -104,7 +104,7 @@ has vanishing master summand. -/
 theorem masterSummand_vanish_of_not_diagonal
     {R : ℕ} (f : EdgeRankParameter R)
     (P : DelignePackage (SkeinObj f))
-    (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+    (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
     (W : ClosedFragment)
     (c : MixedColouring k ℓ (edgeCount W + edgeCount W))
     (hpure : PairPure c)

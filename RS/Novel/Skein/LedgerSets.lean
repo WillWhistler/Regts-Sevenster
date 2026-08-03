@@ -1,4 +1,3 @@
-import RS.Common.PairDisjoint
 import RS.Novel.Skein.StateFlipSet
 import RS.Novel.Skein.StatusSet
 

@@ -1,4 +1,3 @@
-import RS.Definitions
 import RS.Common.RowSpanRank
 import RS.Novel.Skein.FragmentEquiv
 

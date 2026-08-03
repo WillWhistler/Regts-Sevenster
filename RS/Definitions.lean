@@ -3,21 +3,21 @@ import RS.Common.MathlibDeps
 /-!
 # The statement surface, defined
 
-Every definition the six theorems of record are phrased in, in one
+Every definition the theorems of record are phrased in, in one
 self-contained module: the flag model of multigraph fragments with
 its gluing, fragment isomorphism, composition, the connection
 pairing and the edge-rank hypothesis, Eulerian edge subsets, the
 mixed partition function (Regts–Sevenster's Definition 5), the
 three named statements, the symmetric monoidal category of super
 vector spaces, the vocabulary of Deligne's hypotheses, and
-Deligne's theorem as the one assumed statement.
+Deligne's theorem, which `RS/Classical/Deligne/` proves.
 
 This module imports only the Mathlib funnel
 (`RS/Common/MathlibDeps.lean`, an import list with no content), so
 its meaning is determined by this file against Mathlib alone.  It
 is the trusted surface of the comparator certification:
 `Challenge.lean` imports this module and nothing else of the tree,
-states the six theorems of record with `sorry`, and
+states the theorems of record with `sorry`, and
 `Solution.lean` proves each by the theorem of record of the same
 name.  Comparator confirms at the kernel-export level that the two
 sides prove identical statements about identical definitions — the
@@ -2376,7 +2376,7 @@ end
 
 end
 
-/-! ## 11. Deligne's theorem, the one assumed statement
+/-! ## 11. Deligne's theorem
 
 The correspondence with the published hypotheses, item by item:
 essentially small — `[EssentiallySmall.{v} A]`; abelian ℂ-linear

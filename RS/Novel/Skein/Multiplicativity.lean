@@ -1,5 +1,4 @@
 import RS.Novel.Skein.CompositionEquiv
-import RS.Novel.Skein.HomSpaces
 
 /-!
 # Multiplicativity from the rank bound at arity zero

@@ -42,7 +42,7 @@ theorem bmc_capPeel_split (m : ℕ) :
 
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 
 /-- **The cast transport**: an arity-cast bundle map conjugates
 through the model transport into the equality of powers. -/
@@ -50,7 +50,7 @@ theorem stdToOmega_bmc_cast {n₁ n₂ : ℕ} (h : n₁ = n₂) :
     letI := P.braided
     stdToOmega f P e n₁ ≫
         P.ω.map (bundleMapClass f (finCongr h)) =
-      eqToHom (congrArg (superPow (stdSuper k ℓ)) h) ≫
+      eqToHom (congrArg (superPow (stdSuperPair k ℓ)) h) ≫
         stdToOmega f P e n₂ := by
   letI := P.braided
   subst h

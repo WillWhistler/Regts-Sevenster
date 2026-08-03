@@ -1,5 +1,4 @@
 import RS.Novel.Coordinates.BlockCanon
-import RS.Novel.Coordinates.PairEnum
 
 /-!
 # The h-generic normal form

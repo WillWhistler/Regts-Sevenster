@@ -107,4 +107,34 @@ theorem rowLen_ofRowLens_getD {w : List ℕ} {hw : w.SortedGE} (i : ℕ) :
       exact fun ⟨h, _⟩ => absurd h (not_lt.mpr (by omega))
     omega
 
+/-- Containment of diagrams is containment of cell sets, so the
+cell count is monotone. -/
+theorem YoungDiagram.card_le_card {lam mu : YoungDiagram}
+    (hle : lam ≤ mu) : lam.card ≤ mu.card :=
+  Finset.card_le_card hle
+
+/-- Summing a function over `List.range` agrees with summing it over
+`Finset.range`. -/
+private theorem sum_map_range (n : ℕ) (f : ℕ → ℕ) :
+    ((List.range n).map f).sum = ∑ i ∈ Finset.range n, f i := by
+  rw [Finset.sum_eq_multiset_sum, Finset.range_val, ← Multiset.coe_range,
+    Multiset.map_coe, Multiset.sum_coe]
+
+/-- The number of cells of a Young diagram is the sum of its row
+lengths. -/
+theorem card_eq_sum_rowLens (μ : YoungDiagram) :
+    μ.card = μ.rowLens.sum := by
+  have hmem : ∀ c ∈ μ.cells, c.1 ∈ Finset.range (μ.colLen 0) := by
+    intro c hc
+    rw [Finset.mem_range]
+    exact lt_of_lt_of_le (YoungDiagram.mem_iff_lt_colLen.mp hc)
+      (μ.colLen_anti 0 c.2 (Nat.zero_le _))
+  calc μ.card
+      = ∑ i ∈ Finset.range (μ.colLen 0),
+          (μ.cells.filter fun c => c.1 = i).card :=
+        Finset.card_eq_sum_card_fiberwise hmem
+    _ = ∑ i ∈ Finset.range (μ.colLen 0), μ.rowLen i :=
+        Finset.sum_congr rfl fun i _ => (μ.rowLen_eq_card (i := i)).symm
+    _ = μ.rowLens.sum := (sum_map_range _ _).symm
+
 end RS

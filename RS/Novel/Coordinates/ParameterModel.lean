@@ -17,16 +17,16 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 variable {R : ℕ} (f : EdgeRankParameter R)
 variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
-variable (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
-variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuper k ℓ)
+variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
 /-- The model action of a permutation: trivial at arity zero,
 the braiding word of the adjacent-transposition word above. -/
 noncomputable def modelPermMap :
     {n : ℕ} → (σ : _root_.Equiv.Perm (Fin n)) →
-      (superPow (stdSuper k ℓ) n ⟶ superPow (stdSuper k ℓ) n)
+      (superPow (stdSuperPair k ℓ) n ⟶ superPow (stdSuperPair k ℓ) n)
   | 0, _ => 𝟙 _
-  | _ + 1, σ => powBraidWord (stdSuper k ℓ) (adjWord σ)
+  | _ + 1, σ => powBraidWord (stdSuperPair k ℓ) (adjWord σ)
 
 /-- The permutation intertwining at every arity. -/
 theorem stdToOmega_bmc_perm_all :
@@ -66,11 +66,11 @@ theorem parameter_model (W : ClosedFragment)
       omegaFun f P (bundleCapClass f (edgeCount W))
         (((stdToOmega f P e (edgeCount W + edgeCount W)) :
           SuperVect.Hom _ _).evenMap
-          (((eqToHom (congrArg (superPow (stdSuper k ℓ))
+          (((eqToHom (congrArg (superPow (stdSuperPair k ℓ))
               (degList_sum (starAssignEnum W))) :
-            superPow (stdSuper k ℓ)
+            superPow (stdSuperPair k ℓ)
               ((degList (starAssignEnum W)).sum) ⟶
-            superPow (stdSuper k ℓ)
+            superPow (stdSuperPair k ℓ)
               (edgeCount W + edgeCount W)) :
             SuperVect.Hom _ _).evenMap
             (((modelPermMap (sortSplitPerm W)) :
@@ -113,7 +113,7 @@ theorem parameter_model (W : ClosedFragment)
           (degList (starAssignEnum W))))) hsplit) ?_
   -- Swap the permutation across the transport.
   have hperm := congrArg (fun z :
-      (superPow (stdSuper k ℓ)
+      (superPow (stdSuperPair k ℓ)
         ((degList (starAssignEnum W)).sum) ⟶
         P.ω.obj (SkeinObj.mk
           ((degList (starAssignEnum W)).sum))) =>
@@ -123,7 +123,7 @@ theorem parameter_model (W : ClosedFragment)
       ((degList (starAssignEnum W)).sum) (sortSplitPerm W))
   -- Swap the cast across the transport.
   have hcast := congrArg (fun z :
-      (superPow (stdSuper k ℓ)
+      (superPow (stdSuperPair k ℓ)
         ((degList (starAssignEnum W)).sum) ⟶
         P.ω.obj (SkeinObj.mk
           (edgeCount W + edgeCount W))) =>

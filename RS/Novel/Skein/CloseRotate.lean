@@ -1,5 +1,4 @@
 import RS.Novel.Skein.ComposeAssoc
-import RS.Novel.Skein.ConnectionRank
 
 /-!
 # Rotation of closures

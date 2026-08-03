@@ -1,5 +1,4 @@
 import RS.Novel.Skein.PartialCloseTensor
-import RS.Novel.Skein.ComposeRelabel
 
 /-!
 # Partial closure as a composition

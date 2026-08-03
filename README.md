@@ -9,9 +9,8 @@ A Lean 4 formalization of the accompanying paper
 > [arXiv:2607.27198](https://arxiv.org/abs/2607.27198).
 
 A copy is included at [`Paper/rstheorem.pdf`](Paper/rstheorem.pdf)
-— the exact version whose numbering this tree matches
-([arXiv:2607.27198v1](https://arxiv.org/abs/2607.27198v1)); the
-arXiv page above is the paper's canonical home.
+— the text whose numbering this tree matches; the arXiv page above
+is the paper's canonical home.
 
 The paper proves a conjecture of Regts and Sevenster
 (Ann. Inst. Henri Poincaré D 8 (2021) 179–200,
@@ -37,29 +36,41 @@ extensively in the development and preparation of this work.
 
 ## The theorems
 
-`RS/TheoremQuant.lean` proves the forward direction in its
-quantitative form, conditional on Deligne's theorem alone:
+`RS/Summit.lean` proves the Main Theorem and its quantitative form
+with no hypothesis at all:
 
-    theorem regts_sevenster_quant_deligne_only
-        (hDeligne : DeligneTheoremStatement.{1, 1}) :
-        RegtsSevensterStatementQuant
+    theorem regts_sevenster : RegtsSevensterStatement
 
-The converse — every mixed partition function has exponentially
-bounded connection rank, base `max 1 (k + 2ℓ)` — is a theorem of
-the development, with no hypothesis of its own
-(`RS/TheoremConverse.lean`):
+    theorem regts_sevenster_quant : RegtsSevensterStatementQuant
 
-    theorem regts_sevenster_converse : RegtsSevensterConverseStatement
-
-so the characterization of the Main Theorem, and its quantitative
-round trip, rest on Deligne alone:
-
-    theorem regts_sevenster_iff
-        (hDeligne : DeligneTheoremStatement.{1, 1})
+    theorem regts_sevenster_characterisation
         (f : ClosedFragment → ℂ)
         (hempty : f emptyClosedFragment = 1)
         (hiso : ∀ W₁ W₂, W₁.Equiv W₂ → f W₁ = f W₂) :
         (∃ R : ℕ, EdgeRankBounded f R) ↔ IsMixedPartitionFunction f
+
+Each depends on `propext`, `Classical.choice` and `Quot.sound` and
+nothing else; the checks are pinned in
+[`RS/Assembly/BlueprintDeligne.lean`](RS/Assembly/BlueprintDeligne.lean).
+
+Deligne's theorem on tensor categories, on which the forward
+direction rests, is proved here rather than cited, in the
+fibre-functor form that is the substance of his own proof
+(`RS/Classical/Deligne/DeligneAssembly.lean`):
+
+    theorem deligne_theorem : DeligneTheoremStatement
+
+The converse — every mixed partition function has exponentially
+bounded connection rank, base `max 1 (k + 2ℓ)` — does not depend on
+it (`RS/TheoremConverse.lean`):
+
+    theorem regts_sevenster_converse : RegtsSevensterConverseStatement
+
+The forms carrying `DeligneTheoremStatement` as a hypothesis are
+kept — `regts_sevenster_deligne_only`,
+`regts_sevenster_quant_deligne_only`, `regts_sevenster_iff` — since
+they exhibit the dependency structure and are what a reader checking
+the argument against the literature will want.
 
 ## The definitions
 
@@ -85,12 +96,13 @@ the named statements, of which the first is
 
 the quantitative form (the dimension bound of Corollary 4.10) and
 the converse being the other two; the category of super vector
-spaces; and the one assumed statement.
+spaces; and `DeligneTheoremStatement`.
 
-## Assumed and proved
+## What the theorems rest on
 
-The forward direction is conditional on exactly one cited input,
-a single declaration of the statement surface:
+**Nothing is assumed.** The development rests on `propext`,
+`Classical.choice` and `Quot.sound`, and on no cited mathematical
+input. In particular:
 
 * `DeligneTheoremStatement` — Deligne's theorem on tensor
   categories (Catégories tensorielles, Moscow Math. J. 2 (2002),
@@ -104,16 +116,34 @@ a single declaration of the statement surface:
   `HasFiniteBiproducts`, which is implied by abelianness, is named
   only so the generation predicate can be stated.
 
-  Two things are taken from the theorem rather than all of it, each
-  weakening the assumption: one direction of Deligne's equivalence,
-  and the conclusion in fibre-functor form — an exact faithful
+  The statement is weaker than what Deligne proves, in two ways:
+  it is one direction of his equivalence, and it takes the
+  conclusion in fibre-functor form — an exact faithful
   ℂ-linear symmetric monoidal functor to finite-dimensional super
   vector spaces (`DeligneFibreFunctor`), which a ⊗-equivalence with
   the representations of an affine supergroup scheme yields by
-  composing with the forgetful functor. The development then
-  consumes less again: only the symmetric monoidal ℂ-linear functor
-  is used, as `DelignePackage`, and `DeligneFibreFunctor.toPackage`
-  forgets faithfulness and exactness.
+  composing with the forgetful functor. The development consumes
+  less again: only the symmetric monoidal ℂ-linear functor is used,
+  as `DelignePackage`, and `DeligneFibreFunctor.toPackage` forgets
+  faithfulness and exactness.
+
+  `RS.deligne_theorem` proves that statement
+  (`RS/Classical/Deligne/DeligneAssembly.lean`). The route is not
+  Deligne's own. His §4 descends the fibre functor along a
+  faithfully flat `Isom⊗` torsor, which needs fppf descent of finite
+  presentation, EGA IV₃ 11.2.6.1, descent along transitive
+  groupoids, and the tensor product of abelian categories. Here the
+  ⊗-generator alone is split, and one passes to a quotient by a
+  maximal ideal: over a simple algebra the regular module and its
+  twist by the odd line are simple objects of the module category,
+  so a free mixed module is semisimple of finite length, and the
+  objects that the algebra splits are closed under subquotients as
+  well as sums, tensor products and duals. Finite ⊗-generation then
+  reaches every object, the section data of Deligne's 2.10 comes
+  free from semisimplicity, and the scalars are a field of countable
+  dimension over ℂ, hence ℂ. This is the pattern of Coulembier,
+  *Tannakian categories in positive characteristic*, Duke Math. J.
+  **169** (2020), Lemma 3.3.2(ii), with Lemmas 1.2.10 and 1.5.2.
 
 All of Deligne's hypotheses are discharged in the development for
 the concretely constructed envelope
@@ -122,7 +152,7 @@ the concretely constructed envelope
 fibre functor is restricted along the braided linear embedding
 back to the skein category.
 
-Everything else is proved, not assumed:
+The other classical inputs are theorems of the tree too:
 
 * the classical symmetric-group input (`SchurPackage`) is a
   theorem (`RS.schurPackage`,
@@ -162,7 +192,7 @@ The dependency-exhibiting two-input form remains available:
 
 ## Correspondence with the paper
 
-Six things differ from the paper's presentation, each deliberately:
+Seven things differ from the paper's presentation, each deliberately:
 
 * **The connection rank is the dimension of a row span.** The paper
   defines the rank of the infinite connection matrix as the
@@ -217,6 +247,19 @@ Six things differ from the paper's presentation, each deliberately:
   undone by the outer Karoubi — so they are equivalent, and it is
   the one the tree builds for which Deligne's hypotheses are
   discharged.
+* **The super symmetric power is reached on coordinates.** The
+  paper factors the functional `β_d(T_d, −)` through `Sym_s^d V`
+  by combining the invariance of the pairing under the super
+  `S_d`-action (its Lemma 5.1(b)) with the invariance of the star
+  tensor. The tree works on coordinates instead: the star class
+  absorbs any relabelling of its legs (`vertexStarClass_perm`),
+  because all legs of a star meet the one vertex, and the model
+  permutation acts on coordinates by the odd-inversion sign
+  (`coordOf_modelPermMap'`). The two combine into `starCoord_perm`,
+  which over `ℂ` is already the statement that the coordinate
+  functional lives on `Sym_s^d V` — symmetric in the even letters,
+  alternating in the odd ones. Lemma 5.1(b) is proved
+  (`betaColour_perm'`) but is not consumed; 5.1(a) is.
 
 ## The converse route
 
@@ -274,8 +317,9 @@ alone, the pairing-fibre holonomy being trivial).
 
 The audit surface is small. What the theorems *mean* is
 [`RS/Definitions.lean`](RS/Definitions.lean), self-contained over
-Mathlib as above; what they *say* is the three theorems-of-record
-files — `RS/TheoremForward.lean`, `RS/TheoremQuant.lean`,
+Mathlib as above; what they *say* is the theorems-of-record files —
+`RS/Summit.lean`, which carries the hypothesis-free forms, over
+`RS/TheoremForward.lean`, `RS/TheoremQuant.lean` and
 `RS/TheoremConverse.lean` — each a statement and a few lines.
 (`RS/Glossary.lean` glosses the vocabulary, and
 `ClassicalOverview.md` surveys the classical layer.)
@@ -283,7 +327,7 @@ files — `RS/TheoremForward.lean`, `RS/TheoremQuant.lean`,
 The `RS/Assembly/` audits then pin that surface.
 `BlueprintStatement.lean` pins the type of every definition the
 summits are phrased in and of every theorem of record with
-`#guard_msgs`-guarded `#check` lines; `Blueprint.lean` and its two
+`#guard_msgs`-guarded `#check` lines; `Blueprint.lean` and its three
 parts pin every main theorem's axiom set to
 `[propext, Classical.choice, Quot.sound]` with guarded
 `#print axioms` lines. Drift in either is a compile error, and both
@@ -295,20 +339,19 @@ loop's two incidences, the loop/free-circle distinction, the
 `η`-convention — so it is also pinned by *value*: the paper's
 worked example must evaluate to `θ − 2` on the loop graph and to
 `0` with a free circle adjoined, and
-`RS/Novel/Skein/LoopExample.lean` proves that it does. And the one
-statement the development *assumes* is pinned by *content*:
-`DeligneTheoremStatement` unfolded, with the definition of every
-predicate its hypothesis list is phrased in, for comparison against
-Deligne's Théorème 0.6 and §0.1.
+`RS/Novel/Skein/LoopExample.lean` proves that it does. And
+`DeligneTheoremStatement` is pinned by *content*: unfolded, with the
+definition of every predicate its hypothesis list is phrased in, for
+comparison against Deligne's Théorème 0.6 and §0.1.
 
 ## Certification
 
-Beyond the in-tree audits, the six theorems of record are certified
+Beyond the in-tree audits, the theorems of record are certified
 with [comparator](https://github.com/leanprover/comparator).
 `Challenge.lean` imports `RS/Definitions.lean` and nothing else of
-the tree and states the six theorems with `sorry`; `Solution.lean`
+the tree and states them with `sorry`; `Solution.lean`
 proves each by the theorem of record of the same name;
-`comparator-config.json` lists the six names and the axiom
+`comparator-config.json` lists the names and the axiom
 whitelist. Comparator builds the two modules separately, exports
 both environments at the kernel level — independently of the
 elaborator — and checks that each theorem is proved with an
@@ -326,10 +369,10 @@ tag, so it builds from a clean clone:
     lake exe cache get      # Mathlib's prebuilt oleans
     lake build              # green, zero warnings
 
-Budget around 12 GB of disk: roughly 8.5 GB for Mathlib and its
-dependencies, source and oleans, and 3 GB for this tree's own build
-products. Once the cache is in place, a clean build of all 477
-modules of the tree takes about five minutes on 128 hardware
+Budget around 11 GB of disk: roughly 8.5 GB for Mathlib and its
+dependencies, source and oleans, and 2 GB for this tree's own build
+products. Once the cache is in place, a clean build of all 808
+modules of the tree takes about nine minutes on 128 hardware
 threads; the wall time is dominated by the longest import chain, so
 expect appreciably more on a small machine. Verifying the audits and
 the summits:
@@ -338,6 +381,7 @@ the summits:
     lake env lean RS/Assembly/Blueprint.lean
     lake env lean RS/Assembly/BlueprintConverse.lean
     lake env lean RS/Assembly/BlueprintSchur.lean
+    lake env lean RS/Assembly/BlueprintDeligne.lean
 
 Each is silent on success. The tree carries no `sorry`, no custom
 `axiom`, and no `native_decide`, and

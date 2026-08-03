@@ -30,7 +30,7 @@ private theorem subsingleton_tmul_eq_zero {P M : Type*}
 /-! ### Arity-one evaluations on general pads -/
 
 private theorem eval1_even_inl (r : ℂ)
-    (x : (stdSuper k ℓ).even)
+    (x : (stdSuperPair k ℓ).even)
     (c₁ : MixedColouring k ℓ 1) (h₁ : c₁.IsEven)
     (i : Fin k) (hi : c₁ (Fin.last 0) = Sum.inl i) :
     (colourPowerEquiv k ℓ 1).evenEquiv
@@ -38,27 +38,27 @@ private theorem eval1_even_inl (r : ℂ)
   show (colourPowerStep k ℓ 0).evenEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 0).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       ((r ⊗ₜ[ℂ] x :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).even)),
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even)),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 0).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd)) 0)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd)) 0)
     ⟨c₁, h₁⟩ = r * x i
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 0).evenEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       ((r ⊗ₜ[ℂ] x :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).even)) =
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even)) =
     ((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ] x :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
   rw [hcongr, map_zero]
   show Sum.elim
     (fun p => funTensorFun _ _
       (((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ]
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even x)) p)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even x)) p)
     (fun q => funTensorFun _ _
       (0 : ({c : MixedColouring k ℓ 0 // ¬ c.IsEven} → ℂ)
         ⊗[ℂ] (Fin (2 * ℓ) → ℂ)) q)
@@ -72,7 +72,7 @@ private theorem eval1_even_inl (r : ℂ)
   rfl
 
 private theorem eval1_even_zero (r : ℂ)
-    (x : (stdSuper k ℓ).even)
+    (x : (stdSuperPair k ℓ).even)
     (c₁ : MixedColouring k ℓ 1) (h₁ : c₁.IsEven)
     (b : Fin (2 * ℓ)) (hb : c₁ (Fin.last 0) = Sum.inr b) :
     (colourPowerEquiv k ℓ 1).evenEquiv
@@ -80,27 +80,27 @@ private theorem eval1_even_zero (r : ℂ)
   show (colourPowerStep k ℓ 0).evenEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 0).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       ((r ⊗ₜ[ℂ] x :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).even)),
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even)),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 0).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd)) 0)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd)) 0)
     ⟨c₁, h₁⟩ = 0
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 0).evenEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       ((r ⊗ₜ[ℂ] x :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).even)) =
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even)) =
     ((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ] x :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
   rw [hcongr, map_zero]
   show Sum.elim
     (fun p => funTensorFun _ _
       (((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ]
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even x)) p)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even x)) p)
     (fun q => funTensorFun _ _
       (0 : ({c : MixedColouring k ℓ 0 // ¬ c.IsEven} → ℂ)
         ⊗[ℂ] (Fin (2 * ℓ) → ℂ)) q)
@@ -112,37 +112,37 @@ private theorem eval1_even_zero (r : ℂ)
     rw [map_zero]; rfl]
 
 private theorem eval1_odd_inr (r : ℂ)
-    (w : (stdSuper k ℓ).odd)
+    (w : (stdSuperPair k ℓ).odd)
     (c₁ : MixedColouring k ℓ 1) (h₁ : ¬ c₁.IsEven)
     (a : Fin (2 * ℓ)) (ha : c₁ (Fin.last 0) = Sum.inr a) :
     (colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] w, 0) :
-        (superPow (stdSuper k ℓ) 1).odd)) ⟨c₁, h₁⟩ =
+        (superPow (stdSuperPair k ℓ) 1).odd)) ⟨c₁, h₁⟩ =
       r * w a := by
   show (colourPowerStep k ℓ 0).oddEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 0).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       ((r ⊗ₜ[ℂ] w :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).odd)),
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 0).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even)) 0)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even)) 0)
     ⟨c₁, h₁⟩ = r * w a
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 0).evenEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       ((r ⊗ₜ[ℂ] w :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).odd)) =
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)) =
     ((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ] w :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
   rw [hcongr, map_zero]
   show Sum.elim
     (fun p => funTensorFun _ _
       (((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ]
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd w)) p)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd w)) p)
     (fun q => funTensorFun _ _
       (0 : ({c : MixedColouring k ℓ 0 // ¬ c.IsEven} → ℂ)
         ⊗[ℂ] (Fin k → ℂ)) q)
@@ -172,36 +172,36 @@ private theorem eval1_odd_inr (r : ℂ)
   rfl
 
 private theorem eval1_odd_zero (r : ℂ)
-    (w : (stdSuper k ℓ).odd)
+    (w : (stdSuperPair k ℓ).odd)
     (c₁ : MixedColouring k ℓ 1) (h₁ : ¬ c₁.IsEven)
     (i : Fin k) (hi : c₁ (Fin.last 0) = Sum.inl i) :
     (colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] w, 0) :
-        (superPow (stdSuper k ℓ) 1).odd)) ⟨c₁, h₁⟩ = 0 := by
+        (superPow (stdSuperPair k ℓ) 1).odd)) ⟨c₁, h₁⟩ = 0 := by
   show (colourPowerStep k ℓ 0).oddEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 0).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       ((r ⊗ₜ[ℂ] w :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).odd)),
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 0).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even)) 0)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even)) 0)
     ⟨c₁, h₁⟩ = 0
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 0).evenEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       ((r ⊗ₜ[ℂ] w :
-        (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-          (stdSuper k ℓ).odd)) =
+        (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)) =
     ((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ] w :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
   rw [hcongr, map_zero]
   show Sum.elim
     (fun p => funTensorFun _ _
       (((colourPowerEquiv k ℓ 0).evenEquiv r) ⊗ₜ[ℂ]
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd w)) p)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd w)) p)
     (fun q => funTensorFun _ _
       (0 : ({c : MixedColouring k ℓ 0 // ¬ c.IsEven} → ℂ)
         ⊗[ℂ] (Fin k → ℂ)) q)
@@ -229,7 +229,7 @@ private theorem eval1_odd_zero (r : ℂ)
 
 /-! ### Arity-two evaluations on general pads, even component -/
 
-private theorem eval2_ee (r : ℂ) (x y : (stdSuper k ℓ).even)
+private theorem eval2_ee (r : ℂ) (x y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven) :
     (colourPowerEquiv k ℓ 2).evenEquiv
       (evenPair (evenPair r x) y) ⟨c, hc⟩ =
@@ -237,7 +237,7 @@ private theorem eval2_ee (r : ℂ) (x y : (stdSuper k ℓ).even)
       (fun p => funTensorFun _ _
         (((colourPowerEquiv k ℓ 1).evenEquiv
             (evenPair r x)) ⊗ₜ[ℂ]
-          (LinearEquiv.refl ℂ (stdSuper k ℓ).even y)) p)
+          (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even y)) p)
       (fun q => funTensorFun _ _
         (0 : ({c : MixedColouring k ℓ 1 // ¬ c.IsEven} → ℂ)
           ⊗[ℂ] (Fin (2 * ℓ) → ℂ)) q)
@@ -245,22 +245,22 @@ private theorem eval2_ee (r : ℂ) (x y : (stdSuper k ℓ).even)
   show (colourPowerStep k ℓ 1).evenEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 1).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       (((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y :
-        (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even)),
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y :
+        (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even)),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 1).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd)) 0)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd)) 0)
     ⟨c, hc⟩ = _
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 1).evenEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       (((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y :
-        (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even)) =
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y :
+        (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even)) =
     ((colourPowerEquiv k ℓ 1).evenEquiv
       (evenPair r x)) ⊗ₜ[ℂ] y :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
@@ -268,7 +268,7 @@ private theorem eval2_ee (r : ℂ) (x y : (stdSuper k ℓ).even)
   rfl
 
 private theorem eval2_ee_val (r : ℂ)
-    (x y : (stdSuper k ℓ).even)
+    (x y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven)
     (i j : Fin k)
     (h0 : c 0 = Sum.inl i) (h1 : c (Fin.last 1) = Sum.inl j) :
@@ -288,7 +288,7 @@ private theorem eval2_ee_val (r : ℂ)
   rfl
 
 private theorem eval2_ee_zero_right (r : ℂ)
-    (x y : (stdSuper k ℓ).even)
+    (x y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven)
     (b : Fin (2 * ℓ)) (h1 : c (Fin.last 1) = Sum.inr b) :
     (colourPowerEquiv k ℓ 2).evenEquiv
@@ -301,7 +301,7 @@ private theorem eval2_ee_zero_right (r : ℂ)
     rw [map_zero]; rfl]
 
 private theorem eval2_ee_zero_left (r : ℂ)
-    (x y : (stdSuper k ℓ).even)
+    (x y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven)
     (j : Fin k) (a : Fin (2 * ℓ))
     (h0 : c 0 = Sum.inr a) (h1 : c (Fin.last 1) = Sum.inl j) :
@@ -320,14 +320,14 @@ private theorem eval2_ee_zero_left (r : ℂ)
   exact zero_mul _
 
 private theorem eval2_oo (r : ℂ)
-    (w z : (stdSuper k ℓ).odd)
+    (w z : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven) :
     (colourPowerEquiv k ℓ 2).evenEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-        (superPow (stdSuper k ℓ) 2).even) ⟨c, hc⟩ =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+        (superPow (stdSuperPair k ℓ) 2).even) ⟨c, hc⟩ =
     Sum.elim
       (fun p => funTensorFun _ _
         (0 : ({c : MixedColouring k ℓ 1 // c.IsEven} → ℂ)
@@ -335,55 +335,55 @@ private theorem eval2_oo (r : ℂ)
       (fun q => funTensorFun _ _
         (((colourPowerEquiv k ℓ 1).oddEquiv
             (((r ⊗ₜ[ℂ] w, 0) :
-              (superPow (stdSuper k ℓ) 1).odd))) ⊗ₜ[ℂ]
-          (LinearEquiv.refl ℂ (stdSuper k ℓ).odd z)) q)
+              (superPow (stdSuperPair k ℓ) 1).odd))) ⊗ₜ[ℂ]
+          (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd z)) q)
       (evenSplitEquiv k ℓ 1 ⟨c, hc⟩) := by
   show (colourPowerStep k ℓ 1).evenEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 1).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
-      (0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-        (stdSuper k ℓ).even),
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
+      (0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+        (stdSuperPair k ℓ).even),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 1).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       ((((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z :
-        (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).odd)))
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z :
+        (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)))
     ⟨c, hc⟩ = _
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 1).oddEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       ((((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z :
-        (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).odd)) =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z :
+        (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)) =
     ((colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] w, 0) :
-        (superPow (stdSuper k ℓ) 1).odd))) ⊗ₜ[ℂ] z :=
+        (superPow (stdSuperPair k ℓ) 1).odd))) ⊗ₜ[ℂ] z :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
   rw [hcongr, map_zero]
   rfl
 
 private theorem eval2_oo_val (r : ℂ)
-    (w z : (stdSuper k ℓ).odd)
+    (w z : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven)
     (a b : Fin (2 * ℓ))
     (h0 : c 0 = Sum.inr a) (h1 : c (Fin.last 1) = Sum.inr b) :
     (colourPowerEquiv k ℓ 2).evenEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-        (superPow (stdSuper k ℓ) 2).even) ⟨c, hc⟩ =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+        (superPow (stdSuperPair k ℓ) 2).even) ⟨c, hc⟩ =
     r * w a * z b := by
   rw [eval2_oo r w z c hc]
   rw [evenSplitD_inr c hc b h1, Sum.elim_inr]
   refine Eq.trans (funTensorFun_tmul _ _ _) ?_
   rw [show ((colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] w, 0) :
-        (superPow (stdSuper k ℓ) 1).odd)))
+        (superPow (stdSuperPair k ℓ) 1).odd)))
       (⟨MixedColouring.tail c, by
         by_contra hcontra
         exact ((c.isEven_succ_right b h1).mp hc) hcontra⟩,
@@ -394,15 +394,15 @@ private theorem eval2_oo_val (r : ℂ)
   rfl
 
 private theorem eval2_oo_zero_right (r : ℂ)
-    (w z : (stdSuper k ℓ).odd)
+    (w z : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven)
     (j : Fin k) (h1 : c (Fin.last 1) = Sum.inl j) :
     (colourPowerEquiv k ℓ 2).evenEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-        (superPow (stdSuper k ℓ) 2).even) ⟨c, hc⟩ = 0 := by
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+        (superPow (stdSuperPair k ℓ) 2).even) ⟨c, hc⟩ = 0 := by
   rw [eval2_oo r w z c hc]
   rw [evenSplitD_inl c hc j h1, Sum.elim_inl]
   rw [show funTensorFun _ _
@@ -411,22 +411,22 @@ private theorem eval2_oo_zero_right (r : ℂ)
     rw [map_zero]; rfl]
 
 private theorem eval2_oo_zero_left (r : ℂ)
-    (w z : (stdSuper k ℓ).odd)
+    (w z : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : c.IsEven)
     (i : Fin k) (b : Fin (2 * ℓ))
     (h0 : c 0 = Sum.inl i) (h1 : c (Fin.last 1) = Sum.inr b) :
     (colourPowerEquiv k ℓ 2).evenEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-        (superPow (stdSuper k ℓ) 2).even) ⟨c, hc⟩ = 0 := by
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+        (superPow (stdSuperPair k ℓ) 2).even) ⟨c, hc⟩ = 0 := by
   rw [eval2_oo r w z c hc]
   rw [evenSplitD_inr c hc b h1, Sum.elim_inr]
   refine Eq.trans (funTensorFun_tmul _ _ _) ?_
   rw [show ((colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] w, 0) :
-        (superPow (stdSuper k ℓ) 1).odd)))
+        (superPow (stdSuperPair k ℓ) 1).odd)))
       (⟨MixedColouring.tail c, by
         by_contra hcontra
         exact ((c.isEven_succ_right b h1).mp hc) hcontra⟩,
@@ -473,84 +473,84 @@ private theorem neg_pack' {V : SuperVect} (r : ℂ)
   rw [TensorProduct.tmul_neg]
   rw [Prod.neg_mk, neg_zero]
 
-private theorem braid_ee (r : ℂ) (x y : (stdSuper k ℓ).even) :
-    ((topBraid (stdSuper k ℓ) 0) :
+private theorem braid_ee (r : ℂ) (x y : (stdSuperPair k ℓ).even) :
+    ((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).evenMap
       (evenPair (evenPair r x) y) =
       evenPair (evenPair r y) x := by
-  have hfun : ((topBraid (stdSuper k ℓ) 0) :
+  have hfun : ((topBraid (stdSuperPair k ℓ) 0) :
       SuperVect.Hom _ _).evenMap
       (evenPair (evenPair r x) y) =
-    (((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-        (stdSuper k ℓ)).inv : _ ⟶ _) :
+    (((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+        (stdSuperPair k ℓ)).inv : _ ⟶ _) :
         SuperVect.Hom _ _).evenMap
-      ((((superPow (stdSuper k ℓ) 0) ◁
-          (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+      ((((superPow (stdSuperPair k ℓ) 0) ◁
+          (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
           SuperVect.Hom _ _).evenMap
-        ((((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-            (stdSuper k ℓ)).hom : _ ⟶ _) :
+        ((((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+            (stdSuperPair k ℓ)).hom : _ ⟶ _) :
             SuperVect.Hom _ _).evenMap
           (evenPair (evenPair r x) y))) := rfl
   rw [hfun]
-  refine Eq.trans (congrArg (((α_ (superPow (stdSuper k ℓ) 0)
-      (stdSuper k ℓ) (stdSuper k ℓ)).inv : _ ⟶ _) :
+  refine Eq.trans (congrArg (((α_ (superPow (stdSuperPair k ℓ) 0)
+      (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv : _ ⟶ _) :
       SuperVect.Hom _ _).evenMap
-    (Eq.trans (congrArg ((((superPow (stdSuper k ℓ) 0) ◁
-        (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+    (Eq.trans (congrArg ((((superPow (stdSuperPair k ℓ) 0) ◁
+        (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
         SuperVect.Hom _ _).evenMap)
       (SuperVect.assoc_unit_ee r x y))
       (Eq.trans (whisker_unit_even'
-        (SuperVect.koszulBraiding (stdSuper k ℓ)
-          (stdSuper k ℓ)) r _)
+        (SuperVect.koszulBraiding (stdSuperPair k ℓ)
+          (stdSuperPair k ℓ)) r _)
         (by rw [SuperVect.koszul_ee])))) ?_
   exact SuperVect.assoc_unit_inv_ee r y x
 
-private theorem braid_oo (r : ℂ) (w z : (stdSuper k ℓ).odd) :
-    ((topBraid (stdSuper k ℓ) 0) :
+private theorem braid_oo (r : ℂ) (w z : (stdSuperPair k ℓ).odd) :
+    ((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).evenMap
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-        (superPow (stdSuper k ℓ) 2).even) =
-      -((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+        (superPow (stdSuperPair k ℓ) 2).even) =
+      -((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] z, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] w)) :
-        (superPow (stdSuper k ℓ) 2).even) := by
-  have hfun : ((topBraid (stdSuper k ℓ) 0) :
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] w)) :
+        (superPow (stdSuperPair k ℓ) 2).even) := by
+  have hfun : ((topBraid (stdSuperPair k ℓ) 0) :
       SuperVect.Hom _ _).evenMap
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-        (superPow (stdSuper k ℓ) 2).even) =
-    (((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-        (stdSuper k ℓ)).inv : _ ⟶ _) :
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+        (superPow (stdSuperPair k ℓ) 2).even) =
+    (((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+        (stdSuperPair k ℓ)).inv : _ ⟶ _) :
         SuperVect.Hom _ _).evenMap
-      ((((superPow (stdSuper k ℓ) 0) ◁
-          (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+      ((((superPow (stdSuperPair k ℓ) 0) ◁
+          (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
           SuperVect.Hom _ _).evenMap
-        ((((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-            (stdSuper k ℓ)).hom : _ ⟶ _) :
+        ((((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+            (stdSuperPair k ℓ)).hom : _ ⟶ _) :
             SuperVect.Hom _ _).evenMap
-          ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-              (stdSuper k ℓ).even),
+          ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+              (stdSuperPair k ℓ).even),
             ((r ⊗ₜ[ℂ] w, 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-            (superPow (stdSuper k ℓ) 2).even))) := rfl
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+            (superPow (stdSuperPair k ℓ) 2).even))) := rfl
   rw [hfun]
-  refine Eq.trans (congrArg (((α_ (superPow (stdSuper k ℓ) 0)
-      (stdSuper k ℓ) (stdSuper k ℓ)).inv : _ ⟶ _) :
+  refine Eq.trans (congrArg (((α_ (superPow (stdSuperPair k ℓ) 0)
+      (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv : _ ⟶ _) :
       SuperVect.Hom _ _).evenMap
-    (Eq.trans (congrArg ((((superPow (stdSuper k ℓ) 0) ◁
-        (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+    (Eq.trans (congrArg ((((superPow (stdSuperPair k ℓ) 0) ◁
+        (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
         SuperVect.Hom _ _).evenMap)
       (SuperVect.assoc_unit_oo r w z))
       (Eq.trans
         (Eq.trans (whisker_unit_even'
-          (SuperVect.koszulBraiding (stdSuper k ℓ)
-            (stdSuper k ℓ)) r _)
+          (SuperVect.koszulBraiding (stdSuperPair k ℓ)
+            (stdSuperPair k ℓ)) r _)
           (by rw [SuperVect.koszul_oo]; rfl))
         (neg_pack' r (z ⊗ₜ[ℂ] w))))) ?_
   refine Eq.trans (map_neg _ _) ?_
@@ -577,9 +577,9 @@ private theorem colourFun_neg_apply {n : ℕ}
 set_option maxHeartbeats 8000000 in
 private theorem braid_coord_even
     (c' : MixedColouring k ℓ 2) (hc' : c'.IsEven)
-    (v : (superPow (stdSuper k ℓ) 2).even) :
+    (v : (superPow (stdSuperPair k ℓ) 2).even) :
     (colourPowerEquiv k ℓ 2).evenEquiv
-      (((topBraid (stdSuper k ℓ) 0) :
+      (((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).evenMap v) ⟨c', hc'⟩ =
     adjSign c' ⟨0, by omega⟩ ⟨1, by omega⟩ *
       (colourPowerEquiv k ℓ 2).evenEquiv v
@@ -587,13 +587,13 @@ private theorem braid_coord_even
           ⟨1, by omega⟩, hc'.comp _⟩ := by
   haveI : Subsingleton SuperVect.tensorUnit.odd :=
     inferInstanceAs (Subsingleton PUnit)
-  haveI : Subsingleton (superPow (stdSuper k ℓ) 0).odd :=
+  haveI : Subsingleton (superPow (stdSuperPair k ℓ) 0).odd :=
     inferInstanceAs (Subsingleton PUnit)
   -- ═══════ THE PREDICATE, PROVED ADDITIVELY ═══════
-  set P : (superPow (stdSuper k ℓ) 2).even → Prop :=
+  set P : (superPow (stdSuperPair k ℓ) 2).even → Prop :=
     fun u =>
       (colourPowerEquiv k ℓ 2).evenEquiv
-        (((topBraid (stdSuper k ℓ) 0) :
+        (((topBraid (stdSuperPair k ℓ) 0) :
           SuperVect.Hom _ _).evenMap u) ⟨c', hc'⟩ =
       adjSign c' ⟨0, by omega⟩ ⟨1, by omega⟩ *
         (colourPowerEquiv k ℓ 2).evenEquiv u
@@ -627,11 +627,11 @@ private theorem braid_coord_even
     rw [map_add, map_add, colourFun_add_apply, map_add,
       colourFun_add_apply, h₁, h₂, mul_add]
   -- ═══════ THE EVEN⊗EVEN GENERATORS ═══════
-  have hee : ∀ (r : ℂ) (x y : (stdSuper k ℓ).even),
+  have hee : ∀ (r : ℂ) (x y : (stdSuperPair k ℓ).even),
       P ((((r ⊗ₜ[ℂ] x, 0) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).odd))) := by
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).odd))) := by
     intro r x y
     rw [hP]
     beta_reduce
@@ -669,11 +669,11 @@ private theorem braid_coord_even
           (hswap1.trans hl0)).symm))
       exact (mul_zero _).symm
   -- ═══════ THE ODD⊗ODD GENERATORS ═══════
-  have hoo : ∀ (r : ℂ) (w z : (stdSuper k ℓ).odd),
-      P (((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).even),
+  have hoo : ∀ (r : ℂ) (w z : (stdSuperPair k ℓ).odd),
+      P (((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).even),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) := by
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) := by
     intro r w z
     rw [hP]
     beta_reduce
@@ -721,7 +721,7 @@ private theorem braid_coord_even
       ring
   -- Assemble by block decomposition and tensor induction.
   obtain ⟨v₁, v₂⟩ := v
-  rw [show ((v₁, v₂) : (superPow (stdSuper k ℓ) 2).even) =
+  rw [show ((v₁, v₂) : (superPow (stdSuperPair k ℓ) 2).even) =
     (v₁, 0) + (0, v₂) from by
     rw [Prod.mk_add_mk, add_zero, zero_add]]
   refine hPadd _ _ ?_ ?_
@@ -730,121 +730,121 @@ private theorem braid_coord_even
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((s + t, 0) :
-          (superPow (stdSuper k ℓ) 2).even) =
+          (superPow (stdSuperPair k ℓ) 2).even) =
         (s, 0) + (t, 0) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
     | tmul a y =>
       obtain ⟨a₁, a₂⟩ := a
       have helem : ((((a₁, a₂) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-          0) : (superPow (stdSuper k ℓ) 2).even) =
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+          0) : (superPow (stdSuperPair k ℓ) 2).even) =
         (((((a₁, 0) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y, 0)) :
-          (superPow (stdSuper k ℓ) 2).even) +
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y, 0)) :
+          (superPow (stdSuperPair k ℓ) 2).even) +
         (((((0, a₂) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y, 0)) :
-          (superPow (stdSuper k ℓ) 2).even)
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y, 0)) :
+          (superPow (stdSuperPair k ℓ) 2).even)
         := by
         refine Eq.trans (congrArg (fun t =>
-          ((t, (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-            (stdSuper k ℓ).odd)) :
-            (superPow (stdSuper k ℓ) 2).even))
+          ((t, (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+            (stdSuperPair k ℓ).odd)) :
+            (superPow (stdSuperPair k ℓ) 2).even))
           (Eq.trans (congrArg (fun s =>
               s ⊗ₜ[ℂ] y)
             (show ((a₁, a₂) :
-                (superPow (stdSuper k ℓ) 1).even) =
-              ((a₁, 0) : (superPow (stdSuper k ℓ) 1).even) +
-              ((0, a₂) : (superPow (stdSuper k ℓ) 1).even)
+                (superPow (stdSuperPair k ℓ) 1).even) =
+              ((a₁, 0) : (superPow (stdSuperPair k ℓ) 1).even) +
+              ((0, a₂) : (superPow (stdSuperPair k ℓ) 1).even)
               from by rw [Prod.mk_add_mk, add_zero,
                 zero_add]))
             (TensorProduct.add_tmul
               (((a₁, 0) :
-                (superPow (stdSuper k ℓ) 1).even))
+                (superPow (stdSuperPair k ℓ) 1).even))
               (((0, a₂) :
-                (superPow (stdSuper k ℓ) 1).even)) y))) ?_
+                (superPow (stdSuperPair k ℓ) 1).even)) y))) ?_
         exact Prod.ext_iff.mpr ⟨rfl, (add_zero 0).symm⟩
       refine Eq.mpr (congrArg P helem) (hPadd _ _ ?_ ?_)
       · clear helem
         induction a₁ using TensorProduct.induction_on with
         | zero =>
           have h0elem : (((((0 :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).even), 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-              0) : (superPow (stdSuper k ℓ) 2).even) =
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).even), 0) :
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+              0) : (superPow (stdSuperPair k ℓ) 2).even) =
               0 := by
             refine Eq.trans (congrArg (fun t =>
-              ((t, (0 : (superPow (stdSuper k ℓ) 1).odd
-                ⊗[ℂ] (stdSuper k ℓ).odd)) :
-                (superPow (stdSuper k ℓ) 2).even))
+              ((t, (0 : (superPow (stdSuperPair k ℓ) 1).odd
+                ⊗[ℂ] (stdSuperPair k ℓ).odd)) :
+                (superPow (stdSuperPair k ℓ) 2).even))
               (show ((((0 :
-                  (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                  (stdSuper k ℓ).even), 0) :
-                (superPow (stdSuper k ℓ) 1).even))
+                  (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                  (stdSuperPair k ℓ).even), 0) :
+                (superPow (stdSuperPair k ℓ) 1).even))
                 ⊗ₜ[ℂ] y = 0 from
                 TensorProduct.zero_tmul _ y)) ?_
             exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
           exact Eq.mpr (congrArg P h0elem) hP0
         | add s t hs ht =>
           have helem : (((((s + t :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).even), 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-              0) : (superPow (stdSuper k ℓ) 2).even) =
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).even), 0) :
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+              0) : (superPow (stdSuperPair k ℓ) 2).even) =
             ((((s, 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-              0) : (superPow (stdSuper k ℓ) 2).even) +
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+              0) : (superPow (stdSuperPair k ℓ) 2).even) +
             (((((t, 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-              0)) : (superPow (stdSuper k ℓ) 2).even) := by
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+              0)) : (superPow (stdSuperPair k ℓ) 2).even) := by
             refine Eq.trans (congrArg (fun u =>
-              ((u, (0 : (superPow (stdSuper k ℓ) 1).odd
-                ⊗[ℂ] (stdSuper k ℓ).odd)) :
-                (superPow (stdSuper k ℓ) 2).even))
+              ((u, (0 : (superPow (stdSuperPair k ℓ) 1).odd
+                ⊗[ℂ] (stdSuperPair k ℓ).odd)) :
+                (superPow (stdSuperPair k ℓ) 2).even))
               (Eq.trans (congrArg (fun w => w ⊗ₜ[ℂ] y)
                 (show (((s + t :
-                    (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                    (stdSuper k ℓ).even), 0) :
-                  (superPow (stdSuper k ℓ) 1).even) =
+                    (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                    (stdSuperPair k ℓ).even), 0) :
+                  (superPow (stdSuperPair k ℓ) 1).even) =
                   ((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).even) +
+                    (superPow (stdSuperPair k ℓ) 1).even) +
                   ((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).even)
+                    (superPow (stdSuperPair k ℓ) 1).even)
                   from by rw [Prod.mk_add_mk, add_zero]))
                 (TensorProduct.add_tmul
                   (((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).even))
+                    (superPow (stdSuperPair k ℓ) 1).even))
                   (((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).even))
+                    (superPow (stdSuperPair k ℓ) 1).even))
                   y))) ?_
             exact Prod.ext_iff.mpr ⟨rfl, (add_zero 0).symm⟩
           exact Eq.mpr (congrArg P helem) (hPadd _ _ hs ht)
         | tmul r x => exact hee r x y
       · have h0elem : (((((0 :
-            (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-            (stdSuper k ℓ).even), a₂) :
-            (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y,
-            0) : (superPow (stdSuper k ℓ) 2).even) =
+            (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+            (stdSuperPair k ℓ).even), a₂) :
+            (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y,
+            0) : (superPow (stdSuperPair k ℓ) 2).even) =
             0 := by
           refine Eq.trans (congrArg (fun t =>
-            ((((((0 : (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).even), t) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] y),
-              (0 : (superPow (stdSuper k ℓ) 1).odd
-                ⊗[ℂ] (stdSuper k ℓ).odd)) :
-              (superPow (stdSuper k ℓ) 2).even))
+            ((((((0 : (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).even), t) :
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] y),
+              (0 : (superPow (stdSuperPair k ℓ) 1).odd
+                ⊗[ℂ] (stdSuperPair k ℓ).odd)) :
+              (superPow (stdSuperPair k ℓ) 2).even))
             (subsingleton_tmul_eq_zero a₂)) ?_
           refine Eq.trans (congrArg (fun t =>
-            ((t, (0 : (superPow (stdSuper k ℓ) 1).odd
-              ⊗[ℂ] (stdSuper k ℓ).odd)) :
-              (superPow (stdSuper k ℓ) 2).even))
+            ((t, (0 : (superPow (stdSuperPair k ℓ) 1).odd
+              ⊗[ℂ] (stdSuperPair k ℓ).odd)) :
+              (superPow (stdSuperPair k ℓ) 2).even))
             (show ((((0 :
-                (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).even), (0 :
-                (superPow (stdSuper k ℓ) 0).odd ⊗[ℂ]
-                (stdSuper k ℓ).odd)) :
-              (superPow (stdSuper k ℓ) 1).even))
+                (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).even), (0 :
+                (superPow (stdSuperPair k ℓ) 0).odd ⊗[ℂ]
+                (stdSuperPair k ℓ).odd)) :
+              (superPow (stdSuperPair k ℓ) 1).even))
               ⊗ₜ[ℂ] y = 0 from
               TensorProduct.zero_tmul _ y)) ?_
           exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
@@ -854,121 +854,121 @@ private theorem braid_coord_even
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((0, s + t) :
-          (superPow (stdSuper k ℓ) 2).even) =
+          (superPow (stdSuperPair k ℓ) 2).even) =
         (0, s) + (0, t) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
     | tmul b z =>
       obtain ⟨b₁, b₂⟩ := b
       have helem : ((0, (((b₁, b₂) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-          (superPow (stdSuper k ℓ) 2).even) =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+          (superPow (stdSuperPair k ℓ) 2).even) =
         (((0, (((b₁, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
-          (superPow (stdSuper k ℓ) 2).even) +
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
+          (superPow (stdSuperPair k ℓ) 2).even) +
         (((0, (((0, b₂) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
-          (superPow (stdSuper k ℓ) 2).even)
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
+          (superPow (stdSuperPair k ℓ) 2).even)
         := by
         refine Eq.trans (congrArg (fun t =>
-          (((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-            (stdSuper k ℓ).even), t) :
-            (superPow (stdSuper k ℓ) 2).even))
+          (((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+            (stdSuperPair k ℓ).even), t) :
+            (superPow (stdSuperPair k ℓ) 2).even))
           (Eq.trans (congrArg (fun s =>
               s ⊗ₜ[ℂ] z)
             (show ((b₁, b₂) :
-                (superPow (stdSuper k ℓ) 1).odd) =
-              ((b₁, 0) : (superPow (stdSuper k ℓ) 1).odd) +
-              ((0, b₂) : (superPow (stdSuper k ℓ) 1).odd)
+                (superPow (stdSuperPair k ℓ) 1).odd) =
+              ((b₁, 0) : (superPow (stdSuperPair k ℓ) 1).odd) +
+              ((0, b₂) : (superPow (stdSuperPair k ℓ) 1).odd)
               from by rw [Prod.mk_add_mk, add_zero,
                 zero_add]))
             (TensorProduct.add_tmul
               (((b₁, 0) :
-                (superPow (stdSuper k ℓ) 1).odd))
+                (superPow (stdSuperPair k ℓ) 1).odd))
               (((0, b₂) :
-                (superPow (stdSuper k ℓ) 1).odd)) z))) ?_
+                (superPow (stdSuperPair k ℓ) 1).odd)) z))) ?_
         exact Prod.ext_iff.mpr ⟨(add_zero 0).symm, rfl⟩
       refine Eq.mpr (congrArg P helem) (hPadd _ _ ?_ ?_)
       · clear helem
         induction b₁ using TensorProduct.induction_on with
         | zero =>
           have h0elem : ((0, ((((0 :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).odd), 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-              (superPow (stdSuper k ℓ) 2).even) = 0 := by
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).odd), 0) :
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+              (superPow (stdSuperPair k ℓ) 2).even) = 0 := by
             refine Eq.trans (congrArg (fun t =>
-              (((0 : (superPow (stdSuper k ℓ) 1).even
-                ⊗[ℂ] (stdSuper k ℓ).even), t) :
-                (superPow (stdSuper k ℓ) 2).even))
+              (((0 : (superPow (stdSuperPair k ℓ) 1).even
+                ⊗[ℂ] (stdSuperPair k ℓ).even), t) :
+                (superPow (stdSuperPair k ℓ) 2).even))
               (show ((((0 :
-                  (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                  (stdSuper k ℓ).odd), 0) :
-                (superPow (stdSuper k ℓ) 1).odd))
+                  (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                  (stdSuperPair k ℓ).odd), 0) :
+                (superPow (stdSuperPair k ℓ) 1).odd))
                 ⊗ₜ[ℂ] z = 0 from
                 TensorProduct.zero_tmul _ z)) ?_
             exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
           exact Eq.mpr (congrArg P h0elem) hP0
         | add s t hs ht =>
           have helem : ((0, ((((s + t :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).odd), 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-              (superPow (stdSuper k ℓ) 2).even) =
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).odd), 0) :
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+              (superPow (stdSuperPair k ℓ) 2).even) =
             (((0, (((s, 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
-              (superPow (stdSuper k ℓ) 2).even) +
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
+              (superPow (stdSuperPair k ℓ) 2).even) +
             (((0, (((t, 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
-              (superPow (stdSuper k ℓ) 2).even)
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z))) :
+              (superPow (stdSuperPair k ℓ) 2).even)
             := by
             refine Eq.trans (congrArg (fun u =>
-              (((0 : (superPow (stdSuper k ℓ) 1).even
-                ⊗[ℂ] (stdSuper k ℓ).even), u) :
-                (superPow (stdSuper k ℓ) 2).even))
+              (((0 : (superPow (stdSuperPair k ℓ) 1).even
+                ⊗[ℂ] (stdSuperPair k ℓ).even), u) :
+                (superPow (stdSuperPair k ℓ) 2).even))
               (Eq.trans (congrArg (fun w =>
                   w ⊗ₜ[ℂ] z)
                 (show (((s + t :
-                    (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                    (stdSuper k ℓ).odd), 0) :
-                  (superPow (stdSuper k ℓ) 1).odd) =
+                    (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                    (stdSuperPair k ℓ).odd), 0) :
+                  (superPow (stdSuperPair k ℓ) 1).odd) =
                   ((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd) +
+                    (superPow (stdSuperPair k ℓ) 1).odd) +
                   ((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd)
+                    (superPow (stdSuperPair k ℓ) 1).odd)
                   from by rw [Prod.mk_add_mk, add_zero]))
                 (TensorProduct.add_tmul
                   (((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd))
+                    (superPow (stdSuperPair k ℓ) 1).odd))
                   (((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd))
+                    (superPow (stdSuperPair k ℓ) 1).odd))
                   z))) ?_
             exact Prod.ext_iff.mpr ⟨(add_zero 0).symm, rfl⟩
           exact Eq.mpr (congrArg P helem) (hPadd _ _ hs ht)
         | tmul r w => exact hoo r w z
       · have h0elem : ((0, ((((0 :
-            (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-            (stdSuper k ℓ).odd), b₂) :
-            (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-            (superPow (stdSuper k ℓ) 2).even) = 0 := by
+            (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+            (stdSuperPair k ℓ).odd), b₂) :
+            (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+            (superPow (stdSuperPair k ℓ) 2).even) = 0 := by
           refine Eq.trans (congrArg (fun t =>
-            (((0 : (superPow (stdSuper k ℓ) 1).even
-              ⊗[ℂ] (stdSuper k ℓ).even),
-              ((((0 : (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).odd), t) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
-              (superPow (stdSuper k ℓ) 2).even))
+            (((0 : (superPow (stdSuperPair k ℓ) 1).even
+              ⊗[ℂ] (stdSuperPair k ℓ).even),
+              ((((0 : (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).odd), t) :
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] z)) :
+              (superPow (stdSuperPair k ℓ) 2).even))
             (subsingleton_tmul_eq_zero b₂)) ?_
           refine Eq.trans (congrArg (fun t =>
-            (((0 : (superPow (stdSuper k ℓ) 1).even
-              ⊗[ℂ] (stdSuper k ℓ).even), t) :
-              (superPow (stdSuper k ℓ) 2).even))
+            (((0 : (superPow (stdSuperPair k ℓ) 1).even
+              ⊗[ℂ] (stdSuperPair k ℓ).even), t) :
+              (superPow (stdSuperPair k ℓ) 2).even))
             (show ((((0 :
-                (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).odd), (0 :
-                (superPow (stdSuper k ℓ) 0).odd ⊗[ℂ]
-                (stdSuper k ℓ).even)) :
-              (superPow (stdSuper k ℓ) 1).odd))
+                (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).odd), (0 :
+                (superPow (stdSuperPair k ℓ) 0).odd ⊗[ℂ]
+                (stdSuperPair k ℓ).even)) :
+              (superPow (stdSuperPair k ℓ) 1).odd))
               ⊗ₜ[ℂ] z = 0 from
               TensorProduct.zero_tmul _ z)) ?_
           exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
@@ -976,15 +976,15 @@ private theorem braid_coord_even
 
 /-! ### Arity-two evaluations, odd component -/
 
-private theorem eval2_eo (r : ℂ) (x : (stdSuper k ℓ).even)
-    (w : (stdSuper k ℓ).odd)
+private theorem eval2_eo (r : ℂ) (x : (stdSuperPair k ℓ).even)
+    (w : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven) :
     (colourPowerEquiv k ℓ 2).oddEquiv
       ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ =
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ =
     Sum.elim
       (fun p => funTensorFun _ _
         (((colourPowerEquiv k ℓ 1).evenEquiv
@@ -998,22 +998,22 @@ private theorem eval2_eo (r : ℂ) (x : (stdSuper k ℓ).even)
   show (colourPowerStep k ℓ 1).oddEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 1).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       (((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w :
-        (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd)),
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w :
+        (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 1).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even)) 0)
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even)) 0)
     ⟨c, hc⟩ = _
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 1).evenEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
       (((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w :
-        (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd)) =
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w :
+        (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd)) =
     ((colourPowerEquiv k ℓ 1).evenEquiv
       (evenPair r x)) ⊗ₜ[ℂ] w :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
@@ -1021,16 +1021,16 @@ private theorem eval2_eo (r : ℂ) (x : (stdSuper k ℓ).even)
   rfl
 
 private theorem eval2_eo_val (r : ℂ)
-    (x : (stdSuper k ℓ).even) (w : (stdSuper k ℓ).odd)
+    (x : (stdSuperPair k ℓ).even) (w : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven)
     (i : Fin k) (b : Fin (2 * ℓ))
     (h0 : c 0 = Sum.inl i) (h1 : c (Fin.last 1) = Sum.inr b) :
     (colourPowerEquiv k ℓ 2).oddEquiv
       ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ =
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ =
     r * x i * w b := by
   rw [eval2_eo r x w c hc]
   rw [oddSplitD_inr c hc b h1]
@@ -1061,15 +1061,15 @@ private theorem eval2_eo_val (r : ℂ)
   rfl
 
 private theorem eval2_eo_zero_right (r : ℂ)
-    (x : (stdSuper k ℓ).even) (w : (stdSuper k ℓ).odd)
+    (x : (stdSuperPair k ℓ).even) (w : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven)
     (j : Fin k) (h1 : c (Fin.last 1) = Sum.inl j) :
     (colourPowerEquiv k ℓ 2).oddEquiv
       ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
   rw [eval2_eo r x w c hc]
   rw [oddSplitD_inl c hc j h1]
   rw [show ((Equiv.sumComm
@@ -1092,16 +1092,16 @@ private theorem eval2_eo_zero_right (r : ℂ)
     rw [map_zero]; rfl]
 
 private theorem eval2_eo_zero_left (r : ℂ)
-    (x : (stdSuper k ℓ).even) (w : (stdSuper k ℓ).odd)
+    (x : (stdSuperPair k ℓ).even) (w : (stdSuperPair k ℓ).odd)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven)
     (a b : Fin (2 * ℓ))
     (h0 : c 0 = Sum.inr a) (h1 : c (Fin.last 1) = Sum.inr b) :
     (colourPowerEquiv k ℓ 2).oddEquiv
       ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
   rw [eval2_eo r x w c hc]
   rw [oddSplitD_inr c hc b h1]
   rw [show ((Equiv.sumComm
@@ -1130,15 +1130,15 @@ private theorem eval2_eo_zero_left (r : ℂ)
         Sum.inr a from h0)]
   exact zero_mul _
 
-private theorem eval2_oe (r : ℂ) (u : (stdSuper k ℓ).odd)
-    (y : (stdSuper k ℓ).even)
+private theorem eval2_oe (r : ℂ) (u : (stdSuperPair k ℓ).odd)
+    (y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven) :
     (colourPowerEquiv k ℓ 2).oddEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ =
     Sum.elim
       (fun p => funTensorFun _ _
         (0 : ({c : MixedColouring k ℓ 1 // c.IsEven} → ℂ)
@@ -1146,49 +1146,49 @@ private theorem eval2_oe (r : ℂ) (u : (stdSuper k ℓ).odd)
       (fun q => funTensorFun _ _
         (((colourPowerEquiv k ℓ 1).oddEquiv
             (((r ⊗ₜ[ℂ] u, 0) :
-              (superPow (stdSuper k ℓ) 1).odd))) ⊗ₜ[ℂ]
+              (superPow (stdSuperPair k ℓ) 1).odd))) ⊗ₜ[ℂ]
           (LinearEquiv.refl ℂ (Fin k → ℂ) y)) q)
       ((Equiv.sumComm _ _).symm
         (oddSplitEquiv k ℓ 1 ⟨c, hc⟩)) := by
   show (colourPowerStep k ℓ 1).oddEquiv
     ((TensorProduct.congr
         (colourPowerEquiv k ℓ 1).evenEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).odd))
-      (0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-        (stdSuper k ℓ).odd),
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).odd))
+      (0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+        (stdSuperPair k ℓ).odd),
       (TensorProduct.congr
         (colourPowerEquiv k ℓ 1).oddEquiv
-        (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+        (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       ((((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y :
-        (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even)))
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y :
+        (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even)))
     ⟨c, hc⟩ = _
   have hcongr : (TensorProduct.congr
       (colourPowerEquiv k ℓ 1).oddEquiv
-      (LinearEquiv.refl ℂ (stdSuper k ℓ).even))
+      (LinearEquiv.refl ℂ (stdSuperPair k ℓ).even))
       ((((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y :
-        (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even)) =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y :
+        (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even)) =
     ((colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] u, 0) :
-        (superPow (stdSuper k ℓ) 1).odd))) ⊗ₜ[ℂ] y :=
+        (superPow (stdSuperPair k ℓ) 1).odd))) ⊗ₜ[ℂ] y :=
     Eq.trans (TensorProduct.congr_tmul _ _ _ _) (by rfl)
   rw [hcongr, map_zero]
   rfl
 
 private theorem eval2_oe_val (r : ℂ)
-    (u : (stdSuper k ℓ).odd) (y : (stdSuper k ℓ).even)
+    (u : (stdSuperPair k ℓ).odd) (y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven)
     (a : Fin (2 * ℓ)) (j : Fin k)
     (h0 : c 0 = Sum.inr a) (h1 : c (Fin.last 1) = Sum.inl j) :
     (colourPowerEquiv k ℓ 2).oddEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ =
     r * u a * y j := by
   rw [eval2_oe r u y c hc]
   rw [oddSplitD_inl c hc j h1]
@@ -1209,7 +1209,7 @@ private theorem eval2_oe_val (r : ℂ)
   refine Eq.trans (funTensorFun_tmul _ _ _) ?_
   rw [show ((colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] u, 0) :
-        (superPow (stdSuper k ℓ) 1).odd)))
+        (superPow (stdSuperPair k ℓ) 1).odd)))
       (⟨MixedColouring.tail c, by
         intro hcontra
         exact hc ((c.isEven_succ_left j h1).mpr
@@ -1220,15 +1220,15 @@ private theorem eval2_oe_val (r : ℂ)
   rfl
 
 private theorem eval2_oe_zero_right (r : ℂ)
-    (u : (stdSuper k ℓ).odd) (y : (stdSuper k ℓ).even)
+    (u : (stdSuperPair k ℓ).odd) (y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven)
     (b : Fin (2 * ℓ)) (h1 : c (Fin.last 1) = Sum.inr b) :
     (colourPowerEquiv k ℓ 2).oddEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
   rw [eval2_oe r u y c hc]
   rw [oddSplitD_inr c hc b h1]
   rw [show ((Equiv.sumComm
@@ -1251,16 +1251,16 @@ private theorem eval2_oe_zero_right (r : ℂ)
     rw [map_zero]; rfl]
 
 private theorem eval2_oe_zero_left (r : ℂ)
-    (u : (stdSuper k ℓ).odd) (y : (stdSuper k ℓ).even)
+    (u : (stdSuperPair k ℓ).odd) (y : (stdSuperPair k ℓ).even)
     (c : MixedColouring k ℓ 2) (hc : ¬ c.IsEven)
     (i j : Fin k)
     (h0 : c 0 = Sum.inl i) (h1 : c (Fin.last 1) = Sum.inl j) :
     (colourPowerEquiv k ℓ 2).oddEquiv
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-        (superPow (stdSuper k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) ⟨c, hc⟩ = 0 := by
   rw [eval2_oe r u y c hc]
   rw [oddSplitD_inl c hc j h1]
   rw [show ((Equiv.sumComm
@@ -1280,7 +1280,7 @@ private theorem eval2_oe_zero_left (r : ℂ)
   refine Eq.trans (funTensorFun_tmul _ _ _) ?_
   rw [show ((colourPowerEquiv k ℓ 1).oddEquiv
       (((r ⊗ₜ[ℂ] u, 0) :
-        (superPow (stdSuper k ℓ) 1).odd)))
+        (superPow (stdSuperPair k ℓ) 1).odd)))
       (⟨MixedColouring.tail c, by
         intro hcontra
         exact hc ((c.isEven_succ_left j h1).mpr
@@ -1309,101 +1309,101 @@ private theorem whisker_unit_odd' {V W : SuperVect}
   rw [TensorProduct.map_tmul, map_zero]
   rfl
 
-private theorem braid_eo (r : ℂ) (x : (stdSuper k ℓ).even)
-    (w : (stdSuper k ℓ).odd) :
-    ((topBraid (stdSuper k ℓ) 0) :
+private theorem braid_eo (r : ℂ) (x : (stdSuperPair k ℓ).even)
+    (w : (stdSuperPair k ℓ).odd) :
+    ((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).oddMap
       ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) =
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) =
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] w, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] x)) :
-        (superPow (stdSuper k ℓ) 2).odd) := by
-  have hfun : ((topBraid (stdSuper k ℓ) 0) :
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] x)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) := by
+  have hfun : ((topBraid (stdSuperPair k ℓ) 0) :
       SuperVect.Hom _ _).oddMap
       ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) =
-    (((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-        (stdSuper k ℓ)).inv : _ ⟶ _) :
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) =
+    (((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+        (stdSuperPair k ℓ)).inv : _ ⟶ _) :
         SuperVect.Hom _ _).oddMap
-      ((((superPow (stdSuper k ℓ) 0) ◁
-          (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+      ((((superPow (stdSuperPair k ℓ) 0) ◁
+          (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
           SuperVect.Hom _ _).oddMap
-        ((((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-            (stdSuper k ℓ)).hom : _ ⟶ _) :
+        ((((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+            (stdSuperPair k ℓ)).hom : _ ⟶ _) :
             SuperVect.Hom _ _).oddMap
           ((((evenPair r x :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-            (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-              (stdSuper k ℓ).even))) :
-            (superPow (stdSuper k ℓ) 2).odd))) := rfl
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+            (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+              (stdSuperPair k ℓ).even))) :
+            (superPow (stdSuperPair k ℓ) 2).odd))) := rfl
   rw [hfun]
-  refine Eq.trans (congrArg (((α_ (superPow (stdSuper k ℓ) 0)
-      (stdSuper k ℓ) (stdSuper k ℓ)).inv : _ ⟶ _) :
+  refine Eq.trans (congrArg (((α_ (superPow (stdSuperPair k ℓ) 0)
+      (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv : _ ⟶ _) :
       SuperVect.Hom _ _).oddMap
-    (Eq.trans (congrArg ((((superPow (stdSuper k ℓ) 0) ◁
-        (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+    (Eq.trans (congrArg ((((superPow (stdSuperPair k ℓ) 0) ◁
+        (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
         SuperVect.Hom _ _).oddMap)
       (SuperVect.assoc_unit_eo r x w))
       (Eq.trans (whisker_unit_odd'
-        (SuperVect.koszulBraiding (stdSuper k ℓ)
-          (stdSuper k ℓ)) r _)
+        (SuperVect.koszulBraiding (stdSuperPair k ℓ)
+          (stdSuperPair k ℓ)) r _)
         (by rw [SuperVect.koszul_eo])))) ?_
   exact SuperVect.assoc_unit_inv_oe r w x
 
-private theorem braid_oe (r : ℂ) (u : (stdSuper k ℓ).odd)
-    (y : (stdSuper k ℓ).even) :
-    ((topBraid (stdSuper k ℓ) 0) :
+private theorem braid_oe (r : ℂ) (u : (stdSuperPair k ℓ).odd)
+    (y : (stdSuperPair k ℓ).even) :
+    ((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).oddMap
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-        (superPow (stdSuper k ℓ) 2).odd) =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) =
       ((((evenPair r y :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] u,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even))) :
-        (superPow (stdSuper k ℓ) 2).odd) := by
-  have hfun : ((topBraid (stdSuper k ℓ) 0) :
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] u,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even))) :
+        (superPow (stdSuperPair k ℓ) 2).odd) := by
+  have hfun : ((topBraid (stdSuperPair k ℓ) 0) :
       SuperVect.Hom _ _).oddMap
-      ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+      ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-        (superPow (stdSuper k ℓ) 2).odd) =
-    (((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-        (stdSuper k ℓ)).inv : _ ⟶ _) :
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+        (superPow (stdSuperPair k ℓ) 2).odd) =
+    (((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+        (stdSuperPair k ℓ)).inv : _ ⟶ _) :
         SuperVect.Hom _ _).oddMap
-      ((((superPow (stdSuper k ℓ) 0) ◁
-          (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+      ((((superPow (stdSuperPair k ℓ) 0) ◁
+          (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
           SuperVect.Hom _ _).oddMap
-        ((((α_ (superPow (stdSuper k ℓ) 0) (stdSuper k ℓ)
-            (stdSuper k ℓ)).hom : _ ⟶ _) :
+        ((((α_ (superPow (stdSuperPair k ℓ) 0) (stdSuperPair k ℓ)
+            (stdSuperPair k ℓ)).hom : _ ⟶ _) :
             SuperVect.Hom _ _).oddMap
-          ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-              (stdSuper k ℓ).odd),
+          ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+              (stdSuperPair k ℓ).odd),
             ((r ⊗ₜ[ℂ] u, 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-            (superPow (stdSuper k ℓ) 2).odd))) := rfl
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+            (superPow (stdSuperPair k ℓ) 2).odd))) := rfl
   rw [hfun]
-  refine Eq.trans (congrArg (((α_ (superPow (stdSuper k ℓ) 0)
-      (stdSuper k ℓ) (stdSuper k ℓ)).inv : _ ⟶ _) :
+  refine Eq.trans (congrArg (((α_ (superPow (stdSuperPair k ℓ) 0)
+      (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv : _ ⟶ _) :
       SuperVect.Hom _ _).oddMap
-    (Eq.trans (congrArg ((((superPow (stdSuper k ℓ) 0) ◁
-        (β_ (stdSuper k ℓ) (stdSuper k ℓ)).hom : _ ⟶ _) :
+    (Eq.trans (congrArg ((((superPow (stdSuperPair k ℓ) 0) ◁
+        (β_ (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom : _ ⟶ _) :
         SuperVect.Hom _ _).oddMap)
       (SuperVect.assoc_unit_oe r u y))
       (Eq.trans (whisker_unit_odd'
-        (SuperVect.koszulBraiding (stdSuper k ℓ)
-          (stdSuper k ℓ)) r _)
+        (SuperVect.koszulBraiding (stdSuperPair k ℓ)
+          (stdSuperPair k ℓ)) r _)
         (by rw [SuperVect.koszul_oe])))) ?_
   exact SuperVect.assoc_unit_inv_eo r y u
 
@@ -1418,9 +1418,9 @@ private theorem colourFunO_add_apply {n : ℕ}
 set_option maxHeartbeats 8000000 in
 private theorem braid_coord_odd
     (c' : MixedColouring k ℓ 2) (hc' : ¬ c'.IsEven)
-    (v : (superPow (stdSuper k ℓ) 2).odd) :
+    (v : (superPow (stdSuperPair k ℓ) 2).odd) :
     (colourPowerEquiv k ℓ 2).oddEquiv
-      (((topBraid (stdSuper k ℓ) 0) :
+      (((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).oddMap v) ⟨c', hc'⟩ =
     adjSign c' ⟨0, by omega⟩ ⟨1, by omega⟩ *
       (colourPowerEquiv k ℓ 2).oddEquiv v
@@ -1429,13 +1429,13 @@ private theorem braid_coord_odd
         MixedColouring.not_isEven_comp hc' _⟩ := by
   haveI : Subsingleton SuperVect.tensorUnit.odd :=
     inferInstanceAs (Subsingleton PUnit)
-  haveI : Subsingleton (superPow (stdSuper k ℓ) 0).odd :=
+  haveI : Subsingleton (superPow (stdSuperPair k ℓ) 0).odd :=
     inferInstanceAs (Subsingleton PUnit)
   -- ═══════ THE PREDICATE, PROVED ADDITIVELY ═══════
-  set P : (superPow (stdSuper k ℓ) 2).odd → Prop :=
+  set P : (superPow (stdSuperPair k ℓ) 2).odd → Prop :=
     fun u =>
       (colourPowerEquiv k ℓ 2).oddEquiv
-        (((topBraid (stdSuper k ℓ) 0) :
+        (((topBraid (stdSuperPair k ℓ) 0) :
           SuperVect.Hom _ _).oddMap u) ⟨c', hc'⟩ =
       adjSign c' ⟨0, by omega⟩ ⟨1, by omega⟩ *
         (colourPowerEquiv k ℓ 2).oddEquiv u
@@ -1471,12 +1471,12 @@ private theorem braid_coord_odd
     rw [map_add, map_add, colourFunO_add_apply, map_add,
       colourFunO_add_apply, h₁, h₂, mul_add]
   -- ═══════ THE EVEN⊗ODD GENERATORS ═══════
-  have heo : ∀ (r : ℂ) (x : (stdSuper k ℓ).even)
-      (w : (stdSuper k ℓ).odd),
+  have heo : ∀ (r : ℂ) (x : (stdSuperPair k ℓ).even)
+      (w : (stdSuperPair k ℓ).odd),
       P ((((evenPair r x :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-        (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-          (stdSuper k ℓ).even)))) := by
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+        (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+          (stdSuperPair k ℓ).even)))) := by
     intro r x w
     rw [hP]
     beta_reduce
@@ -1518,12 +1518,12 @@ private theorem braid_coord_odd
           (hswap0.trans hl1) (hswap1.trans hl0)).symm))
       exact (mul_zero _).symm
   -- ═══════ THE ODD⊗EVEN GENERATORS ═══════
-  have hoe : ∀ (r : ℂ) (u : (stdSuper k ℓ).odd)
-      (y : (stdSuper k ℓ).even),
-      P ((((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-          (stdSuper k ℓ).odd),
+  have hoe : ∀ (r : ℂ) (u : (stdSuperPair k ℓ).odd)
+      (y : (stdSuperPair k ℓ).even),
+      P ((((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+          (stdSuperPair k ℓ).odd),
         ((r ⊗ₜ[ℂ] u, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y))) := by
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y))) := by
     intro r u y
     rw [hP]
     beta_reduce
@@ -1566,7 +1566,7 @@ private theorem braid_coord_odd
       exact (mul_zero _).symm
   -- Assemble by block decomposition and tensor induction.
   obtain ⟨v₁, v₂⟩ := v
-  rw [show ((v₁, v₂) : (superPow (stdSuper k ℓ) 2).odd) =
+  rw [show ((v₁, v₂) : (superPow (stdSuperPair k ℓ) 2).odd) =
     (v₁, 0) + (0, v₂) from by
     rw [Prod.mk_add_mk, add_zero, zero_add]]
   refine hPadd _ _ ?_ ?_
@@ -1575,121 +1575,121 @@ private theorem braid_coord_odd
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((s + t, 0) :
-          (superPow (stdSuper k ℓ) 2).odd) =
+          (superPow (stdSuperPair k ℓ) 2).odd) =
         (s, 0) + (t, 0) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
     | tmul a w =>
       obtain ⟨a₁, a₂⟩ := a
       have helem : ((((a₁, a₂) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-          0) : (superPow (stdSuper k ℓ) 2).odd) =
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+          0) : (superPow (stdSuperPair k ℓ) 2).odd) =
         (((((a₁, 0) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w, 0)) :
-          (superPow (stdSuper k ℓ) 2).odd) +
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w, 0)) :
+          (superPow (stdSuperPair k ℓ) 2).odd) +
         (((((0, a₂) :
-          (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w, 0)) :
-          (superPow (stdSuper k ℓ) 2).odd)
+          (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w, 0)) :
+          (superPow (stdSuperPair k ℓ) 2).odd)
         := by
         refine Eq.trans (congrArg (fun t =>
-          ((t, (0 : (superPow (stdSuper k ℓ) 1).odd ⊗[ℂ]
-            (stdSuper k ℓ).even)) :
-            (superPow (stdSuper k ℓ) 2).odd))
+          ((t, (0 : (superPow (stdSuperPair k ℓ) 1).odd ⊗[ℂ]
+            (stdSuperPair k ℓ).even)) :
+            (superPow (stdSuperPair k ℓ) 2).odd))
           (Eq.trans (congrArg (fun s =>
               s ⊗ₜ[ℂ] w)
             (show ((a₁, a₂) :
-                (superPow (stdSuper k ℓ) 1).even) =
-              ((a₁, 0) : (superPow (stdSuper k ℓ) 1).even) +
-              ((0, a₂) : (superPow (stdSuper k ℓ) 1).even)
+                (superPow (stdSuperPair k ℓ) 1).even) =
+              ((a₁, 0) : (superPow (stdSuperPair k ℓ) 1).even) +
+              ((0, a₂) : (superPow (stdSuperPair k ℓ) 1).even)
               from by rw [Prod.mk_add_mk, add_zero,
                 zero_add]))
             (TensorProduct.add_tmul
               (((a₁, 0) :
-                (superPow (stdSuper k ℓ) 1).even))
+                (superPow (stdSuperPair k ℓ) 1).even))
               (((0, a₂) :
-                (superPow (stdSuper k ℓ) 1).even)) w))) ?_
+                (superPow (stdSuperPair k ℓ) 1).even)) w))) ?_
         exact Prod.ext_iff.mpr ⟨rfl, (add_zero 0).symm⟩
       refine Eq.mpr (congrArg P helem) (hPadd _ _ ?_ ?_)
       · clear helem
         induction a₁ using TensorProduct.induction_on with
         | zero =>
           have h0elem : (((((0 :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).even), 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-              0) : (superPow (stdSuper k ℓ) 2).odd) =
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).even), 0) :
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+              0) : (superPow (stdSuperPair k ℓ) 2).odd) =
               0 := by
             refine Eq.trans (congrArg (fun t =>
-              ((t, (0 : (superPow (stdSuper k ℓ) 1).odd
-                ⊗[ℂ] (stdSuper k ℓ).even)) :
-                (superPow (stdSuper k ℓ) 2).odd))
+              ((t, (0 : (superPow (stdSuperPair k ℓ) 1).odd
+                ⊗[ℂ] (stdSuperPair k ℓ).even)) :
+                (superPow (stdSuperPair k ℓ) 2).odd))
               (show ((((0 :
-                  (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                  (stdSuper k ℓ).even), 0) :
-                (superPow (stdSuper k ℓ) 1).even))
+                  (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                  (stdSuperPair k ℓ).even), 0) :
+                (superPow (stdSuperPair k ℓ) 1).even))
                 ⊗ₜ[ℂ] w = 0 from
                 TensorProduct.zero_tmul _ w)) ?_
             exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
           exact Eq.mpr (congrArg P h0elem) hP0
         | add s t hs ht =>
           have helem : (((((s + t :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).even), 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-              0) : (superPow (stdSuper k ℓ) 2).odd) =
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).even), 0) :
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+              0) : (superPow (stdSuperPair k ℓ) 2).odd) =
             ((((s, 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-              0) : (superPow (stdSuper k ℓ) 2).odd) +
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+              0) : (superPow (stdSuperPair k ℓ) 2).odd) +
             (((((t, 0) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-              0)) : (superPow (stdSuper k ℓ) 2).odd) := by
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+              0)) : (superPow (stdSuperPair k ℓ) 2).odd) := by
             refine Eq.trans (congrArg (fun u =>
-              ((u, (0 : (superPow (stdSuper k ℓ) 1).odd
-                ⊗[ℂ] (stdSuper k ℓ).even)) :
-                (superPow (stdSuper k ℓ) 2).odd))
+              ((u, (0 : (superPow (stdSuperPair k ℓ) 1).odd
+                ⊗[ℂ] (stdSuperPair k ℓ).even)) :
+                (superPow (stdSuperPair k ℓ) 2).odd))
               (Eq.trans (congrArg (fun q => q ⊗ₜ[ℂ] w)
                 (show (((s + t :
-                    (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                    (stdSuper k ℓ).even), 0) :
-                  (superPow (stdSuper k ℓ) 1).even) =
+                    (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                    (stdSuperPair k ℓ).even), 0) :
+                  (superPow (stdSuperPair k ℓ) 1).even) =
                   ((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).even) +
+                    (superPow (stdSuperPair k ℓ) 1).even) +
                   ((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).even)
+                    (superPow (stdSuperPair k ℓ) 1).even)
                   from by rw [Prod.mk_add_mk, add_zero]))
                 (TensorProduct.add_tmul
                   (((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).even))
+                    (superPow (stdSuperPair k ℓ) 1).even))
                   (((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).even))
+                    (superPow (stdSuperPair k ℓ) 1).even))
                   w))) ?_
             exact Prod.ext_iff.mpr ⟨rfl, (add_zero 0).symm⟩
           exact Eq.mpr (congrArg P helem) (hPadd _ _ hs ht)
         | tmul r x => exact heo r x w
       · have h0elem : (((((0 :
-            (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-            (stdSuper k ℓ).even), a₂) :
-            (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w,
-            0) : (superPow (stdSuper k ℓ) 2).odd) =
+            (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+            (stdSuperPair k ℓ).even), a₂) :
+            (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w,
+            0) : (superPow (stdSuperPair k ℓ) 2).odd) =
             0 := by
           refine Eq.trans (congrArg (fun t =>
-            ((((((0 : (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).even), t) :
-              (superPow (stdSuper k ℓ) 1).even) ⊗ₜ[ℂ] w),
-              (0 : (superPow (stdSuper k ℓ) 1).odd
-                ⊗[ℂ] (stdSuper k ℓ).even)) :
-              (superPow (stdSuper k ℓ) 2).odd))
+            ((((((0 : (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).even), t) :
+              (superPow (stdSuperPair k ℓ) 1).even) ⊗ₜ[ℂ] w),
+              (0 : (superPow (stdSuperPair k ℓ) 1).odd
+                ⊗[ℂ] (stdSuperPair k ℓ).even)) :
+              (superPow (stdSuperPair k ℓ) 2).odd))
             (subsingleton_tmul_eq_zero a₂)) ?_
           refine Eq.trans (congrArg (fun t =>
-            ((t, (0 : (superPow (stdSuper k ℓ) 1).odd
-              ⊗[ℂ] (stdSuper k ℓ).even)) :
-              (superPow (stdSuper k ℓ) 2).odd))
+            ((t, (0 : (superPow (stdSuperPair k ℓ) 1).odd
+              ⊗[ℂ] (stdSuperPair k ℓ).even)) :
+              (superPow (stdSuperPair k ℓ) 2).odd))
             (show ((((0 :
-                (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).even), (0 :
-                (superPow (stdSuper k ℓ) 0).odd ⊗[ℂ]
-                (stdSuper k ℓ).odd)) :
-              (superPow (stdSuper k ℓ) 1).even))
+                (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).even), (0 :
+                (superPow (stdSuperPair k ℓ) 0).odd ⊗[ℂ]
+                (stdSuperPair k ℓ).odd)) :
+              (superPow (stdSuperPair k ℓ) 1).even))
               ⊗ₜ[ℂ] w = 0 from
               TensorProduct.zero_tmul _ w)) ?_
           exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
@@ -1699,120 +1699,120 @@ private theorem braid_coord_odd
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((0, s + t) :
-          (superPow (stdSuper k ℓ) 2).odd) =
+          (superPow (stdSuperPair k ℓ) 2).odd) =
         (0, s) + (0, t) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
     | tmul b y =>
       obtain ⟨b₁, b₂⟩ := b
       have helem : ((0, (((b₁, b₂) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-          (superPow (stdSuper k ℓ) 2).odd) =
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+          (superPow (stdSuperPair k ℓ) 2).odd) =
         (((0, (((b₁, 0) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
-          (superPow (stdSuper k ℓ) 2).odd) +
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
+          (superPow (stdSuperPair k ℓ) 2).odd) +
         (((0, (((0, b₂) :
-          (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
-          (superPow (stdSuper k ℓ) 2).odd)
+          (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
+          (superPow (stdSuperPair k ℓ) 2).odd)
         := by
         refine Eq.trans (congrArg (fun t =>
-          (((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-            (stdSuper k ℓ).odd), t) :
-            (superPow (stdSuper k ℓ) 2).odd))
+          (((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+            (stdSuperPair k ℓ).odd), t) :
+            (superPow (stdSuperPair k ℓ) 2).odd))
           (Eq.trans (congrArg (fun s =>
               s ⊗ₜ[ℂ] y)
             (show ((b₁, b₂) :
-                (superPow (stdSuper k ℓ) 1).odd) =
-              ((b₁, 0) : (superPow (stdSuper k ℓ) 1).odd) +
-              ((0, b₂) : (superPow (stdSuper k ℓ) 1).odd)
+                (superPow (stdSuperPair k ℓ) 1).odd) =
+              ((b₁, 0) : (superPow (stdSuperPair k ℓ) 1).odd) +
+              ((0, b₂) : (superPow (stdSuperPair k ℓ) 1).odd)
               from by rw [Prod.mk_add_mk, add_zero,
                 zero_add]))
             (TensorProduct.add_tmul
               (((b₁, 0) :
-                (superPow (stdSuper k ℓ) 1).odd))
+                (superPow (stdSuperPair k ℓ) 1).odd))
               (((0, b₂) :
-                (superPow (stdSuper k ℓ) 1).odd)) y))) ?_
+                (superPow (stdSuperPair k ℓ) 1).odd)) y))) ?_
         exact Prod.ext_iff.mpr ⟨(add_zero 0).symm, rfl⟩
       refine Eq.mpr (congrArg P helem) (hPadd _ _ ?_ ?_)
       · clear helem
         induction b₁ using TensorProduct.induction_on with
         | zero =>
           have h0elem : ((0, ((((0 :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).odd), 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-              (superPow (stdSuper k ℓ) 2).odd) = 0 := by
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).odd), 0) :
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+              (superPow (stdSuperPair k ℓ) 2).odd) = 0 := by
             refine Eq.trans (congrArg (fun t =>
-              (((0 : (superPow (stdSuper k ℓ) 1).even
-                ⊗[ℂ] (stdSuper k ℓ).odd), t) :
-                (superPow (stdSuper k ℓ) 2).odd))
+              (((0 : (superPow (stdSuperPair k ℓ) 1).even
+                ⊗[ℂ] (stdSuperPair k ℓ).odd), t) :
+                (superPow (stdSuperPair k ℓ) 2).odd))
               (show ((((0 :
-                  (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                  (stdSuper k ℓ).odd), 0) :
-                (superPow (stdSuper k ℓ) 1).odd))
+                  (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                  (stdSuperPair k ℓ).odd), 0) :
+                (superPow (stdSuperPair k ℓ) 1).odd))
                 ⊗ₜ[ℂ] y = 0 from
                 TensorProduct.zero_tmul _ y)) ?_
             exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
           exact Eq.mpr (congrArg P h0elem) hP0
         | add s t hs ht =>
           have helem : ((0, ((((s + t :
-              (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-              (stdSuper k ℓ).odd), 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-              (superPow (stdSuper k ℓ) 2).odd) =
+              (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+              (stdSuperPair k ℓ).odd), 0) :
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+              (superPow (stdSuperPair k ℓ) 2).odd) =
             (((0, (((s, 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
-              (superPow (stdSuper k ℓ) 2).odd) +
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
+              (superPow (stdSuperPair k ℓ) 2).odd) +
             (((0, (((t, 0) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
-              (superPow (stdSuper k ℓ) 2).odd)
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y))) :
+              (superPow (stdSuperPair k ℓ) 2).odd)
             := by
             refine Eq.trans (congrArg (fun u =>
-              (((0 : (superPow (stdSuper k ℓ) 1).even
-                ⊗[ℂ] (stdSuper k ℓ).odd), u) :
-                (superPow (stdSuper k ℓ) 2).odd))
+              (((0 : (superPow (stdSuperPair k ℓ) 1).even
+                ⊗[ℂ] (stdSuperPair k ℓ).odd), u) :
+                (superPow (stdSuperPair k ℓ) 2).odd))
               (Eq.trans (congrArg (fun q => q ⊗ₜ[ℂ] y)
                 (show (((s + t :
-                    (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                    (stdSuper k ℓ).odd), 0) :
-                  (superPow (stdSuper k ℓ) 1).odd) =
+                    (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                    (stdSuperPair k ℓ).odd), 0) :
+                  (superPow (stdSuperPair k ℓ) 1).odd) =
                   ((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd) +
+                    (superPow (stdSuperPair k ℓ) 1).odd) +
                   ((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd)
+                    (superPow (stdSuperPair k ℓ) 1).odd)
                   from by rw [Prod.mk_add_mk, add_zero]))
                 (TensorProduct.add_tmul
                   (((s, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd))
+                    (superPow (stdSuperPair k ℓ) 1).odd))
                   (((t, 0) :
-                    (superPow (stdSuper k ℓ) 1).odd))
+                    (superPow (stdSuperPair k ℓ) 1).odd))
                   y))) ?_
             exact Prod.ext_iff.mpr ⟨(add_zero 0).symm, rfl⟩
           exact Eq.mpr (congrArg P helem) (hPadd _ _ hs ht)
         | tmul r u => exact hoe r u y
       · have h0elem : ((0, ((((0 :
-            (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-            (stdSuper k ℓ).odd), b₂) :
-            (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-            (superPow (stdSuper k ℓ) 2).odd) = 0 := by
+            (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+            (stdSuperPair k ℓ).odd), b₂) :
+            (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+            (superPow (stdSuperPair k ℓ) 2).odd) = 0 := by
           refine Eq.trans (congrArg (fun t =>
-            (((0 : (superPow (stdSuper k ℓ) 1).even
-              ⊗[ℂ] (stdSuper k ℓ).odd),
-              ((((0 : (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).odd), t) :
-              (superPow (stdSuper k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
-              (superPow (stdSuper k ℓ) 2).odd))
+            (((0 : (superPow (stdSuperPair k ℓ) 1).even
+              ⊗[ℂ] (stdSuperPair k ℓ).odd),
+              ((((0 : (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).odd), t) :
+              (superPow (stdSuperPair k ℓ) 1).odd) ⊗ₜ[ℂ] y)) :
+              (superPow (stdSuperPair k ℓ) 2).odd))
             (subsingleton_tmul_eq_zero b₂)) ?_
           refine Eq.trans (congrArg (fun t =>
-            (((0 : (superPow (stdSuper k ℓ) 1).even
-              ⊗[ℂ] (stdSuper k ℓ).odd), t) :
-              (superPow (stdSuper k ℓ) 2).odd))
+            (((0 : (superPow (stdSuperPair k ℓ) 1).even
+              ⊗[ℂ] (stdSuperPair k ℓ).odd), t) :
+              (superPow (stdSuperPair k ℓ) 2).odd))
             (show ((((0 :
-                (superPow (stdSuper k ℓ) 0).even ⊗[ℂ]
-                (stdSuper k ℓ).odd), (0 :
-                (superPow (stdSuper k ℓ) 0).odd ⊗[ℂ]
-                (stdSuper k ℓ).even)) :
-              (superPow (stdSuper k ℓ) 1).odd))
+                (superPow (stdSuperPair k ℓ) 0).even ⊗[ℂ]
+                (stdSuperPair k ℓ).odd), (0 :
+                (superPow (stdSuperPair k ℓ) 0).odd ⊗[ℂ]
+                (stdSuperPair k ℓ).even)) :
+              (superPow (stdSuperPair k ℓ) 1).odd))
               ⊗ₜ[ℂ] y = 0 from
               TensorProduct.zero_tmul _ y)) ?_
           exact Prod.ext_iff.mpr ⟨rfl, rfl⟩
@@ -1888,9 +1888,9 @@ private theorem adjSign_secondHalf (n : ℕ)
 set_option maxHeartbeats 8000000 in
 private theorem braidN_coord_even (n : ℕ)
     (c : MixedColouring k ℓ (n + 2)) (hc : c.IsEven)
-    (v : (superPow (stdSuper k ℓ) (n + 2)).even) :
+    (v : (superPow (stdSuperPair k ℓ) (n + 2)).even) :
     (colourPowerEquiv k ℓ (n + 2)).evenEquiv
-      (((topBraid (stdSuper k ℓ) n) :
+      (((topBraid (stdSuperPair k ℓ) n) :
         SuperVect.Hom _ _).evenMap v) ⟨c, hc⟩ =
     adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ *
       (colourPowerEquiv k ℓ (n + 2)).evenEquiv v
@@ -1898,30 +1898,30 @@ private theorem braidN_coord_even (n : ℕ)
           (⟨n, by omega⟩ : Fin (n + 2)) ⟨n + 1, by omega⟩,
         hc.comp _⟩ := by
   obtain ⟨w, rfl⟩ :=
-    powMerge_evenMap_surjective (stdSuper k ℓ) n 2 v
+    powMerge_evenMap_surjective (stdSuperPair k ℓ) n 2 v
   -- ═══════ THE BRAIDING COMMUTES PAST THE LEADING BLOCK ═══════
   have hcomm := (congrArg (fun z :
-      (superPow (stdSuper k ℓ) n ⊗
-        superPow (stdSuper k ℓ) 2 ⟶
-        superPow (stdSuper k ℓ) (n + 2)) =>
+      (superPow (stdSuperPair k ℓ) n ⊗
+        superPow (stdSuperPair k ℓ) 2 ⟶
+        superPow (stdSuperPair k ℓ) (n + 2)) =>
     (z : SuperVect.Hom _ _).evenMap w)
-    (powMerge_topBraid (stdSuper k ℓ) n)).symm
+    (powMerge_topBraid (stdSuperPair k ℓ) n)).symm
   refine Eq.trans (congrArg
     (fun t => (colourPowerEquiv k ℓ (n + 2)).evenEquiv t
       ⟨c, hc⟩) hcomm) ?_
   clear hcomm
   -- ═══════ THE PREDICATE, PROVED ADDITIVELY ═══════
-  set P : (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-      (superPow (stdSuper k ℓ) 2)).even → Prop := fun u =>
+  set P : (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+      (superPow (stdSuperPair k ℓ) 2)).even → Prop := fun u =>
     (colourPowerEquiv k ℓ (n + 2)).evenEquiv
-      (((powMerge (stdSuper k ℓ) n 2) :
+      (((powMerge (stdSuperPair k ℓ) n 2) :
         SuperVect.Hom _ _).evenMap
-        ((((superPow (stdSuper k ℓ) n) ◁
-            topBraid (stdSuper k ℓ) 0 : _ ⟶ _) :
+        ((((superPow (stdSuperPair k ℓ) n) ◁
+            topBraid (stdSuperPair k ℓ) 0 : _ ⟶ _) :
           SuperVect.Hom _ _).evenMap u)) ⟨c, hc⟩ =
     adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ *
       (colourPowerEquiv k ℓ (n + 2)).evenEquiv
-        (((powMerge (stdSuper k ℓ) n 2) :
+        (((powMerge (stdSuperPair k ℓ) n 2) :
           SuperVect.Hom _ _).evenMap u)
         ⟨c ∘ _root_.Equiv.swap
           (⟨n, by omega⟩ : Fin (n + 2)) ⟨n + 1, by omega⟩,
@@ -1941,21 +1941,21 @@ private theorem braidN_coord_even (n : ℕ)
     rw [map_add, map_add, map_add, colourFun_add_apply,
       map_add, map_add, colourFun_add_apply, h₁, h₂, mul_add]
   -- ═══════ THE EVEN LEADING BLOCK ═══════
-  have hblock1 : ∀ (p : (superPow (stdSuper k ℓ) n).even)
-      (q : (superPow (stdSuper k ℓ) 2).even),
+  have hblock1 : ∀ (p : (superPow (stdSuperPair k ℓ) n).even)
+      (q : (superPow (stdSuperPair k ℓ) 2).even),
       P (evenPair p q) := by
     intro p q
     rw [hP]
     beta_reduce
     refine Eq.trans (congrArg (fun t =>
       (colourPowerEquiv k ℓ (n + 2)).evenEquiv
-        (((powMerge (stdSuper k ℓ) n 2) :
+        (((powMerge (stdSuperPair k ℓ) n 2) :
           SuperVect.Hom _ _).evenMap t) ⟨c, hc⟩)
       (tensorHom_evenPair (SuperVect.Hom.id _)
-        ((topBraid (stdSuper k ℓ) 0) :
+        ((topBraid (stdSuperPair k ℓ) 0) :
           SuperVect.Hom _ _) p q)) ?_
     refine Eq.trans (colourMerge_coord n 2 p
-      (((topBraid (stdSuper k ℓ) 0) :
+      (((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).evenMap q) c hc) ?_
     refine Eq.trans ?_ (congrArg
       (fun t => adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ * t)
@@ -2003,23 +2003,23 @@ private theorem braidN_coord_even (n : ℕ)
         fun h' => hfh ((firstHalf_swapTop n c) ▸ h'))]
       rw [mul_zero]
   -- ═══════ THE ODD LEADING BLOCK ═══════
-  have hblock2 : ∀ (p : (superPow (stdSuper k ℓ) n).odd)
-      (q : (superPow (stdSuper k ℓ) 2).odd),
-      P (((0 : (superPow (stdSuper k ℓ) n).even ⊗[ℂ]
-          (superPow (stdSuper k ℓ) 2).even),
+  have hblock2 : ∀ (p : (superPow (stdSuperPair k ℓ) n).odd)
+      (q : (superPow (stdSuperPair k ℓ) 2).odd),
+      P (((0 : (superPow (stdSuperPair k ℓ) n).even ⊗[ℂ]
+          (superPow (stdSuperPair k ℓ) 2).even),
         p ⊗ₜ[ℂ] q)) := by
     intro p q
     rw [hP]
     beta_reduce
     refine Eq.trans (congrArg (fun t =>
       (colourPowerEquiv k ℓ (n + 2)).evenEquiv
-        (((powMerge (stdSuper k ℓ) n 2) :
+        (((powMerge (stdSuperPair k ℓ) n 2) :
           SuperVect.Hom _ _).evenMap t) ⟨c, hc⟩)
       (tensorHom_oddPair (SuperVect.Hom.id _)
-        ((topBraid (stdSuper k ℓ) 0) :
+        ((topBraid (stdSuperPair k ℓ) 0) :
           SuperVect.Hom _ _) p q)) ?_
     refine Eq.trans (colourMerge_coord_oddPair n 2 p
-      (((topBraid (stdSuper k ℓ) 0) :
+      (((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).oddMap q) c hc) ?_
     refine Eq.trans ?_ (congrArg
       (fun t => adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ * t)
@@ -2069,8 +2069,8 @@ private theorem braidN_coord_even (n : ℕ)
       ring
   obtain ⟨w₁, w₂⟩ := w
   rw [show ((w₁, w₂) :
-      (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-        (superPow (stdSuper k ℓ) 2)).even) =
+      (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+        (superPow (stdSuperPair k ℓ) 2)).even) =
     (w₁, 0) + (0, w₂) from by
     rw [Prod.mk_add_mk, add_zero, zero_add]]
   refine hPadd _ _ ?_ ?_
@@ -2078,8 +2078,8 @@ private theorem braidN_coord_even (n : ℕ)
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((s + t, 0) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-            (superPow (stdSuper k ℓ) 2)).even) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+            (superPow (stdSuperPair k ℓ) 2)).even) =
         (s, 0) + (t, 0) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
@@ -2088,8 +2088,8 @@ private theorem braidN_coord_even (n : ℕ)
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((0, s + t) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-            (superPow (stdSuper k ℓ) 2)).even) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+            (superPow (stdSuperPair k ℓ) 2)).even) =
         (0, s) + (0, t) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
@@ -2136,9 +2136,9 @@ private theorem secondHalf_even_of_odd_odd {a b : ℕ}
 set_option maxHeartbeats 8000000 in
 private theorem braidN_coord_odd (n : ℕ)
     (c : MixedColouring k ℓ (n + 2)) (hc : ¬ c.IsEven)
-    (v : (superPow (stdSuper k ℓ) (n + 2)).odd) :
+    (v : (superPow (stdSuperPair k ℓ) (n + 2)).odd) :
     (colourPowerEquiv k ℓ (n + 2)).oddEquiv
-      (((topBraid (stdSuper k ℓ) n) :
+      (((topBraid (stdSuperPair k ℓ) n) :
         SuperVect.Hom _ _).oddMap v) ⟨c, hc⟩ =
     adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ *
       (colourPowerEquiv k ℓ (n + 2)).oddEquiv v
@@ -2146,29 +2146,29 @@ private theorem braidN_coord_odd (n : ℕ)
           (⟨n, by omega⟩ : Fin (n + 2)) ⟨n + 1, by omega⟩,
         MixedColouring.not_isEven_comp hc _⟩ := by
   obtain ⟨w, rfl⟩ :=
-    powMerge_oddMap_surjective (stdSuper k ℓ) n 2 v
+    powMerge_oddMap_surjective (stdSuperPair k ℓ) n 2 v
   have hcomm := (congrArg (fun z :
-      (superPow (stdSuper k ℓ) n ⊗
-        superPow (stdSuper k ℓ) 2 ⟶
-        superPow (stdSuper k ℓ) (n + 2)) =>
+      (superPow (stdSuperPair k ℓ) n ⊗
+        superPow (stdSuperPair k ℓ) 2 ⟶
+        superPow (stdSuperPair k ℓ) (n + 2)) =>
     (z : SuperVect.Hom _ _).oddMap w)
-    (powMerge_topBraid (stdSuper k ℓ) n)).symm
+    (powMerge_topBraid (stdSuperPair k ℓ) n)).symm
   refine Eq.trans (congrArg
     (fun t => (colourPowerEquiv k ℓ (n + 2)).oddEquiv t
       ⟨c, hc⟩) hcomm) ?_
   clear hcomm
   -- ═══════ THE PREDICATE, PROVED ADDITIVELY ═══════
-  set P : (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-      (superPow (stdSuper k ℓ) 2)).odd → Prop := fun u =>
+  set P : (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+      (superPow (stdSuperPair k ℓ) 2)).odd → Prop := fun u =>
     (colourPowerEquiv k ℓ (n + 2)).oddEquiv
-      (((powMerge (stdSuper k ℓ) n 2) :
+      (((powMerge (stdSuperPair k ℓ) n 2) :
         SuperVect.Hom _ _).oddMap
-        ((((superPow (stdSuper k ℓ) n) ◁
-            topBraid (stdSuper k ℓ) 0 : _ ⟶ _) :
+        ((((superPow (stdSuperPair k ℓ) n) ◁
+            topBraid (stdSuperPair k ℓ) 0 : _ ⟶ _) :
           SuperVect.Hom _ _).oddMap u)) ⟨c, hc⟩ =
     adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ *
       (colourPowerEquiv k ℓ (n + 2)).oddEquiv
-        (((powMerge (stdSuper k ℓ) n 2) :
+        (((powMerge (stdSuperPair k ℓ) n 2) :
           SuperVect.Hom _ _).oddMap u)
         ⟨c ∘ _root_.Equiv.swap
           (⟨n, by omega⟩ : Fin (n + 2)) ⟨n + 1, by omega⟩,
@@ -2189,23 +2189,23 @@ private theorem braidN_coord_odd (n : ℕ)
       map_add, map_add, colourFunO_add_apply, h₁, h₂,
       mul_add]
   -- ═══════ THE EVEN LEADING BLOCK ═══════
-  have hblock1 : ∀ (p : (superPow (stdSuper k ℓ) n).even)
-      (q : (superPow (stdSuper k ℓ) 2).odd),
+  have hblock1 : ∀ (p : (superPow (stdSuperPair k ℓ) n).even)
+      (q : (superPow (stdSuperPair k ℓ) 2).odd),
       P ((p ⊗ₜ[ℂ] q,
-        (0 : (superPow (stdSuper k ℓ) n).odd ⊗[ℂ]
-          (superPow (stdSuper k ℓ) 2).even))) := by
+        (0 : (superPow (stdSuperPair k ℓ) n).odd ⊗[ℂ]
+          (superPow (stdSuperPair k ℓ) 2).even))) := by
     intro p q
     rw [hP]
     beta_reduce
     refine Eq.trans (congrArg (fun t =>
       (colourPowerEquiv k ℓ (n + 2)).oddEquiv
-        (((powMerge (stdSuper k ℓ) n 2) :
+        (((powMerge (stdSuperPair k ℓ) n 2) :
           SuperVect.Hom _ _).oddMap t) ⟨c, hc⟩)
       (tensorHom_oddFst (SuperVect.Hom.id _)
-        ((topBraid (stdSuper k ℓ) 0) :
+        ((topBraid (stdSuperPair k ℓ) 0) :
           SuperVect.Hom _ _) p q)) ?_
     refine Eq.trans (colourMerge_coord_evenOdd n 2 p
-      (((topBraid (stdSuper k ℓ) 0) :
+      (((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).oddMap q) c hc) ?_
     refine Eq.trans ?_ (congrArg
       (fun t => adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ * t)
@@ -2255,23 +2255,23 @@ private theorem braidN_coord_odd (n : ℕ)
         fun h' => hfh ((firstHalf_swapTop n c) ▸ h'))]
       rw [mul_zero]
   -- ═══════ THE ODD LEADING BLOCK ═══════
-  have hblock2 : ∀ (p : (superPow (stdSuper k ℓ) n).odd)
-      (q : (superPow (stdSuper k ℓ) 2).even),
-      P (((0 : (superPow (stdSuper k ℓ) n).even ⊗[ℂ]
-          (superPow (stdSuper k ℓ) 2).odd),
+  have hblock2 : ∀ (p : (superPow (stdSuperPair k ℓ) n).odd)
+      (q : (superPow (stdSuperPair k ℓ) 2).even),
+      P (((0 : (superPow (stdSuperPair k ℓ) n).even ⊗[ℂ]
+          (superPow (stdSuperPair k ℓ) 2).odd),
         p ⊗ₜ[ℂ] q)) := by
     intro p q
     rw [hP]
     beta_reduce
     refine Eq.trans (congrArg (fun t =>
       (colourPowerEquiv k ℓ (n + 2)).oddEquiv
-        (((powMerge (stdSuper k ℓ) n 2) :
+        (((powMerge (stdSuperPair k ℓ) n 2) :
           SuperVect.Hom _ _).oddMap t) ⟨c, hc⟩)
       (tensorHom_oddSnd (SuperVect.Hom.id _)
-        ((topBraid (stdSuper k ℓ) 0) :
+        ((topBraid (stdSuperPair k ℓ) 0) :
           SuperVect.Hom _ _) p q)) ?_
     refine Eq.trans (colourMerge_coord_odd n 2 p
-      (((topBraid (stdSuper k ℓ) 0) :
+      (((topBraid (stdSuperPair k ℓ) 0) :
         SuperVect.Hom _ _).evenMap q) c hc) ?_
     refine Eq.trans ?_ (congrArg
       (fun t => adjSign c ⟨n, by omega⟩ ⟨n + 1, by omega⟩ * t)
@@ -2321,8 +2321,8 @@ private theorem braidN_coord_odd (n : ℕ)
       ring
   obtain ⟨w₁, w₂⟩ := w
   rw [show ((w₁, w₂) :
-      (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-        (superPow (stdSuper k ℓ) 2)).odd) =
+      (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+        (superPow (stdSuperPair k ℓ) 2)).odd) =
     (w₁, 0) + (0, w₂) from by
     rw [Prod.mk_add_mk, add_zero, zero_add]]
   refine hPadd _ _ ?_ ?_
@@ -2330,8 +2330,8 @@ private theorem braidN_coord_odd (n : ℕ)
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((s + t, 0) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-            (superPow (stdSuper k ℓ) 2)).odd) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+            (superPow (stdSuperPair k ℓ) 2)).odd) =
         (s, 0) + (t, 0) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
@@ -2340,8 +2340,8 @@ private theorem braidN_coord_odd (n : ℕ)
     | zero => exact hP0
     | add s t hs ht =>
       rw [show ((0, s + t) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) n)
-            (superPow (stdSuper k ℓ) 2)).odd) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) n)
+            (superPow (stdSuperPair k ℓ) 2)).odd) =
         (0, s) + (0, t) from by
         rw [Prod.mk_add_mk, add_zero]]
       exact hPadd _ _ hs ht
@@ -2354,7 +2354,7 @@ set_option maxHeartbeats 4000000 in
 /-- **The colour action of the top braiding.** -/
 theorem toColour_topBraid (n : ℕ) :
     toColour (k := k) (ℓ := ℓ) (n + 2)
-        (topBraid (stdSuper k ℓ) n) =
+        (topBraid (stdSuperPair k ℓ) n) =
       colourSwap k ℓ (n + 2) n (by omega) := by
   refine SuperVect.Hom.ext ?_ ?_
   · refine LinearMap.ext (fun F => ?_)

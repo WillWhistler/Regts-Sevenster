@@ -1,4 +1,5 @@
 import RS.Classical.SchurTheory.FixWeight
+import RS.Common.YoungDiagrams
 
 /-!
 # The Jacobi–Trudi virtual character
@@ -22,35 +23,6 @@ private theorem list_sum_eq_fin_sum (l : List ℕ) :
     l.sum = ∑ i : Fin l.length, l.get i := by
   conv_lhs => rw [← List.ofFn_get l]
   rw [List.sum_ofFn]
-
-/-- The cell count of a Young diagram is the sum of its row
-lengths. -/
-theorem card_eq_sum_rowLens (μ : YoungDiagram) :
-    μ.card = μ.rowLens.sum := by
-  classical
-  have hrange : ((List.range (μ.colLen 0)).map μ.rowLen).sum =
-      ∑ i ∈ Finset.range (μ.colLen 0), μ.rowLen i := by
-    induction μ.colLen 0 with
-    | zero => simp
-    | succ k ih =>
-      rw [List.range_succ, List.map_append, List.sum_append,
-        Finset.sum_range_succ, ih]
-      simp
-  rw [YoungDiagram.rowLens, hrange]
-  rw [show μ.card = μ.cells.card from rfl]
-  rw [Finset.card_eq_sum_card_fiberwise
-    (f := Prod.fst) (t := Finset.range (μ.colLen 0))
-    (fun c hc => by
-      have hc' : c ∈ μ.cells := hc
-      rw [Finset.mem_coe, Finset.mem_range]
-      have hm : c ∈ μ := (YoungDiagram.mem_cells c).mp hc'
-      have h1 : c.1 < μ.colLen c.2 := by
-        rw [← YoungDiagram.mem_iff_lt_colLen]
-        exact hm
-      exact lt_of_lt_of_le h1 (μ.colLen_anti 0 c.2 (Nat.zero_le _)))]
-  refine Finset.sum_congr rfl fun i _ => ?_
-  rw [YoungDiagram.rowLen_eq_card]
-  congr 1
 
 /-- The signed Jacobi–Trudi degree of row `i` under `σ`. -/
 def jtSigned (μ : YoungDiagram)

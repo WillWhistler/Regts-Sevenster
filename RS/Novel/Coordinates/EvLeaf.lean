@@ -21,7 +21,7 @@ variable (P : DelignePackage (SkeinObj f))
 variable {k ℓ : ℕ}
 
 /-- The standard form on even pairs is the even form. -/
-theorem stdForm_evenPair (x y : (stdSuper k ℓ).even) :
+theorem stdForm_evenPair (x y : (stdSuperPair k ℓ).even) :
     (stdForm k ℓ).evenMap (evenPair x y) = stdFormEven k x y := by
   show LinearMap.coprod
       (TensorProduct.lift (stdFormEvenBilin k))
@@ -31,7 +31,7 @@ theorem stdForm_evenPair (x y : (stdSuper k ℓ).even) :
   exact TensorProduct.lift.tmul x y
 
 /-- The standard form on odd pairs is the odd form. -/
-theorem stdForm_oddPair (x y : (stdSuper k ℓ).odd) :
+theorem stdForm_oddPair (x y : (stdSuperPair k ℓ).odd) :
     (stdForm k ℓ).evenMap (oddPair x y) = stdFormOdd ℓ x y := by
   show LinearMap.coprod
       (TensorProduct.lift (stdFormEvenBilin k))
@@ -48,7 +48,7 @@ set_option maxHeartbeats 4000000 in
 transported two-position basis vector is the colour form entry of
 the two colours. -/
 theorem omegaFun_ev_basis
-    (e : stdSuper k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
+    (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
     (hform :
       letI := P.braided
       SuperVect.Hom.comp
@@ -95,15 +95,15 @@ theorem omegaFun_ev_basis
     refine Eq.trans ?_
       (evForm f P e hform (stdE k i) (stdE k j))
     have hmerge := congrArg (fun z :
-        (superPow (stdSuper k ℓ) 1 ⊗
-          superPow (stdSuper k ℓ) 1 ⟶
+        (superPow (stdSuperPair k ℓ) 1 ⊗
+          superPow (stdSuperPair k ℓ) 1 ⟶
           P.ω.obj (SkeinObj.mk (1 + 1))) =>
       (z : SuperVect.Hom _ _).evenMap
         (evenPair
           ((evenPair (1 : ℂ) (stdE k i) :
-            (superPow (stdSuper k ℓ) 1).even))
+            (superPow (stdSuperPair k ℓ) 1).even))
           ((evenPair (1 : ℂ) (stdE k j) :
-            (superPow (stdSuper k ℓ) 1).even))))
+            (superPow (stdSuperPair k ℓ) 1).even))))
       (stdToOmega_merge f P e 1 1)
     refine Eq.trans (congrArg (omegaFun f P (evClass f))
       hmerge.symm) ?_
@@ -171,15 +171,15 @@ theorem omegaFun_ev_basis
     refine Eq.trans ?_
       (evFormOdd f P e hform (stdF ℓ a) (stdF ℓ b))
     have hmerge := congrArg (fun z :
-        (superPow (stdSuper k ℓ) 1 ⊗
-          superPow (stdSuper k ℓ) 1 ⟶
+        (superPow (stdSuperPair k ℓ) 1 ⊗
+          superPow (stdSuperPair k ℓ) 1 ⟶
           P.ω.obj (SkeinObj.mk (1 + 1))) =>
       (z : SuperVect.Hom _ _).evenMap
-        (((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-            (superPow (stdSuper k ℓ) 1).even),
+        (((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+            (superPow (stdSuperPair k ℓ) 1).even),
           oddUnitPad (stdF ℓ a) ⊗ₜ[ℂ] oddUnitPad (stdF ℓ b)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) 1)
-            (superPow (stdSuper k ℓ) 1)).even))
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) 1)
+            (superPow (stdSuperPair k ℓ) 1)).even))
       (stdToOmega_merge f P e 1 1)
     refine Eq.trans (congrArg (omegaFun f P (evClass f))
       hmerge.symm) ?_
@@ -188,19 +188,19 @@ theorem omegaFun_ev_basis
         SuperVect.Hom _ _).evenMap
         (((stdToOmega f P e 1 ⊗ₘ stdToOmega f P e 1) :
           SuperVect.Hom _ _).evenMap
-          (((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-              (superPow (stdSuper k ℓ) 1).even),
+          (((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+              (superPow (stdSuperPair k ℓ) 1).even),
             oddUnitPad (stdF ℓ a) ⊗ₜ[ℂ]
               oddUnitPad (stdF ℓ b)) :
-            (SuperVect.tensorObj (superPow (stdSuper k ℓ) 1)
-              (superPow (stdSuper k ℓ) 1)).even))) = _
+            (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) 1)
+              (superPow (stdSuperPair k ℓ) 1)).even))) = _
     rw [show ((stdToOmega f P e 1 ⊗ₘ stdToOmega f P e 1) :
         SuperVect.Hom _ _).evenMap
-        (((0 : (superPow (stdSuper k ℓ) 1).even ⊗[ℂ]
-            (superPow (stdSuper k ℓ) 1).even),
+        (((0 : (superPow (stdSuperPair k ℓ) 1).even ⊗[ℂ]
+            (superPow (stdSuperPair k ℓ) 1).even),
           oddUnitPad (stdF ℓ a) ⊗ₜ[ℂ] oddUnitPad (stdF ℓ b)) :
-          (SuperVect.tensorObj (superPow (stdSuper k ℓ) 1)
-            (superPow (stdSuper k ℓ) 1)).even) =
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) 1)
+            (superPow (stdSuperPair k ℓ) 1)).even) =
       oddPair
         ((stdToOmega f P e 1 : SuperVect.Hom _ _).oddMap
           (oddUnitPad (stdF ℓ a)))

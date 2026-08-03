@@ -1,4 +1,3 @@
-import RS.Definitions
 import RS.Common.PermCongr
 import RS.Novel.Skein.ConnectionRank
 

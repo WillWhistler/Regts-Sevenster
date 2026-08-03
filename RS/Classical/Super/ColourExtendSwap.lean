@@ -72,10 +72,10 @@ private theorem funTensorFun_map_id {ι κ : Type} [Fintype ι] [DecidableEq ι]
 set_option maxHeartbeats 800000 in
 private theorem step_tensorHom_even_apply (d : ℕ)
     (T : colourPower k ℓ d ⟶ colourPower k ℓ d)
-    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuper k ℓ)).even)
+    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuperPair k ℓ)).even)
     (c : {c : MixedColouring k ℓ (d + 1) // c.IsEven}) :
     (colourPowerStep k ℓ d).evenEquiv
-      ((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuper k ℓ)) :
+      ((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuperPair k ℓ)) :
         SuperVect.Hom _ _).evenMap P) c =
     Sum.elim
       (fun p => funTensorFun _ _ (TensorProduct.map
@@ -88,7 +88,7 @@ private theorem step_tensorHom_even_apply (d : ℕ)
 
 /-- The even step equivalence applied at a point. -/
 private theorem step_even_apply (d : ℕ)
-    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuper k ℓ)).even)
+    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuperPair k ℓ)).even)
     (c : {c : MixedColouring k ℓ (d + 1) // c.IsEven}) :
     (colourPowerStep k ℓ d).evenEquiv P c =
     Sum.elim (fun p => funTensorFun _ _ P.1 p)
@@ -101,10 +101,10 @@ private theorem step_even_apply (d : ℕ)
 set_option maxHeartbeats 800000 in
 private theorem step_tensorHom_odd_apply (d : ℕ)
     (T : colourPower k ℓ d ⟶ colourPower k ℓ d)
-    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuper k ℓ)).odd)
+    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuperPair k ℓ)).odd)
     (c : {c : MixedColouring k ℓ (d + 1) // ¬ c.IsEven}) :
     (colourPowerStep k ℓ d).oddEquiv
-      ((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuper k ℓ)) :
+      ((SuperVect.tensorHom T (SuperVect.Hom.id (stdSuperPair k ℓ)) :
         SuperVect.Hom _ _).oddMap P) c =
     Sum.elim
       (fun p => funTensorFun _ _ (TensorProduct.map
@@ -117,7 +117,7 @@ private theorem step_tensorHom_odd_apply (d : ℕ)
 
 /-- The odd step equivalence applied at a point. -/
 private theorem step_odd_apply (d : ℕ)
-    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuper k ℓ)).odd)
+    (P : (SuperVect.tensorObj (colourPower k ℓ d) (stdSuperPair k ℓ)).odd)
     (c : {c : MixedColouring k ℓ (d + 1) // ¬ c.IsEven}) :
     (colourPowerStep k ℓ d).oddEquiv P c =
     Sum.elim (fun p => funTensorFun _ _ P.1 p)
@@ -349,7 +349,7 @@ theorem colourExtend_colourSwap {k ℓ : ℕ} (n i : ℕ)
     suffices key : ∀ P,
         (colourPowerStep k ℓ (n + 1)).evenEquiv
           ((SuperVect.tensorHom (colourSwap k ℓ (n + 1) i h)
-            (SuperVect.Hom.id (stdSuper k ℓ)) :
+            (SuperVect.Hom.id (stdSuperPair k ℓ)) :
             SuperVect.Hom _ _).evenMap P) =
         (colourSwap k ℓ (n + 2) i (by omega) :
           SuperVect.Hom _ _).evenMap
@@ -357,7 +357,7 @@ theorem colourExtend_colourSwap {k ℓ : ℕ} (n i : ℕ)
       ext F
       show (colourPowerStep k ℓ (n + 1)).evenEquiv
         (((SuperVect.tensorHom (colourSwap k ℓ (n + 1) i h)
-          (SuperVect.Hom.id (stdSuper k ℓ)) :
+          (SuperVect.Hom.id (stdSuperPair k ℓ)) :
           SuperVect.Hom _ _).evenMap)
           ((colourPowerStep k ℓ (n + 1)).evenEquiv.symm F)) =
         (colourSwap k ℓ (n + 2) i (by omega) :
@@ -403,7 +403,7 @@ theorem colourExtend_colourSwap {k ℓ : ℕ} (n i : ℕ)
     suffices key : ∀ P,
         (colourPowerStep k ℓ (n + 1)).oddEquiv
           ((SuperVect.tensorHom (colourSwap k ℓ (n + 1) i h)
-            (SuperVect.Hom.id (stdSuper k ℓ)) :
+            (SuperVect.Hom.id (stdSuperPair k ℓ)) :
             SuperVect.Hom _ _).oddMap P) =
         (colourSwap k ℓ (n + 2) i (by omega) :
           SuperVect.Hom _ _).oddMap
@@ -411,7 +411,7 @@ theorem colourExtend_colourSwap {k ℓ : ℕ} (n i : ℕ)
       ext F
       show (colourPowerStep k ℓ (n + 1)).oddEquiv
         (((SuperVect.tensorHom (colourSwap k ℓ (n + 1) i h)
-          (SuperVect.Hom.id (stdSuper k ℓ)) :
+          (SuperVect.Hom.id (stdSuperPair k ℓ)) :
           SuperVect.Hom _ _).oddMap)
           ((colourPowerStep k ℓ (n + 1)).oddEquiv.symm F)) =
         (colourSwap k ℓ (n + 2) i (by omega) :
