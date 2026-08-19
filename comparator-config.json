@@ -2,7 +2,6 @@
     "challenge_module": "Challenge",
     "solution_module": "Solution",
     "theorem_names": [
-        "Certified.deligne_theorem",
         "Certified.regts_sevenster",
         "Certified.regts_sevenster_quant",
         "Certified.regts_sevenster_converse",

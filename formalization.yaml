@@ -179,10 +179,11 @@ automation:
         trusted."
   spend_usd: "subscription-based usage; no metered API spend"
   notes: "Beyond the in-tree audits, the theorems of record are
-    certified in CI with leanprover/comparator: Challenge.lean imports
-    the self-contained statement surface RS/Definitions.lean and
-    states them with sorry, Solution.lean proves each by the theorem
-    of record of the same name, and comparator checks at the
+    certified in CI with leanprover/comparator: Challenge.lean is
+    self-contained, importing Mathlib alone and carrying the statement
+    surface itself, and states them with sorry; Solution.lean proves
+    each by the theorem of record of the same name against the
+    identical definitions of RS/Definitions.lean, and comparator checks at the
     kernel-export level that the statements and their definitions
     agree, that the proofs use no axiom outside the whitelist, and
     that the kernel replays them."

@@ -348,9 +348,11 @@ comparison against Deligne's Théorème 0.6 and §0.1.
 
 Beyond the in-tree audits, the theorems of record are certified
 with [comparator](https://github.com/leanprover/comparator).
-`Challenge.lean` imports `RS/Definitions.lean` and nothing else of
-the tree and states them with `sorry`; `Solution.lean`
-proves each by the theorem of record of the same name;
+`Challenge.lean` is self-contained — it imports Mathlib and nothing
+else, carries the statement surface itself, and states them with
+`sorry`; `Solution.lean` proves each by the theorem of record of the
+same name, against the identical definitions of
+`RS/Definitions.lean`;
 `comparator-config.json` lists the names and the axiom
 whitelist. Comparator builds the two modules separately, exports
 both environments at the kernel level — independently of the

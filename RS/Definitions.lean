@@ -16,10 +16,10 @@ This module imports only the Mathlib funnel
 (`RS/Common/MathlibDeps.lean`, an import list with no content), so
 its meaning is determined by this file against Mathlib alone.  It
 is the trusted surface of the comparator certification:
-`Challenge.lean` imports this module and nothing else of the tree,
-states the theorems of record with `sorry`, and
+`Challenge.lean` carries a copy of the sections below, against
+Mathlib alone, and states the theorems of record with `sorry`;
 `Solution.lean` proves each by the theorem of record of the same
-name.  Comparator confirms at the kernel-export level that the two
+name, against the definitions here.  Comparator confirms at the kernel-export level that the two
 sides prove identical statements about identical definitions — the
 definitions below.  The rest of the tree imports them from here
 rather than restating them, so this file is the single source of

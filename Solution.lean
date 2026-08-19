@@ -27,15 +27,6 @@ theorem edgeRankBounded_of_mixedBounded
     EdgeRankBounded f (max 1 (2 * B)) :=
   RS.edgeRankBounded_of_mixedBounded hf
 
-/-- **Deligne's theorem** on tensor categories: every essentially
-small abelian ℂ-linear rigid symmetric monoidal category with
-ℂ-bilinear tensor product, scalar unit endomorphisms, a finite
-tensor generator and moderate growth of the lengths of its tensor
-powers admits an exact faithful ℂ-linear symmetric monoidal fibre
-functor to finite-dimensional super vector spaces. -/
-theorem deligne_theorem : DeligneTheoremStatement.{1, 1} :=
-  RS.deligne_theorem
-
 /-- **The forward direction**, with no hypothesis. -/
 theorem regts_sevenster : RegtsSevensterStatement :=
   RS.regts_sevenster
