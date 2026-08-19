@@ -113,10 +113,9 @@ theorem boundaryFlag_injective (W : Fragment α) :
   rw [hij, hj] at hi
   exact (Sum.inr.inj hi).symm
 
-/-- The partner of a boundary flag is not that boundary flag's own
-label's flag; more useful below: the partner of the flag at `i` is
-the flag at `j` precisely when the flag at `j`'s partner is the flag
-at `i`. -/
+/-- Bounding a common edge is symmetric in the two labels: if the
+flag at `i` pairs to the flag at `j`, then the flag at `j` pairs back
+to the flag at `i`. -/
 theorem pairing_boundaryFlag_comm (W : Fragment α) {i j : α}
     (h : W.pairing (W.boundaryFlag i) = W.boundaryFlag j) :
     W.pairing (W.boundaryFlag j) = W.boundaryFlag i := by
@@ -216,22 +215,37 @@ theorem survivingFlag_attach_ne {W : Fragment α} {i j : α}
   ⟨fun h => f.prop.1 (W.eq_boundaryFlag i f.val h),
    fun h => f.prop.2 (W.eq_boundaryFlag j f.val h)⟩
 
+/-- The attachment map computed at a *given* value of `W.attach`,
+which is supplied together with the equation identifying it.  Taking
+the value as a parameter is what lets every proof below reason by
+cases on it, so `glueAttach` itself is never unfolded. -/
+def glueAttachOn (W : Fragment α) (i j : α) (f : SurvivingFlag W i j) :
+    ∀ s : W.Vertex ⊕ α, W.attach f.val = s →
+      W.Vertex ⊕ SurvivingLabel α i j
+  | Sum.inl v, _ => Sum.inl v
+  | Sum.inr ℓ, ha => Sum.inr ⟨ℓ,
+      fun h => (survivingFlag_attach_ne f).1 (h ▸ ha),
+      fun h => (survivingFlag_attach_ne f).2 (h ▸ ha)⟩
+
 /-- The attachment map after gluing at `{i, j}`: unchanged, with the
 label type restricted to the surviving labels. -/
 def glueAttach (W : Fragment α) (i j : α) (f : SurvivingFlag W i j) :
     W.Vertex ⊕ SurvivingLabel α i j :=
-  match ha : W.attach f.val with
-  | Sum.inl v => Sum.inl v
-  | Sum.inr ℓ => Sum.inr ⟨ℓ,
-      fun h => (survivingFlag_attach_ne f).1 (h ▸ ha),
-      fun h => (survivingFlag_attach_ne f).2 (h ▸ ha)⟩
+  glueAttachOn W i j f (W.attach f.val) rfl
+
+/-- `glueAttachOn` returns, under the label inclusion, exactly the
+value of `attach` it was handed. -/
+theorem glueAttachOn_spec (W : Fragment α) (i j : α)
+    (f : SurvivingFlag W i j) (s : W.Vertex ⊕ α)
+    (h : W.attach f.val = s) :
+    (glueAttachOn W i j f s h).map id Subtype.val = s := by
+  cases s <;> rfl
 
 /-- `glueAttach` agrees with `attach` under the label inclusion. -/
 theorem glueAttach_spec (W : Fragment α) (i j : α)
     (f : SurvivingFlag W i j) :
-    (glueAttach W i j f).map id Subtype.val = W.attach f.val := by
-  unfold glueAttach
-  split <;> simp_all
+    (glueAttach W i j f).map id Subtype.val = W.attach f.val :=
+  glueAttachOn_spec W i j f _ rfl
 
 end GluePair
 
@@ -329,8 +343,8 @@ variable {W i j}
 
 /-- The glued attachment lands on a surviving label exactly when
 the original attachment lands on its underlying label. -/
-theorem glueAttach_inr {f : SurvivingFlag W i j}
-    {ℓ : SurvivingLabel α i j} :
+theorem glueAttach_inr_iff (f : SurvivingFlag W i j)
+    (ℓ : SurvivingLabel α i j) :
     glueAttach W i j f = Sum.inr ℓ ↔ W.attach f.val = Sum.inr ℓ.val := by
   constructor
   · intro h
@@ -338,12 +352,52 @@ theorem glueAttach_inr {f : SurvivingFlag W i j}
     rw [h] at this
     simpa using this.symm
   · intro h
-    unfold glueAttach
-    split
-    · simp_all
-    · rename_i ℓ' ha
-      rw [ha] at h
-      exact congrArg Sum.inr (Subtype.ext (Sum.inr.inj h))
+    have hs := glueAttach_spec W i j f
+    rw [h] at hs
+    cases hg : glueAttach W i j f with
+    | inl v => rw [hg] at hs; exact absurd hs (by simp)
+    | inr m =>
+      rw [hg] at hs
+      simp only [Sum.map_inr, Sum.inr.injEq] at hs
+      exact congrArg Sum.inr (Subtype.ext hs)
+
+/-- The glued attachment lands on a vertex exactly when the original
+attachment does.  With `glueAttach_inr_iff` this characterises
+`glueAttach`, so no proof needs to unfold it. -/
+theorem glueAttach_inl_iff (f : SurvivingFlag W i j) (v : W.Vertex) :
+    glueAttach W i j f = Sum.inl v ↔ W.attach f.val = Sum.inl v := by
+  have hs := glueAttach_spec W i j f
+  constructor
+  · intro h; rw [h] at hs; simpa using hs.symm
+  · intro h
+    rw [h] at hs
+    cases hg : glueAttach W i j f with
+    | inl v' => rw [hg] at hs; simp only [Sum.map_inl, id_eq,
+        Sum.inl.injEq] at hs; rw [hs]
+    | inr m => rw [hg] at hs; exact absurd hs (by simp)
+
+/-- The surviving label a flag glues onto, with its equation. -/
+theorem exists_glueAttach_inr (f : SurvivingFlag W i j) {ℓ : α}
+    (ha : W.attach f.val = Sum.inr ℓ) :
+    ∃ p : SurvivingLabel α i j,
+      glueAttach W i j f = Sum.inr p ∧ p.val = ℓ :=
+  ⟨⟨ℓ, fun e => (survivingFlag_attach_ne f).1 (e ▸ ha),
+       fun e => (survivingFlag_attach_ne f).2 (e ▸ ha)⟩,
+   (glueAttach_inr_iff f _).mpr ha, rfl⟩
+
+/-- Case analysis on `glueAttach`, phrased on the value of `attach`.
+This is the eliminator every proof below uses: it replaces unfolding
+the definition, so `glueAttach` is never unfolded anywhere. -/
+@[elab_as_elim]
+theorem glueAttach_cases {motive : W.Vertex ⊕ SurvivingLabel α i j → Prop}
+    (f : SurvivingFlag W i j)
+    (hinl : ∀ v, W.attach f.val = Sum.inl v → motive (Sum.inl v))
+    (hinr : ∀ p : SurvivingLabel α i j,
+      W.attach f.val = Sum.inr p.val → motive (Sum.inr p)) :
+    motive (glueAttach W i j f) := by
+  cases hg : glueAttach W i j f with
+  | inl v => exact hinl v ((glueAttach_inl_iff f v).mp hg)
+  | inr p => exact hinr p ((glueAttach_inr_iff f p).mp hg)
 
 variable (W i j)
 
@@ -351,14 +405,14 @@ variable (W i j)
 label. -/
 theorem glue_attach_boundaryFlag (ℓ : SurvivingLabel α i j) :
     glueAttach W i j (glueBoundaryFlag W i j ℓ) = Sum.inr ℓ :=
-  glueAttach_inr.mpr (W.attach_boundaryFlag ℓ.val)
+  (glueAttach_inr_iff _ _).mpr (W.attach_boundaryFlag ℓ.val)
 
 /-- A surviving flag attached to a surviving label is that label's
 boundary flag. -/
 theorem glue_eq_boundaryFlag (ℓ : SurvivingLabel α i j)
     (f : SurvivingFlag W i j) (h : glueAttach W i j f = Sum.inr ℓ) :
     f = glueBoundaryFlag W i j ℓ :=
-  Subtype.ext (W.eq_boundaryFlag ℓ.val f.val (glueAttach_inr.mp h))
+  Subtype.ext (W.eq_boundaryFlag ℓ.val f.val ((glueAttach_inr_iff _ _).mp h))
 
 /-- A glue at `{i, j}` with a prescribed pairing and circle count.
 

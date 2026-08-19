@@ -481,24 +481,6 @@ theorem vertex_flag_surviving
   · rw [h, W.attach_boundaryFlag] at hv; cases hv
   · rw [h, W.attach_boundaryFlag] at hv; cases hv
 
-/-- `glueAttach` at a vertex agrees with `attach`. -/
-theorem glueAttach_inl_iff
-    (f : SurvivingFlag W i j) (v : W.Vertex) :
-    glueAttach W i j f = Sum.inl v ↔
-      W.attach f.val = Sum.inl v := by
-  constructor
-  · intro h
-    have := glueAttach_spec W i j f
-    rw [h] at this; simpa using this.symm
-  · intro h
-    unfold glueAttach
-    split
-    · rename_i v' ha
-      rw [ha] at h
-      exact congrArg Sum.inl (Sum.inl.inj h)
-    · rename_i ℓ ha
-      rw [ha] at h; cases h
-
 /-- Vertex degrees are preserved by the open-case lift. -/
 theorem deg_liftSubsetOpen_eq
     (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)

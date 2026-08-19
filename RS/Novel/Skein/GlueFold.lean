@@ -460,27 +460,17 @@ private noncomputable def gluePair_cast_equiv (W : Fragment α) (e : α ≃ β)
           (survLabelCastEquiv e i j)).map (_root_.Equiv.refl _) id
       rcases ha : W.attach f.val with v | ℓ
       · have h1 : glueAttach W i j (flagE f) = Sum.inl v := by
-          unfold glueAttach; split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         have h2 : glueAttach W (e.symm (e i)) (e.symm (e j)) f = Sum.inl v := by
-          unfold glueAttach; split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         rw [h1, h2]; rfl
       · have h1 : ∃ p : SurvivingLabel α i j,
             glueAttach W i j (flagE f) = Sum.inr p ∧ p.val = ℓ := by
-          unfold glueAttach; split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' =>
-            exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         have h2 : ∃ p : SurvivingLabel α (e.symm (e i)) (e.symm (e j)),
             glueAttach W (e.symm (e i)) (e.symm (e j)) f = Sum.inr p ∧ p.val = ℓ
               := by
-          unfold glueAttach; split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' =>
-            exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         obtain ⟨p1, hp1, hv1⟩ := h1
         obtain ⟨p2, hp2, hv2⟩ := h2
         rw [hp1, hp2]
@@ -501,27 +491,17 @@ private noncomputable def gluePair_cast_equiv (W : Fragment α) (e : α ≃ β)
           (survLabelCastEquiv e i j)).map (_root_.Equiv.refl _) id
       rcases ha : W.attach f.val with v | ℓ
       · have h1 : glueAttach W i j (flagE f) = Sum.inl v := by
-          unfold glueAttach; split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         have h2 : glueAttach W (e.symm (e i)) (e.symm (e j)) f = Sum.inl v := by
-          unfold glueAttach; split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         rw [h1, h2]; rfl
       · have h1 : ∃ p : SurvivingLabel α i j,
             glueAttach W i j (flagE f) = Sum.inr p ∧ p.val = ℓ := by
-          unfold glueAttach; split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' =>
-            exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         have h2 : ∃ p : SurvivingLabel α (e.symm (e i)) (e.symm (e j)),
             glueAttach W (e.symm (e i)) (e.symm (e j)) f = Sum.inr p ∧ p.val = ℓ
               := by
-          unfold glueAttach; split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' =>
-            exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         obtain ⟨p1, hp1, hv1⟩ := h1
         obtain ⟨p2, hp2, hv2⟩ := h2
         rw [hp1, hp2]

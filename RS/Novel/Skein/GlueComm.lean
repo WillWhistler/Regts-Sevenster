@@ -60,37 +60,6 @@ the circle count tell the configurations below apart, so the pairing
 is all each of them has to compute.
 -/
 
--- `glueAttach` lands in `Sum.inl` exactly when the base attachment
--- does.
-omit [DecidableEq α] in
-private theorem glueAttach_inl_iff {W : Fragment α} {i j : α}
-    (f : SurvivingFlag W i j) (v : W.Vertex) :
-    glueAttach W i j f = Sum.inl v ↔ W.attach f.val = Sum.inl v := by
-  constructor
-  · intro h
-    have := glueAttach_spec W i j f
-    rw [h] at this; simpa using this.symm
-  · intro h
-    unfold glueAttach; split
-    · rename_i v' heq
-      exact congrArg Sum.inl (Sum.inl.inj (heq.symm.trans h))
-    · rename_i ℓ' heq; exact absurd (heq.symm.trans h) Sum.inr_ne_inl
-
--- ... and in `Sum.inr` at the same underlying label.
-omit [DecidableEq α] in
-private theorem glueAttach_inr_iff {W : Fragment α} {i j : α}
-    (f : SurvivingFlag W i j) (ℓ : SurvivingLabel α i j) :
-    glueAttach W i j f = Sum.inr ℓ ↔ W.attach f.val = Sum.inr ℓ.val := by
-  constructor
-  · intro h
-    have := glueAttach_spec W i j f
-    rw [h] at this; simpa using this.symm
-  · intro h
-    unfold glueAttach; split
-    · rename_i v' heq; exact absurd (heq.symm.trans h) Sum.inl_ne_inr
-    · rename_i ℓ' heq
-      exact congrArg Sum.inr (Subtype.ext (Sum.inr.inj (heq.symm.trans h)))
-
 /-- The flags surviving both glues, read in either order: removing
 `{i, j}` and then `{k, l}` nests the four exclusions one way, and
 removing `{k, l}` first nests them the other way.  The swap is the

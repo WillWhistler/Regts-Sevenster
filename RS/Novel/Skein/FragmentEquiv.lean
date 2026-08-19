@@ -177,27 +177,27 @@ theorem gluePair_case_preserved (e : Equiv W₁ W₂) (i j : α) :
     rw [e.boundaryFlag_comm i, h, ← e.boundaryFlag_comm j] at h1
     exact e.flagEquiv.injective h1
 
+/-- The surviving-flag equivalence commutes with `glueAttachOn`.  Both
+scrutinees are variables, so each of the four cases reduces. -/
+private theorem survivingFlagEquiv_glueAttachOn (e : Equiv W₁ W₂)
+    (i j : α) (f : SurvivingFlag W₁ i j)
+    (s₁ : W₁.Vertex ⊕ α) (h₁ : W₁.attach f.val = s₁)
+    (s₂ : W₂.Vertex ⊕ α)
+    (h₂ : W₂.attach (e.survivingFlagEquiv i j f).val = s₂) :
+    glueAttachOn W₂ i j (e.survivingFlagEquiv i j f) s₂ h₂ =
+      (glueAttachOn W₁ i j f s₁ h₁).map e.vertexEquiv id := by
+  have hatt := e.attach_comm f.val
+  change W₂.attach (e.flagEquiv f.val) = s₂ at h₂
+  rw [h₁] at hatt
+  rw [h₂] at hatt
+  cases s₁ <;> cases s₂ <;> simp_all [glueAttachOn]
+
 /-- The surviving-flag equivalence commutes with glueAttach. -/
 private theorem survivingFlagEquiv_glueAttach (e : Equiv W₁ W₂)
     (i j : α) (f : SurvivingFlag W₁ i j) :
     glueAttach W₂ i j (e.survivingFlagEquiv i j f) =
-    (glueAttach W₁ i j f).map e.vertexEquiv id := by
-  unfold glueAttach
-  have hatt := e.attach_comm f.val
-  split
-  · rename_i v₂ ha₂
-    change W₂.attach (e.flagEquiv f.val) = Sum.inl v₂ at ha₂
-    rw [ha₂] at hatt
-    split
-    · rename_i v₁ ha₁; rw [ha₁] at hatt; simp at hatt; subst hatt; rfl
-    · rename_i ℓ₁ ha₁; rw [ha₁] at hatt; simp at hatt
-  · rename_i ℓ₂ ha₂
-    change W₂.attach (e.flagEquiv f.val) = Sum.inr ℓ₂ at ha₂
-    rw [ha₂] at hatt
-    split
-    · rename_i v₁ ha₁; rw [ha₁] at hatt; simp at hatt
-    · rename_i ℓ₁ ha₁; rw [ha₁] at hatt; simp at hatt
-      subst hatt; exact congrArg Sum.inr (Subtype.ext rfl)
+    (glueAttach W₁ i j f).map e.vertexEquiv id :=
+  e.survivingFlagEquiv_glueAttachOn i j f _ rfl _ rfl
 
 /-- The closed case: the flag equivalence restricts to a
 `gluePairClosed` congruence. -/

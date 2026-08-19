@@ -77,21 +77,16 @@ def ambientFlagEquiv (W : Fragment α) (V : Fragment β) (i j : α) :
 private theorem glueAttach_of_vertex {W : Fragment α} {i j : α}
     (f : SurvivingFlag W i j) {v : W.Vertex}
     (ha : W.attach f.val = Sum.inl v) :
-    glueAttach W i j f = Sum.inl v := by
-  unfold glueAttach; split
-  · rename_i v' hv'; exact congrArg Sum.inl (Sum.inl.inj (hv'.symm.trans ha))
-  · rename_i ℓ' hℓ'; exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+    glueAttach W i j f = Sum.inl v :=
+  (glueAttach_inl_iff f v).mpr ha
 
 /-- `glueAttach` at a flag attached to a label. -/
 private theorem glueAttach_of_label {W : Fragment α} {i j : α}
     (f : SurvivingFlag W i j) {ℓ : α}
     (ha : W.attach f.val = Sum.inr ℓ)
     (hℓi : ℓ ≠ i) (hℓj : ℓ ≠ j) :
-    glueAttach W i j f = Sum.inr ⟨ℓ, hℓi, hℓj⟩ := by
-  unfold glueAttach; split
-  · rename_i v' hv'; exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-  · rename_i ℓ' hℓ'
-    exact congrArg Sum.inr (Subtype.ext (Sum.inr.inj (hℓ'.symm.trans ha)))
+    glueAttach W i j f = Sum.inr ⟨ℓ, hℓi, hℓj⟩ :=
+  (glueAttach_inr_iff f ⟨ℓ, hℓi, hℓj⟩).mpr ha
 
 /-- The closed case of glue-in-ambient: when the two boundary flags
 bound a common edge in W, the LHS and RHS produce equivalent
@@ -436,29 +431,17 @@ noncomputable def gluePairSwap (W : Fragment α) {i j : α}
         (glueAttach W i j f).map (_root_.Equiv.refl _) id
       rcases ha : W.attach f.val with v | ℓ
       · have h1 : glueAttach W j i (flagE.symm f) = Sum.inl v := by
-          unfold glueAttach
-          split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         have h2 : glueAttach W i j f = Sum.inl v := by
-          unfold glueAttach
-          split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         rw [h1, h2]
         rfl
       · have h1 : ∃ p : SurvivingLabel α j i,
             glueAttach W j i (flagE.symm f) = Sum.inr p ∧ p.val = ℓ := by
-          unfold glueAttach
-          split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' => exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         have h2 : ∃ p : SurvivingLabel α i j,
             glueAttach W i j f = Sum.inr p ∧ p.val = ℓ := by
-          unfold glueAttach
-          split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' => exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         obtain ⟨p1, hp1, hv1⟩ := h1
         obtain ⟨p2, hp2, hv2⟩ := h2
         rw [hp1, hp2]
@@ -476,29 +459,17 @@ noncomputable def gluePairSwap (W : Fragment α) {i j : α}
         (glueAttach W i j f).map (_root_.Equiv.refl _) id
       rcases ha : W.attach f.val with v | ℓ
       · have h1 : glueAttach W j i (flagE.symm f) = Sum.inl v := by
-          unfold glueAttach
-          split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         have h2 : glueAttach W i j f = Sum.inl v := by
-          unfold glueAttach
-          split
-          · next v' hv' => exact congrArg _ (Sum.inl.inj (hv'.symm.trans ha))
-          · next _ hℓ' => exact absurd (hℓ'.symm.trans ha) Sum.inr_ne_inl
+          exact (glueAttach_inl_iff _ v).mpr ha
         rw [h1, h2]
         rfl
       · have h1 : ∃ p : SurvivingLabel α j i,
             glueAttach W j i (flagE.symm f) = Sum.inr p ∧ p.val = ℓ := by
-          unfold glueAttach
-          split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' => exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         have h2 : ∃ p : SurvivingLabel α i j,
             glueAttach W i j f = Sum.inr p ∧ p.val = ℓ := by
-          unfold glueAttach
-          split
-          · next _ hv' => exact absurd (hv'.symm.trans ha) Sum.inl_ne_inr
-          · next _ hℓ' => exact ⟨_, rfl, Sum.inr.inj (hℓ'.symm.trans ha)⟩
+          exact exists_glueAttach_inr _ ha
         obtain ⟨p1, hp1, hv1⟩ := h1
         obtain ⟨p2, hp2, hv2⟩ := h2
         rw [hp1, hp2]

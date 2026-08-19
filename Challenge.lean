@@ -3,34 +3,22 @@ import Mathlib
 /-!
 # The certification challenge
 
-The trusted half of an independently checkable certificate for the
-theorems of record, in the format of
-[comparator](https://github.com/leanprover/comparator).  This module
-is self-contained: it imports Mathlib and nothing else, carries the
-whole statement surface the theorems are phrased in, and states them
-with `sorry`.  `Solution.lean` proves each by the theorem of record
-of the same name, against the identical definitions carried by
-`RS/Definitions.lean`.
+**What is certified.**  A complex-valued parameter on closed
+multigraphs, normalized at the empty graph and invariant under
+isomorphism, has exponentially bounded edge-connection rank if and
+only if it is the partition function of a mixed edge-colouring model
+— and the model may be taken with `k` even and `ℓ` odd colours
+satisfying `k, 2ℓ ≤ ⌊2eR⌋` when the rank base is `R` — the conjecture
+of Regts and Sevenster.  The six theorems are section 9; sections 1
+to 8 define every notion they use.
 
-Comparator builds this module and `Solution.lean` separately, exports
-both environments at the kernel level, and checks that each theorem
-below is proved in the solution with an identical statement, about
-identical definitions; that the proofs use no axiom outside
-`[propext, Classical.choice, Quot.sound]`
-(`comparator-config.json`); and that the kernel replays them.
-Reading this file — against Mathlib alone — therefore determines
-exactly what is being certified.
-
-The sections below are the flag model of multigraph fragments with
-its gluing, fragment isomorphism, composition, the connection
-pairing and the edge-rank hypothesis, Eulerian edge subsets, the
-mixed partition function (Regts–Sevenster's Definition 5), and the
-named statements.
-
-This module deliberately contains `sorry` — that is the challenge
-format — so it is not part of the default build target.
+**How to read it.**  The module imports Mathlib and nothing else, so
+what the theorems mean is fixed by this file alone.  It states them
+with `sorry`; `Solution.lean` proves each by the theorem of record of
+the same name, and [comparator](https://github.com/leanprover/comparator)
+checks at the kernel level that the two sides prove identical
+statements about identical definitions.
 -/
-
 
 namespace RS
 
@@ -110,10 +98,9 @@ theorem boundaryFlag_injective (W : Fragment α) :
   rw [hij, hj] at hi
   exact (Sum.inr.inj hi).symm
 
-/-- The partner of a boundary flag is not that boundary flag's own
-label's flag; more useful below: the partner of the flag at `i` is
-the flag at `j` precisely when the flag at `j`'s partner is the flag
-at `i`. -/
+/-- Bounding a common edge is symmetric in the two labels: if the
+flag at `i` pairs to the flag at `j`, then the flag at `j` pairs back
+to the flag at `i`. -/
 theorem pairing_boundaryFlag_comm (W : Fragment α) {i j : α}
     (h : W.pairing (W.boundaryFlag i) = W.boundaryFlag j) :
     W.pairing (W.boundaryFlag j) = W.boundaryFlag i := by
@@ -213,22 +200,37 @@ theorem survivingFlag_attach_ne {W : Fragment α} {i j : α}
   ⟨fun h => f.prop.1 (W.eq_boundaryFlag i f.val h),
    fun h => f.prop.2 (W.eq_boundaryFlag j f.val h)⟩
 
+/-- The attachment map computed at a *given* value of `W.attach`,
+which is supplied together with the equation identifying it.  Taking
+the value as a parameter is what lets every proof below reason by
+cases on it, so `glueAttach` itself is never unfolded. -/
+def glueAttachOn (W : Fragment α) (i j : α) (f : SurvivingFlag W i j) :
+    ∀ s : W.Vertex ⊕ α, W.attach f.val = s →
+      W.Vertex ⊕ SurvivingLabel α i j
+  | Sum.inl v, _ => Sum.inl v
+  | Sum.inr ℓ, ha => Sum.inr ⟨ℓ,
+      fun h => (survivingFlag_attach_ne f).1 (h ▸ ha),
+      fun h => (survivingFlag_attach_ne f).2 (h ▸ ha)⟩
+
 /-- The attachment map after gluing at `{i, j}`: unchanged, with the
 label type restricted to the surviving labels. -/
 def glueAttach (W : Fragment α) (i j : α) (f : SurvivingFlag W i j) :
     W.Vertex ⊕ SurvivingLabel α i j :=
-  match ha : W.attach f.val with
-  | Sum.inl v => Sum.inl v
-  | Sum.inr ℓ => Sum.inr ⟨ℓ,
-      fun h => (survivingFlag_attach_ne f).1 (h ▸ ha),
-      fun h => (survivingFlag_attach_ne f).2 (h ▸ ha)⟩
+  glueAttachOn W i j f (W.attach f.val) rfl
+
+/-- `glueAttachOn` returns, under the label inclusion, exactly the
+value of `attach` it was handed. -/
+theorem glueAttachOn_spec (W : Fragment α) (i j : α)
+    (f : SurvivingFlag W i j) (s : W.Vertex ⊕ α)
+    (h : W.attach f.val = s) :
+    (glueAttachOn W i j f s h).map id Subtype.val = s := by
+  cases s <;> rfl
 
 /-- `glueAttach` agrees with `attach` under the label inclusion. -/
 theorem glueAttach_spec (W : Fragment α) (i j : α)
     (f : SurvivingFlag W i j) :
-    (glueAttach W i j f).map id Subtype.val = W.attach f.val := by
-  unfold glueAttach
-  split <;> simp_all
+    (glueAttach W i j f).map id Subtype.val = W.attach f.val :=
+  glueAttachOn_spec W i j f _ rfl
 
 end GluePair
 
@@ -326,8 +328,8 @@ variable {W i j}
 
 /-- The glued attachment lands on a surviving label exactly when
 the original attachment lands on its underlying label. -/
-theorem glueAttach_inr {f : SurvivingFlag W i j}
-    {ℓ : SurvivingLabel α i j} :
+theorem glueAttach_inr_iff (f : SurvivingFlag W i j)
+    (ℓ : SurvivingLabel α i j) :
     glueAttach W i j f = Sum.inr ℓ ↔ W.attach f.val = Sum.inr ℓ.val := by
   constructor
   · intro h
@@ -335,12 +337,14 @@ theorem glueAttach_inr {f : SurvivingFlag W i j}
     rw [h] at this
     simpa using this.symm
   · intro h
-    unfold glueAttach
-    split
-    · simp_all
-    · rename_i ℓ' ha
-      rw [ha] at h
-      exact congrArg Sum.inr (Subtype.ext (Sum.inr.inj h))
+    have hs := glueAttach_spec W i j f
+    rw [h] at hs
+    cases hg : glueAttach W i j f with
+    | inl v => rw [hg] at hs; exact absurd hs (by simp)
+    | inr m =>
+      rw [hg] at hs
+      simp only [Sum.map_inr, Sum.inr.injEq] at hs
+      exact congrArg Sum.inr (Subtype.ext hs)
 
 variable (W i j)
 
@@ -348,14 +352,14 @@ variable (W i j)
 label. -/
 theorem glue_attach_boundaryFlag (ℓ : SurvivingLabel α i j) :
     glueAttach W i j (glueBoundaryFlag W i j ℓ) = Sum.inr ℓ :=
-  glueAttach_inr.mpr (W.attach_boundaryFlag ℓ.val)
+  (glueAttach_inr_iff _ _).mpr (W.attach_boundaryFlag ℓ.val)
 
 /-- A surviving flag attached to a surviving label is that label's
 boundary flag. -/
 theorem glue_eq_boundaryFlag (ℓ : SurvivingLabel α i j)
     (f : SurvivingFlag W i j) (h : glueAttach W i j f = Sum.inr ℓ) :
     f = glueBoundaryFlag W i j ℓ :=
-  Subtype.ext (W.eq_boundaryFlag ℓ.val f.val (glueAttach_inr.mp h))
+  Subtype.ext (W.eq_boundaryFlag ℓ.val f.val ((glueAttach_inr_iff _ _).mp h))
 
 /-- A glue at `{i, j}` with a prescribed pairing and circle count.
 
@@ -939,41 +943,39 @@ def RegtsSevensterConverseStatement : Prop :=
     ∃ g : EdgeRankParameter (max 1 (k + 2 * ℓ)),
       ∀ W : ClosedFragment, g.val W = mixedPartition h W
 
-
 end RS
-
-/-! ## 9. The theorems of record
-
-Stated with `sorry`; `Solution.lean` proves each by the theorem of
-record of the same name, and comparator certifies the match. -/
+/-! ## 9. The theorems of record: the statements of section 8,
+asserted. -/
 
 namespace Certified
 
 open RS
+
+/-- **The forward direction**, with no hypothesis: bounded
+edge-connection rank implies mixed partition function. -/
+theorem regts_sevenster : RegtsSevensterStatement :=
+  sorry
+
+/-- **The quantitative forward direction**, with no hypothesis: the
+model may be taken with `k, 2ℓ ≤ ⌊2eR⌋`. -/
+theorem regts_sevenster_quant : RegtsSevensterStatementQuant :=
+  sorry
 
 /-- **The converse**: every mixed partition function is an
 edge-rank-bounded parameter, with base `max 1 (k + 2ℓ)`. -/
 theorem regts_sevenster_converse : RegtsSevensterConverseStatement :=
   sorry
 
-/-- **The rank bound from a bounded mixed partition function.** -/
+/-- **The converse, quantitatively**: dimensions at most `B` give
+edge-rank base `max 1 (2B)`. -/
 theorem edgeRankBounded_of_mixedBounded
     {f : ClosedFragment → ℂ} {B : ℕ}
     (hf : IsMixedPartitionFunctionBounded f B) :
     EdgeRankBounded f (max 1 (2 * B)) :=
   sorry
 
-/-- **The forward direction**, with no hypothesis. -/
-theorem regts_sevenster : RegtsSevensterStatement :=
-  sorry
-
-/-- **The quantitative forward direction**, with no hypothesis:
-both dimensions at most `⌊2eR⌋`. -/
-theorem regts_sevenster_quant : RegtsSevensterStatementQuant :=
-  sorry
-
-/-- **The characterisation**: a fragment parameter has bounded edge
-rank exactly when it is a mixed partition function. -/
+/-- **The characterisation**: for a normalized isomorphism-invariant
+parameter the two conditions coincide. -/
 theorem regts_sevenster_characterisation
     (f : ClosedFragment → ℂ)
     (hempty : f emptyClosedFragment = 1)
@@ -981,8 +983,8 @@ theorem regts_sevenster_characterisation
     (∃ R : ℕ, EdgeRankBounded f R) ↔ IsMixedPartitionFunction f :=
   sorry
 
-/-- **The quantitative round trip**: edge rank `R` gives dimension
-`⌊2eR⌋`, and dimension `B` gives edge rank base `max 1 (2B)`. -/
+/-- **The characterisation, quantitatively**: `R` gives `⌊2eR⌋`, and
+`B` gives base `max 1 (2B)`. -/
 theorem regts_sevenster_quant_characterisation
     (f : ClosedFragment → ℂ)
     (hempty : f emptyClosedFragment = 1)

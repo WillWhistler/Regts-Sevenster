@@ -539,10 +539,10 @@ private noncomputable def stageStepEquiv (t t' u : ℕ) (ht : t' + 1 ≤ t)
               rw [stageEquiv_inl t (t' + 1) u ht ⟨(t' + 1) + k, by omega⟩,
                   dif_neg (show ¬ ((t' + 1) + k : ℕ) < t' + 1 from by omega)]
               exact congrArg Sum.inl (Fin.ext (by simp))
-          unfold Fragment.glueAttach
-          split
-          · rename_i v hv; exact absurd (hv.symm.trans hba) (nomatch ·)
-          · rename_i ℓ hℓ
+          refine Fragment.glueAttach_cases _ (fun v hv => ?_)
+            (fun ℓ hℓ => ?_)
+          · exact absurd (hv.symm.trans hba) (nomatch ·)
+          · obtain ⟨ℓ, _hs₁, _hs₂⟩ := ℓ
             simp only [Sum.map_inr]
             have hℓ_eq : ℓ =
                 Sum.inl ⟨if b then t + k else k, by split <;> omega⟩ :=
@@ -609,10 +609,10 @@ private noncomputable def stageStepEquiv (t t' u : ℕ) (ht : t' + 1 ≤ t)
             rw [stageEquiv_inl t (t' + 1) u ht ⟨k, by omega⟩,
                 dif_pos (show (k : ℕ) < t' + 1 from by omega)]
             exact congrArg Sum.inl (Fin.ext (by omega))
-          unfold Fragment.glueAttach
-          split
-          · rename_i v hv; exact absurd (hv.symm.trans hba) (nomatch ·)
-          · rename_i ℓ hℓ
+          refine Fragment.glueAttach_cases _ (fun v hv => ?_)
+            (fun ℓ hℓ => ?_)
+          · exact absurd (hv.symm.trans hba) (nomatch ·)
+          · obtain ⟨ℓ, _hs₁, _hs₂⟩ := ℓ
             simp only [Sum.map_inr]
             have hℓ_eq : ℓ = Sum.inl ⟨t', by omega⟩ := Sum.inr.inj
               (hℓ.symm.trans hba)
@@ -652,12 +652,11 @@ private noncomputable def stageStepEquiv (t t' u : ℕ) (ht : t' + 1 ≤ t)
             change ((F.attach g).map Sum.inr Sum.inr).map id (stageEquiv t (t' +
               1) u ht) = _
             rw [ha]; rfl
-          unfold Fragment.glueAttach
-          split
-          · rename_i v' hv'
-            simp only [Sum.map_inl, id_eq]
+          refine Fragment.glueAttach_cases _ (fun v' hv' => ?_)
+            (fun ℓ' hℓ' => ?_)
+          · simp only [Sum.map_inl, id_eq]
             exact congrArg Sum.inl (Sum.inl.inj (hv'.symm.trans hba))
-          · rename_i ℓ' hℓ'
+          · obtain ⟨ℓ', _hs₁, _hs₂⟩ := ℓ'
             exact absurd (hℓ'.symm.trans hba) (nomatch ·)
         exact (hflag ▸ hLHS).trans
           (by rw [hRHS]; rfl : ((sourceFragment t t' u ht F).attach
@@ -696,10 +695,10 @@ private noncomputable def stageStepEquiv (t t' u : ℕ) (ht : t' + 1 ≤ t)
               rw [ha]; simp only [Sum.map_inr]; refine congrArg Sum.inr ?_
               rw [stageEquiv_inr t (t' + 1) u ht ℓ,
                   dif_pos (show ℓ.val < t' + 1 from by omega)]
-            unfold Fragment.glueAttach
-            split
-            · rename_i v' hv'; exact absurd (hv'.symm.trans hba) (nomatch ·)
-            · rename_i ℓ' hℓ'
+            refine Fragment.glueAttach_cases _ (fun v' hv' => ?_)
+              (fun ℓ' hℓ' => ?_)
+            · exact absurd (hv'.symm.trans hba) (nomatch ·)
+            · obtain ⟨ℓ', _hs₁, _hs₂⟩ := ℓ'
               simp only [Sum.map_inr]
               have hℓ'_eq : ℓ' = Sum.inr ⟨ℓ.val, by omega⟩ :=
                 Sum.inr.inj (hℓ'.symm.trans hba)
@@ -739,10 +738,10 @@ private noncomputable def stageStepEquiv (t t' u : ℕ) (ht : t' + 1 ≤ t)
                 rw [stageEquiv_inr t (t' + 1) u ht ℓ,
                     dif_neg (show ¬ ℓ.val < t' + 1 from by omega), dif_pos
                       hℓ_lt_t]
-              unfold Fragment.glueAttach
-              split
-              · rename_i v' hv'; exact absurd (hv'.symm.trans hba) (nomatch ·)
-              · rename_i ℓ' hℓ'
+              refine Fragment.glueAttach_cases _ (fun v' hv' => ?_)
+                (fun ℓ' hℓ' => ?_)
+              · exact absurd (hv'.symm.trans hba) (nomatch ·)
+              · obtain ⟨ℓ', _hs₁, _hs₂⟩ := ℓ'
                 simp only [Sum.map_inr]
                 have hℓ'_eq : ℓ' = Sum.inl ⟨ℓ.val, by omega⟩ :=
                   Sum.inr.inj (hℓ'.symm.trans hba)
@@ -781,10 +780,10 @@ private noncomputable def stageStepEquiv (t t' u : ℕ) (ht : t' + 1 ≤ t)
                 rw [stageEquiv_inr t (t' + 1) u ht ℓ,
                     dif_neg (show ¬ ℓ.val < t' + 1 from by omega), dif_neg
                       hℓ_lt_t]
-              unfold Fragment.glueAttach
-              split
-              · rename_i v' hv'; exact absurd (hv'.symm.trans hba) (nomatch ·)
-              · rename_i ℓ' hℓ'
+              refine Fragment.glueAttach_cases _ (fun v' hv' => ?_)
+                (fun ℓ' hℓ' => ?_)
+              · exact absurd (hv'.symm.trans hba) (nomatch ·)
+              · obtain ⟨ℓ', _hs₁, _hs₂⟩ := ℓ'
                 have hℓ'_eq : ℓ' = Sum.inr ⟨(t' + 1) + (ℓ.val - t), by omega⟩ :=
                   Sum.inr.inj (hℓ'.symm.trans hba)
                 subst hℓ'_eq
