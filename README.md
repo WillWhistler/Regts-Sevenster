@@ -30,9 +30,12 @@ numbers the displays (11)–(16) as (19)–(24), and numbers the
 closing display of Theorem 6's proof, unnumbered in the journal,
 as (25)–(26); the named results agree.)
 
-Claude Fable 5, Claude Opus 5 and GPT-5.6 Sol Pro were used
-extensively in the development and preparation of this work.
-[formalization.yaml](formalization.yaml) reports how.
+Claude Fable 5 and Claude Opus 5 were used extensively in developing
+this formalization; [formalization.yaml](formalization.yaml) reports
+how.  The paper this tree formalizes was developed with Claude Fable 5
+and GPT-5.6 Sol Pro.  Sol Pro had no part in the formalization: no
+model other than Claude Fable 5 and Claude Opus 5 contributed to the
+Lean development.
 
 ## The theorems
 
