@@ -152,15 +152,13 @@ theorem pairing_inr (g : W₂.Flag) :
 /-! ## The component edge subsets -/
 
 /-- The left component of an edge subset of a disjoint union. -/
-noncomputable def leftSub
-    (F : EdgeSubset (W₁.disjUnion W₂)) : EdgeSubset W₁ :=
+noncomputable def leftSub (F : EdgeSubset (W₁.disjUnion W₂)) : EdgeSubset W₁ :=
   ⟨leftPart F.flags, fun f hf => mem_leftPart.mpr (by
     have h := F.pairing_mem _ (mem_leftPart.mp hf)
     rwa [pairing_inl] at h)⟩
 
 /-- The right component of an edge subset of a disjoint union. -/
-noncomputable def rightSub
-    (F : EdgeSubset (W₁.disjUnion W₂)) : EdgeSubset W₂ :=
+noncomputable def rightSub (F : EdgeSubset (W₁.disjUnion W₂)) : EdgeSubset W₂ :=
   ⟨rightPart F.flags, fun f hf => mem_rightPart.mpr (by
     have h := F.pairing_mem _ (mem_rightPart.mp hf)
     rwa [pairing_inr] at h)⟩
@@ -545,8 +543,7 @@ noncomputable def rightRel (κ : F.RelTransitionSystem) :
 
 /-- The product of two componentwise transition systems: a system on
 the union, inverse to the two restrictions. -/
-noncomputable def prodRel
-    (κ₁ : (leftSub F).RelTransitionSystem)
+noncomputable def prodRel (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) :
     F.RelTransitionSystem where
   match_ := Sum.map κ₁.match_ κ₂.match_
@@ -588,8 +585,7 @@ noncomputable def prodRel
           (inr_mem_internal.mp hf) w (attach_inr_eq_inr.mp hv))
 
 /-- The product of two componentwise orientations. -/
-noncomputable def prodOrient
-    {κ₁ : (leftSub F).RelTransitionSystem}
+noncomputable def prodOrient {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem}
     (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation) :
     (prodRel (F := F) κ₁ κ₂).Orientation where
@@ -617,8 +613,7 @@ noncomputable def prodOrient
 
 /-- A walk of the product system started at a left flag stays left
 and tracks the left component's walk. -/
-theorem iterWalk_prodRel_inl
-    (κ₁ : (leftSub F).RelTransitionSystem)
+theorem iterWalk_prodRel_inl (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem)
     (g : W₁.Flag) (n : ℕ) :
     iterWalk (prodRel (F := F) κ₁ κ₂) (Sum.inl g) n =
@@ -631,8 +626,7 @@ theorem iterWalk_prodRel_inl
     rfl
 
 /-- The right analogue. -/
-theorem iterWalk_prodRel_inr
-    (κ₁ : (leftSub F).RelTransitionSystem)
+theorem iterWalk_prodRel_inr (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem)
     (g : W₂.Flag) (n : ℕ) :
     iterWalk (prodRel (F := F) κ₁ κ₂) (Sum.inr g) n =
@@ -644,8 +638,7 @@ theorem iterWalk_prodRel_inr
       iterWalk_succ κ₂ g n]
     rfl
 
-private theorem inl_mem_periodic
-    {κ₁ : (leftSub F).RelTransitionSystem}
+private theorem inl_mem_periodic {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem} {g : W₁.Flag} :
     (Sum.inl g : (W₁.disjUnion W₂).Flag) ∈
         (prodRel (F := F) κ₁ κ₂).periodicFlags ↔
@@ -673,8 +666,7 @@ private theorem inl_mem_periodic
       exact inl_mem_internal.mpr (hcont j hj)
     · rw [iterWalk_prodRel_inl κ₁ κ₂ g n, hper]
 
-private theorem inr_mem_periodic
-    {κ₁ : (leftSub F).RelTransitionSystem}
+private theorem inr_mem_periodic {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem} {g : W₂.Flag} :
     (Sum.inr g : (W₁.disjUnion W₂).Flag) ∈
         (prodRel (F := F) κ₁ κ₂).periodicFlags ↔
@@ -723,8 +715,7 @@ private noncomputable def periodicSumEquiv
   right_inv x := by
     rcases x with ⟨g, h⟩ | ⟨g, h⟩ <;> rfl
 
-private theorem walkPermPeriodic_prodRel
-    (κ₁ : (leftSub F).RelTransitionSystem)
+private theorem walkPermPeriodic_prodRel (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) :
     (prodRel (F := F) κ₁ κ₂).walkPermPeriodic =
       (periodicSumEquiv κ₁ κ₂).symm.permCongr
@@ -737,8 +728,7 @@ private theorem walkPermPeriodic_prodRel
 /-- **Circuit counts add**: the product system's open circuit count
 is the sum of the two components'.  Each component's orbit data is
 even, so no halving correction survives the split. -/
-theorem openCircuitCount_prodRel
-    (κ₁ : (leftSub F).RelTransitionSystem)
+theorem openCircuitCount_prodRel (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) :
     (prodRel (F := F) κ₁ κ₂).openCircuitCount =
       κ₁.openCircuitCount + κ₂.openCircuitCount := by
@@ -759,9 +749,7 @@ section ThroughSplit
 
 open EdgeSubset
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β]
-  {W₁ : Fragment α} {W₂ : Fragment β}
-  {F : EdgeSubset (W₁.disjUnion W₂)}
+variable {α β : Type}
 
 end ThroughSplit
 

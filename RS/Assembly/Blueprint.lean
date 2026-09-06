@@ -244,10 +244,11 @@ import RS.Novel.Envelope.EnvDelignePackage
 Every main theorem of the development carries a pinned
 `#print axioms` line: an axiom set drifting from the whitelist
 `[propext, Classical.choice, Quot.sound]` is a compile error, not a
-reading exercise.  A new theorem worth auditing gets a pinned line.
+reading exercise.
 
-**How to read it.**  The sections below follow the forward proof in
-the order it is built, from hook vanishing to the theorem itself.
+**How to read it.** The sections group the categorical, Schur and
+coordinate inputs to the forward theorem. The factorial mainline is
+audited in `BlueprintFactorial.lean`.
 Each pin names one theorem; the section it sits in says what that
 theorem contributes.  The converse is audited in
 `BlueprintConverse.lean`, the symmetric-group input in
@@ -1268,7 +1269,3 @@ envelope, and the package they assemble into.
 #print axioms RS.skein_delignePackage
 
 /-! ### The forward theorem -/
-
-/-- info: 'RS.regts_sevenster_conditional' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
-#print axioms RS.regts_sevenster_conditional

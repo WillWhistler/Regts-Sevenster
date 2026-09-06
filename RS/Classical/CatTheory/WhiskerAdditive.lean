@@ -25,24 +25,30 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
-  [Preadditive C] [MonoidalPreadditive C]
+variable {C : Type u}
 
 /-- Whiskering on the left commutes with negation. -/
 @[simp]
-theorem whiskerLeft_neg (X : C) {Y Z : C} (f : Y ⟶ Z) :
+theorem whiskerLeft_neg [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C]
+    (X : C) {Y Z : C} (f : Y ⟶ Z) :
     X ◁ (-f) = -(X ◁ f) :=
   (tensorLeft X).map_neg
 
 /-- Whiskering on the right commutes with negation. -/
 @[simp]
-theorem neg_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
+theorem neg_whiskerRight [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C]
+    {X Y : C} (f : X ⟶ Y) (Z : C) :
     (-f) ▷ Z = -(f ▷ Z) :=
   (tensorRight Z).map_neg
 
 /-- Tensoring a zero object on the right with any object gives a
 zero object. -/
-theorem isZero_whiskerRight {X : C} (h : IsZero X) (V : C) :
+theorem isZero_whiskerRight
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C]
+    {X : C} (h : IsZero X) (V : C) :
     IsZero (X ⊗ V) := by
   rw [IsZero.iff_id_eq_zero] at h ⊢
   rw [show 𝟙 (X ⊗ V) = 𝟙 X ▷ V from
@@ -51,7 +57,9 @@ theorem isZero_whiskerRight {X : C} (h : IsZero X) (V : C) :
 
 /-- Tensoring any object with a zero object on the right gives a
 zero object. -/
-theorem isZero_whiskerLeft (V : C) {Y : C} (h : IsZero Y) :
+theorem isZero_whiskerLeft [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C]
+    (V : C) {Y : C} (h : IsZero Y) :
     IsZero (V ⊗ Y) := by
   rw [IsZero.iff_id_eq_zero] at h ⊢
   rw [show 𝟙 (V ⊗ Y) = V ◁ 𝟙 Y from
@@ -62,11 +70,12 @@ theorem isZero_whiskerLeft (V : C) {Y : C} (h : IsZero Y) :
 
 section Distributors
 
-variable [Limits.HasBinaryBiproducts C]
-
 /-- **Tensoring on the left distributes over a binary
 biproduct.** -/
-noncomputable def tensorBiprodIso (B X Y : C) :
+noncomputable def tensorBiprodIso
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (B X Y : C) :
     B ⊗ (X ⊞ Y) ≅ (B ⊗ X) ⊞ (B ⊗ Y) where
   hom := biprod.lift (B ◁ biprod.fst) (B ◁ biprod.snd)
   inv := biprod.desc (B ◁ biprod.inl) (B ◁ biprod.inr)
@@ -80,7 +89,10 @@ noncomputable def tensorBiprodIso (B X Y : C) :
 
 /-- **Tensoring on the right distributes over a binary
 biproduct.** -/
-noncomputable def biprodTensorIso (X Y B : C) :
+noncomputable def biprodTensorIso
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (X Y B : C) :
     (X ⊞ Y) ⊗ B ≅ (X ⊗ B) ⊞ (Y ⊗ B) where
   hom := biprod.lift (biprod.fst ▷ B) (biprod.snd ▷ B)
   inv := biprod.desc (biprod.inl ▷ B) (biprod.inr ▷ B)
@@ -92,42 +104,66 @@ noncomputable def biprodTensorIso (X Y B : C) :
     ext <;> simp [← comp_whiskerRight]
 
 @[reassoc (attr := simp)]
-theorem inl_tensorBiprodIso_hom (B X Y : C) :
+theorem inl_tensorBiprodIso_hom
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (B X Y : C) :
     (B ◁ biprod.inl) ≫ (tensorBiprodIso B X Y).hom = biprod.inl := by
   ext <;> simp [tensorBiprodIso, ← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
-theorem inr_tensorBiprodIso_hom (B X Y : C) :
+theorem inr_tensorBiprodIso_hom
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (B X Y : C) :
     (B ◁ biprod.inr) ≫ (tensorBiprodIso B X Y).hom = biprod.inr := by
   ext <;> simp [tensorBiprodIso, ← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
-theorem inl_tensorBiprodIso_inv (B X Y : C) :
+theorem inl_tensorBiprodIso_inv
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (B X Y : C) :
     biprod.inl ≫ (tensorBiprodIso B X Y).inv = B ◁ biprod.inl := by
   simp [tensorBiprodIso]
 
 @[reassoc (attr := simp)]
-theorem inr_tensorBiprodIso_inv (B X Y : C) :
+theorem inr_tensorBiprodIso_inv
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (B X Y : C) :
     biprod.inr ≫ (tensorBiprodIso B X Y).inv = B ◁ biprod.inr := by
   simp [tensorBiprodIso]
 
 @[reassoc (attr := simp)]
-theorem inl_biprodTensorIso_hom (X Y B : C) :
+theorem inl_biprodTensorIso_hom
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (X Y B : C) :
     (biprod.inl ▷ B) ≫ (biprodTensorIso X Y B).hom = biprod.inl := by
   ext <;> simp [biprodTensorIso, ← comp_whiskerRight]
 
 @[reassoc (attr := simp)]
-theorem inr_biprodTensorIso_hom (X Y B : C) :
+theorem inr_biprodTensorIso_hom
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (X Y B : C) :
     (biprod.inr ▷ B) ≫ (biprodTensorIso X Y B).hom = biprod.inr := by
   ext <;> simp [biprodTensorIso, ← comp_whiskerRight]
 
 @[reassoc (attr := simp)]
-theorem inl_biprodTensorIso_inv (X Y B : C) :
+theorem inl_biprodTensorIso_inv
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (X Y B : C) :
     biprod.inl ≫ (biprodTensorIso X Y B).inv = biprod.inl ▷ B := by
   simp [biprodTensorIso]
 
 @[reassoc (attr := simp)]
-theorem inr_biprodTensorIso_inv (X Y B : C) :
+theorem inr_biprodTensorIso_inv
+    [Category.{v} C] [MonoidalCategory C] [Preadditive C]
+    [MonoidalPreadditive C] [Limits.HasBinaryBiproducts C]
+    (X Y B : C) :
     biprod.inr ≫ (biprodTensorIso X Y B).inv = biprod.inr ▷ B := by
   simp [biprodTensorIso]
 

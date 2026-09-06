@@ -26,8 +26,7 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [MonoidalPreadditive A]
+variable {A : Type u}
 
 /-- The descent step at a general left factor: if `(P ⊗ X) ⊗ X`
 vanishes, so does `P ⊗ X`.  The identity of `P ⊗ X` factors
@@ -35,7 +34,10 @@ through `P ⊗ ((X ⊗ Xᘁ) ⊗ X)` by the triangle identity for the
 pairing `(X, Xᘁ)` whiskered by `P`, and that object is zero,
 being isomorphic to `((P ⊗ X) ⊗ X) ⊗ Xᘁ` by associators and the
 braiding `β_ Xᘁ X`. -/
-theorem isZero_tensorObj_of_isZero_tensorObj (X : A)
+theorem isZero_tensorObj_of_isZero_tensorObj
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [MonoidalPreadditive A]
+    (X : A)
     [HasRightDual X] {P : A}
     (h : Limits.IsZero ((P ⊗ X) ⊗ X)) :
     Limits.IsZero (P ⊗ X) := by
@@ -58,7 +60,10 @@ theorem isZero_tensorObj_of_isZero_tensorObj (X : A)
 
 /-- Deligne 1.17, descent: a vanishing `(n + 2)`-nd tensor power
 forces a vanishing `(n + 1)`-st tensor power. -/
-theorem isZero_tensorPow_pred (X : A) [HasRightDual X] {n : ℕ}
+theorem isZero_tensorPow_pred
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [MonoidalPreadditive A]
+    (X : A) [HasRightDual X] {n : ℕ}
     (h : Limits.IsZero (tensorPow A X (n + 2))) :
     Limits.IsZero (tensorPow A X (n + 1)) :=
   isZero_tensorObj_of_isZero_tensorObj (P := tensorPow A X n) X h
@@ -66,7 +71,10 @@ theorem isZero_tensorPow_pred (X : A) [HasRightDual X] {n : ℕ}
 /-- **Deligne 1.17** (Catégories tensorielles): a vanishing tensor
 power forces a vanishing object — if `X ^ ⊗ n = 0` for some
 `n ≠ 0`, then `X = 0`. -/
-theorem isZero_of_isZero_tensorPow (X : A) [HasRightDual X] {n : ℕ}
+theorem isZero_of_isZero_tensorPow
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [MonoidalPreadditive A]
+    (X : A) [HasRightDual X] {n : ℕ}
     (hn : n ≠ 0) (h : Limits.IsZero (tensorPow A X n)) :
     Limits.IsZero X := by
   induction n with

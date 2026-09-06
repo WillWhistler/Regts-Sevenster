@@ -19,11 +19,7 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
+variable {C : Type v}
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
@@ -31,7 +27,11 @@ attribute [local instance]
 /-- **The line step of the dévissage**: when every alternating
 power of the remainder survives, a further line factor splits
 off it. -/
-theorem devissageStepB (L : OddLine (Ind C)) (X : Ind C) :
+theorem devissageStepB
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (X : Ind C) :
     DevissageStepB (Ind C) L X := by
   intro st hAlt
   letI := st.monObj

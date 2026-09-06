@@ -30,12 +30,13 @@ universe v u v' u'
 
 section General
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u}
 
 /-- **A section of the epimorphism splits a short exact sequence.**
 The retraction is the factorization of `𝟙 - g ≫ s` through the
 kernel `f`. -/
 noncomputable def ShortComplex.ShortExact.splittingOfSplitEpi
+    [Category.{v} C] [Abelian C]
     {S : CategoryTheory.ShortComplex C} (hS : S.ShortExact)
     (s : S.X₃ ⟶ S.X₂) (hs : s ≫ S.g = 𝟙 S.X₃) :
     S.Splitting :=

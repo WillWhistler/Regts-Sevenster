@@ -5,8 +5,8 @@ import RS.Novel.Envelope.EnvDeligne
 
 The Deligne semisimplicity hypothesis for the envelope: every
 object is a finite biproduct of simple objects.  The endomorphism
-algebra is finite-dimensional and semisimple (conditional on the
-Schur package), so the identity splits into a complete orthogonal
+algebra is finite-dimensional and semisimple by the factorial trace
+obstruction, so the identity splits into a complete orthogonal
 family of atomic idempotents; each cuts out a corner object with
 scalar endomorphisms, which is simple because monomorphisms split
 in the envelope, and the object is the biproduct of its corners.
@@ -25,60 +25,69 @@ variable {R : ℕ} (f : EdgeRankParameter R)
 
 section GenericCut
 
-variable {D : Type u} [Category.{v} D] [Preadditive D]
-  (X : Karoubi D) {e : End X} (he : IsIdempotentElem e)
+variable {D : Type u}
 
 /-- The corner object cut out of a Karoubi object by an
 idempotent endomorphism. -/
-noncomputable def karoubiCorner : Karoubi D :=
+noncomputable def karoubiCorner
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
+    Karoubi D :=
   ⟨X.X, e.f, congrArg Karoubi.Hom.f he⟩
 
 /-- The corner inclusion. -/
-noncomputable def cornerIncl : karoubiCorner X he ⟶ X :=
+noncomputable def cornerIncl
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
+    karoubiCorner X he ⟶ X :=
   ⟨e.f, by
     show e.f ≫ e.f ≫ X.p = e.f
     rw [Karoubi.comp_p]
     exact congrArg Karoubi.Hom.f he⟩
 
 /-- The corner projection. -/
-noncomputable def cornerProj : X ⟶ karoubiCorner X he :=
+noncomputable def cornerProj
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
+    X ⟶ karoubiCorner X he :=
   ⟨e.f, by
     show X.p ≫ e.f ≫ e.f = e.f
     rw [show (e.f ≫ e.f : X.X ⟶ X.X) = e.f from
       congrArg Karoubi.Hom.f he, Karoubi.p_comp]⟩
 
-omit [Preadditive D] in
 /-- The corner is a retract: including then projecting is the
 identity on it. -/
-theorem cornerIncl_proj :
+theorem cornerIncl_proj
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
     cornerIncl X he ≫ cornerProj X he = 𝟙 (karoubiCorner X he) := by
   apply Karoubi.hom_ext
   show e.f ≫ e.f = e.f
   exact congrArg Karoubi.Hom.f he
 
-omit [Preadditive D] in
 /-- Projecting then including is the idempotent. -/
-theorem cornerProj_incl :
+theorem cornerProj_incl
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
     cornerProj X he ≫ cornerIncl X he = e := by
   apply Karoubi.hom_ext
   exact congrArg Karoubi.Hom.f he
 
-omit [Preadditive D] in
 /-- The inclusion is absorbed by the idempotent. -/
-theorem cornerIncl_absorb : cornerIncl X he ≫ e = cornerIncl X he := by
+theorem cornerIncl_absorb
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
+    cornerIncl X he ≫ e = cornerIncl X he := by
   apply Karoubi.hom_ext
   show e.f ≫ e.f = e.f
   exact congrArg Karoubi.Hom.f he
 
-omit [Preadditive D] in
 /-- And so is the projection. -/
-theorem cornerProj_absorb : e ≫ cornerProj X he = cornerProj X he := by
+theorem cornerProj_absorb
+    [Category.{v} D] (X : Karoubi D) {e : End X} (he : IsIdempotentElem e) :
+    e ≫ cornerProj X he = cornerProj X he := by
   apply Karoubi.hom_ext
   show e.f ≫ e.f = e.f
   exact congrArg Karoubi.Hom.f he
 
 /-- Cross-composites of distinct orthogonal corners vanish. -/
 theorem cornerIncl_proj_orthogonal
+    [Category.{v} D] [Preadditive D] (X : Karoubi D) {e : End X}
+    (he : IsIdempotentElem e)
     {e' : End X} (he' : IsIdempotentElem e')
     (horth : e' * e = 0) :
     cornerIncl X he ≫ cornerProj X he' = 0 := by
@@ -93,8 +102,7 @@ end GenericCut
 /-- An envelope object with scalar endomorphism algebra and
 nonzero identity is simple: monomorphisms split, and a split
 idempotent scalar is `0` or `1`. -/
-theorem env_simple_of_scalar_end (P : SchurPackage.{1})
-    (E : Env f) (hne : 𝟙 E ≠ 0)
+theorem env_simple_of_scalar_end (E : Env f) (hne : 𝟙 E ≠ 0)
     (hsc : ∀ x : End E, ∃ c : ℂ, x = c • 𝟙 E) :
     Simple E := by
   constructor
@@ -105,7 +113,7 @@ theorem env_simple_of_scalar_end (P : SchurPackage.{1})
     rw [hg, comp_zero] at hr2
     exact hne hr2.symm
   · intro hg
-    obtain ⟨r, hr⟩ := env_mono_split f P g
+    obtain ⟨r, hr⟩ := env_mono_split f g
     obtain ⟨c, hc⟩ := hsc (r ≫ g)
     have hidem : (r ≫ g) ≫ (r ≫ g) = r ≫ g := by
       rw [assoc, ← assoc g r g, hr, id_comp]
@@ -180,19 +188,19 @@ theorem env_corner_id_ne_zero (E : Env f) {e : End E}
 
 /-- **Semisimplicity of the envelope**: every object is a finite
 biproduct of simple objects. -/
-theorem env_deligneSemisimple (P : SchurPackage.{1}) :
+theorem env_deligneSemisimple :
     IsSemisimple (Env f) := by
   classical
   intro E
   haveI : FiniteDimensional ℂ (End E) := envHomFinite f E E
-  haveI := envEnd_isSemisimpleRing f E P
+  haveI := envEnd_isSemisimpleRing f E
   obtain ⟨ι, hfin, e, hco, hatom⟩ :=
     exists_completeOrthogonal_atomic (A := End E)
   -- The corners, reindexed over `Fin n`.
   let q := (Fintype.equivFin ι).symm
   refine ⟨Fintype.card ι,
     fun i => karoubiCorner E (hatom (q i)).idem, fun i => ?_, ⟨?_⟩⟩
-  · exact env_simple_of_scalar_end f P _
+  · exact env_simple_of_scalar_end f _
       (env_corner_id_ne_zero f E (hatom (q i)))
       (env_corner_scalar f E (hatom (q i)))
   -- The object is the biproduct of its corners over `ι`; then

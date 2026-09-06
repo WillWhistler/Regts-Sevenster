@@ -19,21 +19,20 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
-variable (S : ShortComplex (Ind C))
-variable [HasRightDual (S.X₃ : Ind C)]
-variable [HasLeftDual (((S.X₃)ᘁ) : Ind C)]
-variable [HasRightDual (((S.X₃)ᘁ) : Ind C)]
-variable [HasRightDual (unitFormMid S : Ind C)]
+variable {C : Type v}
 
 /-- **The unit of the splitting algebra survives over the
 ind-completion**: the colimit unit dies only at a finite stage,
 and the stage units are nonvanishing symmetrised point powers of
 the monic dualised point. -/
-theorem splitAlgebraUnit_ne_zero_ind (hS : S.ShortExact)
+theorem splitAlgebraUnit_ne_zero_ind
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (S : ShortComplex (Ind C))
+    [HasRightDual (S.X₃ : Ind C)] [HasLeftDual (((S.X₃)ᘁ) : Ind C)]
+    [HasRightDual (((S.X₃)ᘁ) : Ind C)]
+    [HasRightDual (unitFormMid S : Ind C)]
+    (hS : S.ShortExact)
     (h1 : ¬ IsZero (𝟙_ (Ind C))) :
     splitAlgebraUnit (((unitFormMid S)ᘁ) : Ind C)
       (unitFormPoint S) ≠ 0 := by
@@ -55,7 +54,14 @@ theorem splitAlgebraUnit_ne_zero_ind (hS : S.ShortExact)
 (Deligne 2.10): every short exact sequence whose quotient and
 derived objects carry duals splits after base change to a nonzero
 commutative algebra. -/
-theorem rappel210_ind (hS : S.ShortExact)
+theorem rappel210_ind
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (S : ShortComplex (Ind C))
+    [HasRightDual (S.X₃ : Ind C)] [HasLeftDual (((S.X₃)ᘁ) : Ind C)]
+    [HasRightDual (((S.X₃)ᘁ) : Ind C)]
+    [HasRightDual (unitFormMid S : Ind C)]
+    (hS : S.ShortExact)
     (h1 : ¬ IsZero (𝟙_ (Ind C))) :
     Rappel210Statement S hS :=
   rappel210_of_unit_nonzero S hS

@@ -201,8 +201,7 @@ variable {F : EdgeSubset W} {κ : F.RelTransitionSystem}
   {a b c d : W.Flag} {S : Finset W.Flag}
 
 /-- The `∂`-flip of a core odd colouring on the segment edges. -/
-noncomputable def segFlipColouring
-    (hSpair : ∀ f ∈ S, W.pairing f ∈ S) {ℓ : ℕ}
+noncomputable def segFlipColouring (hSpair : ∀ f ∈ S, W.pairing f ∈ S) {ℓ : ℕ}
     (φ : F.CoreOddColouring ℓ) : F.CoreOddColouring ℓ :=
   ⟨fun g => if g.val ∈ S then oddPartner ℓ (φ.val g) else φ.val g,
    fun g => by
@@ -223,8 +222,7 @@ noncomputable def segFlipColouring
      exact hbeta⟩
 
 /-- The segment-flipped colouring, unfolded. -/
-theorem segFlipColouring_val
-    (hSpair : ∀ f ∈ S, W.pairing f ∈ S) {ℓ : ℕ}
+theorem segFlipColouring_val (hSpair : ∀ f ∈ S, W.pairing f ∈ S) {ℓ : ℕ}
     (φ : F.CoreOddColouring ℓ)
     (g : {g : W.Flag // g ∈ F.coreFlags}) :
     (segFlipColouring hSpair φ).val g =
@@ -415,8 +413,7 @@ private theorem diffAtS_split {κ₀ : F.RelTransitionSystem}
     · exact ⟨hgS, hgat⟩
     · exact ⟨hgS, hgat⟩
 
-private theorem S_eq_biUnion_diffAtS
-    (hSint : ∀ f ∈ S, f ∈ F.internalFlags) :
+private theorem S_eq_biUnion_diffAtS (hSint : ∀ f ∈ S, f ∈ F.internalFlags) :
     S = Finset.univ.biUnion (fun vv => diffAtS S vv) := by
   apply Finset.ext
   intro g
@@ -438,8 +435,7 @@ private theorem diffAtS_pairwiseDisjoint :
   rw [h1] at h2
   exact Sum.inl.inj h2
 
-private theorem prod_inSign_seg
-    (hSpair : ∀ f ∈ S, W.pairing f ∈ S)
+private theorem prod_inSign_seg (hSpair : ∀ f ∈ S, W.pairing f ∈ S)
     (hScore : ∀ f ∈ S, f ∈ F.coreFlags)
     (φ : F.CoreOddColouring ℓ) :
     ∏ g ∈ S, inSign φ g = 1 := by
@@ -846,8 +842,7 @@ private theorem signAt_flip_v (hd : SegData κ κ' o o' S v P Q R T)
   exact key _ _ _ _ _ _ _ hr2 hM2
 
 /-- Away from the move's vertex: the flipped vertex list. -/
-private theorem evalList_flip_ne
-    (hd : SegData κ κ' o o' S v P Q R T)
+private theorem evalList_flip_ne (hd : SegData κ κ' o o' S v P Q R T)
     (hM : MixedFunctional k ℓ) (μ : Multiset (Fin k))
     {vv : W.Vertex} (hvv : vv ≠ v) {φ φ' : F.CoreOddColouring ℓ}
     (hφ' : ∀ g, φ'.val g =
@@ -993,8 +988,7 @@ private theorem evalList_flip_ne
         rw [hp]
 
 /-- At the move's vertex: the flipped vertex list. -/
-private theorem evalList_flip_v
-    (hd : SegData κ κ' o o' S v P Q R T)
+private theorem evalList_flip_v (hd : SegData κ κ' o o' S v P Q R T)
     (hM : MixedFunctional k ℓ) (μ : Multiset (Fin k))
     {φ φ' : F.CoreOddColouring ℓ}
     (hφ' : ∀ g, φ'.val g =
@@ -1693,12 +1687,9 @@ end WalkReach
 
 section WalkReachLocalized
 
-variable [LinearOrder α] {F : EdgeSubset W}
-  {κ : F.RelTransitionSystem}
-
-omit [LinearOrder α] in
 /-- The chain membership is closed under the pairing. -/
-theorem onBoundaryChain_pairing {β f : W.Flag}
+theorem onBoundaryChain_pairing {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {β f : W.Flag}
     (h : OnBoundaryChain κ β f) :
     OnBoundaryChain κ β (W.pairing f) := by
   obtain ⟨k, t, htk, hcont, hterm, hf⟩ := h
@@ -1707,10 +1698,10 @@ theorem onBoundaryChain_pairing {β f : W.Flag}
   · exact Or.inr rfl
   · exact Or.inl (W.pairing_invol _)
 
-omit [LinearOrder α] in
 /-- The chain membership is closed along internally-continuing
 walks. -/
-theorem onBoundaryChain_iterWalk {β f : W.Flag}
+theorem onBoundaryChain_iterWalk {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {β f : W.Flag}
     (hβ : β ∈ F.boundaryFlags) (h : OnBoundaryChain κ β f)
     {m : ℕ}
     (hcont : ∀ j, j < m →
@@ -1725,11 +1716,12 @@ theorem onBoundaryChain_iterWalk {β f : W.Flag}
     exact onBoundaryChain_match hβ (hcont j (by omega))
       (onBoundaryChain_pairing (ih (by omega)))
 
-omit [LinearOrder α] in
 /-- A same-component square is localized: `c`'s component either
 is a circuit carrying all four flags, or is the chain of a
 boundary flag carrying them. -/
-theorem squareLocalized_of_walkReach {a b c d : W.Flag}
+theorem squareLocalized_of_walkReach
+    {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {a b c d : W.Flag}
     {v : W.Vertex} (hsq : RepairSquare κ a b c d v)
     (hreach : WalkReach κ c a) :
     SquareLocalized κ a b c d := by
@@ -1748,12 +1740,12 @@ theorem squareLocalized_of_walkReach {a b c d : W.Flag}
     · exact Or.inr
         (hsq.hcd ▸ onBoundaryChain_match hβ hsq.hc hchain)
 
-omit [LinearOrder α] in
 /-- On a component with an orientation, membership of `a` on `c`'s
 periodic orbit forces the forward reach under the non-separated
 condition: the pairing-side (reverse) membership contradicts the
 orientation. -/
-theorem walkReach_of_orbitFlag {a c : W.Flag} {o : κ.Orientation}
+theorem walkReach_of_orbitFlag {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {a c : W.Flag} {o : κ.Orientation}
     (hpc : κ.PeriodicFlag c) (hsame : o.isOut c = o.isOut a)
     (hac : a ≠ c) (horb : OrbitFlag κ c a) :
     WalkReach κ c a := by
@@ -1781,9 +1773,9 @@ theorem walkReach_of_orbitFlag {a c : W.Flag} {o : κ.Orientation}
     rw [← hm, hsame] at h1
     simp at h1
 
-omit [LinearOrder α] in
 /-- Orbit membership on a periodic component is periodic. -/
-theorem periodicFlag_of_orbitFlag {c f : W.Flag}
+theorem periodicFlag_of_orbitFlag {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {c f : W.Flag}
     (hpc : κ.PeriodicFlag c) (horb : OrbitFlag κ c f) :
     κ.PeriodicFlag f := by
   obtain ⟨m, rfl | rfl⟩ := horb

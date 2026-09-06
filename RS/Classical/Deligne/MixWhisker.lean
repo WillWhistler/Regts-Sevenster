@@ -34,21 +34,21 @@ universe v u
 
 section WhiskerLetters
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+variable {A : Type u}
 
 namespace MixedLetters
-
-variable {K : Type} [Fintype K] [DecidableEq K] {par : K → Bool}
-  {U M : A}
 
 /-- **Whiskered extraction**: if a group-algebra element acts as
 zero on the tensor power of the mixed object *after whiskering by
 `W`*, all its colour sums vanish — provided no power of the odd
 line is annihilated by `W ⊗ −`.  The proof is the unwhiskered one
 run through the `ℂ`-linear functor `W ◁ −`. -/
-theorem colourSum_eq_zero_whisker (S : MixedLetters K par U M)
+theorem colourSum_eq_zero_whisker
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] [DecidableEq K]
+    {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) (W : A)
     (hW : ∀ k : ℕ, 𝟙 (W ⊗ tensorPow A U k) ≠
       (0 : W ⊗ tensorPow A U k ⟶ W ⊗ tensorPow A U k))
@@ -84,15 +84,16 @@ end WhiskerLetters
 
 section AmbientWhisker
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [HasBinaryBiproducts A]
+variable {A : Type u}
 
 /-- **Whiskered extraction in the ambient category**: if the block
 idempotent acts as zero on the whiskered tensor power of the mixed
 sum, every colour sum of the idempotent vanishes. -/
-theorem colourSum_eq_zero_of_whisker_sum (P : SchurPackage.{v})
+theorem colourSum_eq_zero_of_whisker_sum
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v})
     (W : A) {U : A}
     (hW : ∀ k : ℕ, 𝟙 (W ⊗ tensorPow A U k) ≠
       (0 : W ⊗ tensorPow A U k ⟶ W ⊗ tensorPow A U k))
@@ -111,7 +112,11 @@ direct sum of `p + 1` unit copies and `q + 1` odd-line copies, at
 any diagram avoiding the cell `(p + 1, q + 1)`.  The nontriviality
 of the ambient category is replaced by the sharper hypothesis that
 `W ⊗ −` kills no power of the line. -/
-theorem whisker_permAlg_sum_ne_zero (P : SchurPackage.{v})
+theorem whisker_permAlg_sum_ne_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v})
     (P₀ : SchurPackage.{0}) (W : A) {U : A}
     (hW : ∀ k : ℕ, 𝟙 (W ⊗ tensorPow A U k) ≠
       (0 : W ⊗ tensorPow A U k ⟶ W ⊗ tensorPow A U k))
@@ -134,14 +139,16 @@ end AmbientWhisker
 
 section Transport
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
+variable {A : Type u}
 
 /-- **The whiskered action is an isomorphism invariant**: the
 tensor power of the inverse splits the tensor power of the
 isomorphism, and `W ◁ −` is a functor, so the naturality square of
 `permAlg` transports the vanishing. -/
-theorem whisker_permAlg_eq_zero_of_iso (W : A) {X Y : A} (e : X ≅ Y)
+theorem whisker_permAlg_eq_zero_of_iso
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (W : A) {X Y : A} (e : X ≅ Y)
     {n : ℕ} (x : SymGroupAlgebra n) (h : W ◁ permAlg X n x = 0) :
     W ◁ permAlg Y n x = 0 := by
   have hST : (W ◁ tensorPowMap e.inv n) ≫
@@ -168,14 +175,12 @@ end Transport
 
 section LinePowers
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [MonoidalPreadditive A]
+variable {A : Type u}
 
-omit [MonoidalCategory A] [SymmetricCategory A]
-  [MonoidalPreadditive A] in
 /-- A zero identity transfers along an isomorphism.  Stated at
 general objects. -/
-private theorem id_zero_of_iso {X Y : A} (e : X ≅ Y) (h : 𝟙 X = 0) :
+private theorem id_zero_of_iso [Category.{v} A] [Preadditive A]
+    {X Y : A} (e : X ≅ Y) (h : 𝟙 X = 0) :
     𝟙 Y = 0 := by
   calc 𝟙 Y = e.inv ≫ 𝟙 X ≫ e.hom := by
         rw [Category.id_comp, e.inv_hom_id]
@@ -185,7 +190,10 @@ private theorem id_zero_of_iso {X Y : A} (e : X ≅ Y) (h : 𝟙 X = 0) :
 of the whiskering monoid is: one more copy of the line is undone
 through the line's self-pairing, and the empty power leaves `W`
 itself, whose identity carries the unit. -/
-theorem OddLine.whisker_tensorPow_id_ne_zero (L : OddLine A)
+theorem OddLine.whisker_tensorPow_id_ne_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [MonoidalPreadditive A]
+    (L : OddLine A)
     {W : A} [MonObj W] (hW : η[W] ≠ 0) (k : ℕ) :
     𝟙 (W ⊗ tensorPow A L.obj k) ≠
       (0 : W ⊗ tensorPow A L.obj k ⟶ W ⊗ tensorPow A L.obj k) := by
@@ -215,10 +223,7 @@ end LinePowers
 
 section MixWhisker
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [HasFiniteBiproducts A]
+variable {A : Type u}
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 

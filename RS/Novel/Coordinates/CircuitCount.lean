@@ -19,14 +19,14 @@ open Equiv
 
 section OrbitCount
 
-variable {β : Type} [Fintype β] [DecidableEq β]
+variable {β : Type}
 
 /-- The orbit count of a permutation: number of non-trivial cycles
 plus number of fixed points. -/
-noncomputable def orbitCount (π : Perm β) : ℕ :=
+noncomputable def orbitCount [Fintype β] [DecidableEq β]
+    (π : Perm β) : ℕ :=
   π.cycleType.card + Fintype.card (Function.fixedPoints π)
 
-omit [Fintype β] [DecidableEq β] in
 /-- Decomposition of a permutation into ofSubtype parts for an
 invariant predicate and its complement. -/
 theorem perm_eq_ofSubtype_mul (π : Perm β) (p : β → Prop) [DecidablePred p]
@@ -51,7 +51,6 @@ theorem perm_eq_ofSubtype_mul (π : Perm β) (p : β → Prop) [DecidablePred p]
       Perm.ofSubtype_subtypePerm_of_not_mem hp ((hp x).not.mpr hpx)
     simp [h1, h2]
 
-omit [Fintype β] [DecidableEq β] in
 /-- The ofSubtype lifts of the p-restriction and not-p-restriction
 are disjoint. -/
 theorem disjoint_ofSubtype_subtypePerm (π : Perm β) (p : β → Prop)
@@ -70,7 +69,8 @@ theorem disjoint_ofSubtype_subtypePerm (π : Perm β) (p : β → Prop)
 
 /-- The orbit count of a permutation splits additively over an
 invariant predicate. -/
-theorem orbitCount_eq_add (π : Perm β) (p : β → Prop) [DecidablePred p]
+theorem orbitCount_eq_add [Fintype β] [DecidableEq β]
+    (π : Perm β) (p : β → Prop) [DecidablePred p]
     (hp : ∀ x, p (π x) ↔ p x) :
     orbitCount π = orbitCount (π.subtypePerm hp) +
       orbitCount (π.subtypePerm (p := fun x => ¬p x) (fun x =>
@@ -95,7 +95,8 @@ theorem orbitCount_eq_add (π : Perm β) (p : β → Prop) [DecidablePred p]
   omega
 
 /-- Orbit count is invariant under inversion. -/
-theorem orbitCount_inv (π : Perm β) :
+theorem orbitCount_inv [Fintype β] [DecidableEq β]
+    (π : Perm β) :
     orbitCount π⁻¹ = orbitCount π := by
   unfold orbitCount
   rw [Perm.cycleType_inv, Perm.card_fixedPoints π⁻¹,
@@ -103,7 +104,8 @@ theorem orbitCount_inv (π : Perm β) :
 
 /-- Orbit count is invariant under transport along an
 equivalence. -/
-theorem orbitCount_permCongr {γ : Type} [Fintype γ] [DecidableEq γ]
+theorem orbitCount_permCongr [Fintype β] [DecidableEq β]
+    {γ : Type} [Fintype γ] [DecidableEq γ]
     (e : β ≃ γ) (π : Perm β) :
     orbitCount (e.permCongr π) = orbitCount π := by
   unfold orbitCount
@@ -123,7 +125,8 @@ private theorem neg_one_pow_sub {a b : ℕ} (h : b ≤ a) :
     _ = (-1) ^ a * (-1) ^ b := by rw [h1]
 
 /-- The sign identity: `(-1)^(orbitCount pi) = (-1)^(card beta) * sign pi`. -/
-theorem neg_one_pow_orbitCount (π : Perm β) :
+theorem neg_one_pow_orbitCount [Fintype β] [DecidableEq β]
+    (π : Perm β) :
     (-1 : ℂ) ^ orbitCount π =
       (-1 : ℂ) ^ Fintype.card β * ((Perm.sign π : ℤ) : ℂ) := by
   have hsign : ((Perm.sign π : ℤ) : ℂ) =

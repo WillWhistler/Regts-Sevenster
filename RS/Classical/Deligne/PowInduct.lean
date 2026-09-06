@@ -20,21 +20,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-- **The successor power datum is the transferred tensor
 datum**: the merge isomorphism carries the tensor of the stage
 datum and the bottom datum to the successor datum. -/
-theorem powDualityDatum_succ (d : ModDualityDatum A M M')
+theorem powDualityDatum_succ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     powDualityDatum A M M' d (n + 1) =
       (tensorDatum A (powDualityDatum A M M' d n)
@@ -71,7 +69,14 @@ theorem powDualityDatum_succ (d : ModDualityDatum A M M')
 /-- **The power data satisfy the zigzag laws at every arity**:
 the base is the arity-one transfer; the step transfers the tensor
 inheritance along the merge isomorphism. -/
-theorem powDualityDatum_zigzag_all (d : ModDualityDatum A M M')
+theorem powDualityDatum_zigzag_all
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d) :
     ∀ n, ModZigzagDatum A (powDualityDatum A M M' d n)
   | 0 => powDualityDatum_zigzag_zero A M M' d hz
@@ -87,7 +92,7 @@ theorem powDualityDatum_zigzag_all (d : ModDualityDatum A M M')
       (tensorDatum_zigzag A
         (powDualityDatum A M M' d n)
         (powDualityDatum A M M' d 0)
-        (powDualityDatum_zigzag_all d hz n)
+        (powDualityDatum_zigzag_all A M M' d hz n)
         (powDualityDatum_zigzag_zero A M M' d hz))
       (powFrontModInv_powFrontMod A M.X n)
       (powBackModInv_powBackMod A M'.X n)
@@ -95,12 +100,18 @@ theorem powDualityDatum_zigzag_all (d : ModDualityDatum A M M')
 
 section Detection
 
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- **Unconditional nonvanishing of the chain unit stages**: for
 a zigzag datum with nonvanishing symmetric powers, every chain
 unit stage is nonzero. -/
-theorem chainUnitStage_ne_zero_all (d : ModDualityDatum A M M')
+theorem chainUnitStage_ne_zero_all
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d) (n : ℕ)
     (hS : ¬ IsZero (symPow A M.X (n + 1))) :
     chainUnitStage A M M' d n ≠ 0 :=

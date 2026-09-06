@@ -29,17 +29,17 @@ open Fragment Equiv Classical
 
 section InterfaceCut
 
-variable {γ δ : Type} [LinearOrder (γ ⊕ δ)] {V : Fragment (γ ⊕ δ)}
-  (F : EdgeSubset V) (e : γ ≃ δ)
+variable {γ δ : Type}
 
 /-- **The subset uses the two halves of every interface pair
 together.** -/
-def InterfacePaired : Prop :=
+def InterfacePaired
+    {V : Fragment (γ ⊕ δ)} (F : EdgeSubset V) (e : γ ≃ δ) : Prop :=
   ∀ a : γ, V.boundaryFlag (Sum.inl a) ∈ F.boundaryFlags
     ↔ V.boundaryFlag (Sum.inr (e a)) ∈ F.boundaryFlags
 
 /-- The used labels, split by side. -/
-def usedSideEquiv :
+def usedSideEquiv {V : Fragment (γ ⊕ δ)} (F : EdgeSubset V) :
     UsedLab F
       ≃ {a : γ // V.boundaryFlag (Sum.inl a) ∈ F.boundaryFlags}
         ⊕ {b : δ // V.boundaryFlag (Sum.inr b) ∈ F.boundaryFlags} where
@@ -56,26 +56,30 @@ def usedSideEquiv :
   right_inv := fun x => by cases x <;> rfl
 
 /-- The identification of the two sides' used labels. -/
-def interfaceSideEquiv (hp : InterfacePaired F e) :
+def interfaceSideEquiv {V : Fragment (γ ⊕ δ)} (F : EdgeSubset V) (e : γ ≃ δ)
+    (hp : InterfacePaired F e) :
     {a : γ // V.boundaryFlag (Sum.inl a) ∈ F.boundaryFlags}
       ≃ {b : δ // V.boundaryFlag (Sum.inr b) ∈ F.boundaryFlags} :=
   e.subtypeEquiv (fun a => hp a)
 
 /-- **The interface matching on the used labels**: each used label of
 one side paired with the label it is glued to. -/
-noncomputable def interfaceCut (hp : InterfacePaired F e) :
+noncomputable def interfaceCut
+    {V : Fragment (γ ⊕ δ)} (F : EdgeSubset V) (e : γ ≃ δ)
+    (hp : InterfacePaired F e) :
     DirMatching (UsedLab F) :=
   (DirMatching.interfaceEquivMatching
     (interfaceSideEquiv F e hp)).map (usedSideEquiv F).symm
 
 /-- **The label involution the interface matching realises**: swap
 sides along the identification. -/
-def interfaceSwap : γ ⊕ δ → γ ⊕ δ :=
+def interfaceSwap (e : γ ≃ δ) : γ ⊕ δ → γ ⊕ δ :=
   Sum.elim (fun a => Sum.inr (e a)) (fun b => Sum.inl (e.symm b))
 
-omit [LinearOrder (γ ⊕ δ)] in
 /-- **The interface matching pairs by the swap.** -/
-theorem interfaceCut_edge_val (hp : InterfacePaired F e)
+theorem interfaceCut_edge_val
+    {V : Fragment (γ ⊕ δ)} (F : EdgeSubset V) (e : γ ≃ δ)
+    (hp : InterfacePaired F e)
     (x : UsedLab F) :
     ((interfaceCut F e hp).edge x).val = interfaceSwap e x.val := by
   obtain ⟨y, hy⟩ := x
@@ -106,12 +110,11 @@ end SwapPaired
 
 section SwapPairedSum
 
-variable {γ δ : Type} [LinearOrder (γ ⊕ δ)] {V : Fragment (γ ⊕ δ)}
-  (F : EdgeSubset V) (e : γ ≃ δ)
+variable {γ δ : Type}
 
-omit [LinearOrder (γ ⊕ δ)] in
 /-- **Pairing on the swap is pairing across the interface.** -/
-theorem swapPaired_iff_interfacePaired :
+theorem swapPaired_iff_interfacePaired
+    {V : Fragment (γ ⊕ δ)} (F : EdgeSubset V) (e : γ ≃ δ) :
     SwapPaired F (interfaceSwap e) ↔ InterfacePaired F e := by
   constructor
   · exact fun h a => h (Sum.inl a)
@@ -141,10 +144,11 @@ theorem swapPaired_of_mem_iff {L L' : Type} {V : Fragment L}
   rw [hmem x, hmem (ι' x), hcomp x]
   exact h (φ x)
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] {W : Fragment α}
+variable {α β : Type}
 
 /-- **Pairing shifts through a relabel.** -/
-theorem swapPaired_relabelUp (E : α ≃o β) (F : EdgeSubset W)
+theorem swapPaired_relabelUp [LinearOrder α] [LinearOrder β] {W : Fragment α}
+    (E : α ≃o β) (F : EdgeSubset W)
     (ι : α → α) (ι' : β → β)
     (hcomp : ∀ x : α, E.symm (ι' (E x)) = ι x)
     (h : SwapPaired F ι) :
@@ -159,14 +163,12 @@ theorem swapPaired_relabelUp (E : α ≃o β) (F : EdgeSubset W)
 
 section SwapPairedCut
 
-variable {L : Type} [LinearOrder L] [Fintype L] {V : Fragment L}
-  (F : EdgeSubset V) (ι : L → L)
-
-omit [LinearOrder L] [Fintype L] in
 /-- **A paired subset reaches the glue.**  The glue only sees the
 base's subsets that use its two labels together, and a subset paired
 by the swap uses them together whenever the swap pairs them. -/
-theorem agreeingSubset_of_swapPaired (h : SwapPaired F ι) {i j : L}
+theorem agreeingSubset_of_swapPaired
+    {L : Type} {V : Fragment L} (F : EdgeSubset V) (ι : L → L)
+    (h : SwapPaired F ι) {i j : L}
     (hij : ι i = j) : AgreeingSubset i j F.flags := by
   refine ⟨F.pairing_mem, ⟨fun hi => ?_, fun hj => ?_⟩⟩
   · have hb := (h i).mp (boundaryFlag_mem_boundaryFlags hi)
@@ -176,10 +178,11 @@ theorem agreeingSubset_of_swapPaired (h : SwapPaired F ι) {i j : L}
     rw [hij]
     exact boundaryFlag_mem_boundaryFlags hj
 
-omit [LinearOrder L] [Fintype L] in
 /-- **The glued pair are partners of the interface matching**, which
 is what makes the glue contract it. -/
-theorem edge_eq_of_swap {N : DirMatching (UsedLab F)}
+theorem edge_eq_of_swap
+    {L : Type} {V : Fragment L} (F : EdgeSubset V) (ι : L → L)
+    {N : DirMatching (UsedLab F)}
     (hN : ∀ x : UsedLab F, ((N.edge x).val : L) = ι x.val) {i j : L}
     (hbi : V.boundaryFlag i ∈ F.boundaryFlags)
     (hbj : V.boundaryFlag j ∈ F.boundaryFlags) (hij : ι i = j) :
@@ -201,13 +204,13 @@ subsets, systems or orientations in it.
 
 section InterfaceRelabel
 
-variable {α γ' δ' : Type} [LinearOrder α] [LinearOrder (γ' ⊕ δ')]
-  {W : Fragment α} (F : EdgeSubset W) (E : α ≃o (γ' ⊕ δ'))
-  (e' : γ' ≃ δ')
+variable {α γ' δ' : Type}
 
 /-- **The relabelled interface matching pairs by the transported
 swap.** -/
 theorem interfaceCut_relabelUp_edge
+    [LinearOrder α] [LinearOrder (γ' ⊕ δ')] {W : Fragment α}
+    (F : EdgeSubset W) (E : α ≃o (γ' ⊕ δ')) (e' : γ' ≃ δ')
     (hp' : InterfacePaired (F.relabelUp E.toEquiv) e')
     (x : UsedLab F) :
     (((interfaceCut (F.relabelUp E.toEquiv) e' hp').map
@@ -230,17 +233,15 @@ the transported swap on surviving labels is the base's swap.
 
 section InterfaceStage
 
-variable {L Lg γ' δ' : Type} [LinearOrder L] [LinearOrder Lg]
-  [LinearOrder (γ' ⊕ δ')] {V : Fragment L} {Vg : Fragment Lg}
-  (Fl : EdgeSubset V) (Fg : EdgeSubset Vg) (E : Lg ≃o (γ' ⊕ δ'))
-  (e' : γ' ≃ δ') (φ : Lg → L) (ι : L → L)
+variable {L Lg γ' δ' : Type}
 
-omit [LinearOrder L] [LinearOrder Lg] [LinearOrder (γ' ⊕ δ')] in
 /-- **A glue restricts a matching that pairs by an involution of the
 labels.**  Both sides pair by the same involution, so reading the
 glued fragment's matching on the base's used labels gives the base's,
 restricted at the glued pair. -/
 theorem restrict_edge_of_swap
+    {V : Fragment L} {Vg : Fragment Lg} (Fl : EdgeSubset V)
+    (Fg : EdgeSubset Vg) (φ : Lg → L) (ι : L → L)
     {N : DirMatching (UsedLab Fl)}
     (hN : ∀ x : UsedLab Fl, ((N.edge x).val : L) = ι x.val)
     {Ng : DirMatching (UsedLab Fg)}
@@ -375,28 +376,29 @@ where RS21's `s_h(G,H)` and the flag model's summand meet.
 
 section ClosedTop
 
-variable {L : Type} [LinearOrder L] [IsEmpty L] {V : Fragment L}
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- A closed fragment has no through flags: every flag meets a
 vertex. -/
-theorem throughFlags_isEmpty (F : EdgeSubset V) :
+theorem throughFlags_isEmpty [IsEmpty L] {V : Fragment L}
+    (F : EdgeSubset V) :
     F.throughFlags = ∅ := by
   refine Finset.eq_empty_of_forall_notMem (fun f hf => ?_)
   obtain ⟨-, ⟨i, -⟩, -⟩ := mem_throughFlags_iff.mp hf
   exact isEmptyElim i
 
-omit [LinearOrder L] in
 /-- At the closed top every flag is internal: there are no labels to
 attach to. -/
-theorem allInternal_isEmpty (F : EdgeSubset V) : F.allInternal := by
+theorem allInternal_isEmpty [IsEmpty L] {V : Fragment L}
+    (F : EdgeSubset V) : F.allInternal := by
   refine Finset.eq_empty_of_forall_notMem (fun f hf => ?_)
   obtain ⟨-, i, -⟩ := Finset.mem_filter.mp hf
   exact isEmptyElim i
 
 /-- **The chord sign is trivial at the closed top.**  There are no
 labels, hence no chords to cross. -/
-theorem pathSign_isEmpty (F : EdgeSubset V)
+theorem pathSign_isEmpty [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    (F : EdgeSubset V)
     (κ : F.RelTransitionSystem) : pathSign κ = 1 :=
   pathSign_of_allInternal (allInternal_isEmpty F) κ
 
@@ -404,7 +406,8 @@ open Classical in
 /-- **The closed top's value is RS21's `s_h(G,H)`**: the circuit sign
 times the colouring sum, with no chord sign and no through-edge
 product. -/
-theorem throughValueC_isEmpty {k ℓ : ℕ} (F : EdgeSubset V)
+theorem throughValueC_isEmpty [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ} (F : EdgeSubset V)
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L)
     (hbnd : genBoundarySubsetMatches V F.flags st)
     (hne : Nonempty F.CanonData) :
@@ -419,7 +422,9 @@ open Classical in
 summands.**  With no labels the chord sign is one and the
 through-edge product is one, so each Eulerian subset contributes its
 circuit sign times its colouring sum — RS21's `s_h(G,H)`. -/
-theorem throughMixedPartitionC_isEmpty {k ℓ : ℕ}
+theorem throughMixedPartitionC_isEmpty
+    [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L) :
     throughMixedPartitionC h V st
       = ((k : ℂ) - 2 * ℓ) ^ V.circles *
@@ -454,7 +459,8 @@ theorem throughMixedPartitionC_isEmpty {k ℓ : ℕ}
   · rw [dif_neg hc, dif_neg hc]
 
 /-- **The through-edge product is one at the closed top.** -/
-theorem throughProduct_isEmpty {k ℓ : ℕ} (F : EdgeSubset V)
+theorem throughProduct_isEmpty [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ} (F : EdgeSubset V)
     (st : GenBoundaryState k ℓ L) : F.throughProduct st = 1 := by
   unfold EdgeSubset.throughProduct
   rw [throughFlags_isEmpty F]
@@ -475,19 +481,19 @@ Lemma 11 for a composition consumes.
 
 section DisjUnionCut
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] [Fintype α]
-  [Fintype β] [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
-  {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+variable {α β : Type}
 
 /-- The used labels of the left half. -/
-def usedLeftEquiv :
+def usedLeftEquiv
+    {W₁ : Fragment α} {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂)) :
     {a : α //
         (W₁.disjUnion W₂).boundaryFlag (Sum.inl a) ∈ F.boundaryFlags}
       ≃ UsedLab (leftSub F) :=
   Equiv.subtypeEquivRight (fun _ => inl_mem_boundary)
 
 /-- The used labels of the right half. -/
-def usedRightEquiv :
+def usedRightEquiv
+    {W₁ : Fragment α} {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂)) :
     {b : β //
         (W₁.disjUnion W₂).boundaryFlag (Sum.inr b) ∈ F.boundaryFlags}
       ≃ UsedLab (rightSub F) :=
@@ -495,15 +501,16 @@ def usedRightEquiv :
 
 /-- The used labels of a disjoint union, split into the two sides'
 own. -/
-def usedDisjUnionEquiv :
+def usedDisjUnionEquiv
+    {W₁ : Fragment α} {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂)) :
     UsedLab F ≃ UsedLab (leftSub F) ⊕ UsedLab (rightSub F) :=
   (usedSideEquiv F).trans
     (Equiv.sumCongr (usedLeftEquiv F) (usedRightEquiv F))
 
-omit [LinearOrder (α ⊕ β)] in
-omit [Fintype α] [Fintype β] in
 /-- **The chord of a left label is the left side's chord.** -/
 theorem chordInv_prodRel_inl
+    [LinearOrder α] [LinearOrder β] {W₁ : Fragment α} {W₂ : Fragment β}
+    (F : EdgeSubset (W₁.disjUnion W₂))
     (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) {a : α}
     (hb : (W₁.disjUnion W₂).boundaryFlag (Sum.inl a)
@@ -519,10 +526,10 @@ theorem chordInv_prodRel_inl
   rw [pathMatch_prodRel_inl κ₁ κ₂ hb hb',
     boundaryFlag_chordInv (leftSub F) κ₁ hb']
 
-omit [LinearOrder (α ⊕ β)] in
-omit [Fintype α] [Fintype β] in
 /-- **The chord of a right label is the right side's chord.** -/
 theorem chordInv_prodRel_inr
+    [LinearOrder α] [LinearOrder β] {W₁ : Fragment α} {W₂ : Fragment β}
+    (F : EdgeSubset (W₁.disjUnion W₂))
     (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) {b : β}
     (hb : (W₁.disjUnion W₂).boundaryFlag (Sum.inr b)
@@ -538,10 +545,11 @@ theorem chordInv_prodRel_inr
   rw [pathMatch_prodRel_inr κ₁ κ₂ hb hb',
     boundaryFlag_chordInv (rightSub F) κ₂ hb']
 
-omit [Fintype α] [Fintype β] in
 /-- **The chord matching of a disjoint union is the two sides' chord
 matchings, side by side.** -/
 theorem cutMatching_disjUnion_edge
+    [LinearOrder α] [LinearOrder β] [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
     (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem)
     (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation) :
@@ -580,28 +588,33 @@ theorem cutMatching_disjUnion_edge
     rw [hy]
     rfl
 
-variable (e : α ≃ β)
-
 /-- The interface identification, read on the two sides' own used
 labels. -/
-def interfaceSideDisjEquiv (hp : InterfacePaired F e) :
+def interfaceSideDisjEquiv
+    {W₁ : Fragment α} {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    (e : α ≃ β)
+    (hp : InterfacePaired F e) :
     UsedLab (leftSub F) ≃ UsedLab (rightSub F) :=
   (usedLeftEquiv F).symm.trans
     ((interfaceSideEquiv F e hp).trans (usedRightEquiv F))
 
 /-- The interface identification on the two sides' used labels, as
 an order isomorphism when the identification is one. -/
-def interfaceSideDisjOrderIso (E : α ≃o β)
+def interfaceSideDisjOrderIso
+    [LinearOrder α] [LinearOrder β] {W₁ : Fragment α} {W₂ : Fragment β}
+    (F : EdgeSubset (W₁.disjUnion W₂))
+    (E : α ≃o β)
     (hp : InterfacePaired F E.toEquiv) :
     UsedLab (leftSub F) ≃o UsedLab (rightSub F) where
   toEquiv := interfaceSideDisjEquiv F E.toEquiv hp
   map_rel_iff' := E.map_rel_iff
 
-omit [LinearOrder α] [LinearOrder β] in
-omit [Fintype α] [Fintype β] [LinearOrder (α ⊕ β)] in
 /-- **The interface matching of a disjoint union is the interface
 identification, read on the two sides' used labels.** -/
-theorem interfaceCut_disjUnion_edge (hp : InterfacePaired F e) :
+theorem interfaceCut_disjUnion_edge
+    {W₁ : Fragment α} {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    (e : α ≃ β)
+    (hp : InterfacePaired F e) :
     ((interfaceCut F e hp).map (usedDisjUnionEquiv F)).edge
       = (DirMatching.interfaceEquivMatching
           (interfaceSideDisjEquiv F e hp)).edge := by
@@ -610,12 +623,11 @@ theorem interfaceCut_disjUnion_edge (hp : InterfacePaired F e) :
   · rfl
   · rfl
 
-omit [LinearOrder α] [LinearOrder β] [Fintype α] [Fintype β]
-  [LinearOrder (α ⊕ β)] in
 /-- **The colouring sum splits over a disjoint union.**  RS21's
 `∏_{v ∈ V′(F₁∗F₂)}` is `∏_{v ∈ V′(F₁)} ∏_{v ∈ V′(F₂)}`, and at a
 fixed interface colouring the two sides' sums are independent. -/
-theorem vertexSum_disjUnion (F : EdgeSubset (W₁.disjUnion W₂))
+theorem vertexSum_disjUnion {W₁ : Fragment α} {W₂ : Fragment β}
+    (F : EdgeSubset (W₁.disjUnion W₂))
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
@@ -637,6 +649,9 @@ disjoint union's chord matching with its interface matching counts
 what the two fragments' own chord matchings count, identified along
 the interface. -/
 theorem unionCount_cutMatching_disjUnion
+    [LinearOrder α] [LinearOrder β] [Fintype α] [Fintype β]
+    [LinearOrder (α ⊕ β)] {W₁ : Fragment α} {W₂ : Fragment β}
+    (F : EdgeSubset (W₁.disjUnion W₂)) (e : α ≃ β)
     (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem)
     (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation)

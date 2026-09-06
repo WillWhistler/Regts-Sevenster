@@ -18,27 +18,12 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- **The orbit extension principle**: a linear map out of the
 base is the orbit map of its unit element. -/
-theorem act_on_point_eq {X : D} (act : A ⊗ X ⟶ X) (f : A ⟶ X)
+theorem act_on_point_eq [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {X : D} (act : A ⊗ X ⟶ X) (f : A ⟶ X)
     (hf : μ[A] ≫ f = (A ◁ f) ≫ act) :
     f = (ρ_ A).inv ≫ (A ◁ (η[A] ≫ f)) ≫ act := by
   rw [MonoidalCategory.whiskerLeft_comp, Category.assoc,
@@ -49,7 +34,14 @@ theorem act_on_point_eq {X : D} (act : A ⊗ X ⟶ X) (f : A ⟶ X)
 
 /-- **The transition is linear**: the power chain transition
 intertwines the descended actions of adjacent stages. -/
-theorem powDelta_actLeft (d : ModDualityDatum A M M') (n : ℕ) :
+theorem powDelta_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (n : ℕ) :
     modTensorAct A (modPowMod A M.X n) (modPowMod A M'.X n) ≫
       powDelta A M M' d n =
     (A ◁ powDelta A M M' d n) ≫
@@ -108,7 +100,14 @@ theorem powDelta_actLeft (d : ModDualityDatum A M M') (n : ℕ) :
 /-- **The successor copairing power is the tensor copairing
 pushed along the transition legs** (Deligne 1.15, copair side of
 the power step). -/
-theorem powCopairA_succ_tensor (d : ModDualityDatum A M M')
+theorem powCopairA_succ_tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     powCopairA A M M' d (n + 1) =
       tensorCopair A (powDualityDatum A M M' d n)

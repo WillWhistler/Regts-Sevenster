@@ -18,25 +18,27 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Y)]
-variable (A : D) [MonObj A] (X : D) [ModObj A X]
+variable {D : Type u}
 
 /-- **Module-level Schur vanishing**: the block of the shape acts
 as zero on the relative tensor power of the module. -/
-def ModSchurKilled (P : SchurPackage.{v}) (μ : YoungDiagram) :
+def ModSchurKilled [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (P : SchurPackage.{v}) (μ : YoungDiagram) :
     Prop :=
   modPowAlg A X μ.card (P.e μ) = 0
 
 /-- **Module-level upward closure** (Deligne 1.7 over the base):
 vanishing of a block's action ascends along containment of
 shapes. -/
-theorem ModSchurKilled.mono (P : SchurPackage.{v})
+theorem ModSchurKilled.mono
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (P : SchurPackage.{v})
     {lam mu : YoungDiagram} (hle : lam ≤ mu)
     (h : ModSchurKilled A X P lam) :
     ModSchurKilled A X P mu := by
@@ -52,13 +54,14 @@ theorem ModSchurKilled.mono (P : SchurPackage.{v})
   rw [← mul_assoc] at hker
   exact P.branching lam mu hle hcard hker
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **Completeness collapses the power**: if every block of one
 size acts as zero on the relative power, the power itself
 vanishes. -/
-theorem isZero_modPow_of_cuts (P : SchurPackage.{v}) {k : ℕ}
+theorem isZero_modPow_of_cuts
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (P : SchurPackage.{v}) {k : ℕ}
     (h : ∀ μ : Shape k, modPowAlg A X k (Shape.e P μ) = 0) :
     IsZero (modPow A X k) := by
   rw [Limits.IsZero.iff_id_eq_zero, ← End.one_def]
@@ -70,12 +73,13 @@ theorem isZero_modPow_of_cuts (P : SchurPackage.{v}) {k : ℕ}
         map_sum _ _ _
     _ = 0 := Finset.sum_eq_zero fun μ _ => h μ
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **The symmetric power vanishes exactly when the symmetriser
 acts as zero.** -/
-theorem symPowIdem_eq_zero_iff (n : ℕ) :
+theorem symPowIdem_eq_zero_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (n : ℕ) :
     symPowIdem A X n = 0 ↔ IsZero (symPow A X n) := by
   constructor
   · intro h0
@@ -88,11 +92,11 @@ theorem symPowIdem_eq_zero_iff (n : ℕ) :
     have hσ : symPowσ A X n = 0 := hz.eq_of_src _ _
     rw [← symPowπ_symPowσ A X n, hσ, Limits.comp_zero]
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **A dead symmetric power kills the row block.** -/
 theorem modSchurKilled_row_of_isZero_symPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
     (P : SchurPackage.{v}) (n : ℕ)
     (h : IsZero (symPow A X (n + 1))) :
     ModSchurKilled A X P (rowShape (n + 1)).val := by
@@ -109,7 +113,13 @@ theorem modSchurKilled_row_of_isZero_symPow
 2.9 case (c), module level, Schur half): a module whose row and
 column blocks act as zero has vanishing relative power at the
 product size. -/
-theorem isZero_modPow_of_row_col (P : SchurPackage.{v})
+theorem isZero_modPow_of_row_col
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (P : SchurPackage.{v})
     {n m : ℕ}
     (hrow : ModSchurKilled A X P (rowShape (n + 1)).val)
     (hcol : ModSchurKilled A X P (colShape (m + 1)).val) :
@@ -135,12 +145,13 @@ theorem isZero_modPow_of_row_col (P : SchurPackage.{v})
     exact modPowAlg_compat A X (le_of_eq μ.prop) _ hk
   exact isZero_modPow_of_cuts A X P hall
 
-omit [MonoidalPreadditive D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **The alternating power vanishes exactly when the
 antisymmetriser acts as zero.** -/
-theorem altPowIdem_eq_zero_iff (n : ℕ) :
+theorem altPowIdem_eq_zero_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (n : ℕ) :
     altPowIdem A X n = 0 ↔ IsZero (altPow A X n) := by
   constructor
   · intro h0
@@ -153,11 +164,11 @@ theorem altPowIdem_eq_zero_iff (n : ℕ) :
     have hσ : altPowσ A X n = 0 := hz.eq_of_src _ _
     rw [← altPowπ_altPowσ A X n, hσ, Limits.comp_zero]
 
-omit [MonoidalPreadditive D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **A dead alternating power kills the column block.** -/
 theorem modSchurKilled_col_of_isZero_altPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
     (P : SchurPackage.{v}) (m : ℕ)
     (h : IsZero (altPow A X (m + 1))) :
     ModSchurKilled A X P (colShape (m + 1)).val := by
@@ -175,6 +186,11 @@ theorem modSchurKilled_col_of_isZero_altPow
 power** (Deligne 2.9 case (c), Schur half): the row and column
 bridges feed the block collapse. -/
 theorem isZero_modPow_of_isZero_sym_alt
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
     (P : SchurPackage.{v}) {n m : ℕ}
     (hs : IsZero (symPow A X (n + 1)))
     (ha : IsZero (altPow A X (m + 1))) :
@@ -183,12 +199,13 @@ theorem isZero_modPow_of_isZero_sym_alt
     (modSchurKilled_row_of_isZero_symPow A X P n hs)
     (modSchurKilled_col_of_isZero_altPow A X P m ha)
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **An idempotent's cut vanishes exactly when it acts as
 zero.** -/
-theorem modPowCutIdem_eq_zero_iff (n : ℕ)
+theorem modPowCutIdem_eq_zero_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (n : ℕ)
     (e : SymGroupAlgebra n) (he : e * e = e) :
     modPowAlg A X n e = 0 ↔ IsZero (modPowCut A X n e) := by
   constructor

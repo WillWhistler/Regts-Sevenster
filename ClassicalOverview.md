@@ -14,7 +14,18 @@ audit — part of the default `lake build` target — and
 [RS/Glossary.lean](RS/Glossary.lean) for the vocabulary used
 below).
 
-Nothing is cited.  `DeligneTheoremStatement`
+The paper's main route is also the route of the Lean summits:
+connection ranks give nondegenerate trace pairings; Schrijver's
+factorial obstruction kills nilpotent traces; finite-dimensional
+algebra gives the semisimple abelian envelope; Deligne supplies a
+super fibre functor; and the commutant estimate gives `k + 2ℓ ≤ R`.
+The paper develops growth, minimum dimension and padding in
+Section 7. Its Appendix A gives an independent trace-zeta route.
+Numbered references here follow the accompanying paper unless
+attributed to another source. RS21's Definition 5 is the paper's
+Definition 2.1.
+
+No cited theorem is an unproved input. `DeligneTheoremStatement`
 ([RS/Definitions.lean](RS/Definitions.lean)) — Deligne's theorem on
 tensor categories (Deligne 2002, Théorème 0.6 with §0.1; Ostrik,
 Thm 2.3) — is proved in the tree as `RS.deligne_theorem`
@@ -27,8 +38,11 @@ length of the tensor powers.  Its conclusion is taken in
 fibre-functor form rather than as the ⊗-equivalence with the
 representations of an affine supergroup scheme, which yields the
 functor by composing with the forgetful functor; the development
-then consumes less again — only the symmetric monoidal ℂ-linear
-functor, as `DelignePackage`.
+then consumes the symmetric monoidal ℂ-linear functor as
+`DelignePackage` for reconstruction, the sharp bound and the
+formalized rank-growth and padding results. Their rank upper bound
+comes from the converse theorem. The paper uses faithfulness in
+its additional survival-hook criterion, Lemma 7.6.
 
 The route is not Deligne's own.  His §4 descends the fibre functor
 along a faithfully flat `Isom⊗` torsor, which calls on fppf descent
@@ -141,19 +155,19 @@ padded sum restricts bijectively to the unpadded one
 `RS/Classical/SymFun/` (the alternant calculus).
 
 
-## 3. The quantitative trace-zeta theorem (paper A.1)
+## 3. The trace-zeta results and the factorial trace argument
 
-**Statement.**  The displayed trace-zeta theorem with the
-appendix's own hypothesis and threshold: for an object `X` of a
+**Statement.** The exponential-growth form of the appendix,
+Corollary A.2: for an object `X` of a
 rigid symmetric ℂ-linear category with `End 𝟙 = ℂ` whose tensor
 powers have finite-dimensional endomorphism algebras satisfying
 `finrank (End (X ^ ⊗ n)) ≤ A ^ n`, with `A` an arbitrary
-nonnegative real, and for *every* integer `s > 2e√A`, the
+real, and for *every* integer `s > 2e√A`, the
 trace zeta function of every endomorphism of `X` is `P/Q` with `P`
 and `Q` coprime, of constant term `1` and of degree at most `s − 1`
 (`traceZeta_rational_of_object`); equivalently the power traces are
 a difference of power sums of two disjoint multisets of nonzero
-complex numbers of sizes at most `s − 1`
+complex numbers of sizes at most `s − 1`, the reduced super-spectrum
 (`traceZeta_superSpectrum_of_object`).  The same conclusions over
 the derived interface alone — a family of algebras carrying the
 symmetric-group action, the traces and the Frobenius identity — are
@@ -164,19 +178,29 @@ square death (`square_growth_sharp`) through sharp hook confinement
 zeta function with the complete-homogeneous series is
 `traceZeta_eq_newtonH_series`.
 
-The forward proof does not need the sharpness: it consumes the
-existentially-quantified side (`traceZeta_rational`,
-`RS/Novel/Envelope/TraceZeta.lean`), which holds over an arbitrary
-Schur package.  The sharp form is stated over the assembled package,
-because the constant comes from the block dimensions there.
+The paper's Theorem A.1 starts from the death of one rectangle
+`((b + 1)^(a + 1))` and gives numerator degree at most `b` and
+denominator degree at most `a`. Its sequence lemma (Lemma A.9)
+is formalized for arbitrary `a,b` in
+`newtonH_series_rational_of_hook_vanishing` and
+`superPowerSums_of_hook_vanishing`. Integer row shifts in the
+Jacobi–Trudi recurrence and zero coefficients at negative degrees
+retain both degree bounds when `a > b`. Corollary A.2 uses the
+square case `a = b = s − 1`.
+
+The existentially-quantified side (`traceZeta_rational`,
+`RS/Novel/Envelope/TraceZeta.lean`) holds over an arbitrary Schur
+package. The sharp form is stated over the assembled package,
+because the constant comes from the block dimensions there. The
+forward proof uses the factorial nilpotent-trace argument below.
 
 The interface is what the appendix's own starting data supplies:
 from a category and an object, the symmetric-group action on
 `Z ^ ⊗ n`, the propagation of vanishing, the traces and the
 Frobenius identity are derived from the trace calculus, and that
 derivation is `objectFrobeniusTower`.  The skein endomorphism
-algebras carry the same structure directly, which is how the
-forward proof uses it.
+algebras carry the same structure directly, giving an instance of
+the appendix's rationality and nilpotent-trace results.
 
 The derivation runs as follows.  The action is built by a recursion
 that chooses no word in the adjacent transpositions — the top factor
@@ -233,6 +257,14 @@ the Schur package's own growth field needs only to beat some
 exponential, and uses the crude integral bound `n^n ≤ 3^n · n!`
 ([FactorialBound.lean](RS/Common/FactorialBound.lean)).
 
+Appendix A.5 relates the rationality statement to the determinantal
+rationality theorem of Kimura, Kimura and Takahashi (2012,
+Proposition 3.10), applied to objects with endomorphisms and then
+to the trace map on their split Grothendieck ring. It attributes
+the sequence argument to Mazza and Weibel (2013, Proposition 4.14
+and Corollary 4.15). Lean follows the paper's direct Jacobi–Trudi
+recurrence proof, retaining the rectangular degree bounds.
+
 **Files.**  The theorem for an object in
 [ObjectTower.lean](RS/Novel/Envelope/ObjectTower.lean) and over the
 interface in
@@ -244,14 +276,117 @@ the series layer in `RS/Classical/SymFun/`
 [ZetaExp.lean](RS/Classical/SymFun/ZetaExp.lean),
 [RationalityFromRecurrence.lean](RS/Classical/SymFun/RationalityFromRecurrence.lean)).
 
+**The mainline nilpotent-trace proof (paper Theorem 4.3).**
+Schrijver's argument (arXiv:1211.3561, Proposition 4) uses the
+cycle-trace formula directly. If a nilpotent has nonzero trace,
+choose its last positive power with nonzero trace, say `y`.
+Then `tr(y^m) = 0` for `m ≥ 2`.
+At level `n`, the functional `a ↦ tr(a · y^⊗n)` is zero on every
+nonidentity permutation and takes the nonzero value `tr(y)^n` at
+the identity. Its translates separate all permutation operators,
+so `n! ≤ dim End(X^⊗n)`. One finite-dimensional level of dimension
+less than `n!` therefore suffices for nilpotent-trace vanishing;
+exponential growth supplies such a level.
 
-## 4. The square principal specializations (Cor 4.10)
+This proof is formalized over the smaller `CycleTraceTower`
+interface in
+[FactorialTrace.lean](RS/Classical/Algebra/FactorialTrace.lean), with
+categorical and strand instances in
+[Envelope/FactorialTrace.lean](RS/Novel/Envelope/FactorialTrace.lean)
+and [BlockFactorialTrace.lean](RS/Novel/Envelope/BlockFactorialTrace.lean).
+The latter also proves strand semisimplicity; the corner trace
+criterion gives `karoubiEnd_isSemisimpleRing_factorial` in
+[KaroubiSemisimple.lean](RS/Novel/Envelope/KaroubiSemisimple.lean).
+[BlueprintFactorial.lean](RS/Assembly/BlueprintFactorial.lean)
+checks their statements, axioms and transitive independence from
+the Schur, hook-confinement, trace-zeta and Deligne engines. The
+summits use the factorial route through the matrix envelope and its
+abelian structure. The audit checks that each forward summit reaches
+the factorial trace theorem and avoids the appendix nilpotent-trace
+and trace-zeta mechanisms. The rationality and degree bounds above
+remain separate conclusions of the appendix mechanism.
+
+
+## 4. The sharp dimension bound and model dimensions
+
+**Statement.** The paper's Lemma 4.9 gives, for the total dimension
+`d = k + 2ℓ` of the reconstructed model and
+`r_n = rk M_{f,2n}`, with `d,n ≥ 1`,
+
+    d^(2n) ≤ r_n binom(n + d² − 1, d² − 1).
+
+Together with `r_n ≤ R^(2n)`, this proves `d ≤ R`
+(Corollary 4.10 and the quantitative clause of Theorem 1.1).
+Lean's certified theorem is `RS.regts_sevenster_total`. It takes
+`R : ℕ`, including zero; the paper states the sharp theorem for
+real `R ≥ 1`.
+
+**Method.** The super-permutation action on `V^⊗n` factors through
+the skein algebra. Lemma 4.8 embeds the sum of the surviving simple
+symmetric-group blocks in that algebra. If `m_λ` are the
+multiplicities, Cauchy–Schwarz gives
+
+    d^(2n) = (Σ_λ d_λ m_λ)²
+        ≤ (Σ_{m_λ ≠ 0} d_λ²) (Σ_λ m_λ²)
+        ≤ r_n dim End_{S_n}(V^⊗n).
+
+The commutant is in the ordinary endomorphism algebra of the total
+vector space, including parity-reversing maps. Conjugating matrix
+units by super permutations permutes them up to signs. Simultaneous
+permutation orbits of pairs of colour words are classified by the
+counts of their `d²` possible letter pairs, giving commutant
+dimension at most `binom(n + d² − 1, d² − 1)`, since the counts
+sum to `n`.
+
+Lean uses the individual-block bound of Lemma A.4 and counts
+each letter-pair multiplicity independently between `0` and `n`:
+
+    d^n = Σ_λ d_λ m_λ ≤ √r_n Σ_λ m_λ
+        ≤ √r_n Σ_λ m_λ² = √r_n dim End_{S_n}(V^⊗n)
+        ≤ √r_n (n + 1)^(d²).
+
+Squaring gives its estimate `d^(2n) ≤ r_n (n + 1)^(2d²)`.
+Either polynomial factor yields the sharp exponential base. The
+block argument is independent of the appendix's trace-zeta and
+nilpotent-trace mechanisms. Section 7.6 recovers the sharp real
+budget from Lean's natural-base result and certified growth limit:
+construct at `⌈R⌉`, then bound the dimension by the limit at `R`.
+
+**Consequences.** The converse rank bound `r_n ≤ d^(2n)` squeezes
+the even rank roots to `d`, including the zero-dimensional case
+(Lemma 7.1). Applying that upper bound to any representing model
+proves minimality (Theorem 7.3(c)). With `c = f(○) = k − 2ℓ`, a
+minimal model has `k = (d + c)/2` and `ℓ = (d − c)/4`
+(Theorem 7.3(b)).
+
+The padding construction (Lemma 7.2) embeds symplectic pairs
+together and extends the functional by zero. If prescribed
+dimensions `K,2L` have the same free-circle value and bound the
+ranks by `(K + 2L)^t`, the reconstructed dimensions satisfy
+`k ≤ K` and `ℓ ≤ L`, so padding supplies exactly those dimensions
+(Theorem 7.5). The criterion includes `K = L = 0`.
+
+The formal declarations are `regts_sevenster_rank_growth`,
+`regts_sevenster_minimum`, `regts_sevenster_prescribed`,
+`TotalBoundedMixedModel.even_dimension_eq` and
+`TotalBoundedMixedModel.half_odd_dimension_eq`.
+
+**Files.** [TheoremTotal.lean](RS/TheoremTotal.lean),
+[TheoremDimension.lean](RS/TheoremDimension.lean),
+[TheoremPadding.lean](RS/TheoremPadding.lean),
+[TotalDimension.lean](RS/Classical/Interfaces/TotalDimension.lean),
+[WordCommutant.lean](RS/Classical/SchurTheory/WordCommutant.lean),
+and [ColourPadding.lean](RS/Novel/Skein/ColourPadding.lean).
+
+### Auxiliary square principal specializations
 
 **Statement.**  Both nonvanishing statements behind the `⌊2eR⌋`
 colour bound: `s_{(s^s)}(1^k) ≠ 0` for `k ≥ s`, and the negated
 specialization via the identity
 `s_{(s^s)}(1^{-m}) = (−1)^s · det[C(m, s+j−i)]` with the
-right-hand determinant nonzero for `m ≥ s`.
+right-hand determinant nonzero for `m ≥ s`. These prove the
+separate-sector bound in `regts_sevenster_quant`. The paper's sharp
+Corollary 4.10 uses the commutant argument above.
 
 **Method and provenance.**  Classically these are cited through
 the hook content formula.  Here both are citation-free: the
@@ -267,16 +402,13 @@ positivity of the surviving count needs no enumeration, since the
 constant families are non-crossing outright
 ([LGVStrict.lean](RS/Classical/SymFun/LGVStrict.lean)).
 
-Two findings of the formalization sharpen the corollary's fine
-print.  The square side's parity matters in the odd sector: the
+The square side's parity matters in this auxiliary argument: the
 all-odd tensor block of the `n`-th super power lies in the even
 part exactly when `n` is even, so the supertrace argument runs at
 side `s` for even `s` but must run at side `s + 1` for odd `s` —
 the displayed bound survives because `2ℓ` is even, so
-`2ℓ < s + 1` still forces `2ℓ ≤ s − 1`.  And the statement needs
-a degenerate-side guard: at `R = 0` the assertion "both
-dimensions are `< s` for every side `s > 2eR`" is false at
-`s = 0`, so the quantifier begins at `s ≥ 1`.
+`2ℓ < s + 1` still forces `2ℓ ≤ s − 1`. The square
+specialization lemmas also carry an explicit positive-side guard.
 
 **Files.**  Above, plus the assembly in
 [RS/TheoremQuant.lean](RS/TheoremQuant.lean) and
@@ -323,17 +455,16 @@ Ostrik.  Three proof arrangements are of this formalization:
   idempotent splittings and normality of monos and epis follows
   from the same splittings
   ([EnvAbelian.lean](RS/Novel/Envelope/EnvAbelian.lean));
-* of everything the route needs, only semisimplicity consumes
-  representation theory — the chain hook confinement → nilpotent
+* semisimplicity follows from the factorial obstruction → nilpotent
   traces → semisimple End algebras
-  ([HookConfinement.lean](RS/Novel/Envelope/HookConfinement.lean),
-  [NilpotentTrace.lean](RS/Novel/Envelope/NilpotentTrace.lean),
+  ([BlockFactorialTrace.lean](RS/Novel/Envelope/BlockFactorialTrace.lean),
+  [NilpotentMatTrace.lean](RS/Novel/Envelope/NilpotentMatTrace.lean),
   [EnvSemisimple.lean](RS/Novel/Envelope/EnvSemisimple.lean)).
+  This chain and abelianness require no Schur package.
   Finite-dimensional Hom-spaces, `End 𝟙 = ℂ`, the tensor generator
-  and the endomorphism-dimension bound are unconditional
-  consequences of the rank bound alone, so the
-  representation-theoretic input enters the Deligne route exactly
-  once.
+  and the endomorphism-dimension bound also follow from the rank
+  bound. All envelope hypotheses therefore precede the use of
+  Deligne's theorem independently of the Schur and appendix engines.
 
 **Files.**  `RS/Novel/Envelope/`; the block Frobenius tower at every
 ambient arity ([BlockTower.lean](RS/Novel/Envelope/BlockTower.lean)).
@@ -425,13 +556,12 @@ in
 super model `stdSuper k ℓ`, the contraction identities the snake
 relations supply (`exists_contraction_families`), the star
 factorization of vertex functionals, and the reconstruction of
-Definition 5's `mixedPartition` from the categorical scalar (the
-paper's Theorem 6.1) — assembling `regts_sevenster` and its
-quantitative form.
+Definition 2.1's `mixedPartition` from the categorical scalar (the
+paper's Theorem 6.1) — assembling `regts_sevenster` and, with
+Section 4's dimension estimate, `regts_sevenster_total`.
 
 **Method and provenance.**  The extraction follows the paper's
-§5–§6, with three departures: two machine-checked findings, and one
-difference of route.
+§5–§6, with the following differences of presentation.
 
 The circuit-sign computation avoids circuit decompositions, the
 consecutive-pairing choice, and the per-circuit `(−1)^{n−1}`
@@ -444,14 +574,22 @@ regrouping parity against the vertex-pair word is then elementary
 inversion counting.  Any transition system and orientation works,
 so no admissibility discussion is needed.
 
-The `J`-twist of `h^RS` — the paper's parity-transfer involution —
-is convention-relative: with the odd data
-presented in sorted-canonical order, keeping the per-vertex twist
-makes the value identity false by exactly `(−1)^{#edges}`, the
-twist's product over all vertices.  The untwisted functional at
-the sorted-canonical ordering is the correct witness; the twist is
-an artefact of the wedge-ordering convention, absorbed entirely by
-the choice of canonical ordering.
+The paper defines the mate-based functional by
+`β_d(T_d, −) = h^cat_d ∘ varpi_d`, and then takes `h^RS = h^cat ∘ J`.
+Lemma 5.6 identifies its value on a sorted monomial with the
+coefficient of the star tensor in the corresponding word of the
+`e_i, η_i` basis: `J` cancels the interleaving sign of `β_d`.
+Lean defines `hRS` as `starCoord` at `canonColouring`, reading
+coefficients in the `e_i, ξ_i` basis instead. This is the paper's
+`h^ξ`. Lemma 5.7 gives the exact relation
+`h^RS = h^ξ ∘ Sym_s(Ψ)`, where `Ψ(e_i) = e_i` and `Ψ(ξ_i) = η_i`.
+The map `Ψ` is an even isometry preserving the copairing and its
+parity twist, so the two functionals define the same partition
+function. Lean's `evalOdd` supplies the sorting sign, and the
+colouring evaluation supplies the symplectic partners; the endpoint
+theorem `parameter_eq_mixedPartition` proves that the raw-coordinate
+witness represents `f`. Both constructions use unscaled symmetric
+and exterior monomials, with no factorial normalization.
 
 The super symmetric power is reached on coordinates.  The paper
 factors `β_d(T_d, −)` through `Sym_s^d V` from the invariance of
@@ -476,7 +614,7 @@ ledgers: [RegroupSign.lean](RS/Novel/Coordinates/RegroupSign.lean),
 [PatternInv.lean](RS/Novel/Coordinates/PatternInv.lean),
 [MasterSum.lean](RS/Novel/Coordinates/MasterSum.lean)); the theorem in
 [RS/TheoremForward.lean](RS/TheoremForward.lean) and
-[RS/TheoremQuant.lean](RS/TheoremQuant.lean).
+[RS/TheoremTotal.lean](RS/TheoremTotal.lean).
 
 
 ## 8. Proposition 3, both sectors
@@ -552,7 +690,9 @@ supporting files), the closed sector in
 
 **Statement.**  Every mixed partition function has exponentially
 bounded connection rank — Regts–Sevenster's Theorem 6, which the
-paper cites rather than reproves — with base `max 1 (k + 2ℓ)`.  This
+paper cites rather than reproves — with exact base `k + 2ℓ` in
+`mixedPartition_edgeRankBounded`, including zero. The existential
+statement `regts_sevenster_converse` uses `max 1 (k + 2ℓ)`. This
 direction is a theorem of the development, resting on no input
 (`regts_sevenster_converse`).  It
 goes through one displayed identity, `SuperGramIdentity` — the
@@ -632,9 +772,11 @@ knowing on sight:
 
 ## 11. Reading order
 
-[RS/Definitions.lean](RS/Definitions.lean) defines everything the
-theorems say; [RS/Glossary.lean](RS/Glossary.lean) glosses the
-vocabulary; `README.md` states the theorems.
+[RS/Definitions.lean](RS/Definitions.lean) defines the main
+statements; [RS/DimensionDefinitions.lean](RS/DimensionDefinitions.lean)
+defines the growth, minimum and prescribed-dimension vocabulary.
+[RS/Glossary.lean](RS/Glossary.lean) glosses the vocabulary;
+[README.md](README.md) states the theorems and their audit coverage.
 
 
 ## References
@@ -651,6 +793,14 @@ vocabulary; `README.md` states the theorems.
 * M. Freedman, L. Lovász, A. Schrijver, *Reflection positivity,
   rank connectivity, and homomorphism of graphs*, J. Amer. Math.
   Soc. 20 (2007), 37–51.
+* A. Schrijver, *Characterizing partition functions of the
+  edge-coloring model by rank growth*, J. Combin. Theory Ser. A
+  136 (2015), 164–173; arXiv:1211.3561, Proposition 4.
+* K. Kimura, S.-I. Kimura, N. Takahashi, *Motivic zeta functions
+  in additive monoidal categories*, J. K-Theory 9 (2012), 459–473;
+  [doi:10.1017/is011011006jkt174](https://doi.org/10.1017/is011011006jkt174).
+* C. Mazza, C. Weibel, *Schur-finiteness in λ-rings*, J. Algebra
+  374 (2013), 66–78; arXiv:1011.1444.
 * F. G. Frobenius, *Über die Charaktere der symmetrischen Gruppe*,
   Sitzungsber. Preuss. Akad. Wiss. (1900), 516–534.
 * B. Lindström, *On the vector representations of induced

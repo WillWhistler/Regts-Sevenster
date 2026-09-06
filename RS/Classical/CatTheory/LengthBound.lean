@@ -21,14 +21,15 @@ open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u}
 
 /-! ### Length of a biproduct of simple objects -/
 
 /-- The biproduct of a family over `Fin (n + 1)` splits off its
 head summand as a binary biproduct with the biproduct of its
 tail. -/
-private noncomputable def biproductSuccIso [Preadditive C]
+private noncomputable def biproductSuccIso [Category.{v} C]
+    [Preadditive C]
     [HasFiniteBiproducts C] [HasBinaryBiproducts C] {n : ℕ}
     (S : Fin (n + 1) → C) :
     (⨁ S) ≅ S 0 ⊞ ⨁ (fun j : Fin n => S j.succ) where
@@ -61,7 +62,8 @@ private noncomputable def biproductSuccIso [Preadditive C]
             biproduct.ι_π_ne _ h]
 
 /-- A biproduct of `n` simple objects has length at most `n`. -/
-theorem lengthLE_biproduct_of_simple [Abelian C] [HasFiniteBiproducts C]
+theorem lengthLE_biproduct_of_simple [Category.{v} C]
+    [Abelian C] [HasFiniteBiproducts C]
     {n : ℕ} (S : Fin n → C) (hS : ∀ i, Simple (S i)) :
     LengthLE (⨁ S) n := by
   induction n with
@@ -79,7 +81,7 @@ theorem lengthLE_biproduct_of_simple [Abelian C] [HasFiniteBiproducts C]
 
 /-- Pairwise-orthogonal nonzero idempotent endomorphisms are
 linearly independent over ℂ. -/
-private lemma linearIndependent_of_orthogonal_idempotents
+private lemma linearIndependent_of_orthogonal_idempotents [Category.{v} C]
     [Preadditive C] [Linear ℂ C] {Y : C} {n : ℕ}
     (p : Fin n → (Y ⟶ Y)) (hne : ∀ i, p i ≠ 0)
     (hidem : ∀ i, p i ≫ p i = p i)
@@ -107,7 +109,8 @@ private lemma linearIndependent_of_orthogonal_idempotents
 /-- An object isomorphic to a biproduct of `n` simple objects has
 `n` pairwise-orthogonal nonzero idempotent endomorphisms, so `n`
 is at most the dimension of its endomorphism algebra. -/
-private lemma card_le_finrank_end [Preadditive C] [Linear ℂ C]
+private lemma card_le_finrank_end [Category.{v} C]
+    [Preadditive C] [Linear ℂ C]
     [HasFiniteBiproducts C] {Y : C} {n : ℕ} {S : Fin n → C}
     (hS : ∀ i, Simple (S i)) (e : Y ≅ ⨁ S)
     (hfd : FiniteDimensional ℂ (End Y)) :
@@ -152,7 +155,8 @@ set_option linter.overlappingInstances false in
 /-- The abelian structure rebuilt over a prescribed preadditive
 structure. -/
 @[reducible]
-private def abelianOver [hpre : Preadditive C] [hab : Abelian C] :
+private def abelianOver [Category.{v} C]
+    [hpre : Preadditive C] [hab : Abelian C] :
     Abelian C :=
   have hzero :
       @Preadditive.preadditiveHasZeroMorphisms C _ hab.toPreadditive =
@@ -174,7 +178,8 @@ every object `Y` satisfies the length bound at `dim End Y`.  The
 semisimplicity and finiteness hypotheses are read over the
 preadditive structure, and the abelian structure is rebuilt over it
 so that the two halves compose. -/
-theorem lengthLE_finrank_end [Preadditive C] [Linear ℂ C]
+theorem lengthLE_finrank_end [Category.{v} C]
+    [Preadditive C] [Linear ℂ C]
     [Abelian C] [HasFiniteBiproducts C]
     (hss : IsSemisimple C) (hfd : HasFinDimHom C) (Y : C) :
     LengthLE Y (Module.finrank ℂ (End Y)) := by

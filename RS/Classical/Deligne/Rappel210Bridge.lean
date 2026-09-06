@@ -19,27 +19,12 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (Y : D) (pt : 𝟙_ D ⟶ Y)
+variable {D : Type u}
 
-omit [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The singleton point in the tensor power, as the point against
 the unitor. -/
-theorem tensorPowPoint_one :
+theorem tensorPowPoint_one
+    [Category.{v} D] [MonoidalCategory D] (Y : D) (pt : 𝟙_ D ⟶ Y) :
     tensorPowPoint pt 1 = pt ≫ (λ_ Y).inv := by
   rw [tensorPowPoint_succ, tensorPowPoint_zero]
   have h : (𝟙 (𝟙_ D) ⊗ₘ pt) = ((𝟙_ D) ◁ pt) :=
@@ -48,13 +33,10 @@ theorem tensorPowPoint_one :
     ((eq_whisker unitors_inv_equal.symm _).trans
       (leftUnitor_inv_naturality pt).symm)
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The seed is the symmetrised singleton point.** -/
-theorem splitSeed_eq :
+theorem splitSeed_eq [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (Y : D) (pt : 𝟙_ D ⟶ Y) :
     splitSeed Y pt =
       tensorPowPoint pt 1 ≫ modPowπ (𝟙_ D) Y 1 ≫
         symPowπ (𝟙_ D) Y 1 := by
@@ -65,17 +47,20 @@ theorem splitSeed_eq :
   simp only [Category.assoc]
   exact (Category.assoc _ _ _).symm
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The stage units are the symmetrised point powers.** -/
-theorem splitUnitStage_eq :
+theorem splitUnitStage_eq
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (Y : D) (pt : 𝟙_ D ⟶ Y) :
     ∀ n : ℕ,
     splitUnitStage Y pt n =
       tensorPowPoint pt (n + 1) ≫ modPowπ (𝟙_ D) Y (n + 1) ≫
         symPowπ (𝟙_ D) Y (n + 1)
   | 0 => splitSeed_eq Y pt
   | (n + 1) => by
-    have hIH := splitUnitStage_eq n
+    have hIH := splitUnitStage_eq Y pt n
     have hpair : (tensorPowPoint pt (n + 1) ⊗ₘ
         tensorPowPoint pt 1) ≫
         ((modPowπ (𝟙_ D) Y (n + 1) ≫
@@ -161,12 +146,15 @@ theorem splitUnitStage_eq :
             ((Category.assoc _ _ _).symm.trans
               ((eq_whisker hrl _).trans (Category.id_comp _)))
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The stage-unit nonvanishing, from mono preservation of the
 tensor factors alone — the form consumed over an
 ind-completion. -/
 theorem splitUnitStage_ne_zero'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (Y : D) (pt : 𝟙_ D ⟶ Y)
     [∀ Z : D, (tensorLeft Z).PreservesMonomorphisms]
     [∀ Z : D, (tensorRight Z).PreservesMonomorphisms]
     [Mono pt] (h1 : ¬ IsZero (𝟙_ D)) (n : ℕ) :
@@ -176,19 +164,25 @@ theorem splitUnitStage_ne_zero'
 
 section Class
 
-variable [HasColimitsOfShape SmallNat.{v} D]
-
 /-- **The class of the object in the splitting algebra**: the
 singleton power, included at the bottom stage. -/
-noncomputable def splitCls : Y ⟶ splitAlgebra Y pt :=
+noncomputable def splitCls
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (Y : D) (pt : 𝟙_ D ⟶ Y) [HasColimitsOfShape SmallNat.{v} D] :
+    Y ⟶ splitAlgebra Y pt :=
   (symPowOne (𝟙_ D) Y).inv ≫
     chainColimitι (splitStage Y) (splitDelta Y pt) 0
 
-omit [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The class restricts on the point to the unit.** -/
-theorem splitCls_point :
+theorem splitCls_point
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (Y : D) (pt : 𝟙_ D ⟶ Y) [HasColimitsOfShape SmallNat.{v} D] :
     pt ≫ splitCls Y pt = splitAlgebraUnit Y pt :=
   (Category.assoc _ _ _).symm
 

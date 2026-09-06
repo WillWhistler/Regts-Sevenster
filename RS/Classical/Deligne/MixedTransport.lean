@@ -16,19 +16,15 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
+variable {D : Type u}
 
 /-- **An isomorphism of free modules base-changes.** -/
-noncomputable def freeModIsoBaseChange (φ : A ⟶ B) [IsMonHom φ]
+noncomputable def freeModIsoBaseChange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
     {V W : D} (e : freeMod A V ≅ freeMod A W) :
     freeMod B V ≅ freeMod B W :=
   (baseChangeFreeIso A B φ V).symm.trans

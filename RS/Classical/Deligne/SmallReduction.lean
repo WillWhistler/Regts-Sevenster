@@ -288,38 +288,44 @@ end Fibre
 
 section SmallModel
 
-variable (A : Type u) [Category.{v} A] [Abelian A] [Linear ℂ A]
-  [MonoidalCategory A] [SymmetricCategory A] [MonoidalPreadditive A]
-  [MonoidalLinear ℂ A] [RigidCategory A] [EssentiallySmall.{v} A]
+variable (A : Type u)
 
 /-- The small model of an essentially small monoidal category,
 carrying the monoidal structure transported along
 `CategoryTheory.equivSmallModel`. -/
-@[reducible] noncomputable def SmallDeligne : Type v :=
+@[reducible] noncomputable def SmallDeligne
+    [Category.{v} A] [EssentiallySmall.{v} A] : Type v :=
   Monoidal.Transported (equivSmallModel.{v} A)
 
 /-- The transporting equivalence onto the small model, monoidal by
 construction. -/
-@[reducible] noncomputable def smallDeligneEquiv : A ≌ SmallDeligne A :=
+@[reducible] noncomputable def smallDeligneEquiv
+    [Category.{v} A] [EssentiallySmall.{v} A] : A ≌ SmallDeligne A :=
   Monoidal.equivalenceTransported (equivSmallModel.{v} A)
 
 /-- The preadditive structure of the small model. -/
 @[implicit_reducible]
-noncomputable def smallDelignePreadditive : Preadditive (SmallDeligne A) :=
+noncomputable def smallDelignePreadditive
+    [Category.{v} A] [Abelian A] [EssentiallySmall.{v} A] :
+    Preadditive (SmallDeligne A) :=
   Preadditive.ofFullyFaithful (smallDeligneEquiv A).fullyFaithfulInverse
 
 attribute [local instance] smallDelignePreadditive
 
 /-- The inverse of the transporting equivalence is additive. -/
 @[implicit_reducible]
-def smallDeligneInverseAdditive : (smallDeligneEquiv A).inverse.Additive :=
+def smallDeligneInverseAdditive
+    [Category.{v} A] [Abelian A] [EssentiallySmall.{v} A] :
+    (smallDeligneEquiv A).inverse.Additive :=
   (smallDeligneEquiv A).fullyFaithfulInverse.additive_ofFullyFaithful
 
 attribute [local instance] smallDeligneInverseAdditive
 
 /-- The transporting equivalence is additive. -/
 @[implicit_reducible]
-def smallDeligneFunctorAdditive : (smallDeligneEquiv A).functor.Additive :=
+def smallDeligneFunctorAdditive
+    [Category.{v} A] [Abelian A] [EssentiallySmall.{v} A] :
+    (smallDeligneEquiv A).functor.Additive :=
   haveI : (smallDeligneEquiv A).symm.functor.Additive :=
     smallDeligneInverseAdditive A
   Equivalence.inverse_additive (smallDeligneEquiv A).symm
@@ -328,14 +334,18 @@ attribute [local instance] smallDeligneFunctorAdditive
 
 /-- The ℂ-linear structure of the small model. -/
 @[implicit_reducible]
-noncomputable def smallDeligneLinear : Linear ℂ (SmallDeligne A) :=
+noncomputable def smallDeligneLinear
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [EssentiallySmall.{v} A] :
+    Linear ℂ (SmallDeligne A) :=
   linearOfFullyFaithful ℂ (smallDeligneEquiv A).fullyFaithfulInverse
 
 attribute [local instance] smallDeligneLinear
 
 /-- The inverse of the transporting equivalence is ℂ-linear. -/
 @[implicit_reducible]
-def smallDeligneInverseLinear : (smallDeligneEquiv A).inverse.Linear ℂ :=
+def smallDeligneInverseLinear
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [EssentiallySmall.{v} A] :
+    (smallDeligneEquiv A).inverse.Linear ℂ :=
   functorLinearOfFullyFaithful ℂ
     (smallDeligneEquiv A).fullyFaithfulInverse
 
@@ -343,7 +353,9 @@ attribute [local instance] smallDeligneInverseLinear
 
 /-- The transporting equivalence is ℂ-linear. -/
 @[implicit_reducible]
-def smallDeligneFunctorLinear : (smallDeligneEquiv A).functor.Linear ℂ :=
+def smallDeligneFunctorLinear
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [EssentiallySmall.{v} A] :
+    (smallDeligneEquiv A).functor.Linear ℂ :=
   haveI : (smallDeligneEquiv A).symm.functor.Linear ℂ :=
     smallDeligneInverseLinear A
   Equivalence.inverseLinear (R := ℂ) (smallDeligneEquiv A).symm
@@ -352,7 +364,9 @@ attribute [local instance] smallDeligneFunctorLinear
 
 /-- The small model has finite limits. -/
 @[implicit_reducible]
-def smallDeligneFiniteLimits : HasFiniteLimits (SmallDeligne A) :=
+def smallDeligneFiniteLimits
+    [Category.{v} A] [Abelian A] [EssentiallySmall.{v} A] :
+    HasFiniteLimits (SmallDeligne A) :=
   ⟨fun _ _ _ =>
     Adjunction.hasLimitsOfShape_of_equivalence (smallDeligneEquiv A).inverse⟩
 
@@ -360,21 +374,27 @@ attribute [local instance] smallDeligneFiniteLimits
 
 /-- The small model is abelian. -/
 @[implicit_reducible]
-noncomputable def smallDeligneAbelian : Abelian (SmallDeligne A) :=
+noncomputable def smallDeligneAbelian
+    [Category.{v} A] [Abelian A] [EssentiallySmall.{v} A] :
+    Abelian (SmallDeligne A) :=
   abelianOfEquivalence (smallDeligneEquiv A).inverse
 
 attribute [local instance] smallDeligneAbelian
 
 /-- The small model has finite biproducts. -/
 @[implicit_reducible]
-def smallDeligneBiproducts : HasFiniteBiproducts (SmallDeligne A) :=
+def smallDeligneBiproducts
+    [Category.{v} A] [Abelian A] [EssentiallySmall.{v} A] :
+    HasFiniteBiproducts (SmallDeligne A) :=
   HasFiniteBiproducts.of_hasFiniteProducts
 
 attribute [local instance] smallDeligneBiproducts
 
 /-- The tensor product of the small model is biadditive. -/
 @[implicit_reducible]
-def smallDeligneMonoidalPreadditive :
+def smallDeligneMonoidalPreadditive
+    [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [EssentiallySmall.{v} A] :
     MonoidalPreadditive (SmallDeligne A) :=
   monoidalPreadditive_of_faithful (smallDeligneEquiv A).inverse
 
@@ -382,14 +402,19 @@ attribute [local instance] smallDeligneMonoidalPreadditive
 
 /-- The tensor product of the small model is ℂ-bilinear. -/
 @[implicit_reducible]
-def smallDeligneMonoidalLinear : MonoidalLinear ℂ (SmallDeligne A) :=
+def smallDeligneMonoidalLinear
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [EssentiallySmall.{v} A] :
+    MonoidalLinear ℂ (SmallDeligne A) :=
   MonoidalLinear.ofFaithful ℂ (smallDeligneEquiv A).inverse
 
 attribute [local instance] smallDeligneMonoidalLinear
 
 /-- The small model is rigid. -/
 @[implicit_reducible]
-noncomputable def smallDeligneRigid : RigidCategory (SmallDeligne A) :=
+noncomputable def smallDeligneRigid
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    [EssentiallySmall.{v} A] : RigidCategory (SmallDeligne A) :=
   rigidCategoryOfEquivalence (smallDeligneEquiv A).symm.toAdjunction
 
 attribute [local instance] smallDeligneRigid

@@ -14,28 +14,27 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
-
-variable (κ : F.RelTransitionSystem)
 
 open Classical in
 /-- The chord diagram of a system: for each participating boundary
 flag, the sorted pair of its label and its path match's label. -/
-noncomputable def labelChords : Finset (α × α) :=
+noncomputable def labelChords
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) : Finset (α × α) :=
   F.boundaryFlags.attach.image (fun b =>
     (min (F.boundaryLabel b.prop)
         (F.boundaryLabel (κ.pathMatch_mem b.prop)),
       max (F.boundaryLabel b.prop)
         (F.boundaryLabel (κ.pathMatch_mem b.prop))))
 
-variable {κ}
-
 /-- Membership: a pair is a chord exactly when it is the sorted
 label pair of some participating boundary flag. -/
-theorem mem_labelChords {p : α × α} :
+theorem mem_labelChords [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {p : α × α} :
     p ∈ labelChords κ ↔
       ∃ (δ : W.Flag) (hδ : δ ∈ F.boundaryFlags),
         p = (min (F.boundaryLabel hδ)
@@ -54,7 +53,9 @@ theorem mem_labelChords {p : α × α} :
 chord of `δ` in `κ'` is the chord of `δ` in `κ` (the only `κ'`
 chord containing `δ`'s label, by label injectivity), and the
 partner's label determines the partner. -/
-theorem samePairing_of_labelChords {κ κ' : F.RelTransitionSystem}
+theorem samePairing_of_labelChords
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (h : labelChords κ = labelChords κ') : SamePairing κ κ' := by
   intro δ hδ
   -- the κ'-chord of δ appears in the κ-diagram
@@ -113,7 +114,9 @@ theorem samePairing_of_labelChords {κ κ' : F.RelTransitionSystem}
 end EdgeSubset
 
 /-- A well-formed chord diagram. -/
-structure IsChordDiagram (P : Finset (α × α)) : Prop where
+structure IsChordDiagram
+    [LinearOrder α]
+    (P : Finset (α × α)) : Prop where
   /-- Every chord is recorded low end first. -/
   ordered : ∀ p ∈ P, p.1 < p.2
   /-- Distinct chords share no end. -/
@@ -123,7 +126,9 @@ namespace EdgeSubset
 
 /-- On an all-internal subset the chord diagram is empty: there are
 no participating boundary flags. -/
-theorem labelChords_of_allInternal (hall : F.allInternal)
+theorem labelChords_of_allInternal
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (hall : F.allInternal)
     (κ : F.RelTransitionSystem) : labelChords κ = ∅ :=
   Finset.eq_empty_of_forall_notMem fun p hp => by
     obtain ⟨δ, hδ, -⟩ := mem_labelChords.mp hp

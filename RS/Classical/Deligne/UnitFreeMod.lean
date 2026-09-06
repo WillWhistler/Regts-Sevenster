@@ -22,21 +22,22 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section UnitFree
 
-variable (V : D)
-
 /-- **The trivial module on `V` is the free module on `V` over
 the tensor unit**, through the inverse left unitor. -/
-noncomputable def unitFreeIso : unitMod V ≅ freeMod (𝟙_ D) V :=
+noncomputable def unitFreeIso [Category.{v} D] [MonoidalCategory D] (V : D) :
+    unitMod V ≅ freeMod (𝟙_ D) V :=
   (freeModUnitBase V).symm
 
-@[simp] lemma unitFreeIso_hom_hom :
+@[simp] lemma unitFreeIso_hom_hom
+    [Category.{v} D] [MonoidalCategory D] (V : D) :
     (unitFreeIso V).hom.hom = (λ_ V).inv := rfl
 
-@[simp] lemma unitFreeIso_inv_hom :
+@[simp] lemma unitFreeIso_inv_hom
+    [Category.{v} D] [MonoidalCategory D] (V : D) :
     (unitFreeIso V).inv.hom = (λ_ V).hom := rfl
 
 end UnitFree

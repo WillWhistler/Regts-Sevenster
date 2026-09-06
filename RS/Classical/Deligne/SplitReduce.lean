@@ -17,18 +17,21 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [RigidCategory A]
+variable {A : Type u}
 
 /-- The dual-side comparison point: the image of the right unitor
 under the duality adjunction — the coevaluation-flavoured map the
 liftings are measured against. -/
-noncomputable def dualUnitPoint (C : A) : 𝟙_ A ⟶ (ᘁC) ⊗ C :=
+noncomputable def dualUnitPoint
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (C : A) : 𝟙_ A ⟶ (ᘁC) ⊗ C :=
   tensorLeftHomEquiv (𝟙_ A) (ᘁC) C C (ρ_ C).hom
 
 /-- **Sections through the dual**: an epimorphism onto `C` admits
 a section exactly when the dual-side unit map lifts through it. -/
-theorem exists_section_iff_unit_lift {B C : A} (b : B ⟶ C) :
+theorem exists_section_iff_unit_lift
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    {B C : A} (b : B ⟶ C) :
     (∃ t : C ⟶ B, t ≫ b = 𝟙 C) ↔
     (∃ s : 𝟙_ A ⟶ (ᘁC) ⊗ B,
       s ≫ ((ᘁC) ◁ b) = dualUnitPoint C) := by
@@ -55,21 +58,24 @@ section Pullback
 
 open Limits
 
-variable [Abelian A]
-
 /-- The unit-ending object of the reduction: the preimage of the
 dual-side unit point inside the dual-twisted middle term. -/
-noncomputable def unitEnd {B C : A} (b : B ⟶ C) : A :=
+noncomputable def unitEnd
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A] [Abelian A]
+    {B C : A} (b : B ⟶ C) : A :=
   pullback ((ᘁC) ◁ b) (dualUnitPoint C)
 
 /-- Its projection to the unit. -/
-noncomputable def unitEndProj {B C : A} (b : B ⟶ C) :
+noncomputable def unitEndProj
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A] [Abelian A]
+    {B C : A} (b : B ⟶ C) :
     unitEnd b ⟶ 𝟙_ A :=
   pullback.snd _ _
 
 /-- The kernel of the second pullback projection is the kernel of
 the first leg. -/
-noncomputable def kernelPullbackSndIso {X Y Z : A} (f : X ⟶ Z)
+noncomputable def kernelPullbackSndIso [Category.{v} A] [Abelian A]
+    {X Y Z : A} (f : X ⟶ Z)
     (g : Y ⟶ Z) :
     kernel (pullback.snd f g) ≅ kernel f := by
   refine ⟨kernel.lift f

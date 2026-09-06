@@ -25,9 +25,9 @@ linear recurrence is a rational function: there exist coprime
 polynomials `P, Q` with constant terms 1, `deg P ≤ b`, `deg Q ≤ a`,
 such that `H · ↑Q = ↑P` in `ℂ⟦X⟧`. -/
 theorem newtonH_series_rational {t : ℕ → ℂ} {a b : ℕ}
-    (hab : a ≤ b) (c : Fin (a + 1) → ℂ) (hc : c ≠ 0)
-    (hrec : ∀ ρ : ℕ, b - a ≤ ρ →
-      ∑ k : Fin (a + 1), c k * newtonH t (ρ + 1 + (k : ℕ)) = 0) :
+    (c : Fin (a + 1) → ℂ) (hc : c ≠ 0)
+    (hrec : ∀ ρ : ℤ, (b : ℤ) - a ≤ ρ →
+      ∑ k : Fin (a + 1), c k * newtonHZ t (ρ + 1 + (k : ℤ)) = 0) :
     ∃ P Q : Polynomial ℂ,
       P.coeff 0 = 1 ∧ Q.coeff 0 = 1 ∧
       P.natDegree ≤ b ∧ Q.natDegree ≤ a ∧
@@ -35,7 +35,7 @@ theorem newtonH_series_rational {t : ℕ → ℂ} {a b : ℕ}
       newtonHSeries t * (↑Q : ℂ⟦X⟧) = ↑P := by
   -- Get raw truncated pair
   obtain ⟨Q, P, hQ_ne, hP_ne, hQH, hQ_deg, hP_deg⟩ :=
-    truncated_product_from_recurrence hab c hc hrec
+    truncated_product_from_recurrence c hc hrec
   -- Get coprime pair with nonzero constant coefficients
   obtain ⟨Q₀, P₀, hQ0_ne, hP0_ne, hcop, hQ0H, hQ0c, hP0c,
     hQ0_deg_le, hP0_deg_le⟩ := coprime_pair_from_product Q P hQ_ne hP_ne hQH
@@ -78,7 +78,6 @@ theorem newtonH_series_rational {t : ℕ → ℂ} {a b : ℕ}
 the Newton generating series is a rational function `P / Q` with
 coprime numerator/denominator of constant term 1. -/
 theorem newtonH_series_rational_of_hook_vanishing {t : ℕ → ℂ} {a b : ℕ}
-    (hab : a ≤ b)
     (hvan : ∀ μ : YoungDiagram, ¬ IsInHook a b μ → diagramSchur μ t = 0) :
     ∃ P Q : Polynomial ℂ, P.coeff 0 = 1 ∧ Q.coeff 0 = 1 ∧
       P.natDegree ≤ b ∧ Q.natDegree ≤ a ∧ IsCoprime P Q ∧
@@ -96,8 +95,8 @@ theorem newtonH_series_rational_of_hook_vanishing {t : ℕ → ℂ} {a b : ℕ}
     have := hvan μ hout
     rwa [diagramSchur, hrows] at this
   -- Extract the recurrence
-  obtain ⟨c, hc, hrec⟩ := exists_recurrence_of_schurDet_vanishing hab hlist
+  obtain ⟨c, hc, hrec⟩ := exists_recurrence_of_schurDet_vanishing hlist
   -- Apply the rationality theorem
-  exact newtonH_series_rational hab c hc hrec
+  exact newtonH_series_rational c hc hrec
 
 end RS

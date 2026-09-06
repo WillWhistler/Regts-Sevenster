@@ -36,31 +36,30 @@ open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u}
 
 /-- Powers in `End X` unfold through the reversed multiplication
 of `End`: read as a morphism, `f ^ (n + 1)` is `f ^ n ≫ f`. -/
-lemma pow_end_eq {X : C} (f : End X) (n : ℕ) :
+lemma pow_end_eq [Category.{v} C]
+    {X : C} (f : End X) (n : ℕ) :
     End.asHom (f ^ (n + 1)) = End.asHom (f ^ n) ≫ End.asHom f := by
   rw [pow_succ']
   rfl
 
 section Chain
 
-variable [Preadditive C] [HasZeroObject C] {X : C}
-
-omit [Preadditive C] [HasZeroObject C] in
 /-- An idempotent has all its positive powers equal to itself. -/
-private lemma pow_succ_of_idem {f : End X} (h : f * f = f) :
+private lemma pow_succ_of_idem [Category.{v} C] {X : C}
+    {f : End X} (h : f * f = f) :
     ∀ n : ℕ, f ^ (n + 1) = f
   | 0 => pow_one f
   | n + 1 => by rw [pow_succ, pow_succ_of_idem h n, h]
 
-omit [HasZeroObject C] in
 /-- An idempotent endomorphism with a vanishing power is zero.  At
 exponent zero the hypothesis reads `1 = 0`, which kills `f` as
 well. -/
-private lemma eq_zero_of_idem_of_pow {f : End X} {N : ℕ}
+private lemma eq_zero_of_idem_of_pow [Category.{v} C] [Preadditive C] {X : C}
+    {f : End X} {N : ℕ}
     (hidem : f * f = f) (hpow : f ^ N = 0) : f = 0 := by
   rcases N with _ | M
   · rw [pow_zero] at hpow
@@ -79,7 +78,9 @@ The proof shows by induction that `(⊤ : Subobject X).arrow`
 composed with `f ^ k` factors through `F k`; at `k = N` the
 factorisation runs through `⊥`, whose arrow is zero, and the top
 arrow is an isomorphism, hence an epimorphism. -/
-theorem comp_eq_zero_of_chain {N : ℕ} (F : ℕ → Subobject X)
+theorem comp_eq_zero_of_chain
+    [Category.{v} C] [Preadditive C] [HasZeroObject C] {X : C}
+    {N : ℕ} (F : ℕ → Subobject X)
     (htop : F 0 = ⊤) (hbot : F N = ⊥) (f : End X)
     (hshift : ∀ k, k < N →
       (F (k + 1)).Factors ((F k).arrow ≫ End.asHom f)) :
@@ -129,7 +130,9 @@ theorem comp_eq_zero_of_chain {N : ℕ} (F : ℕ → Subobject X)
 `End` multiplication `f * f = f`) vanishes outright: `f ^ N = 0`
 and `f = f ^ N` for `N ≥ 1`, while `N = 0` makes `X` a zero
 object. -/
-theorem eq_zero_of_idem_of_chain {N : ℕ} (F : ℕ → Subobject X)
+theorem eq_zero_of_idem_of_chain
+    [Category.{v} C] [Preadditive C] [HasZeroObject C] {X : C}
+    {N : ℕ} (F : ℕ → Subobject X)
     (htop : F 0 = ⊤) (hbot : F N = ⊥) (f : End X)
     (hshift : ∀ k, k < N →
       (F (k + 1)).Factors ((F k).arrow ≫ End.asHom f))
@@ -141,7 +144,9 @@ theorem eq_zero_of_idem_of_chain {N : ℕ} (F : ℕ → Subobject X)
 indexed by `Fin (N + 1)`: it runs from `F 0 = ⊤` to
 `F (Fin.last N) = ⊥`, and the shift hypothesis is stated over
 `k : Fin N` via `Fin.castSucc` and `Fin.succ`. -/
-theorem comp_eq_zero_of_finChain {N : ℕ}
+theorem comp_eq_zero_of_finChain
+    [Category.{v} C] [Preadditive C] [HasZeroObject C] {X : C}
+    {N : ℕ}
     (F : Fin (N + 1) → Subobject X) (htop : F 0 = ⊤)
     (hbot : F (Fin.last N) = ⊥) (f : End X)
     (hshift : ∀ k : Fin N,
@@ -162,7 +167,9 @@ theorem comp_eq_zero_of_finChain {N : ℕ}
 
 /-- Convenience form of `eq_zero_of_idem_of_chain` with the chain
 indexed by `Fin (N + 1)`. -/
-theorem eq_zero_of_idem_of_finChain {N : ℕ}
+theorem eq_zero_of_idem_of_finChain
+    [Category.{v} C] [Preadditive C] [HasZeroObject C] {X : C}
+    {N : ℕ}
     (F : Fin (N + 1) → Subobject X) (htop : F 0 = ⊤)
     (hbot : F (Fin.last N) = ⊥) (f : End X)
     (hshift : ∀ k : Fin N,

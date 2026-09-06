@@ -18,11 +18,7 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
+variable {C : Type v}
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
@@ -31,6 +27,9 @@ attribute [local instance]
 power of the remainder survives, the Key Lemma splits a unit
 factor off it. -/
 theorem devissageStepA
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
     (L : OddLine (Ind C)) (X : Ind C) :
     DevissageStepA (Ind C) L X := by
   intro st hSym

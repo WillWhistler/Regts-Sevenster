@@ -21,20 +21,19 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- A finite family of endomorphisms of a module object whose
 underlying morphisms sum to the identity stays total after
 tensoring with a second module object. -/
-theorem sum_modTensorMapMod {ι : Type*} (s : Finset ι)
+theorem sum_modTensorMapMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    {ι : Type*} (s : Finset ι)
     {M N : Mod D R} (g : ι → (M ⟶ M))
     (h : ∑ i ∈ s, (g i).hom = 𝟙 M.X) :
     ∑ i ∈ s, (modTensorMapMod R (g i) (𝟙 N)).hom =
@@ -57,7 +56,13 @@ theorem sum_modTensorMapMod {ι : Type*} (s : Finset ι)
   exact (Category.comp_id _).symm
 
 /-- **The comparison map on a family of retracts.** -/
-theorem isIso_gammaPairComparison_of_retracts {ι : Type*}
+theorem isIso_gammaPairComparison_of_retracts
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {ι : Type*}
     [Fintype ι] {M : Mod D R} {M' : ι → Mod D R} (N : Mod D R)
     (s : ∀ i, M' i ⟶ M) (r : ∀ i, M ⟶ M' i)
     (htot : ∑ i : ι, (r i).hom ≫ (s i).hom = 𝟙 M.X)

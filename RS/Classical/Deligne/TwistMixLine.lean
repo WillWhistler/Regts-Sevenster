@@ -18,15 +18,15 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
+variable {D : Type u}
 
 /-- Tensoring a summand of `L.mix p q` with the line gives the
 summand of `L.mix q p` at the swapped index: a unit summand
 becomes a line, a line summand becomes a unit. -/
-noncomputable def OddLine.twistSummandIso (L : OddLine D)
+noncomputable def OddLine.twistSummandIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D)
     (p q : ℕ) :
     ∀ j : Fin p ⊕ Fin q,
       L.mixFun q p (Equiv.sumComm (Fin p) (Fin q) j) ≅
@@ -37,7 +37,10 @@ noncomputable def OddLine.twistSummandIso (L : OddLine D)
 /-- **Twisting a mixed sum by the line**: tensoring with the odd
 line turns `p` units and `q` lines into `q` units and `p` lines.
 -/
-noncomputable def OddLine.twistMixIso (L : OddLine D) (p q : ℕ) :
+noncomputable def OddLine.twistMixIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.obj ⊗ L.mix p q ≅ L.mix q p :=
   leftDistributor L.obj (L.mixFun p q) ≪≫
     biproduct.whiskerEquiv (Equiv.sumComm (Fin p) (Fin q))

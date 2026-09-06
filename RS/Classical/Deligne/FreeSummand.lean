@@ -76,11 +76,11 @@ end Matrices
 
 section Biprod
 
-variable {D : Type u} [Category.{v} D] [Preadditive D]
-  [HasFiniteBiproducts D]
+variable {D : Type u}
 
 /-- **The matrix of a composite is the product of the matrices.** -/
-theorem components_comp {J K M : Type} [Fintype J] [Fintype K]
+theorem components_comp [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {J K M : Type} [Fintype J] [Fintype K]
     [Fintype M] {f : J → D} {g : K → D} {h : M → D}
     (x : ⨁ f ⟶ ⨁ g) (y : ⨁ g ⟶ ⨁ h) (j : J) (m : M) :
     biproduct.components (x ≫ y) j m =
@@ -99,7 +99,9 @@ theorem components_comp {J K M : Type} [Fintype J] [Fintype K]
     Preadditive.sum_comp, Category.assoc]
 
 /-- Two maps of biproducts with the same matrix agree. -/
-theorem hom_ext_components {J K : Type} [Fintype J] [Fintype K]
+theorem hom_ext_components
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {J K : Type} [Fintype J] [Fintype K]
     {f : J → D} {g : K → D} (x y : ⨁ f ⟶ ⨁ g)
     (h : ∀ j k, biproduct.components x j k =
       biproduct.components y j k) : x = y := by
@@ -107,13 +109,17 @@ theorem hom_ext_components {J K : Type} [Fintype J] [Fintype K]
   exact congrArg biproduct.matrix (funext fun j => funext fun k => h j k)
 
 /-- The diagonal entries of the identity matrix. -/
-theorem components_id_self {J : Type} [Fintype J] [DecidableEq J]
+theorem components_id_self
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {J : Type} [Fintype J] [DecidableEq J]
     {f : J → D} (j : J) :
     biproduct.components (𝟙 (⨁ f)) j j = 𝟙 (f j) := by
   simp [biproduct.components]
 
 /-- The off-diagonal entries of the identity matrix vanish. -/
-theorem components_id_ne {J : Type} [Fintype J] [DecidableEq J]
+theorem components_id_ne
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {J : Type} [Fintype J] [DecidableEq J]
     {f : J → D} {j k : J} (h : j ≠ k) :
     biproduct.components (𝟙 (⨁ f)) j k = 0 := by
   simp [biproduct.components, biproduct.ι_π_ne _ h]
@@ -124,60 +130,67 @@ end Biprod
 
 section Line
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (L : OddLine D)
+variable {D : Type u}
 
 /-- Whiskering an object twice by the line returns the object. -/
-noncomputable def OddLine.rot (X : D) : (X ⊗ L.obj) ⊗ L.obj ≅ X :=
+noncomputable def OddLine.rot
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    (X : D) : (X ⊗ L.obj) ⊗ L.obj ≅ X :=
   α_ X L.obj L.obj ≪≫ whiskerLeftIso X L.sq ≪≫ ρ_ X
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
-theorem OddLine.rot_hom (X : D) :
+theorem OddLine.rot_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    (X : D) :
     (L.rot X).hom =
       (α_ X L.obj L.obj).hom ≫ X ◁ L.sq.hom ≫ (ρ_ X).hom :=
   rfl
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- Whiskering a morphism twice by the line conjugates it. -/
 @[reassoc]
-theorem OddLine.whiskerRight_rot {X Y : D} (f : X ⟶ Y) :
+theorem OddLine.whiskerRight_rot
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    {X Y : D} (f : X ⟶ Y) :
     ((f ▷ L.obj) ▷ L.obj) ≫ (L.rot Y).hom = (L.rot X).hom ≫ f := by
   simp only [rot_hom, Category.assoc]
   rw [associator_naturality_left_assoc, ← whisker_exchange_assoc,
     rightUnitor_naturality]
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
-theorem OddLine.whiskerRight_whiskerRight {X Y : D} (f : X ⟶ Y) :
+theorem OddLine.whiskerRight_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    {X Y : D} (f : X ⟶ Y) :
     (f ▷ L.obj) ▷ L.obj = (L.rot X).hom ≫ f ≫ (L.rot Y).inv := by
   rw [← Category.assoc, ← L.whiskerRight_rot f, Category.assoc,
     Iso.hom_inv_id, Category.comp_id]
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- Double whiskering by the line is undone by the rotation. -/
-theorem OddLine.rot_whiskerRight {X Y : D} (f : X ⟶ Y) :
+theorem OddLine.rot_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    {X Y : D} (f : X ⟶ Y) :
     (L.rot X).inv ≫ ((f ▷ L.obj) ▷ L.obj) ≫ (L.rot Y).hom = f := by
   rw [L.whiskerRight_whiskerRight, Category.assoc,
     Iso.inv_hom_id_assoc, Category.assoc, Iso.inv_hom_id,
     Category.comp_id]
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- **Whiskering by the odd line is injective on morphisms.** -/
-theorem OddLine.whiskerRight_injective {X Y : D} :
+theorem OddLine.whiskerRight_injective
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    {X Y : D} :
     Function.Injective (fun f : X ⟶ Y => f ▷ L.obj) := by
   intro f g h
   have h' : f ▷ L.obj = g ▷ L.obj := h
   rw [← L.rot_whiskerRight f, ← L.rot_whiskerRight g, h']
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- A morphism killed by whiskering with the line vanishes. -/
-theorem OddLine.eq_zero_of_whiskerRight {X Y : D} (f : X ⟶ Y)
+theorem OddLine.eq_zero_of_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D)
+    {X Y : D} (f : X ⟶ Y)
     (h : f ▷ L.obj = 0) : f = 0 := by
   refine L.whiskerRight_injective ?_
   show f ▷ L.obj = (0 : X ⟶ Y) ▷ L.obj
@@ -189,20 +202,21 @@ end Line
 
 section Cancel
 
-variable {D : Type u} [Category.{v} D] [Preadditive D]
+variable {D : Type u}
 
 /-- A morphism sandwiched between isomorphisms vanishes only if it
 vanishes. -/
-theorem eq_zero_of_iso_comp {W X Y Z : D} (a : W ≅ X) (f : X ⟶ Y)
+theorem eq_zero_of_iso_comp [Category.{v} D] [Preadditive D]
+    {W X Y Z : D} (a : W ≅ X) (f : X ⟶ Y)
     (b : Y ≅ Z) (h : a.hom ≫ f ≫ b.hom = 0) : f = 0 := by
   have h2 := congrArg (fun k : W ⟶ Z => a.inv ≫ k ≫ b.inv) h
   simpa using h2
 
-variable [Linear ℂ D]
-
 /-- Scalars are determined by their action on a nonzero
 morphism. -/
-theorem smul_left_cancel_of_ne_zero {X Y : D} {a b : ℂ} {f : X ⟶ Y}
+theorem smul_left_cancel_of_ne_zero
+    [Category.{v} D] [Preadditive D] [Linear ℂ D]
+    {X Y : D} {a b : ℂ} {f : X ⟶ Y}
     (hf : f ≠ 0) (h : a • f = b • f) : a = b := by
   by_contra hne
   refine hf ?_
@@ -216,41 +230,42 @@ end Cancel
 
 section Unit
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- The unit of the free module on an object, read in the ambient
 category. -/
-noncomputable def algUnitHom (W : D) : W ⟶ R ⊗ W :=
+noncomputable def algUnitHom
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (W : D) : W ⟶ R ⊗ W :=
   (λ_ W).inv ≫ η[R] ▷ W
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- The unit of the free module is natural. -/
 @[reassoc]
-theorem algUnitHom_naturality {W W' : D} (k : W ⟶ W') :
+theorem algUnitHom_naturality
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {W W' : D} (k : W ⟶ W') :
     algUnitHom R W ≫ (R ◁ k) = k ≫ algUnitHom R W' := by
   rw [algUnitHom, algUnitHom, Category.assoc, ← whisker_exchange,
     ← leftUnitor_inv_naturality_assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- At the tensor unit the free-module unit is the algebra unit. -/
-theorem algUnitHom_unit :
+theorem algUnitHom_unit
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R] :
     algUnitHom R (𝟙_ D) ≫ (ρ_ R).hom = η[R] := by
   rw [algUnitHom, Category.assoc, rightUnitor_naturality,
     ← unitors_equal, Iso.inv_hom_id_assoc]
 
 /-- **Postcomposition with the free-module unit is bijective.** -/
-def UnitBij (V W : D) : Prop :=
+def UnitBij [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (V W : D) : Prop :=
   Function.Bijective (fun f : V ⟶ W => f ≫ algUnitHom R W)
 
-omit [SymmetricCategory D] [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- The bijectivity statement passes to biproducts in the
 target. -/
-theorem unitBij_biproduct_right {J : Type} [Fintype J]
+theorem unitBij_biproduct_right
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] (R : D) [MonObj R]
+    {J : Type} [Fintype J]
     [DecidableEq J] (V : D) (g : J → D)
     (h : ∀ k, UnitBij R V (g k)) : UnitBij R V (⨁ g) := by
   constructor
@@ -281,11 +296,12 @@ theorem unitBij_biproduct_right {J : Type} [Fintype J]
       biproduct.total, MonoidalCategory.whiskerLeft_id,
       Category.comp_id]
 
-omit [SymmetricCategory D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] in
 /-- The bijectivity statement passes to biproducts in the
 source. -/
-theorem unitBij_biproduct_left {J : Type} [Fintype J]
+theorem unitBij_biproduct_left
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasFiniteBiproducts D] (R : D) [MonObj R]
+    {J : Type} [Fintype J]
     [DecidableEq J] (f : J → D) (W : D)
     (h : ∀ j, UnitBij R (f j) W) : UnitBij R (⨁ f) W := by
   constructor
@@ -317,15 +333,14 @@ end Unit
 
 section Atoms
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (L : OddLine D) (R : D) [MonObj R]
+variable {D : Type u}
 
-omit [HasFiniteBiproducts D] in
 /-- **Endomorphisms of the odd line are scalars** when the
 endomorphisms of the tensor unit are. -/
 theorem OddLine.hom_line_scalar
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D)
     (hsc : ∀ g : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, g = c • 𝟙 (𝟙_ D))
     (f : L.obj ⟶ L.obj) : ∃ c : ℂ, f = c • 𝟙 L.obj := by
   obtain ⟨c, hc⟩ := hsc (L.sq.inv ≫ (f ▷ L.obj) ≫ L.sq.hom)
@@ -339,40 +354,41 @@ theorem OddLine.hom_line_scalar
   rw [h1, Linear.comp_smul, Category.comp_id, Linear.smul_comp,
     Category.id_comp]
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- **Maps from the tensor unit to the odd line vanish** when maps
 the other way do. -/
 theorem OddLine.hom_unit_line_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D)
     (hLU : ∀ g : L.obj ⟶ 𝟙_ D, g = 0) (f : 𝟙_ D ⟶ L.obj) : f = 0 := by
   refine L.eq_zero_of_whiskerRight f ?_
   exact eq_zero_of_iso_comp (λ_ L.obj).symm _ L.sq (hLU _)
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-  [MonObj R] in
 /-- Maps from the tensor unit into the free module on the line
 vanish. -/
 theorem hom_unit_freeLine_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) (R : D)
     (hLR : ∀ f : L.obj ⟶ R, f = 0) (g : 𝟙_ D ⟶ R ⊗ L.obj) :
     g = 0 := by
   refine L.eq_zero_of_whiskerRight g ?_
   exact eq_zero_of_iso_comp (λ_ L.obj).symm _ (L.rot R) (hLR _)
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] [MonObj R] in
 /-- Maps from the line into the free module on the tensor unit
 vanish. -/
 theorem hom_line_freeUnit_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D)
     (hLR : ∀ f : L.obj ⟶ R, f = 0) (g : L.obj ⟶ R ⊗ 𝟙_ D) :
     g = 0 := by
   refine (Iso.cancel_iso_hom_right _ _ (ρ_ R)).mp ?_
   rw [Limits.zero_comp]
   exact hLR _
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- The free-module unit at the line, transported through the
 rotation, is the algebra unit. -/
-theorem algUnitHom_line :
+theorem algUnitHom_line
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] :
     ((algUnitHom R L.obj) ▷ L.obj) ≫ (L.rot R).hom
       = L.sq.hom ≫ η[R] := by
   have hcoh : ((λ_ L.obj).inv ▷ L.obj)
@@ -396,16 +412,19 @@ theorem algUnitHom_line :
         rw [← Category.assoc, algUnitHom_naturality, Category.assoc]
     _ = L.sq.hom ≫ η[R] := by rw [algUnitHom_unit]
 
-omit [SymmetricCategory D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- The free-module unit at the tensor unit is nonzero. -/
-theorem algUnitHom_unit_ne_zero (hη : η[R] ≠ 0) :
+theorem algUnitHom_unit_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D] (R : D) [MonObj R]
+    (hη : η[R] ≠ 0) :
     algUnitHom R (𝟙_ D) ≠ 0 := fun h =>
   hη (by rw [← algUnitHom_unit, h, Limits.zero_comp])
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- The free-module unit at the line is nonzero. -/
-theorem algUnitHom_line_ne_zero (hη : η[R] ≠ 0) :
+theorem algUnitHom_line_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) (R : D)
+    [MonObj R]
+    (hη : η[R] ≠ 0) :
     algUnitHom R L.obj ≠ 0 := by
   intro h
   refine hη ?_
@@ -415,10 +434,12 @@ theorem algUnitHom_line_ne_zero (hη : η[R] ≠ 0) :
   have h3 := congrArg (fun k : L.obj ⊗ L.obj ⟶ R => L.sq.inv ≫ k) h2
   simpa using h3
 
-omit [HasFiniteBiproducts D] in
 /-- **Maps from the line into the free module on the line are
 scalar multiples of the unit.** -/
 theorem hom_line_freeLine_scalar
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R]
     (halg : ∀ f : 𝟙_ D ⟶ R, ∃ c : ℂ, f = c • η[R])
     (g : L.obj ⟶ R ⊗ L.obj) :
     ∃ c : ℂ, g = c • algUnitHom R L.obj := by
@@ -434,10 +455,10 @@ theorem hom_line_freeLine_scalar
 
 /-! ## Bijectivity at the atoms -/
 
-omit [SymmetricCategory D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- The unit-to-unit case. -/
 theorem unitBij_unit_unit
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D] [Linear ℂ D]
+    (R : D) [MonObj R]
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (halg : ∀ f : 𝟙_ D ⟶ R, ∃ c : ℂ, f = c • η[R])
     (hη : η[R] ≠ 0) : UnitBij R (𝟙_ D) (𝟙_ D) := by
@@ -465,9 +486,11 @@ theorem unitBij_unit_unit
     rw [Linear.smul_comp, Category.id_comp, Linear.smul_comp,
       algUnitHom_unit, hc]
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- The unit-to-line case. -/
 theorem unitBij_unit_line
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) (R : D)
+    [MonObj R]
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0)
     (hLR : ∀ f : L.obj ⟶ R, f = 0) : UnitBij R (𝟙_ D) L.obj := by
   constructor
@@ -479,10 +502,10 @@ theorem unitBij_unit_line
     rw [Limits.zero_comp]
     exact (hom_unit_freeLine_eq_zero L R hLR y).symm
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- The line-to-unit case. -/
 theorem unitBij_line_unit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R]
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0)
     (hLR : ∀ f : L.obj ⟶ R, f = 0) : UnitBij R L.obj (𝟙_ D) := by
   constructor
@@ -494,9 +517,11 @@ theorem unitBij_line_unit
     rw [Limits.zero_comp]
     exact (hom_line_freeUnit_eq_zero L R hLR y).symm
 
-omit [HasFiniteBiproducts D] in
 /-- The line-to-line case. -/
 theorem unitBij_line_line
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R]
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (halg : ∀ f : 𝟙_ D ⟶ R, ∃ c : ℂ, f = c • η[R])
     (hη : η[R] ≠ 0) : UnitBij R L.obj L.obj := by
@@ -522,9 +547,12 @@ theorem unitBij_line_line
 
 /-! ## Bijectivity at the mixed sums -/
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- Bijectivity at a mixed target follows from the two atoms. -/
-theorem unitBij_mix_right (V : D)
+theorem unitBij_mix_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (R : D) [MonObj R]
+    (V : D)
     (h1 : UnitBij R V (𝟙_ D)) (h2 : UnitBij R V L.obj) (p q : ℕ) :
     UnitBij R V (L.mix p q) := by
   show UnitBij R V (⨁ L.mixFun p q)
@@ -535,7 +563,10 @@ theorem unitBij_mix_right (V : D)
 
 /-- **Postcomposition with the free-module unit is bijective on
 mixed sums.** -/
-theorem unitBij_mix
+theorem unitBij_mix [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0)
     (halg : ∀ f : 𝟙_ D ⟶ R, ∃ c : ℂ, f = c • η[R])
@@ -558,16 +589,13 @@ end Atoms
 
 section Fullness
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (L : OddLine D) (R : D) [MonObj R]
+variable {D : Type u}
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- Base change of a morphism corresponds, under the free–forgetful
 adjunction, to postcomposition with the free-module unit. -/
-theorem freeModHomEquiv_freeModMap {V W : D} (f : V ⟶ W) :
+theorem freeModHomEquiv_freeModMap
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {V W : D} (f : V ⟶ W) :
     freeModHomEquiv R V (freeMod R W) (freeModMap R f)
       = f ≫ algUnitHom R W := by
   show (λ_ V).inv ≫ (η[R] ▷ V) ≫ (R ◁ f) = f ≫ algUnitHom R W
@@ -576,6 +604,10 @@ theorem freeModHomEquiv_freeModMap {V W : D} (f : V ⟶ W) :
 
 /-- **The free-module functor is full on mixed sums.** -/
 theorem exists_preimage_freeModMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0)
     (halg : ∀ f : 𝟙_ D ⟶ R, ∃ c : ℂ, f = c • η[R])
@@ -593,6 +625,10 @@ theorem exists_preimage_freeModMap
 
 /-- **The free-module functor is faithful on mixed sums.** -/
 theorem freeModMap_injective_mix
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0)
     (halg : ∀ f : 𝟙_ D ⟶ R, ∃ c : ℂ, f = c • η[R])
@@ -607,11 +643,11 @@ theorem freeModMap_injective_mix
     = f' ≫ algUnitHom R (L.mix p' q')
   rw [← freeModHomEquiv_freeModMap, ← freeModHomEquiv_freeModMap, h']
 
-omit [SymmetricCategory D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- A nonzero algebra unit forces a nonzero identity on the tensor
 unit. -/
-theorem id_unit_ne_zero_of_unit (hη : η[R] ≠ 0) :
+theorem id_unit_ne_zero_of_unit
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D] (R : D) [MonObj R]
+    (hη : η[R] ≠ 0) :
     𝟙 (𝟙_ D) ≠ 0 := fun h =>
   hη (by rw [← Category.id_comp η[R], h, Limits.zero_comp])
 
@@ -621,15 +657,14 @@ end Fullness
 
 section Split
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (L : OddLine D)
+variable {D : Type u}
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D] in
 /-- The identity of the line is nonzero as soon as the identity of
 the tensor unit is. -/
-theorem OddLine.id_line_ne_zero (hid : 𝟙 (𝟙_ D) ≠ 0) :
+theorem OddLine.id_line_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D)
+    (hid : 𝟙 (𝟙_ D) ≠ 0) :
     𝟙 L.obj ≠ 0 := by
   intro h
   refine hid ?_
@@ -641,7 +676,10 @@ theorem OddLine.id_line_ne_zero (hid : 𝟙 (𝟙_ D) ≠ 0) :
   rw [h3, h2, Limits.zero_comp, Limits.comp_zero]
 
 /-- The entries of a block-diagonal matrix on a mixed sum. -/
-noncomputable def OddLine.mixEntry {p q p' q' : ℕ}
+noncomputable def OddLine.mixEntry
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] (L : OddLine D)
+    {p q p' q' : ℕ}
     (A : Matrix (Fin p) (Fin p') ℂ) (B : Matrix (Fin q) (Fin q') ℂ) :
     ∀ (j : Fin p ⊕ Fin q) (k : Fin p' ⊕ Fin q'),
       L.mixFun p q j ⟶ L.mixFun p' q' k
@@ -651,33 +689,37 @@ noncomputable def OddLine.mixEntry {p q p' q' : ℕ}
   | Sum.inr j, Sum.inr j' => B j j' • 𝟙 L.obj
 
 /-- A pair of complex matrices as a morphism of mixed sums. -/
-noncomputable def OddLine.mixMat {p q p' q' : ℕ}
+noncomputable def OddLine.mixMat
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] [HasFiniteBiproducts D] (L : OddLine D)
+    {p q p' q' : ℕ}
     (A : Matrix (Fin p) (Fin p') ℂ) (B : Matrix (Fin q) (Fin q') ℂ) :
     (⨁ L.mixFun p q) ⟶ (⨁ L.mixFun p' q') :=
   biproduct.matrix (L.mixEntry A B)
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D] in
-theorem OddLine.components_mixMat {p q p' q' : ℕ}
+theorem OddLine.components_mixMat
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] [HasFiniteBiproducts D] (L : OddLine D)
+    {p q p' q' : ℕ}
     (A : Matrix (Fin p) (Fin p') ℂ) (B : Matrix (Fin q) (Fin q') ℂ)
     (j : Fin p ⊕ Fin q) (k : Fin p' ⊕ Fin q') :
     biproduct.components (L.mixMat A B) j k = L.mixEntry A B j k :=
   biproduct.matrix_components _ j k
 
-omit [MonoidalCategory D] [SymmetricCategory D]
-  [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- Scalar multiples of an identity compose by multiplication. -/
-theorem sum_smul_id {X : D} {J : Type} [Fintype J] (u v : J → ℂ) :
+theorem sum_smul_id [Category.{v} D] [Preadditive D] [Linear ℂ D]
+    {X : D} {J : Type} [Fintype J] (u v : J → ℂ) :
     ∑ x : J, (u x • 𝟙 X) ≫ (v x • 𝟙 X)
       = (∑ x : J, u x * v x) • 𝟙 X := by
   rw [Finset.sum_smul]
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [Linear.smul_comp, Linear.comp_smul, Category.id_comp, smul_smul]
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D] in
 /-- Block-diagonal matrices multiply blockwise. -/
-theorem OddLine.mixEntry_comp {p q p' q' p'' q'' : ℕ}
+theorem OddLine.mixEntry_comp
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] (L : OddLine D)
+    {p q p' q' p'' q'' : ℕ}
     (A : Matrix (Fin p) (Fin p') ℂ) (B : Matrix (Fin q) (Fin q') ℂ)
     (A' : Matrix (Fin p') (Fin p'') ℂ)
     (B' : Matrix (Fin q') (Fin q'') ℂ)
@@ -692,9 +734,11 @@ theorem OddLine.mixEntry_comp {p q p' q' p'' q'' : ℕ}
   · exact sum_smul_id _ _
   · exact sum_smul_id _ _
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D] in
 /-- Composition of block matrices is matrix multiplication. -/
-theorem OddLine.mixMat_comp {p q p' q' p'' q'' : ℕ}
+theorem OddLine.mixMat_comp
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] [HasFiniteBiproducts D] (L : OddLine D)
+    {p q p' q' p'' q'' : ℕ}
     (A : Matrix (Fin p) (Fin p') ℂ) (B : Matrix (Fin q) (Fin q') ℂ)
     (A' : Matrix (Fin p') (Fin p'') ℂ)
     (B' : Matrix (Fin q') (Fin q'') ℂ) :
@@ -704,9 +748,11 @@ theorem OddLine.mixMat_comp {p q p' q' p'' q'' : ℕ}
   simp only [components_mixMat]
   exact L.mixEntry_comp A B A' B' j k
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D] in
 /-- The identity matrices give the identity morphism. -/
-theorem OddLine.mixMat_one (p q : ℕ) :
+theorem OddLine.mixMat_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] [HasFiniteBiproducts D] (L : OddLine D)
+    (p q : ℕ) :
     L.mixMat (1 : Matrix (Fin p) (Fin p) ℂ)
         (1 : Matrix (Fin q) (Fin q) ℂ) = 𝟙 (⨁ L.mixFun p q) := by
   refine hom_ext_components _ _ fun j k => ?_
@@ -735,6 +781,9 @@ theorem OddLine.mixMat_one (p q : ℕ) :
 /-- **Every endomorphism of a mixed sum is a pair of complex
 matrices.** -/
 theorem OddLine.exists_mixMat
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D)
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0)
     {p q : ℕ} (e : (⨁ L.mixFun p q) ⟶ (⨁ L.mixFun p q)) :
@@ -755,9 +804,12 @@ theorem OddLine.exists_mixMat
     · exact hLU _
     · exact hB jj j2
 
-omit [MonoidalLinear ℂ D] in
 /-- The pair of matrices is determined by the morphism. -/
-theorem OddLine.mixMat_injective (hid : 𝟙 (𝟙_ D) ≠ 0)
+theorem OddLine.mixMat_injective
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [HasFiniteBiproducts D] (L : OddLine D)
+    (hid : 𝟙 (𝟙_ D) ≠ 0)
     {p q p' q' : ℕ} {A A' : Matrix (Fin p) (Fin p') ℂ}
     {B B' : Matrix (Fin q) (Fin q') ℂ}
     (h : L.mixMat A B = L.mixMat A' B') : A = A' ∧ B = B' := by
@@ -776,6 +828,9 @@ theorem OddLine.mixMat_injective (hid : 𝟙 (𝟙_ D) ≠ 0)
 /-- **An idempotent endomorphism of a mixed sum splits off a mixed
 sum.** -/
 theorem exists_split_of_idem_mix
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D)
     (hsc : ∀ f : 𝟙_ D ⟶ 𝟙_ D, ∃ c : ℂ, f = c • 𝟙 (𝟙_ D))
     (hLU : ∀ f : L.obj ⟶ 𝟙_ D, f = 0) (hid : 𝟙 (𝟙_ D) ≠ 0)
     {p q : ℕ} (e : L.mix p q ⟶ L.mix p q) (he : e ≫ e = e) :

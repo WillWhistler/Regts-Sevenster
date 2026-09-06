@@ -26,7 +26,7 @@ open Fragment Classical
 
 section OpenCut
 
-variable {L : Type} [LinearOrder L] {V : Fragment L} {i j : L}
+variable {L : Type} {V : Fragment L} {i j : L}
   (hij : i ≠ j)
   (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
   (t : Finset (SurvivingFlag V i j))
@@ -45,14 +45,12 @@ section Miss
 
 variable (hni : partnerSurvI hopen ∉ t)
 
-omit [LinearOrder L] in
 include hij hopen hni in
 /-- The `i`-flag is out of the lift. -/
 theorem boundaryFlagI_notMem_lift_of_miss :
     V.boundaryFlag i ∉ liftSubsetOpen hopen t := fun hmem =>
   hni ((boundaryFlagI_mem_liftOpen_iff hij hopen t).mp hmem)
 
-omit [LinearOrder L] in
 include hij hopen hct hni in
 /-- The `j`-flag is out of the lift. -/
 theorem boundaryFlagJ_notMem_lift_of_miss :
@@ -60,7 +58,6 @@ theorem boundaryFlagJ_notMem_lift_of_miss :
   partnerSurvJ_notMem_of hij hopen t hct hni
     ((boundaryFlagJ_mem_liftOpen_iff hij hopen t).mp hmem)
 
-omit [LinearOrder L] in
 include hij hopen hct hni in
 /-- A flag of the lift survives the glue. -/
 theorem surviving_of_mem_lift_of_miss {f : V.Flag}
@@ -77,7 +74,6 @@ noncomputable def survOfLift {f : V.Flag}
   ⟨f, (surviving_of_mem_lift_of_miss hij hopen t hct hni hf).1,
     (surviving_of_mem_lift_of_miss hij hopen t hct hni hf).2⟩
 
-omit [LinearOrder L] in
 /-- A flag of the lift, read as a glued flag, lies in the glued
 subset. -/
 theorem survOfLift_mem {f : V.Flag}
@@ -85,7 +81,6 @@ theorem survOfLift_mem {f : V.Flag}
     survOfLift hij hopen t hct hni hf ∈ t :=
   (surviving_val_mem_liftOpen_iff hopen t _).mp hf
 
-omit [LinearOrder L] in
 /-- Conversely a glued subset flag's underlying flag lies in the
 lift. -/
 theorem mem_lift_of_mem {g : SurvivingFlag V i j} (hg : g ∈ t) :
@@ -123,7 +118,6 @@ noncomputable def oddColourEquivMiss (ℓ : ℕ) :
   left_inv _ := rfl
   right_inv _ := rfl
 
-omit [LinearOrder L] in
 include hij hopen hct hcL hni in
 /-- **The odd boundary constraint matches across a missed cut.** -/
 theorem edgeOddBoundaryMatch_miss {k ℓ : ℕ}
@@ -184,7 +178,9 @@ local notation "oW" =>
 include hij hopen hct hcL hni in
 open Classical in
 /-- **The odd colouring sum transports across a missed cut.** -/
-theorem sum_odd_miss {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem sum_odd_miss
+    [LinearOrder L]
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j)) (a : Fin k)
     (ψ' : (Fg).EvenColouring k) :
     (∑ φ : (Fl).EdgeOddColouring ℓ,
@@ -226,7 +222,9 @@ open Classical in
 /-- **One missed cut, on RS21's colouring sums.**  The join carries
 an even colour, and that colour is the glued colouring's own at the
 far end of the cut — so the sum over it has a single term. -/
-theorem edgeSum_openCut_miss {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeSum_openCut_miss
+    [LinearOrder L]
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairOpen i j hij hopen) t st')
@@ -303,14 +301,12 @@ section Hit
 
 variable (hpi : partnerSurvI hopen ∈ t)
 
-omit [LinearOrder L] in
 include hij hopen hpi in
 /-- The `i`-flag is in the lift. -/
 theorem boundaryFlagI_mem_lift_of_hit :
     V.boundaryFlag i ∈ liftSubsetOpen hopen t :=
   (boundaryFlagI_mem_liftOpen_iff hij hopen t).mpr hpi
 
-omit [LinearOrder L] in
 include hij hopen hct hpi in
 /-- The far end of the `j`-edge is in the subset too. -/
 theorem partnerSurvJ_mem_of_hit : partnerSurvJ hopen ∈ t := by
@@ -319,7 +315,6 @@ theorem partnerSurvJ_mem_of_hit : partnerSurvJ hopen ∈ t := by
     (partnerSurvI hopen)
     (by rw [partnerSurvI_val hopen, V.pairing_invol])] at hp
 
-omit [LinearOrder L] in
 include hij hopen hct hpi in
 /-- The `j`-flag is in the lift. -/
 theorem boundaryFlagJ_mem_lift_of_hit :
@@ -327,7 +322,6 @@ theorem boundaryFlagJ_mem_lift_of_hit :
   (boundaryFlagJ_mem_liftOpen_iff hij hopen t).mpr
     (partnerSurvJ_mem_of_hit hij hopen t hct hpi)
 
-omit [LinearOrder L] in
 include hij hopen hct hpi in
 /-- A flag outside the lift survives the glue. -/
 theorem surviving_of_notMem_lift_of_hit {f : V.Flag}
@@ -343,7 +337,6 @@ noncomputable def survOfNotLift {f : V.Flag}
   ⟨f, (surviving_of_notMem_lift_of_hit hij hopen t hct hpi hf).1,
     (surviving_of_notMem_lift_of_hit hij hopen t hct hpi hf).2⟩
 
-omit [LinearOrder L] in
 /-- A flag outside the lift, read as a glued flag, lies outside the
 glued subset. -/
 theorem survOfNotLift_notMem {f : V.Flag}
@@ -351,14 +344,12 @@ theorem survOfNotLift_notMem {f : V.Flag}
     survOfNotLift hij hopen t hct hpi hf ∉ t := fun hm =>
   hf ((surviving_val_mem_liftOpen_iff hopen t _).mpr hm)
 
-omit [LinearOrder L] in
 /-- Conversely a flag outside the glued subset has its underlying
 flag outside the lift. -/
 theorem notMem_lift_of_notMem {g : SurvivingFlag V i j}
     (hg : g ∉ t) : g.val ∉ liftSubsetOpen hopen t := fun hm =>
   hg ((surviving_val_mem_liftOpen_iff hopen t g).mp hm)
 
-omit [LinearOrder L] in
 include hij hopen hct hpi in
 /-- Away from the interface the glued pairing is the base's. -/
 theorem pairing_val_hit {g : SurvivingFlag V i j} (hg : g ∉ t) :
@@ -402,7 +393,6 @@ noncomputable def evenColourEquivHit (k : ℕ) :
   left_inv _ := rfl
   right_inv _ := rfl
 
-omit [LinearOrder L] in
 include hij hopen hct hpi in
 /-- **The glued colouring is constant across the join.** -/
 theorem glued_odd_merged {ℓ : ℕ}
@@ -432,7 +422,6 @@ noncomputable def oddPushHitFun {ℓ : ℕ}
     (surviving_val_mem_liftOpen_iff hopen t
       ⟨f.val, hfi, hfj⟩).mp f.prop⟩
 
-omit [LinearOrder L] in
 /-- At the first glued boundary flag the pushed colouring takes the
 join's colour. -/
 theorem oddPushHitFun_at_i {ℓ : ℕ}
@@ -442,7 +431,6 @@ theorem oddPushHitFun_at_i {ℓ : ℕ}
     oddPushHitFun hij hopen t hct hpi φ' ⟨V.boundaryFlag i, hP⟩
       = φ'.val ⟨partnerSurvI hopen, hpi⟩ := dif_pos rfl
 
-omit [LinearOrder L] in
 include hij in
 /-- At the second it takes the same colour: the two ends of the
 join are one edge after gluing. -/
@@ -456,7 +444,6 @@ theorem oddPushHitFun_at_j {ℓ : ℕ}
   rw [dif_neg (fun hEq => hij (V.boundaryFlag_injective hEq).symm),
     dif_pos rfl]
 
-omit [LinearOrder L] in
 /-- Away from the two glued flags the pushed colouring is the
 colouring it was pushed from. -/
 theorem oddPushHitFun_agrees {ℓ : ℕ}
@@ -556,7 +543,6 @@ noncomputable def oddPushHit {ℓ : ℕ}
             exact (gluePairOpen_pairing_val_of_ne hij hopen
               ⟨f.val, hfi, hfj⟩ hpi' hpj').symm⟩
 
-omit [LinearOrder L] in
 include hij hopen hct hcL hpi in
 /-- **The odd boundary constraint across a carried cut.**  It pins
 the join's colour to the state's, and is the glued constraint
@@ -611,7 +597,6 @@ theorem edgeOddBoundaryMatch_hit_iff {k ℓ : ℕ}
           (glueBoundaryFlag V i j ⟨b, hbi, hbj⟩) hmem hmg).trans
           (hG ⟨b, hbi, hbj⟩ c hst' hmg)
 
-omit [LinearOrder L] in
 include hij hopen hct hcL hpi in
 /-- The push is injective. -/
 theorem oddPushHit_injective {ℓ : ℕ} :
@@ -635,7 +620,6 @@ theorem oddPushHit_injective {ℓ : ℕ} :
   rw [h1, h2] at hv
   exact hv
 
-omit [LinearOrder L] in
 include hij hopen hct hcL hpi in
 /-- **Every colouring meeting the join's constraint is a push.** -/
 theorem oddPushHit_covers {k ℓ : ℕ}
@@ -766,7 +750,6 @@ theorem oddPushHit_covers {k ℓ : ℕ}
         exact oddPushHitFun_agrees hij hopen t hct hpi _
           ⟨f.val, hfi, hfj⟩ f.prop hgt
 
-omit [LinearOrder L] in
 include hij hopen hct hcL hpi in
 /-- **The even boundary constraint across a carried cut.** -/
 theorem genEvenBoundaryMatch_hit_iff {k ℓ : ℕ}
@@ -812,7 +795,6 @@ theorem genEvenBoundaryMatch_hit_iff {k ℓ : ℕ}
     exact (congrArg ψ'.val (Subtype.ext (Subtype.ext rfl))).trans
       (hG ⟨b, hbi, hbj⟩ y hst')
 
-omit [LinearOrder L] in
 include hij hopen hct hcL hpi in
 /-- **The odd colouring sum is a sum over the glued colourings.** -/
 theorem sum_odd_hit {k ℓ : ℕ}
@@ -867,7 +849,9 @@ open Classical in
 /-- **One carried cut, on RS21's colouring sums.**  The join carries
 an odd colour, and that colour is the glued colouring's own there —
 so again the sum over it has a single term. -/
-theorem edgeSum_openCut_hit {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeSum_openCut_hit
+    [LinearOrder L]
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairOpen i j hij hopen) t st')
@@ -997,7 +981,7 @@ glued fragment's colouring sum over again.
 
 section ClosedCut
 
-variable {L : Type} [LinearOrder L] {V : Fragment L} {i j : L}
+variable {L : Type} {V : Fragment L} {i j : L}
   (hij : i ≠ j)
   (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
   (t : Finset (SurvivingFlag V i j))
@@ -1008,7 +992,6 @@ section ClosedFalse
 variable (hcL : ∀ f ∈ liftSubsetClosed t false,
   V.pairing f ∈ liftSubsetClosed t false)
 
-omit [LinearOrder L] in
 include hij in
 /-- The `i`-flag is out of the empty lift. -/
 theorem boundaryFlagI_notMem_liftClosed_false :
@@ -1016,7 +999,6 @@ theorem boundaryFlagI_notMem_liftClosed_false :
   Bool.false_ne_true
     ((boundaryFlagI_mem_liftClosed_iff hij t false).mp hmem)
 
-omit [LinearOrder L] in
 include hij in
 /-- The `j`-flag is out of the empty lift. -/
 theorem boundaryFlagJ_notMem_liftClosed_false :
@@ -1024,7 +1006,6 @@ theorem boundaryFlagJ_notMem_liftClosed_false :
   Bool.false_ne_true
     ((boundaryFlagJ_mem_liftClosed_iff hij t false).mp hmem)
 
-omit [LinearOrder L] in
 include hij in
 /-- A flag of the empty lift survives the glue. -/
 theorem surviving_of_mem_liftClosed_false {f : V.Flag}
@@ -1039,14 +1020,12 @@ noncomputable def survOfLiftClosedFalse {f : V.Flag}
   ⟨f, (surviving_of_mem_liftClosed_false hij t hf).1,
     (surviving_of_mem_liftClosed_false hij t hf).2⟩
 
-omit [LinearOrder L] in
 /-- A glued subset flag's underlying flag lies in the untaken
 closed lift. -/
 theorem mem_liftClosed_false_of_mem {g : SurvivingFlag V i j}
     (hg : g ∈ t) : g.val ∈ liftSubsetClosed t false :=
   (surviving_val_mem_liftClosed_iff t false g).mpr hg
 
-omit [LinearOrder L] in
 /-- A flag of the untaken closed lift lies in the glued subset. -/
 theorem survOfLiftClosedFalse_mem {f : V.Flag}
     (hf : f ∈ liftSubsetClosed t false) :
@@ -1083,7 +1062,6 @@ noncomputable def oddColourEquivClosedFalse (ℓ : ℕ) :
   left_inv _ := rfl
   right_inv _ := rfl
 
-omit [LinearOrder L] in
 include hij hclosed hct hcL in
 /-- **The odd boundary constraint matches across a closing cut the
 subset misses.** -/
@@ -1135,7 +1113,6 @@ noncomputable def evenPushClosedFalseFun {k : ℕ} (a : Fin k)
     ((surviving_val_mem_liftClosed_iff t false
       ⟨f.val, hfi, hfj⟩).mpr hmem)⟩
 
-omit [LinearOrder L] in
 /-- At the first glued boundary flag the pushed even colouring
 takes the summation colour. -/
 theorem evenPushClosedFalseFun_at_i {k : ℕ} (a : Fin k)
@@ -1145,7 +1122,6 @@ theorem evenPushClosedFalseFun_at_i {k : ℕ} (a : Fin k)
     evenPushClosedFalseFun hclosed t hct a ψ'
         ⟨V.boundaryFlag i, hP⟩ = a := dif_pos rfl
 
-omit [LinearOrder L] in
 include hij in
 /-- At the second it takes the same colour. -/
 theorem evenPushClosedFalseFun_at_j {k : ℕ} (a : Fin k)
@@ -1158,7 +1134,6 @@ theorem evenPushClosedFalseFun_at_j {k : ℕ} (a : Fin k)
   rw [dif_neg (fun hEq => hij (V.boundaryFlag_injective hEq).symm),
     dif_pos rfl]
 
-omit [LinearOrder L] in
 /-- Away from the two glued flags the pushed even colouring is
 unchanged. -/
 theorem evenPushClosedFalseFun_agrees {k : ℕ} (a : Fin k)
@@ -1233,7 +1208,6 @@ noncomputable def evenPushClosedFalse {k : ℕ} (a : Fin k)
             ⟨f.val, hfi, hfj⟩ f.prop hgn]
         exact ψ'.prop ⟨⟨f.val, hfi, hfj⟩, hgn⟩⟩
 
-omit [LinearOrder L] in
 include hij hclosed hct hcL in
 /-- The push is injective. -/
 theorem evenPushClosedFalse_injective {k : ℕ} (a : Fin k) :
@@ -1257,7 +1231,6 @@ theorem evenPushClosedFalse_injective {k : ℕ} (a : Fin k) :
   rw [e1, e2] at hv
   exact hv
 
-omit [LinearOrder L] in
 include hij hclosed hct hcL in
 /-- **The even boundary constraint across a closing cut the subset
 misses.** -/
@@ -1310,7 +1283,6 @@ theorem genEvenBoundaryMatch_closedFalse_iff {k ℓ : ℕ}
           (glueBoundaryFlag V i j ⟨b, hbi, hbj⟩) _ _).trans
           (hG ⟨b, hbi, hbj⟩ y hst')
 
-omit [LinearOrder L] in
 include hij hclosed hct hcL in
 /-- **Every colouring meeting the join's constraint is a push.** -/
 theorem evenPushClosedFalse_covers {k ℓ : ℕ}
@@ -1381,7 +1353,6 @@ variable (κ' : (EdgeSubset.mk t hct :
     EdgeSubset (V.gluePairClosed i j hclosed)).RelTransitionSystem)
   (o' : κ'.Orientation)
 
-omit [LinearOrder L] in
 include hij hclosed hct hcL in
 open Classical in
 /-- **The even colouring sum is a sum over the glued
@@ -1434,7 +1405,9 @@ open Classical in
 /-- **A closing cut the subset misses, on RS21's colouring sums.**
 The closed edge carries the join's even colour and nothing else
 changes, so each of the `k` colours reproduces the glued sum. -/
-theorem edgeSum_closedCut_false {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeSum_closedCut_false
+    [LinearOrder L]
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j)) (a : Fin k)
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairClosed i j hclosed) t st')
@@ -1507,21 +1480,18 @@ section ClosedTrue
 variable (hcT : ∀ f ∈ liftSubsetClosed t true,
   V.pairing f ∈ liftSubsetClosed t true)
 
-omit [LinearOrder L] in
 include hij in
 /-- The `i`-flag is in the carried lift. -/
 theorem boundaryFlagI_mem_liftClosed_true :
     V.boundaryFlag i ∈ liftSubsetClosed t true :=
   (boundaryFlagI_mem_liftClosed_iff hij t true).mpr rfl
 
-omit [LinearOrder L] in
 include hij in
 /-- The `j`-flag is in the carried lift. -/
 theorem boundaryFlagJ_mem_liftClosed_true :
     V.boundaryFlag j ∈ liftSubsetClosed t true :=
   (boundaryFlagJ_mem_liftClosed_iff hij t true).mpr rfl
 
-omit [LinearOrder L] in
 include hij in
 /-- A flag outside the carried lift survives the glue. -/
 theorem surviving_of_notMem_liftClosed_true {f : V.Flag}
@@ -1536,7 +1506,6 @@ noncomputable def survOfNotLiftClosedTrue {f : V.Flag}
   ⟨f, (surviving_of_notMem_liftClosed_true hij t hf).1,
     (surviving_of_notMem_liftClosed_true hij t hf).2⟩
 
-omit [LinearOrder L] in
 /-- A flag outside the taken closed lift lies outside the glued
 subset. -/
 theorem survOfNotLiftClosedTrue_notMem {f : V.Flag}
@@ -1544,14 +1513,12 @@ theorem survOfNotLiftClosedTrue_notMem {f : V.Flag}
     survOfNotLiftClosedTrue hij t hf ∉ t := fun hm =>
   hf ((surviving_val_mem_liftClosed_iff t true _).mpr hm)
 
-omit [LinearOrder L] in
 /-- A glued subset flag's underlying flag lies in the taken closed
 lift. -/
 theorem mem_liftClosed_true_of_mem {g : SurvivingFlag V i j}
     (hg : g ∈ t) : g.val ∈ liftSubsetClosed t true :=
   (surviving_val_mem_liftClosed_iff t true g).mpr hg
 
-omit [LinearOrder L] in
 /-- And a flag outside the glued subset lies outside it. -/
 theorem notMem_liftClosed_true_of_notMem {g : SurvivingFlag V i j}
     (hg : g ∉ t) : g.val ∉ liftSubsetClosed t true := fun hm =>
@@ -1587,7 +1554,6 @@ noncomputable def evenColourEquivClosedTrue (k : ℕ) :
   left_inv _ := rfl
   right_inv _ := rfl
 
-omit [LinearOrder L] in
 include hij hclosed hct hcT in
 /-- **The even boundary constraint across a closing cut the subset
 carries.** -/
@@ -1647,7 +1613,6 @@ noncomputable def oddPushClosedTrueFun {ℓ : ℕ} (d : Fin (2 * ℓ))
     (surviving_val_mem_liftClosed_iff t true
       ⟨f.val, hfi, hfj⟩).mp f.prop⟩
 
-omit [LinearOrder L] in
 /-- At the first glued boundary flag the pushed odd colouring takes
 the circle's colour. -/
 theorem oddPushClosedTrueFun_at_i {ℓ : ℕ} (d : Fin (2 * ℓ))
@@ -1657,7 +1622,6 @@ theorem oddPushClosedTrueFun_at_i {ℓ : ℕ} (d : Fin (2 * ℓ))
     oddPushClosedTrueFun hclosed t hct d φ' ⟨V.boundaryFlag i, hP⟩
       = d := dif_pos rfl
 
-omit [LinearOrder L] in
 include hij in
 /-- At the second it takes the same colour. -/
 theorem oddPushClosedTrueFun_at_j {ℓ : ℕ} (d : Fin (2 * ℓ))
@@ -1670,7 +1634,6 @@ theorem oddPushClosedTrueFun_at_j {ℓ : ℕ} (d : Fin (2 * ℓ))
   rw [dif_neg (fun hEq => hij (V.boundaryFlag_injective hEq).symm),
     dif_pos rfl]
 
-omit [LinearOrder L] in
 /-- Away from the two glued flags the pushed odd colouring is
 unchanged. -/
 theorem oddPushClosedTrueFun_agrees {ℓ : ℕ} (d : Fin (2 * ℓ))
@@ -1741,7 +1704,6 @@ noncomputable def oddPushClosedTrue {ℓ : ℕ} (d : Fin (2 * ℓ))
             ⟨f.val, hfi, hfj⟩ f.prop hgt]
         exact φ'.prop ⟨⟨f.val, hfi, hfj⟩, hgt⟩⟩
 
-omit [LinearOrder L] in
 include hij hclosed hct hcT in
 /-- The push is injective. -/
 theorem oddPushClosedTrue_injective {ℓ : ℕ} (d : Fin (2 * ℓ)) :
@@ -1764,7 +1726,6 @@ theorem oddPushClosedTrue_injective {ℓ : ℕ} (d : Fin (2 * ℓ)) :
   rw [e1, e2] at hv
   exact hv
 
-omit [LinearOrder L] in
 include hij hclosed hct hcT in
 /-- **The odd boundary constraint across a closing cut the subset
 carries.** -/
@@ -1815,7 +1776,6 @@ theorem edgeOddBoundaryMatch_closedTrue_iff {k ℓ : ℕ}
           (glueBoundaryFlag V i j ⟨b, hbi, hbj⟩) hmem hmg).trans
           (hG ⟨b, hbi, hbj⟩ c hst' hmg)
 
-omit [LinearOrder L] in
 include hij hclosed hct hcT in
 /-- **Every colouring meeting the join's constraint is a push.** -/
 theorem oddPushClosedTrue_covers {k ℓ : ℕ}
@@ -1873,7 +1833,6 @@ theorem oddPushClosedTrue_covers {k ℓ : ℕ}
         exact oddPushClosedTrueFun_agrees hclosed t hct d _
           ⟨f.val, hfi, hfj⟩ f.prop hgt
 
-omit [LinearOrder L] in
 include hij hclosed hct hcT in
 open Classical in
 /-- **The odd colouring sum is a sum over the glued
@@ -1931,7 +1890,9 @@ open Classical in
 /-- **A closing cut the subset carries, on RS21's colouring sums.**
 The closed edge carries the join's odd colour and nothing else
 changes, so each of the `2ℓ` colours reproduces the glued sum. -/
-theorem edgeSum_closedCut_true {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeSum_closedCut_true
+    [LinearOrder L]
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (d : Fin (2 * ℓ))
     (hbnd' : genBoundarySubsetMatches

@@ -34,13 +34,14 @@ open CategoryTheory CategoryTheory.Limits MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-! ## Word powers -/
 
 /-- **The word power**: tensor an `X` for each `true` letter of `w`
 and a `Y` for each `false` one, by the recursion of `tensorPow`. -/
-def wordPow (X Y : A) : (n : ℕ) → (Fin n → Bool) → A
+def wordPow [Category.{v} A] [MonoidalCategory A]
+    (X Y : A) : (n : ℕ) → (Fin n → Bool) → A
   | 0, _ => 𝟙_ A
   | n + 1, w =>
       wordPow X Y n (w ∘ Fin.castSucc) ⊗
@@ -48,7 +49,8 @@ def wordPow (X Y : A) : (n : ℕ) → (Fin n → Bool) → A
 
 /-- The defining recursion of `wordPow`: one more letter tensors
 the selected object on the right. -/
-theorem wordPow_succ (X Y : A) (n : ℕ) (w : Fin (n + 1) → Bool) :
+theorem wordPow_succ [Category.{v} A] [MonoidalCategory A]
+    (X Y : A) (n : ℕ) (w : Fin (n + 1) → Bool) :
     wordPow X Y (n + 1) w =
       wordPow X Y n (w ∘ Fin.castSucc) ⊗
         (bif w (Fin.last n) then X else Y) := rfl
@@ -57,31 +59,35 @@ theorem wordPow_succ (X Y : A) (n : ℕ) (w : Fin (n + 1) → Bool) :
 
 section Biprod
 
-variable [Preadditive A] [HasBinaryBiproducts A]
-
 /-- The biproduct inclusion selected by one letter. -/
-noncomputable def letterInto (X Y : A) :
+noncomputable def letterInto
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) :
     (b : Bool) → ((bif b then X else Y) ⟶ X ⊞ Y)
   | true => biprod.inl
   | false => biprod.inr
 
 /-- The biproduct projection selected by one letter. -/
-noncomputable def letterFrom (X Y : A) :
+noncomputable def letterFrom
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) :
     (b : Bool) → (X ⊞ Y ⟶ (bif b then X else Y))
   | true => biprod.fst
   | false => biprod.snd
 
-omit [MonoidalCategory A] in
 /-- A letter's round trip through the biproduct is the identity. -/
-theorem letterInto_letterFrom (X Y : A) (b : Bool) :
+theorem letterInto_letterFrom
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) (b : Bool) :
     letterInto X Y b ≫ letterFrom X Y b = 𝟙 _ := by
   cases b
   · exact biprod.inr_snd
   · exact biprod.inl_fst
 
-omit [MonoidalCategory A] in
 /-- Different letters' round trips vanish. -/
-theorem letterInto_letterFrom_ne (X Y : A) {b b' : Bool}
+theorem letterInto_letterFrom_ne
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) {b b' : Bool}
     (hbb' : b ≠ b') :
     letterInto X Y b ≫ letterFrom X Y b' = 0 := by
   cases b <;> cases b'
@@ -93,7 +99,10 @@ theorem letterInto_letterFrom_ne (X Y : A) {b b' : Bool}
 /-- **The inclusion of a word power** into the tensor power of the
 biproduct: the fold of the letterwise inclusions, by the recursion
 of `wordPow`. -/
-noncomputable def mixedInto (X Y : A) : (n : ℕ) → (w : Fin n → Bool) →
+noncomputable def mixedInto
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) : (n : ℕ) → (w : Fin n → Bool) →
     (wordPow X Y n w ⟶ tensorPow A (X ⊞ Y) n)
   | 0, _ => 𝟙 (𝟙_ A)
   | n + 1, w =>
@@ -102,7 +111,10 @@ noncomputable def mixedInto (X Y : A) : (n : ℕ) → (w : Fin n → Bool) →
 
 /-- **The projection onto a word power** from the tensor power of
 the biproduct: the fold of the letterwise projections. -/
-noncomputable def mixedFrom (X Y : A) : (n : ℕ) → (w : Fin n → Bool) →
+noncomputable def mixedFrom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) : (n : ℕ) → (w : Fin n → Bool) →
     (tensorPow A (X ⊞ Y) n ⟶ wordPow X Y n w)
   | 0, _ => 𝟙 (𝟙_ A)
   | n + 1, w =>
@@ -116,9 +128,9 @@ stated at general objects and applied by `exact`, so that no
 tensor-power arity enters the rewriting.
 -/
 
-omit [Preadditive A] [HasBinaryBiproducts A] in
 /-- Sections tensor to a section.  Stated at general objects. -/
-private theorem tensor_split_id {P Q R S : A} (f : P ⟶ Q) (g : Q ⟶ P)
+private theorem tensor_split_id [Category.{v} A] [MonoidalCategory A]
+    {P Q R S : A} (f : P ⟶ Q) (g : Q ⟶ P)
     (h : R ⟶ S) (k : S ⟶ R) (hfg : f ≫ g = 𝟙 P) (hhk : h ≫ k = 𝟙 R) :
     (f ⊗ₘ h) ≫ (g ⊗ₘ k) = 𝟙 (P ⊗ R) := by
   rw [MonoidalCategory.tensorHom_comp_tensorHom, hfg, hhk,
@@ -140,21 +152,23 @@ private theorem word_ne_cases {n : ℕ} {w w' : Fin (n + 1) → Bool}
 
 section MonPre
 
-variable [MonoidalPreadditive A]
-
-omit [HasBinaryBiproducts A] in
 /-- A vanishing first factor kills the tensor.  Stated at general
 objects. -/
-private theorem tensor_split_zero_fst {P Q R S T U : A}
+private theorem tensor_split_zero_fst
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    {P Q R S T U : A}
     (f : P ⟶ Q) (g : Q ⟶ R) (h : S ⟶ T) (k : T ⟶ U)
     (hfg : f ≫ g = 0) : (f ⊗ₘ h) ≫ (g ⊗ₘ k) = 0 := by
   rw [MonoidalCategory.tensorHom_comp_tensorHom, hfg,
     MonoidalPreadditive.zero_tensor]
 
-omit [HasBinaryBiproducts A] in
 /-- A vanishing second factor kills the tensor.  Stated at general
 objects. -/
-private theorem tensor_split_zero_snd {P Q R S T U : A}
+private theorem tensor_split_zero_snd
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    {P Q R S T U : A}
     (f : P ⟶ Q) (g : Q ⟶ R) (h : S ⟶ T) (k : T ⟶ U)
     (hhk : h ≫ k = 0) : (f ⊗ₘ h) ≫ (g ⊗ₘ k) = 0 := by
   rw [MonoidalCategory.tensorHom_comp_tensorHom, hhk,
@@ -169,10 +183,12 @@ and a shorter word; the letter sum is `biprod.total` and the word
 sum is the inductive hypothesis.
 -/
 
-omit [MonoidalPreadditive A] in
 /-- One word's round trip through the full power, split into the
 shorter word's round trip and the last letter's. -/
-private theorem fromInto_snoc (X Y : A) (n : ℕ) (w' : Fin n → Bool)
+private theorem fromInto_snoc
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) (n : ℕ) (w' : Fin n → Bool)
     (b : Bool) :
     mixedFrom X Y (n + 1) (Fin.snoc w' b) ≫
         mixedInto X Y (n + 1) (Fin.snoc w' b) =
@@ -195,7 +211,10 @@ private theorem fromInto_snoc (X Y : A) (n : ℕ) (w' : Fin n → Bool)
 
 /-- **Completeness of the word decomposition**: the round trips
 through the word powers sum to the identity of the full power. -/
-theorem sum_mixedFrom_mixedInto (X Y : A) :
+theorem sum_mixedFrom_mixedInto
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A] [MonoidalPreadditive A]
+    (X Y : A) :
     ∀ n : ℕ,
       ∑ w : Fin n → Bool, mixedFrom X Y n w ≫ mixedInto X Y n w =
         𝟙 (tensorPow A (X ⊞ Y) n) := by
@@ -347,7 +366,8 @@ theorem standardWord_last (p q : ℕ) :
 /-! ## The sorted word power -/
 
 /-- An all-`true` word power is a pure power of `X`. -/
-theorem wordPow_const_true (X Y : A) :
+theorem wordPow_const_true [Category.{v} A] [MonoidalCategory A]
+    (X Y : A) :
     ∀ n : ℕ, wordPow X Y n (fun _ => true) = tensorPow A X n := by
   intro n
   induction n with
@@ -358,13 +378,15 @@ theorem wordPow_const_true (X Y : A) :
 
 /-- The sorted word power with empty second block is the pure
 power of `X`. -/
-theorem wordPow_standard_zero (X Y : A) (p : ℕ) :
+theorem wordPow_standard_zero [Category.{v} A] [MonoidalCategory A]
+    (X Y : A) (p : ℕ) :
     wordPow X Y (p + 0) (standardWord p 0) = tensorPow A X p := by
   rw [standardWord_zero]
   exact wordPow_const_true X Y p
 
 /-- One more `false` letter of a sorted word tensors a `Y`. -/
-theorem wordPow_standard_succ (X Y : A) (p q : ℕ) :
+theorem wordPow_standard_succ [Category.{v} A] [MonoidalCategory A]
+    (X Y : A) (p q : ℕ) :
     wordPow X Y (p + (q + 1)) (standardWord p (q + 1)) =
       wordPow X Y (p + q) (standardWord p q) ⊗ Y := by
   show wordPow X Y (p + q)
@@ -378,7 +400,8 @@ theorem wordPow_standard_succ (X Y : A) (p q : ℕ) :
 with all `X`s below all `Y`s, the word power reassociates to
 `X ^ ⊗ p ⊗ Y ^ ⊗ q`.  Built by the recursion of the word, so that
 consumers can compose with it stage by stage. -/
-noncomputable def standardMixedIso (X Y : A) (p : ℕ) : (q : ℕ) →
+noncomputable def standardMixedIso [Category.{v} A] [MonoidalCategory A]
+    (X Y : A) (p : ℕ) : (q : ℕ) →
     (wordPow X Y (p + q) (standardWord p q) ≅
       tensorPow A X p ⊗ tensorPow A Y q)
   | 0 =>
@@ -399,14 +422,16 @@ enters the rewriting.
 
 /-- Tensoring with the unit's identity is unitor conjugation.
 Stated at general objects. -/
-private theorem unit_tensor_unitor {P Q : A} (f : P ⟶ Q) :
+private theorem unit_tensor_unitor [Category.{v} A] [MonoidalCategory A]
+    {P Q : A} (f : P ⟶ Q) :
     (f ⊗ₘ 𝟙 (𝟙_ A)) ≫ (ρ_ Q).hom = (ρ_ P).hom ≫ f := by
   rw [MonoidalCategory.tensorHom_id]
   exact MonoidalCategory.rightUnitor_naturality f
 
 /-- One stage of the concatenation glued onto an intertwining of
 the previous stage.  Stated at general objects. -/
-private theorem concat_step_glue {P Q W R P' Q' Y Z : A}
+private theorem concat_step_glue [Category.{v} A] [MonoidalCategory A]
+    {P Q W R P' Q' Y Z : A}
     (u : P ⊗ Q ⟶ W) (M : W ⟶ R) (f : P ⟶ P') (g : Q ⟶ Q')
     (c : P' ⊗ Q' ⟶ R) (e : Y ⟶ Z)
     (hih : u ≫ M = (f ⊗ₘ g) ≫ c) :
@@ -431,27 +456,28 @@ private theorem concat_step_glue {P Q W R P' Q' Y Z : A}
 
 /-- An `eqToHom` pulls out of the first factor of a tensor.  Stated
 at general objects. -/
-private theorem eqToHom_tensor_pull {P P' Q R S : A} (h : P = P')
+private theorem eqToHom_tensor_pull [Category.{v} A] [MonoidalCategory A]
+    {P P' Q R S : A} (h : P = P')
     (f : P' ⟶ Q) (g : R ⟶ S) :
     (eqToHom h ≫ f) ⊗ₘ g =
       eqToHom (congrArg (· ⊗ R) h) ≫ (f ⊗ₘ g) := by
   subst h
   rw [eqToHom_refl, eqToHom_refl, Category.id_comp, Category.id_comp]
 
-omit [MonoidalCategory A] in
 /-- Append a definitionally trivial transport to a two-step
 factorisation.  The transport's endpoints coincide, so `exact`
 applies it wherever they agree definitionally. -/
-private theorem comp_cast_end₂ {P Q R : A} {f : P ⟶ R} {g₁ : P ⟶ Q}
+private theorem comp_cast_end₂ [Category.{v} A]
+    {P Q R : A} {f : P ⟶ R} {g₁ : P ⟶ Q}
     {g₂ : Q ⟶ R} (H : R = R) (hfg : f = g₁ ≫ g₂) :
     f = g₁ ≫ g₂ ≫ eqToHom H := by
   rw [show H = rfl from rfl, eqToHom_refl, Category.comp_id, hfg]
 
-omit [MonoidalCategory A] in
 /-- A transport and its inverse cancel across a decomposition of
 the middle morphism.  Stated at general objects and applied by
 `exact`, so the defeq-mismatched arities never enter a rewrite. -/
-private theorem cast_cancel_glue {U V W R : A} (h : V = W)
+private theorem cast_cancel_glue [Category.{v} A]
+    {U V W R : A} (h : V = W)
     (h' : W = V) (a : U ⟶ V) (D : W ⟶ R) (T : V ⟶ R)
     (hD : D = eqToHom h' ≫ T) :
     (a ≫ eqToHom h) ≫ D = a ≫ T := by
@@ -461,10 +487,10 @@ private theorem cast_cancel_glue {U V W R : A} (h : V = W)
 
 section Base
 
-variable [Preadditive A] [HasBinaryBiproducts A]
-
 /-- Transport of `mixedInto` along an equality of words. -/
-theorem mixedInto_congr (X Y : A) {n : ℕ} {w w' : Fin n → Bool}
+theorem mixedInto_congr [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) {n : ℕ} {w w' : Fin n → Bool}
     (h : w = w') :
     mixedInto X Y n w =
       eqToHom (congrArg (wordPow X Y n) h) ≫ mixedInto X Y n w' := by
@@ -473,7 +499,9 @@ theorem mixedInto_congr (X Y : A) {n : ℕ} {w w' : Fin n → Bool}
 
 /-- Splitting `mixedInto` at the last letter, with the recursion's
 word and letter replaced by given values. -/
-theorem mixedInto_split (X Y : A) (n : ℕ) (w : Fin (n + 1) → Bool)
+theorem mixedInto_split [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) (n : ℕ) (w : Fin (n + 1) → Bool)
     (w' : Fin n → Bool) (b : Bool) (hw : w ∘ Fin.castSucc = w')
     (hb : w (Fin.last n) = b)
     (h : wordPow X Y (n + 1) w =
@@ -486,7 +514,10 @@ theorem mixedInto_split (X Y : A) (n : ℕ) (w : Fin (n + 1) → Bool)
 
 /-- On an all-`true` word the inclusion is the pure power of
 `biprod.inl`. -/
-theorem mixedInto_const_true (X Y : A) :
+theorem mixedInto_const_true
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) :
     ∀ n : ℕ,
       mixedInto X Y n (fun _ => true) =
         eqToHom (wordPow_const_true X Y n) ≫
@@ -503,7 +534,10 @@ theorem mixedInto_const_true (X Y : A) :
 
 /-- The last-letter split of `mixedInto` at a `false` letter, with
 the selected object and inclusion spelled as `Y` and `biprod.inr`. -/
-theorem mixedInto_split_false (X Y : A) (n : ℕ)
+theorem mixedInto_split_false
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) (n : ℕ)
     (w : Fin (n + 1) → Bool) (w' : Fin n → Bool)
     (hw : w ∘ Fin.castSucc = w') (hb : w (Fin.last n) = false)
     (h : wordPow X Y (n + 1) w = wordPow X Y n w' ⊗ Y) :
@@ -514,7 +548,10 @@ theorem mixedInto_split_false (X Y : A) (n : ℕ)
 
 /-- The last-letter split of `mixedInto` at a `true` letter, with
 the selected object and inclusion spelled as `X` and `biprod.inl`. -/
-theorem mixedInto_split_true (X Y : A) (n : ℕ)
+theorem mixedInto_split_true
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) (n : ℕ)
     (w : Fin (n + 1) → Bool) (w' : Fin n → Bool)
     (hw : w ∘ Fin.castSucc = w') (hb : w (Fin.last n) = true)
     (h : wordPow X Y (n + 1) w = wordPow X Y n w' ⊗ X) :
@@ -525,7 +562,10 @@ theorem mixedInto_split_true (X Y : A) (n : ℕ)
 
 /-- Transport along the `p + 0` arity cast composes away against
 the pure power of the first inclusion. -/
-private theorem inl_pow_cast (X Y : A) (m : ℕ)
+private theorem inl_pow_cast
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) (m : ℕ)
     (H : tensorPow A X m = tensorPow A X (m + 0)) :
     eqToHom H ≫ tensorPowMap (biprod.inl : X ⟶ X ⊞ Y) (m + 0) =
       tensorPowMap (biprod.inl : X ⟶ X ⊞ Y) m := by
@@ -546,10 +586,10 @@ bottom factor into the concatenation — `insertTop_full` and
 
 section Symmetric
 
-variable [SymmetricCategory A]
-
 /-- The recursion of the action, at a split permutation. -/
-theorem permMor_ofSplit (Z : A) (n : ℕ) (q : Fin (n + 1))
+theorem permMor_ofSplit
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (Z : A) (n : ℕ) (q : Fin (n + 1))
     (τ : Equiv.Perm (Fin n)) :
     permMor Z (n + 1) (ofSplit q τ) =
       (permMor Z n τ ▷ Z) ≫ insertTop Z n (n - (q : ℕ)) := by
@@ -558,7 +598,9 @@ theorem permMor_ofSplit (Z : A) (n : ℕ) (q : Fin (n + 1))
 /-- The hexagon, arranged for one bubbling step: braiding the top
 two slots and then the lower pair against the top is braiding the
 joint pair.  Stated at a general object. -/
-private theorem swap_hexagon (P Z : A) :
+private theorem swap_hexagon
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P Z : A) :
     ((α_ P Z Z).hom ≫ (P ◁ (β_ Z Z).hom) ≫ (α_ P Z Z).inv) ≫
         ((β_ P Z).hom ▷ Z) =
       (β_ (P ⊗ Z) Z).hom ≫ (α_ Z P Z).inv := by
@@ -575,7 +617,9 @@ private theorem swap_hexagon (P Z : A) :
 /-- One rotation step, at a general base object: a braid-and-merge
 of the lower slots, whiskered and preceded by the top braiding, is
 the joint braid-and-merge one slot higher. -/
-private theorem rotate_step {P V : A} (Z : A) (i : P ⊗ Z ⟶ V)
+private theorem rotate_step
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {P V : A} (Z : A) (i : P ⊗ Z ⟶ V)
     (u : Z ⊗ P ⟶ V) (hi : i = (β_ P Z).hom ≫ u) :
     ((α_ P Z Z).hom ≫ (P ◁ (β_ Z Z).hom) ≫ (α_ P Z Z).inv) ≫
         (i ▷ Z) =
@@ -583,10 +627,10 @@ private theorem rotate_step {P V : A} (Z : A) (i : P ⊗ Z ⟶ V)
   rw [hi, MonoidalCategory.comp_whiskerRight, ← Category.assoc,
     swap_hexagon, Category.assoc]
 
-omit [SymmetricCategory A] in
 /-- **Merging a factor at the bottom**: the structural morphism
 `Z ⊗ Z ^ ⊗ m ⟶ Z ^ ⊗ (m + 1)`, by the recursion of the power. -/
-noncomputable def putBelow (Z : A) : (m : ℕ) →
+noncomputable def putBelow [Category.{v} A] [MonoidalCategory A]
+    (Z : A) : (m : ℕ) →
     (Z ⊗ tensorPow A Z m ⟶ tensorPow A Z (m + 1))
   | 0 => (ρ_ Z).hom ≫ (λ_ Z).inv
   | m + 1 =>
@@ -595,7 +639,9 @@ noncomputable def putBelow (Z : A) : (m : ℕ) →
 /-- **The full rotation is a braiding**: bubbling the top factor of
 `Z ^ ⊗ (m + 1)` all the way to the bottom is the braiding of the
 factor against the whole tail, followed by the bottom merge. -/
-theorem insertTop_full (Z : A) :
+theorem insertTop_full
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (Z : A) :
     ∀ m : ℕ, insertTop Z m m =
       (β_ (tensorPow A Z m) Z).hom ≫ putBelow Z m := by
   intro m
@@ -610,30 +656,30 @@ theorem insertTop_full (Z : A) :
     rw [insertTop_succ]
     exact rotate_step Z (insertTop Z m m) (putBelow Z m) ih
 
-omit [SymmetricCategory A] in
 /-- A whiskered arity transport is the transport one arity up.
 Stated with both transports explicit, so it applies by `exact`
 wherever the endpoints agree definitionally. -/
-private theorem cast_whiskerRight_eq (Z : A) {P Q : A} (h : P = Q)
+private theorem cast_whiskerRight_eq [Category.{v} A] [MonoidalCategory A]
+    (Z : A) {P Q : A} (h : P = Q)
     (h' : P ⊗ Z = Q ⊗ Z) :
     eqToHom h ▷ Z = eqToHom h' := by
   subst h
   rw [show h' = rfl from rfl, eqToHom_refl, eqToHom_refl,
     MonoidalCategory.id_whiskerRight]
 
-omit [SymmetricCategory A] in
 /-- The bottom merge against one concatenation stage, at the empty
 tail: pure unitor coherence, at general objects. -/
-private theorem putBelow_concat_zero_coh (P Z : A) :
+private theorem putBelow_concat_zero_coh [Category.{v} A] [MonoidalCategory A]
+    (P Z : A) :
     (P ◁ ((ρ_ Z).hom ≫ (λ_ Z).inv)) ≫
         ((α_ P (𝟙_ A) Z).inv ≫ ((ρ_ P).hom ▷ Z)) =
       (α_ P Z (𝟙_ A)).inv ≫ (ρ_ (P ⊗ Z)).hom := by
   monoidal
 
-omit [SymmetricCategory A] in
 /-- The inductive step of the bottom merge against the
 concatenation, at general objects: the pentagon and naturality. -/
-private theorem merge_step_glue {P U M W B' N N' : A}
+private theorem merge_step_glue [Category.{v} A] [MonoidalCategory A]
+    {P U M W B' N N' : A}
     (u : U ⊗ M ⟶ B') (c : P ⊗ B' ⟶ N)
     (c' : (P ⊗ U) ⊗ M ⟶ N') (E : N' ⟶ N)
     (hih : (P ◁ u) ≫ c = (α_ P U M).inv ≫ c' ≫ E) :
@@ -671,11 +717,11 @@ private theorem merge_step_glue {P U M W B' N N' : A}
         rw [hpent]
         try simp only [Category.assoc]
 
-omit [SymmetricCategory A] in
 /-- **The bottom merge concatenates**: merging a factor below the
 second block and concatenating is reassociating it onto the first
 block, up to the arity transport. -/
-theorem putBelow_concat (Z : A) (p : ℕ) :
+theorem putBelow_concat [Category.{v} A] [MonoidalCategory A]
+    (Z : A) (p : ℕ) :
     ∀ m : ℕ,
       (tensorPow A Z p ◁ putBelow Z m) ≫
           (tensorPowConcat Z p (m + 1)).hom =
@@ -704,10 +750,10 @@ theorem putBelow_concat (Z : A) (p : ℕ) :
         (tensorPow A Z m ⊗ Z)).inv ≫ t)
       (Category.assoc _ _ _).symm
 
-omit [SymmetricCategory A] in
 /-- Splitting the first factor off a composite tensored against a
 morphism.  Stated at general objects. -/
-private theorem tensor_split_first {P Q R S T : A} (a : P ⟶ Q)
+private theorem tensor_split_first [Category.{v} A] [MonoidalCategory A]
+    {P Q R S T : A} (a : P ⟶ Q)
     (v : Q ⟶ R) (g : S ⟶ T) :
     (a ≫ v) ⊗ₘ g = (a ▷ S) ≫ (v ⊗ₘ g) := by
   calc (a ≫ v) ⊗ₘ g = (a ≫ v) ⊗ₘ (𝟙 S ≫ g) := by
@@ -717,10 +763,10 @@ private theorem tensor_split_first {P Q R S T : A} (a : P ⟶ Q)
     _ = (a ▷ S) ≫ (v ⊗ₘ g) := by
         rw [MonoidalCategory.tensorHom_id]
 
-omit [SymmetricCategory A] in
 /-- Splitting the last factor off a composite tensored against a
 morphism.  Stated at general objects. -/
-private theorem tensor_split_last {P Q R S T : A} (v : P ⟶ Q)
+private theorem tensor_split_last [Category.{v} A] [MonoidalCategory A]
+    {P Q R S T : A} (v : P ⟶ Q)
     (E : Q ⟶ R) (g : S ⟶ T) :
     (v ≫ E) ⊗ₘ g = (v ⊗ₘ g) ≫ (E ▷ T) := by
   calc (v ≫ E) ⊗ₘ g = (v ≫ E) ⊗ₘ (g ≫ 𝟙 T) := by
@@ -730,28 +776,28 @@ private theorem tensor_split_last {P Q R S T : A} (v : P ⟶ Q)
     _ = (v ⊗ₘ g) ≫ (E ▷ T) := by
         rw [MonoidalCategory.tensorHom_id]
 
-omit [SymmetricCategory A] in
 /-- A tensor absorbed into the second factor through a left
 whiskering.  Stated at general objects. -/
-private theorem tensor_then_whiskerLeft {P Q S T U : A} (g : P ⟶ Q)
+private theorem tensor_then_whiskerLeft [Category.{v} A] [MonoidalCategory A]
+    {P Q S T U : A} (g : P ⟶ Q)
     (h : S ⟶ T) (k : T ⟶ U) :
     (g ⊗ₘ h) ≫ (Q ◁ k) = g ⊗ₘ (h ≫ k) := by
   rw [← MonoidalCategory.id_tensorHom Q k,
     MonoidalCategory.tensorHom_comp_tensorHom, Category.comp_id]
 
-omit [SymmetricCategory A] in
 /-- A left whiskering absorbed into the second factor of a tensor.
 Stated at general objects. -/
-private theorem whiskerLeft_then_tensor {P Q S T U : A} (g : P ⟶ Q)
+private theorem whiskerLeft_then_tensor [Category.{v} A] [MonoidalCategory A]
+    {P Q S T U : A} (g : P ⟶ Q)
     (h : S ⟶ T) (k : T ⟶ U) :
     (P ◁ h) ≫ (g ⊗ₘ k) = g ⊗ₘ (h ≫ k) := by
   rw [← MonoidalCategory.id_tensorHom P h,
     MonoidalCategory.tensorHom_comp_tensorHom, Category.id_comp]
 
-omit [SymmetricCategory A] in
 /-- One concatenation stage, whiskered: reassociate and take the
 next stage. -/
-private theorem concat_whisker_step (Z : A) (p m : ℕ) :
+private theorem concat_whisker_step [Category.{v} A] [MonoidalCategory A]
+    (Z : A) (p m : ℕ) :
     ((tensorPowConcat Z p m).hom ▷ Z) =
       (α_ (tensorPow A Z p) (tensorPow A Z m) Z).hom ≫
         (tensorPowConcat Z p (m + 1)).hom :=
@@ -759,7 +805,9 @@ private theorem concat_whisker_step (Z : A) (p m : ℕ) :
     (α_ (tensorPow A Z p) (tensorPow A Z m) Z) _).symm
 
 /-- Arity transport commutes with the insertion cycle. -/
-private theorem insertTop_cast (Z : A) (a b k : ℕ) (hab : a = b)
+private theorem insertTop_cast
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (Z : A) (a b k : ℕ) (hab : a = b)
     (H : tensorPow A Z a = tensorPow A Z b) :
     (eqToHom H ▷ Z) ≫ insertTop Z b k =
       insertTop Z a k ≫ (eqToHom H ▷ Z) := by
@@ -768,10 +816,10 @@ private theorem insertTop_cast (Z : A) (a b k : ℕ) (hab : a = b)
     MonoidalCategory.id_whiskerRight, Category.id_comp]
   exact (Category.comp_id _).symm
 
-omit [SymmetricCategory A] in
 /-- An arity transport composed with a whiskered one is the joint
 transport. -/
-private theorem cast_then_cast_whisker (Z : A) {a b n : ℕ}
+private theorem cast_then_cast_whisker [Category.{v} A] [MonoidalCategory A]
+    (Z : A) {a b n : ℕ}
     (hab : a = b + 1) (hbn : b = n)
     (H₁ : tensorPow A Z a = tensorPow A Z (b + 1))
     (H₂ : tensorPow A Z b = tensorPow A Z n)
@@ -784,23 +832,27 @@ private theorem cast_then_cast_whisker (Z : A) {a b n : ℕ}
     MonoidalCategory.id_whiskerRight, Category.id_comp]
   rfl
 
-omit [SymmetricCategory A] in
 /-- `tensor_then_whiskerLeft` against a tail. -/
-private theorem tensor_then_whiskerLeft_assoc {P Q S T U V : A}
+private theorem tensor_then_whiskerLeft_assoc
+    [Category.{v} A] [MonoidalCategory A]
+    {P Q S T U V : A}
     (g : P ⟶ Q) (h : S ⟶ T) (k : T ⟶ U) (rest : Q ⊗ U ⟶ V) :
     (g ⊗ₘ h) ≫ (Q ◁ k) ≫ rest = (g ⊗ₘ (h ≫ k)) ≫ rest := by
   rw [← Category.assoc, tensor_then_whiskerLeft]
 
-omit [SymmetricCategory A] in
 /-- `whiskerLeft_then_tensor` against a tail. -/
-private theorem whiskerLeft_then_tensor_assoc {P Q S T U V : A}
+private theorem whiskerLeft_then_tensor_assoc
+    [Category.{v} A] [MonoidalCategory A]
+    {P Q S T U V : A}
     (g : P ⟶ Q) (h : S ⟶ T) (k : T ⟶ U) (rest : Q ⊗ U ⟶ V) :
     (P ◁ h) ≫ (g ⊗ₘ k) ≫ rest = (g ⊗ₘ (h ≫ k)) ≫ rest := by
   rw [← Category.assoc, whiskerLeft_then_tensor]
 
 /-- One whiskered concatenation stage against the insertion cycle:
 reassociate, insert within the second block, and concatenate. -/
-private theorem concat_whisker_insert (Z : A) (p m : ℕ) :
+private theorem concat_whisker_insert
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (Z : A) (p m : ℕ) :
     ((tensorPowConcat Z p m).hom ▷ Z) ≫ insertTop Z (p + m) m =
       (α_ (tensorPow A Z p) (tensorPow A Z m) Z).hom ≫
         ((tensorPow A Z p ◁ insertTop Z m m) ≫
@@ -822,33 +874,33 @@ private theorem concat_whisker_insert (Z : A) (p m : ℕ) :
           (fun t => (α_ (tensorPow A Z p) (tensorPow A Z m) Z).hom ≫ t)
           h1
 
-omit [SymmetricCategory A] in
 /-- A tensor absorbed through a right whiskering.  Stated at
 general objects. -/
-private theorem tensor_then_whiskerRight {P Q R S T : A}
+private theorem tensor_then_whiskerRight [Category.{v} A] [MonoidalCategory A]
+    {P Q R S T : A}
     (f : P ⟶ Q) (u : Q ⟶ R) (g : S ⟶ T) :
     (f ⊗ₘ g) ≫ (u ▷ T) = (f ≫ u) ⊗ₘ g := by
   rw [← MonoidalCategory.tensorHom_id u T,
     MonoidalCategory.tensorHom_comp_tensorHom, Category.comp_id]
 
-omit [SymmetricCategory A] in
 /-- The concatenation's successor stage, unfolded. -/
-private theorem tensorPowConcat_succ_hom (Z : A) (a b : ℕ) :
+private theorem tensorPowConcat_succ_hom [Category.{v} A] [MonoidalCategory A]
+    (Z : A) (a b : ℕ) :
     (tensorPowConcat Z a (b + 1)).hom =
       (α_ (tensorPow A Z a) (tensorPow A Z b) Z).inv ≫
         ((tensorPowConcat Z a b).hom ▷ Z) := rfl
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
 /-- Reassociating a parenthesised three-chain against a tail. -/
-private theorem assoc₃ {P Q R S T : A} (a : P ⟶ Q) (b : Q ⟶ R)
+private theorem assoc₃ [Category.{v} A]
+    {P Q R S T : A} (a : P ⟶ Q) (b : Q ⟶ R)
     (c : R ⟶ S) (d : S ⟶ T) :
     (a ≫ b ≫ c) ≫ d = a ≫ b ≫ c ≫ d := by
   simp only [Category.assoc]
 
-omit [SymmetricCategory A] in
 /-- The false-branch gluing at general objects: tensoring a
 four-chain with a letter splits it around the reassociation. -/
-private theorem sorted_false_glue {W P Q P' Q' N N' Y Z : A}
+private theorem sorted_false_glue [Category.{v} A] [MonoidalCategory A]
+    {W P Q P' Q' N N' Y Z : A}
     (a : W ⟶ P ⊗ Q) (f₁ : P ⟶ P') (f₂ : Q ⟶ Q')
     (c : P' ⊗ Q' ⟶ N) (E : N ⟶ N') (g : Y ⟶ Z) :
     (a ≫ (f₁ ⊗ₘ f₂) ≫ c ≫ E) ⊗ₘ g =
@@ -861,14 +913,15 @@ private theorem sorted_false_glue {W P Q P' Q' N N' Y Z : A}
 
 section SortedBiprod
 
-variable [Preadditive A] [HasBinaryBiproducts A]
-
 /-- **Sorting one appended `X`**: the base-point inclusion with one
 more `X` in the last slot, bubbled down past the whole `Y` block,
 is the base-point inclusion of the grown `X` block — up to braiding
 the appended factor past the `Y` power on the mixed side and the
 arity transport `(p + 1) + m = p + (m + 1)` at the target. -/
-theorem base_insert_true (X Y : A) (p m : ℕ) :
+theorem base_insert_true
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) (p m : ℕ) :
     (((tensorPowMap (biprod.inl : X ⟶ X ⊞ Y) p ⊗ₘ
           tensorPowMap (biprod.inr : Y ⟶ X ⊞ Y) m) ≫
         (tensorPowConcat (X ⊞ Y) p m).hom) ⊗ₘ
@@ -892,11 +945,10 @@ theorem base_insert_true (X Y : A) (p m : ℕ) :
     putBelow_concat, MonoidalCategory.associator_inv_naturality_assoc]
   exact rfl
 
-omit [MonoidalCategory A] [SymmetricCategory A] [Preadditive A]
-  [HasBinaryBiproducts A] in
 /-- Regrouping a flat seven-chain into the packaged form.  Stated
 at general objects. -/
-private theorem false_final_shape {W₀ W₁ P R₁ R₂ R₃ R₄ R₅ : A}
+private theorem false_final_shape [Category.{v} A]
+    {W₀ W₁ P R₁ R₂ R₃ R₄ R₅ : A}
     (a : W₀ ⟶ W₁) (b : W₁ ⟶ P) (c : P ⟶ R₁) (t : R₁ ⟶ R₂)
     (ai : R₂ ⟶ R₃) (cw : R₃ ⟶ R₄) (e : R₄ ⟶ R₅) :
     a ≫ b ≫ c ≫ t ≫ ai ≫ cw ≫ e =
@@ -905,7 +957,10 @@ private theorem false_final_shape {W₀ W₁ P R₁ R₂ R₃ R₄ R₅ : A}
 
 /-- **The sorting square grows by a `false` letter**: the appended
 `Y` joins the top of the `Y` block and nothing is bubbled. -/
-private theorem sorted_step_false (X Y : A) {n : ℕ}
+private theorem sorted_step_false
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) {n : ℕ}
     (w : Fin (n + 1) → Bool) (p m : ℕ)
     (hpm : p + m = n) (hq1 : p + (m + 1) = n + 1)
     (e' : wordPow X Y n (w ∘ Fin.castSucc) ≅
@@ -1039,11 +1094,10 @@ private theorem sorted_step_false (X Y : A) {n : ℕ}
   exact h1.trans (h2.trans (h3.trans (h4.trans (h5.trans
     (h6.trans h7)))))
 
-omit [MonoidalCategory A] [SymmetricCategory A] [Preadditive A]
-  [HasBinaryBiproducts A] in
 /-- Regrouping the true-branch chain into the packaged form.
 Stated at general objects. -/
-private theorem true_final_shape {W₀ W₁ P R₀ R₁ R₂ R₃ R₄ R₅ R₆ : A}
+private theorem true_final_shape [Category.{v} A]
+    {W₀ W₁ P R₀ R₁ R₂ R₃ R₄ R₅ R₆ : A}
     (a : W₀ ⟶ W₁) (b : W₁ ⟶ P) (c : P ⟶ R₀) (d : R₀ ⟶ R₁)
     (e : R₁ ⟶ R₂) (t : R₂ ⟶ R₃) (cw : R₃ ⟶ R₄) (e₁ : R₄ ⟶ R₅)
     (e₂ : R₅ ⟶ R₆) :
@@ -1054,7 +1108,10 @@ private theorem true_final_shape {W₀ W₁ P R₀ R₁ R₂ R₃ R₄ R₅ R₆
 /-- **The sorting square grows by a `true` letter**: the appended
 `X` is bubbled down past the whole `Y` block onto the top of the
 `X` block. -/
-private theorem sorted_step_true (X Y : A) {n : ℕ}
+private theorem sorted_step_true
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) {n : ℕ}
     (w : Fin (n + 1) → Bool) (p m : ℕ)
     (hpm : p + m = n) (hm : n - p = m)
     (hq1 : p + 1 + m = n + 1)
@@ -1187,20 +1244,21 @@ private theorem sorted_step_true (X Y : A) {n : ℕ}
       (tensorPowConcat (X ⊞ Y) (p + 1) m).hom ≫ s)
     hmerge
 
-omit [MonoidalCategory A] [SymmetricCategory A] [Preadditive A]
-  [HasBinaryBiproducts A] in
 /-- Append a definitionally trivial transport to a three-step
 factorisation. -/
-private theorem comp_cast_end₃ {P Q R S : A} {f : P ⟶ S}
+private theorem comp_cast_end₃ [Category.{v} A]
+    {P Q R S : A} {f : P ⟶ S}
     {g₁ : P ⟶ Q} {g₂ : Q ⟶ R} {g₃ : R ⟶ S} (H : S = S)
     (hfg : f = g₁ ≫ g₂ ≫ g₃) :
     f = g₁ ≫ g₂ ≫ g₃ ≫ eqToHom H := by
   rw [show H = rfl from rfl, eqToHom_refl, Category.comp_id, hfg]
 
-omit [SymmetricCategory A] in
 /-- Renaming the block sizes of a sorting square: the data and the
 square transport along equalities of the two sizes. -/
-private theorem sorted_pack (X Y : A) {n : ℕ} {W : A}
+private theorem sorted_pack
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : A) {n : ℕ} {W : A}
     (mi : W ⟶ tensorPow A (X ⊞ Y) n) (p q pc qc : ℕ)
     (hp : p = pc) (hq : q = qc) (hpq : p + q = n)
     (hpcqc : pc + qc = n)
@@ -1226,7 +1284,10 @@ the word power with `X ^ ⊗ popCount w ⊗ Y ^ ⊗ (n − popCount w)`
 under which `mixedInto`, followed by the action of `sortPerm w`, is
 the concatenation of the two pure-power inclusions, transported
 along `popCount w + (n − popCount w) = n` at the target. -/
-theorem mixedInto_sorted (X Y : A) :
+theorem mixedInto_sorted
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) :
     ∀ (n : ℕ) (w : Fin n → Bool),
       ∃ e : wordPow X Y n w ≅
           tensorPow A X (popCount w) ⊗
@@ -1321,13 +1382,18 @@ theorem mixedInto_sorted (X Y : A) :
 /-- **The sorting isomorphism**, chosen once and for all from the
 sorting lemma: `wordPow X Y n w` against the sorted concatenation
 of pure powers. -/
-noncomputable def sortIso (X Y : A) (n : ℕ) (w : Fin n → Bool) :
+noncomputable def sortIso
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) (n : ℕ) (w : Fin n → Bool) :
     wordPow X Y n w ≅
       tensorPow A X (popCount w) ⊗ tensorPow A Y (n - popCount w) :=
   (mixedInto_sorted X Y n w).choose
 
 /-- The sorting square, for the chosen isomorphism `sortIso`. -/
-theorem sortIso_spec (X Y : A) (n : ℕ) (w : Fin n → Bool) :
+theorem sortIso_spec [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : A) (n : ℕ) (w : Fin n → Bool) :
     mixedInto X Y n w ≫ permMor (X ⊞ Y) n (sortPerm w) =
       (sortIso X Y n w).hom ≫
         (tensorPowMap (biprod.inl : X ⟶ X ⊞ Y) (popCount w) ⊗ₘ

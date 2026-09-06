@@ -6,7 +6,7 @@ import RS.Classical.SymFun.SuperPowerSums
 If the complete homogeneous sequence `newtonH t` satisfies a linear
 recurrence with constant coefficients from some index onward, then `t`
 decomposes as a difference of power sums of two disjoint multisets of
-nonzero complex numbers (Lemma A.8 of the accompanying paper).
+nonzero complex numbers (Lemma A.9 of the accompanying paper).
 
 The proof passes through the generating series `H = newtonHSeries t`,
 builds a polynomial `Q` from the recurrence whose product with `H`
@@ -209,9 +209,9 @@ enough for the kernel's `whnf` check.
 /-- Build the recurrence polynomial `Q` and its truncated product `P`
 with the Newton generating series. -/
 theorem truncated_product_from_recurrence {t : ℕ → ℂ} {a b : ℕ}
-    (_hab : a ≤ b) (c : Fin (a + 1) → ℂ) (hc : c ≠ 0)
-    (_hrec : ∀ ρ : ℕ, b - a ≤ ρ →
-      ∑ k : Fin (a + 1), c k * newtonH t (ρ + 1 + (k : ℕ)) = 0) :
+    (c : Fin (a + 1) → ℂ) (hc : c ≠ 0)
+    (hrec : ∀ ρ : ℤ, (b : ℤ) - a ≤ ρ →
+      ∑ k : Fin (a + 1), c k * newtonHZ t (ρ + 1 + (k : ℤ)) = 0) :
     ∃ Q P : ℂ[X],
       Q ≠ 0 ∧ P ≠ 0 ∧
       (↑Q : ℂ⟦X⟧) * newtonHSeries t = ↑P ∧
@@ -253,42 +253,67 @@ theorem truncated_product_from_recurrence {t : ℕ → ℂ} {a b : ℕ}
       rw [Finset.sum_eq_single_of_mem k (Finset.mem_range.mpr hk)]
       · simp
       · intro j _ hji; simp [Ne.symm hji]
-    have hstep1 : ∑ k ∈ Finset.range (n + 1), Q.coeff k * newtonH t (n - k) =
+    have hnat (k : ℕ) (hk : k < n + 1) :
+        newtonH t (n - k) = newtonHZ t ((n : ℤ) - k) := by
+      rw [show (n : ℤ) - k = ((n - k : ℕ) : ℤ) by omega,
+        newtonHZ_natCast]
+    have hstep1 :
+        ∑ k ∈ Finset.range (n + 1), Q.coeff k * newtonH t (n - k) =
         ∑ k ∈ Finset.range (a + 1),
-          c ⟨a - k, by omega⟩ * newtonH t (n - k) := by
-      rw [show ∑ k ∈ Finset.range (n + 1), Q.coeff k * newtonH t (n - k) =
-          ∑ k ∈ Finset.range (a + 1), Q.coeff k * newtonH t (n - k) from by
-        symm; apply Finset.sum_subset (Finset.range_mono (by omega))
-        intro k _ hk; simp only [Finset.mem_range, not_lt] at hk
-        rw [hQ_van k (by omega), zero_mul]]
-      apply Finset.sum_congr rfl
-      intro k hk; rw [hQ_val k (Finset.mem_range.mp hk)]
+          c ⟨a - k, by omega⟩ * newtonHZ t ((n : ℤ) - k) := by
+      calc
+        _ = ∑ k ∈ Finset.range (n + 1),
+            Q.coeff k * newtonHZ t ((n : ℤ) - k) := by
+          apply Finset.sum_congr rfl
+          intro k hk
+          rw [hnat k (Finset.mem_range.mp hk)]
+        _ = ∑ k ∈ Finset.range (a + 1),
+            Q.coeff k * newtonHZ t ((n : ℤ) - k) := by
+          by_cases han : a ≤ n
+          · symm
+            apply Finset.sum_subset (Finset.range_mono (by omega))
+            intro k _ hk
+            rw [hQ_van k (by simpa only [Finset.mem_range] using hk),
+              zero_mul]
+          · apply Finset.sum_subset (Finset.range_mono (by omega))
+            intro k _ hk
+            rw [newtonHZ_neg t _ (by
+              simp only [Finset.mem_range] at hk
+              omega), mul_zero]
+        _ = _ := by
+          apply Finset.sum_congr rfl
+          intro k hk
+          rw [hQ_val k (Finset.mem_range.mp hk)]
     rw [hstep1]
     let f : ℕ → ℂ := fun j =>
-      if h : j < a + 1 then c ⟨j, h⟩ * newtonH t (n - a + j) else 0
-    suffices hsuff : ∑ k ∈ Finset.range (a + 1), f ((a + 1) - 1 - k) = 0 by
+      if h : j < a + 1 then
+        c ⟨j, h⟩ * newtonHZ t ((n : ℤ) - a + j) else 0
+    suffices hsuff : ∑ k ∈ Finset.range (a + 1),
+        f ((a + 1) - 1 - k) = 0 by
       convert hsuff using 1
       apply Finset.sum_congr rfl
-      intro k hk; rw [Finset.mem_range] at hk
-      show c ⟨a - k, _⟩ * newtonH t (n - k) = f (a - k)
-      show c ⟨a - k, _⟩ * newtonH t (n - k) =
-        (if h : a - k < a + 1 then
-          c ⟨a - k, h⟩ * newtonH t (n - a + (a - k)) else 0)
+      intro k hk
+      rw [Finset.mem_range] at hk
+      change c ⟨a - k, _⟩ * newtonHZ t ((n : ℤ) - k) =
+        if h : a - k < a + 1 then
+          c ⟨a - k, h⟩ * newtonHZ t ((n : ℤ) - a + (a - k : ℕ)) else 0
       rw [dif_pos (show a - k < a + 1 by omega)]
-      show c ⟨a - k, _⟩ * newtonH t (n - k) =
-        c ⟨a - k, _⟩ * newtonH t (n - a + (a - k))
-      congr 2; omega
+      congr 2
+      omega
     rw [Finset.sum_range_reflect f (a + 1),
       ← Fin.sum_univ_eq_sum_range f (a + 1)]
     have hf_eq : ∑ i : Fin (a + 1), f ↑i =
-        ∑ i : Fin (a + 1), c i * newtonH t ((n - a - 1) + 1 + ↑i) :=
-      Finset.sum_congr rfl fun ⟨i, hi⟩ _ => by
-        show (if h : i < a + 1 then c ⟨i, h⟩ * newtonH t (n - a + i) else 0) =
-          c ⟨i, hi⟩ * newtonH t ((n - a - 1) + 1 + i)
-        rw [dif_pos hi]
-        congr 2; omega
+        ∑ i : Fin (a + 1),
+          c i * newtonHZ t (((n : ℤ) - a - 1) + 1 + (i : ℤ)) := by
+      apply Finset.sum_congr rfl
+      intro i _
+      dsimp only [f]
+      rw [dif_pos i.isLt]
+      congr 2
+      omega
     rw [hf_eq]
-    exact _hrec (n - a - 1) (by omega)
+    exact hrec ((n : ℤ) - a - 1) (by omega)
+
   let P := PowerSeries.trunc (b + 1) ((↑Q : ℂ⟦X⟧) * H)
   have hQH_eq : (↑Q : ℂ⟦X⟧) * H = ↑P :=
     powerSeries_eq_coe_trunc_of_eventually_zero _ (b + 1) hQH_ev
@@ -382,15 +407,15 @@ theorem coprime_pair_from_product {t : ℕ → ℂ}
 
 /-! ### Main theorem -/
 
-/-- **Lemma A.8 of the accompanying paper.**
+/-- **Lemma A.9 of the accompanying paper.**
 If the complete homogeneous sequence `newtonH t` satisfies a nontrivial
 linear recurrence with constant coefficients from some index onward,
 then `t` decomposes as a difference of power sums of two disjoint
 multisets of nonzero complex numbers. -/
 theorem superPowerSums_of_recurrence {t : ℕ → ℂ} {a b : ℕ}
-    (hab : a ≤ b) (c : Fin (a + 1) → ℂ) (hc : c ≠ 0)
-    (hrec : ∀ ρ : ℕ, b - a ≤ ρ →
-      ∑ k : Fin (a + 1), c k * newtonH t (ρ + 1 + (k : ℕ)) = 0) :
+    (c : Fin (a + 1) → ℂ) (hc : c ≠ 0)
+    (hrec : ∀ ρ : ℤ, (b : ℤ) - a ≤ ρ →
+      ∑ k : Fin (a + 1), c k * newtonHZ t (ρ + 1 + (k : ℤ)) = 0) :
     ∃ α β : Multiset ℂ,
       α.card ≤ a ∧ β.card ≤ b ∧
       (∀ x ∈ α, x ≠ 0) ∧ (∀ x ∈ β, x ≠ 0) ∧ (∀ x ∈ α, x ∉ β) ∧
@@ -398,7 +423,7 @@ theorem superPowerSums_of_recurrence {t : ℕ → ℂ} {a b : ℕ}
         t m = (α.map (· ^ m)).sum - (β.map (· ^ m)).sum := by
   -- ═══════ STAGE A: Get the truncated pair ═══════
   obtain ⟨Q, P, hQ_ne, hP_ne, hQH, hQ_deg, hP_deg⟩ :=
-    truncated_product_from_recurrence hab c hc hrec
+    truncated_product_from_recurrence c hc hrec
   -- ═══════ STAGE B: Get the coprime pair ═══════
   obtain ⟨Q₀, P₀, hQ0_ne, hP0_ne, hcop, hQ0H, hQ0_coeff0, hP0_coeff0,
     hQ0_deg_le, hP0_deg_le⟩ := coprime_pair_from_product Q P hQ_ne hP_ne hQH

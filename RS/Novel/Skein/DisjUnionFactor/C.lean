@@ -24,15 +24,14 @@ section CanonMigration
 
 open EdgeSubset
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β]
-  {W₁ : Fragment α} {W₂ : Fragment β}
-  {F : EdgeSubset (W₁.disjUnion W₂)}
+variable {α β : Type}
 
 /-! ### Boundary membership over the union -/
 
-omit [LinearOrder α] [LinearOrder β] in
 /-- Being a boundary flag is componentwise on the left. -/
-theorem inl_mem_boundary {g : W₁.Flag} :
+theorem inl_mem_boundary
+    {W₁ : Fragment α} {W₂ : Fragment β} {F : EdgeSubset (W₁.disjUnion W₂)}
+    {g : W₁.Flag} :
     (Sum.inl g : (W₁.disjUnion W₂).Flag) ∈ F.boundaryFlags ↔
       g ∈ (leftSub F).boundaryFlags := by
   constructor
@@ -45,9 +44,10 @@ theorem inl_mem_boundary {g : W₁.Flag} :
     exact Finset.mem_filter.mpr
       ⟨mem_leftSub_flags.mp hf, attach_inl_label_iff.mpr hl⟩
 
-omit [LinearOrder α] [LinearOrder β] in
 /-- And on the right. -/
-theorem inr_mem_boundary {g : W₂.Flag} :
+theorem inr_mem_boundary
+    {W₁ : Fragment α} {W₂ : Fragment β} {F : EdgeSubset (W₁.disjUnion W₂)}
+    {g : W₂.Flag} :
     (Sum.inr g : (W₁.disjUnion W₂).Flag) ∈ F.boundaryFlags ↔
       g ∈ (rightSub F).boundaryFlags := by
   constructor
@@ -68,6 +68,8 @@ set_option linter.unusedSectionVars false in
 /-- A left boundary flag's chain stays left, so the product
 system's path matching is the left component's. -/
 theorem pathMatch_prodRel_inl
+    [LinearOrder α] [LinearOrder β] {W₁ : Fragment α} {W₂ : Fragment β}
+    {F : EdgeSubset (W₁.disjUnion W₂)}
     (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem)
     {g : W₁.Flag}
@@ -102,6 +104,8 @@ theorem pathMatch_prodRel_inl
 set_option linter.unusedSectionVars false in
 /-- And likewise on the right. -/
 theorem pathMatch_prodRel_inr
+    [LinearOrder α] [LinearOrder β] {W₁ : Fragment α} {W₂ : Fragment β}
+    {F : EdgeSubset (W₁.disjUnion W₂)}
     (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem)
     {g : W₂.Flag}

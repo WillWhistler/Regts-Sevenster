@@ -22,15 +22,14 @@ open CategoryTheory MonoidalCategory Limits Finset
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [HasBinaryBiproducts A]
+variable {A : Type u}
 
-omit [MonoidalPreadditive A] [HasBinaryBiproducts A] in
 /-- Transport of the group-algebra action along an arity
 equality. -/
-theorem permAlg_eqToHom (Z : A) {m n : ℕ} (h : m = n)
+theorem permAlg_eqToHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (Z : A) {m n : ℕ} (h : m = n)
     (x : SymGroupAlgebra n) :
     eqToHom (congrArg (tensorPow A Z) h) ≫ permAlg Z n x =
       permAlg Z m (symCast (le_of_eq h.symm) x) ≫
@@ -74,9 +73,11 @@ theorem le_of_box_of_cell {μ μ' : YoungDiagram} {p q : ℕ}
     exact μ.up_left_mem (Nat.zero_le _) le_rfl hcmem
   exact μ'.up_left_mem (by omega) (by omega) hcell
 
-omit [MonoidalPreadditive A] [HasBinaryBiproducts A] in
 /-- A central element commutes with every permutation action. -/
-theorem permMor_comp_permAlg (Z : A) {n : ℕ}
+theorem permMor_comp_permAlg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (Z : A) {n : ℕ}
     (g : Equiv.Perm (Fin n)) {x : SymGroupAlgebra n}
     (hcen : ∀ y, x * y = y * x) :
     permMor Z n g ≫ permAlg Z n x =
@@ -95,7 +96,11 @@ theorem permMor_comp_permAlg (Z : A) {n : ℕ}
 vanishing for `X` at `μ` and `Y` at `ν` forces Schur vanishing for
 `X ⊞ Y` at every diagram containing the fat-hook cell of the two
 bounding boxes. -/
-theorem SchurKilled.biprod (P : SchurPackage.{v}) {X Y : A}
+theorem SchurKilled.biprod
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v}) {X Y : A}
     {μ ν lam : YoungDiagram} {p q r s : ℕ}
     (hμc : μ.colLen 0 ≤ p + 1) (hμr : μ.rowLen 0 ≤ q + 1)
     (hνc : ν.colLen 0 ≤ r + 1) (hνr : ν.rowLen 0 ≤ s + 1)

@@ -28,14 +28,15 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 /-- **The separated four-label parity identity**: when the canonical
 directions at the `x`-end and the `y`-end differ, the two
 anti-canonicality indicators of the new chords plus the intrinsic
 sign of the step match, mod 2, the crossing change of the re-paired
 chords. -/
-theorem fourLabel_parity_sep {x xb y yb : α}
+theorem fourLabel_parity_sep [LinearOrder α]
+    {x xb y yb : α}
     (hxxb : x ≠ xb) (hyyb : y ≠ yb) (hxy : x ≠ y) (hxyb : x ≠ yb)
     (hxby : xb ≠ y) (hxbyb : xb ≠ yb)
     (hsep : (xb < x) ≠ (yb < y)) :
@@ -76,7 +77,8 @@ canonical directions at the `x`-end and the `y`-end agree, the
 anchor flip toggles the `y`-side directions and cancels the
 intrinsic sign, so the bare toggled anti-canonicality count matches,
 mod 2, the crossing change of the re-paired chords. -/
-theorem fourLabel_parity_nonsep {x xb y yb : α}
+theorem fourLabel_parity_nonsep [LinearOrder α]
+    {x xb y yb : α}
     (hxxb : x ≠ xb) (hyyb : y ≠ yb) (hxy : x ≠ y) (hxyb : x ≠ yb)
     (hxby : xb ≠ y) (hxbyb : xb ≠ yb)
     (hsame : (xb < x) = (yb < y)) :

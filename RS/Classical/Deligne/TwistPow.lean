@@ -17,18 +17,14 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-- The double twist transport: object and module isomorphisms
 together. -/
-noncomputable def tensorLeftModMapIso {V V' : D} (e : V ≅ V')
+noncomputable def tensorLeftModMapIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    {V V' : D} (e : V ≅ V')
     {M N : Mod D A} (f : M ≅ N) :
     tensorLeftMod A V M ≅ tensorLeftMod A V' N :=
   tensorLeftModContextIso A e M ≪≫
@@ -36,11 +32,14 @@ noncomputable def tensorLeftModMapIso {V V' : D} (e : V ≅ V')
 
 section Powers
 
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-
 /-- The bottom power module is the module. -/
-noncomputable def modPowModZeroIso (M : Mod D A) :
+noncomputable def modPowModZeroIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (M : Mod D A) :
     modPowMod A M.X 0 ≅ M where
   hom := fromModPowModZero A M
   inv := toModPowModZero A M
@@ -49,7 +48,13 @@ noncomputable def modPowModZeroIso (M : Mod D A) :
 
 /-- The merge of adjacent power modules, as a module
 isomorphism. -/
-noncomputable def powMergeModIso (X : D) [ModObj A X] (k : ℕ) :
+noncomputable def powMergeModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (X : D) [ModObj A X] (k : ℕ) :
     modTensorMod A (modPowMod A X k) (modPowMod A X 0) ≅
       modPowMod A X (k + 1) where
   hom := powMulMod A X k 0
@@ -60,7 +65,13 @@ noncomputable def powMergeModIso (X : D) [ModObj A X] (k : ℕ) :
 /-- **The twisted power identification**: the relative powers of
 a twisted module are the twist of the powers by the tensor powers
 of the twisting object. -/
-noncomputable def twistPowModIso (V : D) (R : Mod D A) :
+noncomputable def twistPowModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (V : D) (R : Mod D A) :
     (k : ℕ) →
     (modPowMod A ((tensorLeftMod A V R).X) k ≅
       tensorLeftMod A (tensorPow D V (k + 1)) (modPowMod A R.X k))
@@ -70,8 +81,8 @@ noncomputable def twistPowModIso (V : D) (R : Mod D A) :
         (modPowModZeroIso A R).symm
   | (k + 1) =>
     (powMergeModIso A ((tensorLeftMod A V R).X) k).symm ≪≫
-      modTensorMapIso A (twistPowModIso V R k)
-        (twistPowModIso V R 0) ≪≫
+      modTensorMapIso A (twistPowModIso A V R k)
+        (twistPowModIso A V R 0) ≪≫
       twistShuffleModIso A (tensorPow D V (k + 1))
         (tensorPow D V 1) (modPowMod A R.X k)
         (modPowMod A R.X 0) ≪≫

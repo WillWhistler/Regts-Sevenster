@@ -19,8 +19,7 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- Pure braid coherence for the interchange prefix: braiding the
 third strand past the fourth, reassociating, and braiding `P` past
@@ -28,7 +27,9 @@ the two `Q`-strands as a block agrees with interchanging via
 `tensorμ`, braiding the block `P ⊗ R` past `Q ⊗ Q`, and
 reassociating. -/
 @[reassoc]
-theorem braid_prefix_coherence (P Q R : D) :
+theorem braid_prefix_coherence
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (P Q R : D) :
     ((P ⊗ Q) ◁ (β_ R Q).hom) ≫
       (α_ (P ⊗ Q) Q R).inv ≫
       ((α_ P Q Q).hom ▷ R) ≫

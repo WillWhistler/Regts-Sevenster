@@ -1,5 +1,6 @@
 import RS.Classical.Deligne.PieriPos
 import RS.Classical.Deligne.SchurVanishing
+import RS.Classical.Super.TotalSpace
 
 /-!
 # Schur nonvanishing on the standard super vector space
@@ -192,23 +193,6 @@ tensor product of the total spaces, by the four-block shuffle
 `totTensor`.  All structure maps of `SuperVect` are conjugates of
 plain linear maps under this identification, which is what the
 braiding trace identity is proved through. -/
-
-/-- The total space of a super vector space. -/
-abbrev Tot (V : SuperVect) : Type := V.even × V.odd
-
-/-- The total linear map of a morphism of super vector spaces. -/
-def tot {V W : SuperVect} (f : V ⟶ W) : Tot V →ₗ[ℂ] Tot W :=
-  LinearMap.prodMap (SuperVect.Hom.evenMap f) (SuperVect.Hom.oddMap f)
-
-/-- The total map of the identity. -/
-@[simp]
-theorem tot_id (V : SuperVect) : tot (𝟙 V) = LinearMap.id := by
-  ext v <;> rfl
-
-/-- The total map of a composite. -/
-theorem tot_comp {V W X : SuperVect} (f : V ⟶ W) (g : W ⟶ X) :
-    tot (f ≫ g) = (tot g).comp (tot f) := by
-  ext v <;> rfl
 
 /-- The super trace is the plain trace of the total map. -/
 theorem sTr_eq_trace_tot {V : SuperVect} (f : V ⟶ V) :
@@ -439,12 +423,12 @@ twist on the last slot. -/
 section PlainTrace
 
 variable {U V : Type*}
-  [AddCommGroup U] [Module ℂ U] [FiniteDimensional ℂ U]
-  [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
 
 /-- **The contraction identity**: the trace of `f ⊗ g` against the
 flip is the trace of `f ∘ g`. -/
-theorem trace_map_comp_comm (f g : V →ₗ[ℂ] V) :
+theorem trace_map_comp_comm
+    [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
+    (f g : V →ₗ[ℂ] V) :
     LinearMap.trace ℂ (V ⊗[ℂ] V)
         ((TensorProduct.map f g).comp
           (TensorProduct.comm ℂ V V).toLinearMap) =
@@ -476,7 +460,10 @@ theorem trace_map_comp_comm (f g : V →ₗ[ℂ] V) :
 /-- **The spectator contraction identity**: with a spectator factor
 `U`, a twist `H` on the outer slot and modifications `s`, `t` inside
 the flip, the trace contracts to a trace over `U ⊗ V`. -/
-theorem trace_flip_twist (G : U ⊗[ℂ] V →ₗ[ℂ] U ⊗[ℂ] V)
+theorem trace_flip_twist
+    [AddCommGroup U] [Module ℂ U] [FiniteDimensional ℂ U] [AddCommGroup V]
+    [Module ℂ V] [FiniteDimensional ℂ V]
+    (G : U ⊗[ℂ] V →ₗ[ℂ] U ⊗[ℂ] V)
     (H s t : V →ₗ[ℂ] V) :
     LinearMap.trace ℂ ((U ⊗[ℂ] V) ⊗[ℂ] V)
         ((TensorProduct.map LinearMap.id H).comp
@@ -1219,22 +1206,6 @@ The same action, packaged as a genuine representation of the
 symmetric group on the total space of the tensor power — the free
 module on colourings carrying the Koszul signs, in its categorical
 presentation. -/
-
-/-- The total map is additive in the morphism. -/
-theorem tot_add {V W : SuperVect} (f g : V ⟶ W) :
-    tot (f + g) = tot f + tot g := by
-  refine LinearMap.ext fun x => ?_
-  show ((f + g).evenMap x.1, (f + g).oddMap x.2) = _
-  rw [SuperVect.add_evenMap, SuperVect.add_oddMap]
-  rfl
-
-/-- The total map is homogeneous in the morphism. -/
-theorem tot_smul {V W : SuperVect} (c : ℂ) (f : V ⟶ W) :
-    tot (c • f) = c • tot f := by
-  refine LinearMap.ext fun x => ?_
-  show ((c • f).evenMap x.1, (c • f).oddMap x.2) = _
-  rw [SuperVect.smul_evenMap, SuperVect.smul_oddMap]
-  rfl
 
 /-- **The graded signed permutation representation**: the symmetric
 group acting on the total space of the tensor power of the standard

@@ -23,23 +23,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable {M M' : Mod D A}
+variable {D : Type u}
 
-omit [MonoidalPreadditive D] in
 /-- **The sandwich contraction descends the carrier
 contraction**: reassociating, contracting the trailing pair and
 collapsing the regular factor is the carrier contraction of the
 zig triangle. -/
-theorem modTensorπ_sandwichCon (d : ModDualityDatum A M M') :
+theorem modTensorπ_sandwichCon
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     modTensorπ A (modTensorMod A M M') M ≫
         (sandwichCon A d).hom =
       zigContract A d.pair d.pair_linear := by
@@ -72,16 +68,13 @@ theorem modTensorπ_sandwichCon (d : ModDualityDatum A M M') :
   refine Eq.trans (whisker_eq _ (whisker_eq _ tail)) ?_
   rw [← MonoidalCategory.whiskerLeft_comp_assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **Naming a map out of the regular module**: inserting the name
 of a module map beside the carrier and projecting is the relative
 tensor of the map with the identity. -/
-theorem modTensorMap_of_regular (P N : Mod D A)
+theorem modTensorMap_of_regular
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    (P N : Mod D A)
     (f : regularMod A ⟶ P) :
     (modTensorUnitLeft A N).hom ≫ (λ_ N.X).inv ≫
         ((η[A] ≫ f.hom) ▷ N.X) ≫ modTensorπ A P N =
@@ -113,14 +106,15 @@ theorem modTensorMap_of_regular (P N : Mod D A)
   simp only [Category.assoc]
   rw [hname]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The sandwich insertion is the copairing insertion**: on
 carriers, expanding the unit and inserting the copairing is
 naming the copairing beside the carrier. -/
-theorem sandwichIns_hom (d : ModDualityDatum A M M') :
+theorem sandwichIns_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     (sandwichIns A d).hom =
       (λ_ M.X).inv ≫ ((η[A] ≫ d.copair) ▷ M.X) ≫
         modTensorπ A (modTensorMod A M M') M := by
@@ -131,11 +125,16 @@ theorem sandwichIns_hom (d : ModDualityDatum A M M') :
   rw [← h, Iso.inv_hom_id_assoc]
   rfl
 
-omit [MonoidalPreadditive D] in
 /-- **The sandwich composite is the zig composite**: the retract
 word of the double-dual sandwich has the carrier zig triangle as
 its underlying morphism. -/
-theorem sandwich_zig_carrier (d : ModDualityDatum A M M') :
+theorem sandwich_zig_carrier
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     (sandwichIns A d ≫ sandwichCon A d).hom =
       (λ_ M.X).inv ≫ ((η[A] ≫ d.copair) ▷ M.X) ≫
         zigContract A d.pair d.pair_linear := by
@@ -146,12 +145,17 @@ theorem sandwich_zig_carrier (d : ModDualityDatum A M M') :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (modTensorπ_sandwichCon A d)
 
-omit [MonoidalPreadditive D] in
 /-- **The zig triangle is the sandwich retract identity**: a
 duality datum satisfies the carrier zig law exactly when the
 module is a retract of its double-dual sandwich through the
 canonical insertion and contraction. -/
-theorem sandwich_zig_iff (d : ModDualityDatum A M M') :
+theorem sandwich_zig_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     sandwichIns A d ≫ sandwichCon A d = 𝟙 M ↔
       (λ_ M.X).inv ≫ ((η[A] ≫ d.copair) ▷ M.X) ≫
         zigContract A d.pair d.pair_linear = 𝟙 M.X := by
@@ -165,10 +169,15 @@ theorem sandwich_zig_iff (d : ModDualityDatum A M M') :
     rw [h]
     exact (Mod.id_hom' M).symm
 
-omit [MonoidalPreadditive D] in
 /-- **The dual sandwich contraction descends the dual carrier
 contraction**. -/
-theorem modTensorπ_sandwichConR (d : ModDualityDatum A M M') :
+theorem modTensorπ_sandwichConR
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     modTensorπ A M' (modTensorMod A M M') ≫
         (sandwichConR A d).hom =
       zagContract A d.pair d.pair_linear := by
@@ -202,14 +211,11 @@ theorem modTensorπ_sandwichConR (d : ModDualityDatum A M M') :
   refine Eq.trans (whisker_eq _ (whisker_eq _ tail)) ?_
   rw [← MonoidalCategory.comp_whiskerRight_assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **Naming a map out of the regular module on the right**. -/
-theorem modTensorMap_of_regular_right (N P : Mod D A)
+theorem modTensorMap_of_regular_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    (N P : Mod D A)
     (f : regularMod A ⟶ P) :
     (modTensorUnitRight A N).hom ≫ (ρ_ N.X).inv ≫
         (N.X ◁ (η[A] ≫ f.hom)) ≫ modTensorπ A N P =
@@ -235,12 +241,13 @@ theorem modTensorMap_of_regular_right (N P : Mod D A)
   simp only [← MonoidalCategory.whiskerLeft_comp_assoc]
   rw [hname]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The dual sandwich insertion is the copairing insertion**. -/
-theorem sandwichInsR_hom (d : ModDualityDatum A M M') :
+theorem sandwichInsR_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     (sandwichInsR A d).hom =
       (ρ_ M'.X).inv ≫ (M'.X ◁ (η[A] ≫ d.copair)) ≫
         modTensorπ A M' (modTensorMod A M M') := by
@@ -251,9 +258,14 @@ theorem sandwichInsR_hom (d : ModDualityDatum A M M') :
   rw [← h, Iso.inv_hom_id_assoc]
   rfl
 
-omit [MonoidalPreadditive D] in
 /-- **The dual sandwich composite is the zag composite**. -/
-theorem sandwich_zag_carrier (d : ModDualityDatum A M M') :
+theorem sandwich_zag_carrier
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     (sandwichInsR A d ≫ sandwichConR A d).hom =
       (ρ_ M'.X).inv ≫ (M'.X ◁ (η[A] ≫ d.copair)) ≫
         zagContract A d.pair d.pair_linear := by
@@ -264,10 +276,15 @@ theorem sandwich_zag_carrier (d : ModDualityDatum A M M') :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (modTensorπ_sandwichConR A d)
 
-omit [MonoidalPreadditive D] in
 /-- **The zag triangle is the dual sandwich retract
 identity**. -/
-theorem sandwich_zag_iff (d : ModDualityDatum A M M') :
+theorem sandwich_zag_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     sandwichInsR A d ≫ sandwichConR A d = 𝟙 M' ↔
       (ρ_ M'.X).inv ≫ (M'.X ◁ (η[A] ≫ d.copair)) ≫
         zagContract A d.pair d.pair_linear = 𝟙 M'.X := by

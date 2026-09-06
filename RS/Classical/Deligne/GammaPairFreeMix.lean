@@ -21,17 +21,17 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [HasFiniteBiproducts D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The comparison map is an isomorphism on the free module of
 the unit**, since that free module is the regular module. -/
-instance isIso_gammaPairComparison_freeUnit (N : Mod D R) :
+instance isIso_gammaPairComparison_freeUnit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) :
     IsIso (gammaPairComparison L R (freeMod R (𝟙_ D)) N) :=
   gammaPairComparison_isIso_of_iso L R (freeModUnitIso R)
     (Iso.refl N) (isIso_gammaPairComparison_unitLeft L R N)
@@ -40,6 +40,11 @@ instance isIso_gammaPairComparison_freeUnit (N : Mod D R) :
 mixed sum**, given that it is on the free module of the odd
 line. -/
 theorem isIso_gammaPairComparison_freeMix
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
     {N : Mod D R}
     (hL : IsIso (gammaPairComparison L R (freeMod R L.obj) N))
     (p q : ℕ) :
@@ -56,6 +61,11 @@ theorem isIso_gammaPairComparison_freeMix
 /-- **The comparison map is an isomorphism on any free module that
 becomes a mixed sum.** -/
 theorem isIso_gammaPairComparison_free
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
     {N : Mod D R}
     (hL : IsIso (gammaPairComparison L R (freeMod R L.obj) N))
     {X : D} {p q : ℕ} (e : freeMod R X ≅ freeMod R (L.mix p q)) :

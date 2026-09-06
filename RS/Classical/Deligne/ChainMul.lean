@@ -16,23 +16,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (X : D) [ModObj A X]
+variable {D : Type u}
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The two module-tensor legs of a pair of symmetric powers
 agree after the symmetric multiplication. -/
-theorem symMul_modTensor_cond (m n : ℕ) :
+theorem symMul_modTensor_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     modTensorLegM A (symPowMod A X m) (symPowMod A X n) ≫
         symMul A X (m + 1) (n + 1) =
       modTensorLegN A (symPowMod A X m) (symPowMod A X n) ≫
@@ -59,26 +53,40 @@ theorem symMul_modTensor_cond (m n : ℕ) :
 
 /-- **The descended symmetric multiplication** on the module
 tensor product of two symmetric powers. -/
-noncomputable def symMulDesc (m n : ℕ) :
+noncomputable def symMulDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     modTensor A (symPowMod A X m) (symPowMod A X n) ⟶
       symPow A X (m + 1 + n + 1) :=
   modTensorDesc A (symPowMod A X m) (symPowMod A X n)
     (symMul A X (m + 1) (n + 1)) (symMul_modTensor_cond A X m n)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- Defining equation of the descended multiplication. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_symMulDesc (m n : ℕ) :
+theorem modTensorπ_symMulDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     modTensorπ A (symPowMod A X m) (symPowMod A X n) ≫
         symMulDesc A X m n = symMul A X (m + 1) (n + 1) :=
   modTensorπ_desc A (symPowMod A X m) (symPowMod A X n) _ _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The descended multiplication intertwines the module
 actions. -/
-theorem symMulDesc_act (m n : ℕ) :
+theorem symMulDesc_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     modTensorAct A (symPowMod A X m) (symPowMod A X n) ≫
         symMulDesc A X m n =
       (A ◁ symMulDesc A X m n) ≫ symPowAct A X (m + 1 + n) := by
@@ -97,21 +105,38 @@ theorem symMulDesc_act (m n : ℕ) :
 
 /-- The descended symmetric multiplication as a map of
 modules. -/
-noncomputable def symMulMod (m n : ℕ) :
+noncomputable def symMulMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     modTensorMod A (symPowMod A X m) (symPowMod A X n) ⟶
       symPowMod A X (m + 1 + n) :=
   Mod.Hom.mk' (symMulDesc A X m n) (symMulDesc_act A X m n)
 
-variable (M M' : Mod D A)
-
 /-- One stage of the splitting chain: the module tensor product
 of matching symmetric powers of the dual pair. -/
-noncomputable def chainStage (k : ℕ) : D :=
+noncomputable def chainStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) : D :=
   modTensor A (symPowMod A M'.X k) (symPowMod A M.X k)
 
 /-- **The chain multiplication**: two stages interchange and
 multiply into the stage of summed arity. -/
-noncomputable def chainMul (m n : ℕ) :
+noncomputable def chainMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (m n : ℕ) :
     chainStage A M M' m ⊗ chainStage A M M' n ⟶
       chainStage A M M' (m + 1 + n) :=
   interchange A (symPowMod A M'.X m) (symPowMod A M.X m)
@@ -121,7 +146,14 @@ noncomputable def chainMul (m n : ℕ) :
 /-- Defining equation of the chain multiplication: under the
 stage projections it is the raw crossing followed by the
 symmetric multiplications. -/
-theorem tensorHom_π_chainMul (m n : ℕ) :
+theorem tensorHom_π_chainMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (m n : ℕ) :
     (modTensorπ A (symPowMod A M'.X m) (symPowMod A M.X m) ⊗ₘ
         modTensorπ A (symPowMod A M'.X n) (symPowMod A M.X n)) ≫
       chainMul A M M' m n =

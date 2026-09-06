@@ -5,6 +5,7 @@ import RS.Definitions
 import RS.StatementConverse
 import RS.TheoremForward
 import RS.TheoremQuant
+import RS.TheoremTotal
 import RS.TheoremConverse
 import RS.QuantSector
 import RS.Glossary
@@ -15,3 +16,7 @@ import RS.Assembly.BlueprintSchur
 import RS.Classical.Deligne
 import RS.Summit
 import RS.Assembly.BlueprintDeligne
+import RS.Assembly.BlueprintFactorial
+import RS.DimensionDefinitions
+import RS.TheoremDimension
+import RS.TheoremPadding

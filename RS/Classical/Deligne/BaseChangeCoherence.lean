@@ -16,24 +16,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
+variable {D : Type u}
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The cast leg is invisible on projections**: the
 restricted projection, transported along the identification of
 the restricted base change, is the projection of the relative
 tensor. -/
-theorem restrictπ_cast (M N : Mod D A) :
+theorem restrictπ_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M N : Mod D A) :
     restrictπ A B φ (baseChangeMod φ M) N ≫
         eqToHom (congrArg (fun R => modTensor A R N)
           (restrictMod_baseChange_eq A B φ M)) =
@@ -58,7 +53,14 @@ theorem restrictπ_cast (M N : Mod D A) :
 structure map with the inner projection unwinds to the right
 action of the new base followed by the half-descended module
 associator, with no transport left in the way. -/
-theorem projFormula_cover (M N : Mod D A) :
+theorem projFormula_cover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M N : Mod D A) :
     ((baseChangeMod φ M).X ◁
         modTensorπ A (restrictRegular φ) N) ≫
         modTensorπ B (baseChangeMod φ M) (baseChangeMod φ N) ≫
@@ -103,7 +105,13 @@ theorem projFormula_cover (M N : Mod D A) :
 /-- **The module triangle**: reassociating and collapsing the
 regular factor on the right is the braided right action on the
 relative tensor. -/
-theorem modTensorAssocMid_unitRight (P N : Mod D A) :
+theorem modTensorAssocMid_unitRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (P N : Mod D A) :
     modTensorAssocMid A P N (regularMod A) ≫
         modTensorMap A (𝟙 P) (modTensorUnitRightMod A N).hom =
       actRight A (modTensorMod A P N).X := by
@@ -137,12 +145,16 @@ theorem modTensorAssocMid_unitRight (P N : Mod D A) :
   refine Eq.trans (whisker_eq _ (eq_whisker hfold _)) ?_
   exact (modTensorπ_actRight A P N).symm
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The restricted action on a base change: the `A`-action on the
 relative tensor is the `B`-action taken through the base
 morphism. -/
-theorem actRight_modTensor_restrictRegular (M : Mod D A) :
+theorem actRight_modTensor_restrictRegular
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M : Mod D A) :
     actRight A (modTensorMod A (restrictRegular φ) M).X =
       ((baseChangeMod φ M).X ◁ φ) ≫
         actRight B (baseChangeMod φ M).X := by
@@ -159,7 +171,14 @@ theorem actRight_modTensor_restrictRegular (M : Mod D A) :
 /-- **The unit coherence of the projection formula**: collapsing
 the regular factor after the base change agrees with collapsing
 the base-changed regular module over the new base. -/
-theorem projFormula_unitRight (M : Mod D A) :
+theorem projFormula_unitRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M : Mod D A) :
     (projFormula A B φ M (regularMod A)).hom ≫
         modTensorMap A (𝟙 (restrictRegular φ))
           (modTensorUnitRightMod A M).hom =
@@ -218,14 +237,12 @@ theorem projFormula_unitRight (M : Mod D A) :
   rw [actRight_modTensor_restrictRegular A B φ M]
   exact hslide
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A module map into the regular module intertwines the braided
 right action with multiplication. -/
-theorem actRight_toRegular (Q : Mod D A) (g : Q ⟶ regularMod A) :
+theorem actRight_toRegular
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [IsCommMonObj A]
+    (Q : Mod D A) (g : Q ⟶ regularMod A) :
     actRight A Q.X ≫ g.hom = (g.hom ▷ A) ≫ μ[A] := by
   have hlin : actLeft A Q.X ≫ g.hom = (A ◁ g.hom) ≫ μ[A] :=
     g.isModHom.smul_hom
@@ -237,7 +254,13 @@ theorem actRight_toRegular (Q : Mod D A) (g : Q ⟶ regularMod A) :
 /-- **The module triangle on the left**: reassociating and
 collapsing the regular factor in the middle is the collapse of the
 leading factor against the balance. -/
-theorem modTensorAssocMid_unitLeft (P N : Mod D A) :
+theorem modTensorAssocMid_unitLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (P N : Mod D A) :
     modTensorAssocMid A P (regularMod A) N ≫
         modTensorMap A (𝟙 P) (modTensorUnitLeftMod A N).hom =
       ((modTensorUnitRight A P).hom ▷ N.X) ≫
@@ -287,7 +310,14 @@ theorem modTensorAssocMid_unitLeft (P N : Mod D A) :
 /-- **The left unit coherence of the projection formula**:
 collapsing the regular factor on the left commutes with the base
 change. -/
-theorem projFormula_unitLeft (N : Mod D A) :
+theorem projFormula_unitLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (N : Mod D A) :
     (projFormula A B φ (regularMod A) N).hom ≫
         modTensorMap A (𝟙 (restrictRegular φ))
           (modTensorUnitLeftMod A N).hom =
@@ -355,13 +385,15 @@ theorem projFormula_unitLeft (N : Mod D A) :
     (modTensorAssocMid_unitLeft A (restrictRegular φ) N))) ?_
   exact hend _ _ _ hu
 
-omit [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The projection into a base change, whiskered against the new
 base, multiplies the two base factors after braiding the trailing
 one past the module. -/
 theorem whiskerRight_modTensorπ_actRight_baseChange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
     (M : Mod D A) :
     (modTensorπ A (restrictRegular φ) M ▷ B) ≫
         actRight B (baseChangeMod φ M).X =
@@ -384,7 +416,14 @@ theorem whiskerRight_modTensorπ_actRight_baseChange
 covering projections the structure map multiplies the two base
 factors and projects — an explicit formula with no descent left
 in it. -/
-theorem projFormula_full_cover (M N : Mod D A) :
+theorem projFormula_full_cover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M N : Mod D A) :
     (modTensorπ A (restrictRegular φ) M ▷ (B ⊗ N.X)) ≫
         ((baseChangeMod φ M).X ◁
           modTensorπ A (restrictRegular φ) N) ≫
@@ -427,16 +466,14 @@ theorem projFormula_full_cover (M N : Mod D A) :
 
 section BaseShuffle
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A] in
 /-- **The base shuffle**: bringing the second copy of the base to
 the front and multiplying is the middle-four interchange followed
 by the multiplication.  Commutativity of the base is what makes
 the two orders agree. -/
-theorem baseShuffle (Q W : D) :
+theorem baseShuffle
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B] [IsCommMonObj B]
+    (Q W : D) :
     (α_ (B ⊗ Q) B W).inv ≫
         (((β_ (B ⊗ Q) B).hom ≫ (α_ B B Q).inv ≫
           (μ[B] ▷ Q)) ▷ W) ≫ (α_ B Q W).hom =
@@ -474,16 +511,13 @@ theorem baseShuffle (Q W : D) :
 
 end BaseShuffle
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsCommMonObj B] in
 /-- **The base multiplication is associative on covers**:
 interchange-and-multiply is the structure map of a lax monoidal
 functor, so it satisfies the associativity square. -/
-theorem baseAssoc (Q₁ Q₂ Q₃ : D) :
+theorem baseAssoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B]
+    (Q₁ Q₂ Q₃ : D) :
     ((tensorμ B Q₁ B Q₂ ≫ (μ[B] ▷ (Q₁ ⊗ Q₂))) ▷ (B ⊗ Q₃)) ≫
         tensorμ B (Q₁ ⊗ Q₂) B Q₃ ≫
         (μ[B] ▷ ((Q₁ ⊗ Q₂) ⊗ Q₃)) ≫
@@ -521,15 +555,12 @@ theorem baseAssoc (Q₁ Q₂ Q₃ : D) :
     simp
   rw [hL, hR, MonObj.mul_assoc]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsCommMonObj B] in
 /-- Interchange-and-multiply is natural in the first module
 slot. -/
-theorem baseMul_natural_left {Q Q' : D} (f : Q ⟶ Q') (W : D) :
+theorem baseMul_natural_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B]
+    {Q Q' : D} (f : Q ⟶ Q') (W : D) :
     ((B ◁ f) ▷ (B ⊗ W)) ≫ tensorμ B Q' B W ≫
         (μ[B] ▷ (Q' ⊗ W)) =
       tensorμ B Q B W ≫ (μ[B] ▷ (Q ⊗ W)) ≫
@@ -539,15 +570,12 @@ theorem baseMul_natural_left {Q Q' : D} (f : Q ⟶ Q') (W : D) :
     MonoidalCategory.id_whiskerRight,
     MonoidalCategory.id_tensorHom, whisker_exchange]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsCommMonObj B] in
 /-- Interchange-and-multiply is natural in the second module
 slot. -/
-theorem baseMul_natural_right (Q : D) {W W' : D} (g : W ⟶ W') :
+theorem baseMul_natural_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B]
+    (Q : D) {W W' : D} (g : W ⟶ W') :
     ((B ⊗ Q) ◁ (B ◁ g)) ≫ tensorμ B Q B W' ≫
         (μ[B] ▷ (Q ⊗ W')) =
       tensorμ B Q B W ≫ (μ[B] ▷ (Q ⊗ W)) ≫
@@ -560,7 +588,14 @@ theorem baseMul_natural_right (Q : D) {W W' : D} (g : W ⟶ W') :
 /-- **The projection formula on the full cover, in interchange
 form**: the structure map multiplies the two base factors through
 the middle-four interchange and projects. -/
-theorem projFormula_tensorμ_cover (M N : Mod D A) :
+theorem projFormula_tensorμ_cover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M N : Mod D A) :
     (modTensorπ A (restrictRegular φ) M ▷ (B ⊗ N.X)) ≫
         ((baseChangeMod φ M).X ◁
           modTensorπ A (restrictRegular φ) N) ≫
@@ -573,14 +608,19 @@ theorem projFormula_tensorμ_cover (M N : Mod D A) :
   rw [projFormula_full_cover,
     reassoc_of% (baseShuffle B M.X N.X)]
 
-omit [IsCommMonObj B] in
 /-- **The core of the associator coherence**: on the triple cover
 the two ways of multiplying three base factors and projecting
 agree.  Naturality of interchange-and-multiply moves the two
 projections to the right, the defining equation of the
 half-descended associator merges them, and what is left is the
 associativity of interchange-and-multiply. -/
-theorem projFormula_assoc_core (M N P : Mod D A) :
+theorem projFormula_assoc_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B]
+    (M N P : Mod D A) :
     (((tensorμ B M.X B N.X ≫ (μ[B] ▷ (M.X ⊗ N.X))) ≫
         (B ◁ modTensorπ A M N)) ▷ (B ⊗ P.X)) ≫
       (tensorμ B (modTensor A M N) B P.X ≫
@@ -615,12 +655,14 @@ theorem projFormula_assoc_core (M N P : Mod D A) :
 
 section ExtRR
 
-variable (M N : Mod D A)
-
-omit [IsCommMonObj A] in
 /-- Whiskering the module-tensor coequalizer twice on the right
 yields a colimit cofork. -/
-noncomputable def modTensorWhiskerRRIsColimit (Y W : D) :
+noncomputable def modTensorWhiskerRRIsColimit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (M : Mod D A) (N : Mod D A)
+    (Y W : D) :
     IsColimit (Cofork.ofπ ((modTensorπ A M N ▷ Y) ▷ W)
       (by rw [← MonoidalCategory.comp_whiskerRight,
         ← MonoidalCategory.comp_whiskerRight,
@@ -632,12 +674,14 @@ noncomputable def modTensorWhiskerRRIsColimit (Y W : D) :
   isColimitOfHasCoequalizerOfPreservesColimit
     (tensorRight Y ⋙ tensorRight W) _ _
 
-omit [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Morphisms out of a twice right-whiskered tensor product of
 modules are determined by the doubly whiskered projection. -/
-lemma modTensor_whiskerRR_hom_ext (Y W : D) {Z : D}
+lemma modTensor_whiskerRR_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (M : Mod D A) (N : Mod D A)
+    (Y W : D) {Z : D}
     {k l : (modTensor A M N ⊗ Y) ⊗ W ⟶ Z}
     (h : ((modTensorπ A M N ▷ Y) ▷ W) ≫ k =
       ((modTensorπ A M N ▷ Y) ▷ W) ≫ l) : k = l :=
@@ -648,11 +692,15 @@ end ExtRR
 
 section AssocMidNatural
 
-variable (P : Mod D A)
-
 /-- The half-descended associator is natural in the third
 slot. -/
-theorem modTensorAssocMid_natural_right (M : Mod D A)
+theorem modTensorAssocMid_natural_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (P : Mod D A)
+    (M : Mod D A)
     {N N' : Mod D A} (g : N ⟶ N') :
     modTensorAssocMid A P M N ≫
         modTensorMap A (𝟙 P) (modTensorMapMod A (𝟙 M) g) =
@@ -706,6 +754,11 @@ theorem modTensorAssocMid_natural_right (M : Mod D A)
 /-- The half-descended associator is natural in the second
 slot. -/
 theorem modTensorAssocMid_natural_mid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (P : Mod D A)
     {M M' : Mod D A} (f : M ⟶ M') (N : Mod D A) :
     modTensorAssocMid A P M N ≫
         modTensorMap A (𝟙 P) (modTensorMapMod A f (𝟙 N)) =

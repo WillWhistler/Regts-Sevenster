@@ -16,22 +16,21 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
-
-variable (L : OddLine (Ind C)) (A : Ind C) [MonObj A]
-  [IsCommMonObj A]
+variable {C : Type v}
 
 /-- The base change of an object, as a module object. -/
-noncomputable abbrev fibreObj (X : Ind C) : Ind C :=
+noncomputable abbrev fibreObj
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (X : Ind C) : Ind C :=
   (freeMod A X).X
 
 /-- **The fibre functor over an algebra** (Deligne 2.11): base
 change and realize. -/
-noncomputable def fibreFunctor :
+noncomputable def fibreFunctor
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (A : Ind C) [MonObj A]
+    [IsCommMonObj A] :
     Ind C ⥤ (gammaAlgebra (Ind C) L A).Mod where
   obj X := gammaModule (Ind C) L A (fibreObj A X)
   map {_ _} f :=

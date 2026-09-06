@@ -14,19 +14,20 @@ namespace RS
 
 open Finset LinearMap
 
-variable {G V : Type*} [Group G] [Fintype G] [DecidableEq G]
-  [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
+variable {G V : Type*}
 
 /-- Irreducibility, spelled invariant-submodule-theoretically. -/
-def IsIrredRep (ρ : Representation ℂ G V) : Prop :=
+def IsIrredRep [Group G] [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V) : Prop :=
   Nontrivial V ∧
     ∀ p : Submodule ℂ V,
       (∀ (g : G) (v : V), v ∈ p → ρ g v ∈ p) → p = ⊥ ∨ p = ⊤
 
-omit [Fintype G] [DecidableEq G] in
 /-- **Schur scalarity**: a commuting endomorphism of an
 irreducible representation is scalar. -/
-theorem commuting_scalar {ρ : Representation ℂ G V}
+theorem commuting_scalar
+    [Group G] [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
+    {ρ : Representation ℂ G V}
     (hirr : IsIrredRep ρ) (T : Module.End ℂ V)
     (hT : ∀ g : G, T ∘ₗ (ρ g : V →ₗ[ℂ] V) =
       (ρ g : V →ₗ[ℂ] V) ∘ₗ T) :
@@ -73,10 +74,11 @@ theorem commuting_scalar {ρ : Representation ℂ G V}
       f + c • LinearMap.id) this
     simpa using h2
 
-omit [FiniteDimensional ℂ V] in
 /-- The image of a class-function element commutes with the
 action. -/
-theorem asAlgebraHom_classElem_comm (ρ : Representation ℂ G V)
+theorem asAlgebraHom_classElem_comm
+    [Group G] [Fintype G] [DecidableEq G] [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V)
     (c : G → ℂ) (hc : ∀ g h : G, c (h * g * h⁻¹) = c g) (g : G) :
     (ρ.asAlgebraHom (classElem c)) ∘ₗ (ρ g : V →ₗ[ℂ] V) =
       (ρ g : V →ₗ[ℂ] V) ∘ₗ ρ.asAlgebraHom (classElem c) := by
@@ -91,7 +93,10 @@ theorem asAlgebraHom_classElem_comm (ρ : Representation ℂ G V)
 
 /-- **Scalar action**: a class-function element acts as a scalar
 on every irreducible representation. -/
-theorem asAlgebraHom_classElem_scalar {ρ : Representation ℂ G V}
+theorem asAlgebraHom_classElem_scalar
+    [Group G] [Fintype G] [DecidableEq G] [AddCommGroup V] [Module ℂ V]
+    [FiniteDimensional ℂ V]
+    {ρ : Representation ℂ G V}
     (hirr : IsIrredRep ρ) (c : G → ℂ)
     (hc : ∀ g h : G, c (h * g * h⁻¹) = c g) :
     ∃ z : ℂ, ρ.asAlgebraHom (classElem c) = z • LinearMap.id :=

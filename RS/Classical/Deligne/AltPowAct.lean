@@ -30,19 +30,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Whiskered extensionality for the alternating power -/
 
 section AltWhisker
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D]
-
 /-- Morphisms out of a left-whiskered alternating power are
 determined by the whiskered projection, which is split epi. -/
-theorem altPow_whiskerLeft_hom_ext (P : D) (n : ℕ) {Z : D}
+theorem altPow_whiskerLeft_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (P : D) (n : ℕ) {Z : D}
     {k l : P ⊗ altPow A X n ⟶ Z}
     (h : (P ◁ altPowπ A X n) ≫ k = (P ◁ altPowπ A X n) ≫ l) :
     k = l := by
@@ -61,38 +61,55 @@ end AltWhisker
 
 section AltAct
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D]
-variable [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Y : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
-
 /-- **The descended action commutes with the antisymmetriser's
 action**: the antisymmetriser is a `ℂ`-linear combination of
 permutations, each of which the action passes. -/
-theorem modPowAct_altPowIdem (n : ℕ) :
+theorem modPowAct_altPowIdem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     modPowAct A X n ≫ altPowIdem A X (n + 1) =
       (A ◁ altPowIdem A X (n + 1)) ≫ modPowAct A X n :=
   modPowAct_alg A X n (antisymmetriser (n + 1))
 
 /-- **The monoid action on the alternating power**, through the
 section and the descended action. -/
-noncomputable def altPowAct (n : ℕ) :
+noncomputable def altPowAct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     A ⊗ altPow A X (n + 1) ⟶ altPow A X (n + 1) :=
   (A ◁ altPowσ A X (n + 1)) ≫ modPowAct A X n ≫
     altPowπ A X (n + 1)
 
 /-- Defining equation of the alternating-power action. -/
 @[reassoc (attr := simp)]
-theorem whiskerLeft_altPowπ_altPowAct (n : ℕ) :
+theorem whiskerLeft_altPowπ_altPowAct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     (A ◁ altPowπ A X (n + 1)) ≫ altPowAct A X n =
       modPowAct A X n ≫ altPowπ A X (n + 1) := by
   rw [altPowAct, ← whiskerLeft_comp_assoc, altPowπ_altPowσ,
     reassoc_of% (modPowAct_altPowIdem A X n).symm, altPowIdem_π]
 
 /-- Unitality of the alternating-power action. -/
-theorem altPowAct_one (n : ℕ) :
+theorem altPowAct_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     η[A] ▷ altPow A X (n + 1) ≫ altPowAct A X n =
       (λ_ (altPow A X (n + 1))).hom := by
   apply altPow_whiskerLeft_hom_ext A X (𝟙_ D) (n + 1)
@@ -100,7 +117,13 @@ theorem altPowAct_one (n : ℕ) :
     reassoc_of% (modPowAct_one A X n), leftUnitor_naturality]
 
 /-- Associativity of the alternating-power action. -/
-theorem altPowAct_mul (n : ℕ) :
+theorem altPowAct_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     μ[A] ▷ altPow A X (n + 1) ≫ altPowAct A X n =
       (α_ A A (altPow A X (n + 1))).hom ≫
         (A ◁ altPowAct A X n) ≫ altPowAct A X n := by
@@ -115,18 +138,36 @@ theorem altPowAct_mul (n : ℕ) :
 /-- **The alternating power of a module is a module**, in every
 positive arity. -/
 @[implicit_reducible]
-noncomputable def altPowModObj (n : ℕ) :
+noncomputable def altPowModObj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     ModObj A (altPow A X (n + 1)) where
   smul := altPowAct A X n
   one_smul := altPowAct_one A X n
   mul_smul := altPowAct_mul A X n
 
 /-- The alternating power of a module, bundled as a module. -/
-noncomputable def altPowMod (n : ℕ) : Mod D A :=
+noncomputable def altPowMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) : Mod D A :=
   letI := altPowModObj A X n
   ⟨altPow A X (n + 1)⟩
 
-@[simp] theorem altPowMod_X (n : ℕ) :
+@[simp] theorem altPowMod_X
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj A]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (n : ℕ) :
     (altPowMod A X n).X = altPow A X (n + 1) := rfl
 
 end AltAct

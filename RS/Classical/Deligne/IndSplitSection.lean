@@ -46,11 +46,12 @@ universe v u
 
 section Transport
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-- Exact pairings transport along an isomorphism of the left leg. -/
 @[implicit_reducible]
-def exactPairingOfIso {X X' Y : D} [ExactPairing X Y] (e : X ≅ X') :
+def exactPairingOfIso [Category.{v} D] [MonoidalCategory D]
+    {X X' Y : D} [ExactPairing X Y] (e : X ≅ X') :
     ExactPairing X' Y where
   coevaluation' := η_ X Y ≫ (e.hom ▷ Y)
   evaluation' := (Y ◁ e.inv) ≫ ε_ X Y
@@ -76,30 +77,32 @@ end Transport
 
 section Embedded
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- Embedded objects inherit right duals. -/
-noncomputable instance hasRightDualIndOf (X : C) :
+noncomputable instance hasRightDualIndOf
+    [SmallCategory C] [MonoidalCategory C] [RigidCategory C]
+    (X : C) :
     HasRightDual ((indOf : C ⥤ Ind C).obj X) where
   rightDual := (indOf : C ⥤ Ind C).obj (Xᘁ)
 
-omit [SymmetricCategory C] [Abelian C] [MonoidalPreadditive C] in
 /-- The coevaluation of an embedded pairing: the unit comparison,
 the image of the coevaluation, and the cotensorator. -/
-theorem coevaluation_indOf (X : C) :
+theorem coevaluation_indOf
+    [SmallCategory C] [MonoidalCategory C] [RigidCategory C]
+    (X : C) :
     η_ ((indOf : C ⥤ Ind C).obj X)
         ((indOf : C ⥤ Ind C).obj (Xᘁ)) =
       Functor.LaxMonoidal.ε (indOf (C := C)) ≫
         indOf.map (η_ X (Xᘁ)) ≫
           Functor.OplaxMonoidal.δ (indOf (C := C)) X (Xᘁ) := rfl
 
-omit [Abelian C] [RigidCategory C] [MonoidalPreadditive C] in
 /-- The cotensorator intertwines the braidings: the embedding is
 braided, so the braiding upstairs is the image of the braiding
 downstairs, conjugated by the tensor comparisons. -/
-theorem delta_braiding_indOf (X Y : C) :
+theorem delta_braiding_indOf
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    (X Y : C) :
     Functor.OplaxMonoidal.δ (indOf (C := C)) X Y ≫
         (β_ ((indOf : C ⥤ Ind C).obj X)
           ((indOf : C ⥤ Ind C).obj Y)).hom =
@@ -108,9 +111,11 @@ theorem delta_braiding_indOf (X Y : C) :
   rw [Functor.map_braiding, Category.assoc, Category.assoc,
     Functor.Monoidal.μ_δ, Category.comp_id]
 
-omit [Abelian C] [MonoidalPreadditive C] in
 /-- **The name of the identity transports along the embedding**. -/
-theorem unitName_indOf (X : C) :
+theorem unitName_indOf
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (X : C) :
     unitName ((indOf : C ⥤ Ind C).obj X) =
       Functor.LaxMonoidal.ε (indOf (C := C)) ≫
         indOf.map (unitName X) ≫
@@ -130,7 +135,10 @@ with the dual instance of `RS.hasRightDualIndOf`, written out so
 that the statement needs no local instance.  The embedding
 preserves the pullback, and the tensor and unit comparisons carry
 the cospan downstairs to the cospan upstairs. -/
-noncomputable def unitFormMidIndOfIso (T : ShortComplex C) :
+noncomputable def unitFormMidIndOfIso
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C]
+    (T : ShortComplex C) :
     (indOf : C ⥤ Ind C).obj (unitFormMid T) ≅
       pullback ((indOf : C ⥤ Ind C).obj ((T.X₃)ᘁ) ◁ indOf.map T.g)
         (unitName ((indOf : C ⥤ Ind C).obj T.X₃)) :=
@@ -155,15 +163,17 @@ noncomputable def unitFormMidIndOfIso (T : ShortComplex C) :
         rw [unitName_indOf, ← Category.assoc, hηε,
           Category.id_comp])))
 
-variable [Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
-
 /-- **The local splitting statement for embedded short exact
 sequences** (Deligne 2.10): the image in `Ind C` of a short exact
 sequence of `C` splits after base change to a nonzero commutative
 algebra.  The four duality side conditions of `RS.rappel210_ind` are
 supplied here: the quotient and its dual are embedded, and so —
 up to isomorphism — is the unit-form middle. -/
-theorem rappel210_indOf (T : CategoryTheory.ShortComplex C)
+theorem rappel210_indOf
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)]
+    (T : CategoryTheory.ShortComplex C)
     (hT : T.ShortExact) (h1 : ¬ IsZero (𝟙_ (Ind C))) :
     ∃ (A : Ind C) (_ : MonObj A) (_ : IsCommMonObj A), η[A] ≠ 0 ∧
       ∃ s : freeMod A ((T.map (indOf : C ⥤ Ind C)).X₃) ⟶

@@ -24,9 +24,7 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
-  [MonoidalLinear ℂ A]
+variable {A : Type u}
 
 /-! ## Whiskering as an algebra map -/
 
@@ -34,7 +32,10 @@ variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
 endomorphisms.  Multiplicativity is functoriality of `▷` — note that
 `End` multiplies in the order opposite to composition, which is why
 no reversal appears. -/
-noncomputable def whiskerAlg (P X : A) : End P →ₐ[ℂ] End (P ⊗ X) where
+noncomputable def whiskerAlg
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    (P X : A) : End P →ₐ[ℂ] End (P ⊗ X) where
   toFun f := f ▷ X
   map_one' := MonoidalCategory.id_whiskerRight P X
   map_mul' f g := MonoidalCategory.comp_whiskerRight g f X
@@ -48,7 +49,10 @@ noncomputable def whiskerAlg (P X : A) : End P →ₐ[ℂ] End (P ⊗ X) where
 /-- **Repeated whiskering**: the algebra map carrying an
 endomorphism of `X ^ ⊗ m` to the endomorphism of `X ^ ⊗ (m + k)`
 that acts on the first `m` factors and fixes the last `k`. -/
-noncomputable def whiskerPowAlg (X : A) (m : ℕ) :
+noncomputable def whiskerPowAlg
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    (X : A) (m : ℕ) :
     (k : ℕ) → (End (tensorPow A X m) →ₐ[ℂ] End (tensorPow A X (m + k)))
   | 0 => AlgHom.id ℂ _
   | k + 1 =>
@@ -72,7 +76,10 @@ private theorem viaEmbedding_castLEEmb_self {m : ℕ}
 action**: a permutation of `Fin m`, extended to `Fin (m + k)` by
 fixing the last `k` slots, acts on the first `m` tensor factors and
 fixes the last `k`. -/
-theorem permMor_viaEmbedding (X : A) (m : ℕ) [SymmetricCategory A] :
+theorem permMor_viaEmbedding
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    (X : A) (m : ℕ) [SymmetricCategory A] :
     ∀ (k : ℕ) (σ : Equiv.Perm (Fin m)),
       permMor X (m + k)
           (σ.viaEmbedding (Fin.castLEEmb (Nat.le_add_right m k))) =
@@ -91,7 +98,10 @@ theorem permMor_viaEmbedding (X : A) (m : ℕ) [SymmetricCategory A] :
 
 /-- **The representation restricted along the standard embedding**
 is the lower representation followed by repeated whiskering. -/
-theorem permAlg_symCast (X : A) [SymmetricCategory A] (m k : ℕ)
+theorem permAlg_symCast
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    (X : A) [SymmetricCategory A] (m k : ℕ)
     (x : SymGroupAlgebra m) :
     permAlg X (m + k) (symCast (Nat.le_add_right m k) x) =
       whiskerPowAlg X m k (permAlg X m x) := by
@@ -114,7 +124,10 @@ theorem permAlg_symCast (X : A) [SymmetricCategory A] (m k : ℕ)
 
 /-- **Vanishing propagates along the standard embeddings.**  This is
 the `compat` field of a tower, for the action on a tensor power. -/
-theorem permAlg_compat (X : A) [SymmetricCategory A] {m n : ℕ}
+theorem permAlg_compat
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    (X : A) [SymmetricCategory A] {m n : ℕ}
     (h : m ≤ n) (x : SymGroupAlgebra m) (hx : permAlg X m x = 0) :
     permAlg X n (symCast h x) = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h

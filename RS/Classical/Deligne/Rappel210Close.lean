@@ -19,34 +19,33 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Abelian D] [MonoidalPreadditive D]
-variable [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [∀ Z : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight Z)]
-variable (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
-variable [HasRightDual (unitFormMid S : D)]
+variable {D : Type u}
 
 /-- The splitting algebra of a short exact sequence: the local
 splitting chain of the dualised unit-form point. -/
-noncomputable def rappel210Algebra : D :=
+noncomputable def rappel210Algebra
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [CategoryTheory.Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [HasColimitsOfShape SmallNat.{v} D] (S : ShortComplex D)
+    [HasRightDual (S.X₃ : D)] [HasRightDual (unitFormMid S : D)] : D :=
   splitAlgebra ((unitFormMid S)ᘁ) (unitFormPoint S)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The local splitting statement holds once the unit of the
 splitting algebra survives**: the class of the dual middle object
 restricts on the point to the unit, so the reduction applies. -/
-theorem rappel210_of_unit_nonzero (hS : S.ShortExact)
+theorem rappel210_of_unit_nonzero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ Z : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight Z)]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (hS : S.ShortExact)
     (hnz : splitAlgebraUnit ((unitFormMid S)ᘁ)
       (unitFormPoint S) ≠ 0) :
     Rappel210Statement S hS := by

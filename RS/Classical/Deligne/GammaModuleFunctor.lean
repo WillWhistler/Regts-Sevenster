@@ -14,12 +14,14 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+variable {D : Type u}
 
 /-- **Realization, as a functor on module objects.** -/
-noncomputable def gammaModuleFunctor (L : OddLine D) (R : D)
+noncomputable def gammaModuleFunctor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D)
     [MonObj R] [IsCommMonObj R] :
     Mod D R ⥤ (gammaAlgebra D L R).Mod where
   obj M := gammaModule D L R M.X

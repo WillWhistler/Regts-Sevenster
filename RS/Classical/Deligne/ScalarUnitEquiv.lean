@@ -15,12 +15,13 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable (A : Type u) [Category.{v} A] [Preadditive A]
-  [CategoryTheory.Linear ℂ A] [MonoidalCategory A]
+variable (A : Type u)
 
 /-- Scaling the identity of the tensor unit, as a ring
 homomorphism. -/
-def scalarUnitRingHom : ℂ →+* End (𝟙_ A) where
+def scalarUnitRingHom
+    [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A]
+    [MonoidalCategory A] : ℂ →+* End (𝟙_ A) where
   toFun c := c • 𝟙 (𝟙_ A)
   map_one' := one_smul _ _
   map_mul' a b := by
@@ -33,11 +34,17 @@ def scalarUnitRingHom : ℂ →+* End (𝟙_ A) where
 variable {A}
 
 /-- **The scalar unit as a ring isomorphism.** -/
-noncomputable def scalarUnitEquiv (h : HasScalarUnit A) :
+noncomputable def scalarUnitEquiv
+    [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A]
+    [MonoidalCategory A]
+    (h : HasScalarUnit A) :
     ℂ ≃+* End (𝟙_ A) :=
   RingEquiv.ofBijective (scalarUnitRingHom A) h
 
-@[simp] theorem scalarUnitEquiv_apply (h : HasScalarUnit A) (c : ℂ) :
+@[simp] theorem scalarUnitEquiv_apply
+    [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A]
+    [MonoidalCategory A]
+    (h : HasScalarUnit A) (c : ℂ) :
     scalarUnitEquiv h c = c • 𝟙 (𝟙_ A) := rfl
 
 end RS

@@ -58,12 +58,13 @@ transported through the full faithfulness of `RS.indOf`. -/
 
 section Lift
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- **A diagram of embedded objects comes from the base category**:
 the chosen isomorphisms transport the structural maps down through
 the full faithfulness of the embedding. -/
-noncomputable def liftEmbedded {I : Type v} [SmallCategory I]
+noncomputable def liftEmbedded [SmallCategory C]
+    {I : Type v} [SmallCategory I]
     (F : I ⥤ Ind C) (W : I → C) (θ : ∀ i, F.obj i ≅ indOf.obj (W i)) :
     I ⥤ C where
   obj := W
@@ -79,7 +80,8 @@ noncomputable def liftEmbedded {I : Type v} [SmallCategory I]
 
 /-- The lifted diagram embeds back to the diagram it was lifted
 from. -/
-noncomputable def liftEmbeddedIso {I : Type v} [SmallCategory I]
+noncomputable def liftEmbeddedIso [SmallCategory C]
+    {I : Type v} [SmallCategory I]
     (F : I ⥤ Ind C) (W : I → C) (θ : ∀ i, F.obj i ≅ indOf.obj (W i)) :
     liftEmbedded F W θ ⋙ indOf ≅ F :=
   NatIso.ofComponents (fun i => (θ i).symm) (by
@@ -101,12 +103,14 @@ family form a diagram again. -/
 
 section ImageDiagram
 
-variable {C : Type v} [SmallCategory C] [Abelian C]
-variable {I : Type v} [SmallCategory I] {D : I ⥤ Ind C} {Q : Ind C}
+variable {C : Type v}
 
 /-- A compatible family of maps into a fixed object, read as a
 diagram in the arrow category. -/
-noncomputable def arrowDiagram (f : ∀ i, D.obj i ⟶ Q)
+noncomputable def arrowDiagram
+    [SmallCategory C] {I : Type v} [SmallCategory I] {D : I ⥤ Ind C}
+    {Q : Ind C}
+    (f : ∀ i, D.obj i ⟶ Q)
     (hf : ∀ (i j : I) (α : i ⟶ j), D.map α ≫ f j = f i) :
     I ⥤ Arrow (Ind C) where
   obj i := Arrow.mk (f i)
@@ -123,25 +127,37 @@ noncomputable def arrowDiagram (f : ∀ i, D.obj i ⟶ Q)
 
 /-- **The diagram of images** of a compatible family of maps into a
 fixed object. -/
-noncomputable def imageDiag (f : ∀ i, D.obj i ⟶ Q)
+noncomputable def imageDiag
+    [SmallCategory C] [Abelian C] {I : Type v} [SmallCategory I]
+    {D : I ⥤ Ind C} {Q : Ind C}
+    (f : ∀ i, D.obj i ⟶ Q)
     (hf : ∀ (i j : I) (α : i ⟶ j), D.map α ≫ f j = f i) : I ⥤ Ind C :=
   arrowDiagram f hf ⋙ Limits.im
 
 /-- The image inclusions, as a map into the constant diagram. -/
-noncomputable def imageDiagHom (f : ∀ i, D.obj i ⟶ Q)
+noncomputable def imageDiagHom
+    [SmallCategory C] [Abelian C] {I : Type v} [SmallCategory I]
+    {D : I ⥤ Ind C} {Q : Ind C}
+    (f : ∀ i, D.obj i ⟶ Q)
     (hf : ∀ (i j : I) (α : i ⟶ j), D.map α ≫ f j = f i) :
     imageDiag f hf ⟶ (Functor.const I).obj Q where
   app i := image.ι (f i)
   naturality _ _ α := image.map_ι ((arrowDiagram f hf).map α)
 
 /-- The map from the colimit of the images to the common target. -/
-noncomputable def imageColimitDesc [IsFiltered I]
+noncomputable def imageColimitDesc
+    [SmallCategory C] [Abelian C] {I : Type v} [SmallCategory I]
+    {D : I ⥤ Ind C} {Q : Ind C}
+    [IsFiltered I]
     (f : ∀ i, D.obj i ⟶ Q)
     (hf : ∀ (i j : I) (α : i ⟶ j), D.map α ≫ f j = f i) :
     colimit (imageDiag f hf) ⟶ Q :=
   colimit.desc (imageDiag f hf) (Cocone.mk Q (imageDiagHom f hf))
 
-theorem ι_imageColimitDesc [IsFiltered I] (f : ∀ i, D.obj i ⟶ Q)
+theorem ι_imageColimitDesc
+    [SmallCategory C] [Abelian C] {I : Type v} [SmallCategory I]
+    {D : I ⥤ Ind C} {Q : Ind C}
+    [IsFiltered I] (f : ∀ i, D.obj i ⟶ Q)
     (hf : ∀ (i j : I) (α : i ⟶ j), D.map α ≫ f j = f i) (i : I) :
     colimit.ι (imageDiag f hf) i ≫ imageColimitDesc f hf =
       image.ι (f i) :=
@@ -152,7 +168,10 @@ their target.**  The map from the colimit of the images is a
 monomorphism because filtered colimits are exact in the
 ind-completion, and an epimorphism because every member of the family
 factors through its image. -/
-theorem exists_iso_colimit_imageDiag [IsFiltered I]
+theorem exists_iso_colimit_imageDiag
+    [SmallCategory C] [Abelian C] {I : Type v} [SmallCategory I]
+    {D : I ⥤ Ind C} {Q : Ind C}
+    [IsFiltered I]
     (f : ∀ i, D.obj i ⟶ Q)
     (hf : ∀ (i j : I) (α : i ⟶ j), D.map α ≫ f j = f i)
     (hepi : ∀ {T : Ind C} (a b : Q ⟶ T),
@@ -190,33 +209,35 @@ end ImageDiagram
 
 section Quotient
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [RigidCategory C] [MonoidalPreadditive C]
-variable {I : Type v} [SmallCategory I] [IsFiltered I]
-  {D : I ⥤ Ind C} {Z Q : Ind C}
+variable {C : Type v}
 
 /-- The stages of a presentation of `Z`, followed by a map out of
 `Z`. -/
-noncomputable def quotientStage (e : Z ≅ colimit D) (p : Z ⟶ Q)
+noncomputable def quotientStage
+    [SmallCategory C] {I : Type v} [SmallCategory I] [IsFiltered I]
+    {D : I ⥤ Ind C} {Z : Ind C} {Q : Ind C}
+    (e : Z ≅ colimit D) (p : Z ⟶ Q)
     (i : I) : D.obj i ⟶ Q :=
   colimit.ι D i ≫ e.inv ≫ p
 
-omit [MonoidalCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- The stages are compatible with the structural maps of the
 presentation. -/
-theorem quotientStage_comp (e : Z ≅ colimit D) (p : Z ⟶ Q) (i j : I)
+theorem quotientStage_comp
+    [SmallCategory C] {I : Type v} [SmallCategory I] [IsFiltered I]
+    {D : I ⥤ Ind C} {Z : Ind C} {Q : Ind C}
+    (e : Z ≅ colimit D) (p : Z ⟶ Q) (i j : I)
     (α : i ⟶ j) :
     D.map α ≫ quotientStage e p j = quotientStage e p i := by
   show D.map α ≫ colimit.ι D j ≫ e.inv ≫ p =
     colimit.ι D i ≫ e.inv ≫ p
   rw [← Category.assoc, colimit.w]
 
-omit [MonoidalCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **The stages of a presentation, followed by an epimorphism, are
 jointly epimorphic.** -/
-theorem quotientStage_jointly_epi (e : Z ≅ colimit D) (p : Z ⟶ Q)
+theorem quotientStage_jointly_epi
+    [SmallCategory C] {I : Type v} [SmallCategory I] [IsFiltered I]
+    {D : I ⥤ Ind C} {Z : Ind C} {Q : Ind C}
+    (e : Z ≅ colimit D) (p : Z ⟶ Q)
     [Epi p] {T : Ind C} (a b : Q ⟶ T)
     (h : ∀ i, quotientStage e p i ≫ a = quotientStage e p i ≫ b) :
     a = b := by
@@ -231,11 +252,10 @@ theorem quotientStage_jointly_epi (e : Z ≅ colimit D) (p : Z ⟶ Q)
     _ = colimit.ι D i ≫ e.inv ≫ p ≫ b :=
         whisker_eq _ (Category.assoc _ _ _)
 
-omit [MonoidalCategory C] [RigidCategory C] [MonoidalPreadditive C] in
 /-- **A quotient of a countably presented ind-object is countably
 presented.**  Finite length makes the images of the stages embedded,
 and those images exhaust the quotient. -/
-theorem CountablyPresented.of_epi
+theorem CountablyPresented.of_epi [SmallCategory C] [Abelian C]
     (hlen : ∀ Z : C, ∃ N, LengthLE Z N) {Z Q : Ind C} (p : Z ⟶ Q)
     [Epi p] (h : CountablyPresented Z) : CountablyPresented Q := by
   classical
@@ -268,16 +288,17 @@ countable dimension; the same then holds for every quotient. -/
 
 section Rank
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
+variable {C : Type v}
 
 /-- **A countably presented ind-object has countable even
 component**: it is a countable filtered colimit of embedded objects,
 each of which has finite dimensional even component by finite
 length. -/
-theorem rank_hom_unit_le_aleph0_of_presented (hu : HasScalarUnit C)
+theorem rank_hom_unit_le_aleph0_of_presented
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     {Z : Ind C} (h : CountablyPresented Z) :
     Module.rank ℂ (𝟙_ (Ind C) ⟶ Z) ≤ Cardinal.aleph0 := by
@@ -292,7 +313,11 @@ theorem rank_hom_unit_le_aleph0_of_presented (hu : HasScalarUnit C)
 /-- **A quotient of a countably presented ind-object has countable
 even component.**  This is the form in which the countable descent
 consumes `RS.CountablyPresented.of_epi`. -/
-theorem rank_hom_unit_le_aleph0_of_epi (hu : HasScalarUnit C)
+theorem rank_hom_unit_le_aleph0_of_epi
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     {Z Q : Ind C} (p : Z ⟶ Q) [Epi p] (h : CountablyPresented Z) :
     Module.rank ℂ (𝟙_ (Ind C) ⟶ Q) ≤ Cardinal.aleph0 :=

@@ -55,14 +55,15 @@ noncomputable section
 
 section Preserve
 
-variable {𝒜 : Type u} [Category.{v} 𝒜] [HasZeroMorphisms 𝒜]
+variable {𝒜 : Type u}
 
 /-- If a morphism into the image of a stage dies against the image
 of a colimit injection, it dies against the colimit injection of the
 transported diagram.  Stated with the domain written as
 `F.obj (D.obj i)` so that every composite below is type-correct
 without unfolding `Functor.comp`. -/
-theorem comp_ι_comp_eq_zero {I : Type v} [SmallCategory I]
+theorem comp_ι_comp_eq_zero [Category.{v} 𝒜] [HasZeroMorphisms 𝒜]
+    {I : Type v} [SmallCategory I]
     (D : I ⥤ 𝒜) [HasColimit D] (F : 𝒜 ⥤ 𝒜) [PreservesColimit D F]
     {i : I} {W : 𝒜} (w : W ⟶ F.obj (D.obj i))
     (h : w ≫ F.map (colimit.ι D i) = 0) :
@@ -83,14 +84,15 @@ end Preserve
 
 section Naturality
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- **Naturality of the embedding-tensor comparison in both
 variables at once**: `RS.indOfTensorIso` intertwines the tensor of
 two embedded morphisms with the embedding of their tensor.  The
 two one-variable naturalities compose along
 `MonoidalCategory.tensorHom_def`. -/
-theorem indOfTensorIso_hom_natural {x x' y y' : C} (f : x ⟶ x')
+theorem indOfTensorIso_hom_natural [SmallCategory C] [MonoidalCategory C]
+    {x x' y y' : C} (f : x ⟶ x')
     (g : y ⟶ y') :
     (indOf.map f ⊗ₘ indOf.map g) ≫ (indOfTensorIso x' y').hom =
       (indOfTensorIso x y).hom ≫ indOf.map (f ⊗ₘ g) := by
@@ -104,17 +106,14 @@ end Naturality
 
 section Embedded
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
+variable {C : Type v}
 
-omit [Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
-  [RigidCategory C] in
 /-- **A point of an embedded object comes from downstairs**: read
 through the unit comparison `RS.indOfUnitIso`, it is the embedding of
 a point of the object in `C`, and that point is nonzero whenever the
 original is. -/
-theorem exists_indOf_point {X : C} (u : 𝟙_ (Ind C) ⟶ indOf.obj X) :
+theorem exists_indOf_point [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    {X : C} (u : 𝟙_ (Ind C) ⟶ indOf.obj X) :
     ∃ u₀ : 𝟙_ C ⟶ X,
       indOf.map u₀ = (indOfUnitIso (C := C)).inv ≫ u ∧
         (u ≠ 0 → u₀ ≠ 0) :=
@@ -130,7 +129,10 @@ theorem exists_indOf_point {X : C} (u : 𝟙_ (Ind C) ⟶ indOf.obj X) :
 nonzero**: the unit comparison and the embedding-tensor comparison
 identify it with the embedding of the corresponding tensor
 downstairs, which is nonzero by `RS.tensorHom_point_ne_zero`. -/
-theorem indTensorHom_point_ne_zero_indOf (hu : HasScalarUnit C)
+theorem indTensorHom_point_ne_zero_indOf
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [Linear ℂ C]
+    [MonoidalPreadditive C] [MonoidalLinear ℂ C] [RigidCategory C]
+    (hu : HasScalarUnit C)
     {X Y : C} {u : 𝟙_ (Ind C) ⟶ indOf.obj X}
     {v : 𝟙_ (Ind C) ⟶ indOf.obj Y} (hu0 : u ≠ 0) (hv0 : v ≠ 0) :
     (u ⊗ₘ v) ≠ 0 := by
@@ -153,15 +155,16 @@ end Embedded
 
 section Stage
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C]
+variable {C : Type v}
 
 /-- **Vanishing at a stage, second factor**: if the tensor of a
 point of `M` with a point of a filtered colimit that factors through
 the stage `i` vanishes, then it already vanishes after some
 transition map out of `i`.  Tensoring on the left preserves the
 filtered colimit, and the unit of `Ind C` is compact. -/
-theorem tensor_unit_point_stage_left {I : Type v} [SmallCategory I]
+theorem tensor_unit_point_stage_left
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (M : Ind C) {i : I}
     (u : 𝟙_ (Ind C) ⟶ M) (g : 𝟙_ (Ind C) ⟶ D.obj i)
     (h : u ⊗ₘ (g ≫ colimit.ι D i) = 0) :
@@ -193,7 +196,9 @@ theorem tensor_unit_point_stage_left {I : Type v} [SmallCategory I]
 /-- **Vanishing at a stage, first factor**: the mirror image of
 `RS.tensor_unit_point_stage_left`, using that tensoring on the right
 preserves filtered colimits. -/
-theorem tensor_unit_point_stage_right {I : Type v} [SmallCategory I]
+theorem tensor_unit_point_stage_right
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (N : Ind C) {i : I}
     (f : 𝟙_ (Ind C) ⟶ D.obj i) (v : 𝟙_ (Ind C) ⟶ N)
     (h : (f ≫ colimit.ι D i) ⊗ₘ v = 0) :
@@ -228,16 +233,17 @@ end Stage
 
 section Main
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
+variable {C : Type v}
 
 /-- **One embedded factor**: the tensor of a nonzero point of an
 embedded object with a nonzero point of an arbitrary ind-object is
 nonzero.  Present the second factor as a filtered colimit of
 embedded objects, factor the point through a stage, and use that a
 vanishing tensor vanishes at a stage. -/
-theorem indTensorHom_point_ne_zero_indOf_left (hu : HasScalarUnit C)
+theorem indTensorHom_point_ne_zero_indOf_left
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [Linear ℂ C]
+    [MonoidalPreadditive C] [MonoidalLinear ℂ C] [RigidCategory C]
+    (hu : HasScalarUnit C)
     {X : C} {N : Ind C} {u : 𝟙_ (Ind C) ⟶ indOf.obj X}
     {v : 𝟙_ (Ind C) ⟶ N} (hu0 : u ≠ 0) (hv0 : v ≠ 0) :
     (u ⊗ₘ v) ≠ 0 := by
@@ -267,7 +273,10 @@ nonzero** (Deligne 2.11, the nonvanishing of the algebra `𝔸`).
 Present the first factor as a filtered colimit of embedded objects,
 factor the point through a stage, and appeal to
 `RS.indTensorHom_point_ne_zero_indOf_left`. -/
-theorem indTensorHom_point_ne_zero (hu : HasScalarUnit C)
+theorem indTensorHom_point_ne_zero
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [Linear ℂ C]
+    [MonoidalPreadditive C] [MonoidalLinear ℂ C] [RigidCategory C]
+    (hu : HasScalarUnit C)
     {M N : Ind C} {u : 𝟙_ (Ind C) ⟶ M} {v : 𝟙_ (Ind C) ⟶ N}
     (hu0 : u ≠ 0) (hv0 : v ≠ 0) : (u ⊗ₘ v) ≠ 0 := by
   intro h0

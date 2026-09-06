@@ -19,13 +19,14 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **Deligne's Proposition 2.1** for a category whose
 Ind-completion carries an odd line. -/
-theorem exists_fibre_functor (ψ : ℂ ≃+* End (𝟙_ C))
+theorem exists_fibre_functor
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (L : OddLine (Ind C))
     (hkill : letI := linearOfScalarUnit ψ

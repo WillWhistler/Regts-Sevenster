@@ -23,14 +23,15 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The fibre functor over an algebra**: base change, then
 realize. -/
-noncomputable def fibreFun : D ⥤ (gammaAlgebra D L R).Mod where
+noncomputable def fibreFun
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
+    D ⥤ (gammaAlgebra D L R).Mod where
   obj V := gammaModule D L R (freeMod R V).X
   map f := (gammaModuleFunctor L R).map (freeModMap R f)
   map_id V := by
@@ -40,15 +41,27 @@ noncomputable def fibreFun : D ⥤ (gammaAlgebra D L R).Mod where
     rw [freeModMap_comp]
     exact CategoryTheory.Functor.map_comp _ _ _
 
-@[simp] theorem fibreFun_obj (V : D) :
+@[simp] theorem fibreFun_obj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V : D) :
     (fibreFun L R).obj V = gammaModule D L R (freeMod R V).X := rfl
 
-@[simp] theorem fibreFun_map {V W : D} (f : V ⟶ W) :
+@[simp] theorem fibreFun_map
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {V W : D} (f : V ⟶ W) :
     (fibreFun L R).map f =
       (gammaModuleFunctor L R).map (freeModMap R f) := rfl
 
 /-- **The fibre functor is additive.** -/
-instance fibreFun_additive : (fibreFun L R).Additive where
+instance fibreFun_additive
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
+    (fibreFun L R).Additive where
   map_add {V W f g} := by
     rw [fibreFun_map, fibreFun_map, fibreFun_map]
     refine SuperCommAlgebra.Mod.Hom.ext ?_ ?_ <;>
@@ -60,11 +73,14 @@ instance fibreFun_additive : (fibreFun L R).Additive where
       rw [MonoidalPreadditive.whiskerLeft_add]
       exact Preadditive.comp_add _ _ _ _ _ _
 
-variable [HasFiniteBiproducts D]
-
 /-- **The fibre functor takes a finite biproduct to a finite
 biproduct.** -/
-noncomputable def fibreFunBiproduct {ι : Type} [Fintype ι]
+noncomputable def fibreFunBiproduct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasFiniteBiproducts D]
+    {ι : Type} [Fintype ι]
     (f : ι → D) :
     (fibreFun L R).obj (⨁ f) ≅ ⨁ fun i => (fibreFun L R).obj (f i) :=
   (fibreFun L R).mapBiproduct f

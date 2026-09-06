@@ -16,8 +16,7 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- Mixed associativity of the interchange: shuffling the first two
 pairs and regrouping against `Z₁ ⊗ Z₂` agrees with regrouping
@@ -26,7 +25,9 @@ decompose into four elementary crossings, of which the adjacent pair
 `β_ X₂ Z₁ ≫ β_ Z₁ X₂` cancels by the symmetry axiom; one exchange of
 the disjoint surviving crossings then matches the left-hand side. -/
 @[reassoc]
-theorem tensorMu_assoc_swap (X₁ Y₁ X₂ Y₂ Z₁ Z₂ : D) :
+theorem tensorMu_assoc_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X₁ Y₁ X₂ Y₂ Z₁ Z₂ : D) :
     (tensorμ X₁ Y₁ X₂ Y₂ ▷ (Z₁ ⊗ Z₂)) ≫
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).hom ≫
       ((X₁ ⊗ X₂) ◁ tensorμ Y₁ Y₂ Z₁ Z₂) =
@@ -64,7 +65,9 @@ which the adjacent pair `β_ Z₂ Y₁ ≫ β_ Y₁ Z₂` cancels by the symmetr
 axiom; one exchange of the disjoint surviving crossings then matches
 the left-hand side. -/
 @[reassoc]
-theorem tensorMu_assoc_swap_inv (Z₁ Z₂ X₁ Y₁ X₂ Y₂ : D) :
+theorem tensorMu_assoc_swap_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (Z₁ Z₂ X₁ Y₁ X₂ Y₂ : D) :
     ((Z₁ ⊗ Z₂) ◁ tensorμ X₁ Y₁ X₂ Y₂) ≫
       (α_ (Z₁ ⊗ Z₂) (X₁ ⊗ X₂) (Y₁ ⊗ Y₂)).inv ≫
       (tensorμ Z₁ Z₂ X₁ X₂ ▷ (Y₁ ⊗ Y₂)) =

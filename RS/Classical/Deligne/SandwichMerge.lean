@@ -30,20 +30,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-- The braiding of the module tensor product, as an isomorphism
 of modules. -/
-noncomputable def modTensorSwapModIso (P Q : Mod D A) :
+noncomputable def modTensorSwapModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (P Q : Mod D A) :
     modTensorMod A P Q ≅ modTensorMod A Q P where
   hom := modTensorSwapMod A P Q
   inv := modTensorSwapMod A Q P
@@ -53,7 +49,13 @@ noncomputable def modTensorSwapModIso (P Q : Mod D A) :
 /-- **The left absorption**: a module merges into its own power
 from the left, through the braiding, the bottom-stage
 identification and the adjacent merge. -/
-noncomputable def leftMergeModIso (N : Mod D A) (n : ℕ) :
+noncomputable def leftMergeModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (N : Mod D A) (n : ℕ) :
     modTensorMod A N (modPowMod A N.X n) ≅
       modPowMod A N.X (n + 1) :=
   modTensorSwapModIso A N (modPowMod A N.X n) ≪≫
@@ -64,7 +66,13 @@ noncomputable def leftMergeModIso (N : Mod D A) (n : ℕ) :
 /-- **The sandwich merge**: the `(k + 1)`-st tower stage carries
 `k + 2` letters `M` and `k + 1` letters `M'`, and reassembles as
 the module tensor product of the corresponding module powers. -/
-noncomputable def sandwichMergeModIso :
+noncomputable def sandwichMergeModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     (k : ℕ) →
       sandwichTower A M M' (k + 1) ≅
         modTensorMod A (modPowMod A M.X (k + 1))
@@ -79,7 +87,7 @@ noncomputable def sandwichMergeModIso :
         (modPowModZeroIso A M').symm
   | (k + 1) =>
     modTensorMapIso A (Iso.refl (modTensorMod A M M'))
-        (sandwichMergeModIso k) ≪≫
+        (sandwichMergeModIso A M M' k) ≪≫
       modTensorAssocModIso A M M'
         (modTensorMod A (modPowMod A M.X (k + 1))
           (modPowMod A M'.X k)) ≪≫
@@ -100,7 +108,14 @@ noncomputable def sandwichMergeModIso :
 the `(k + 1)`-st tower stage is the relative tensor product of
 `modPow A M.X (k + 2)` with `modPow A M'.X (k + 1)`, presented
 through the bundled module powers. -/
-noncomputable def sandwichMergeIso (k : ℕ) :
+noncomputable def sandwichMergeIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     (sandwichTower A M M' (k + 1)).X ≅
       modTensor A (modPowMod A M.X (k + 1))
         (modPowMod A M'.X k) where
@@ -114,7 +129,14 @@ noncomputable def sandwichMergeIso (k : ℕ) :
 /-- **Vanishing descends the tower**: if the `(k + 2)`-nd relative
 power of the module vanishes, so does the carrier of the
 `(k + 1)`-st sandwich tower stage. -/
-theorem isZero_sandwichTower_of_isZero_modPow (k : ℕ)
+theorem isZero_sandwichTower_of_isZero_modPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ)
     (h : IsZero (modPow A M.X (k + 2))) :
     IsZero ((sandwichTower A M M' (k + 1)).X) :=
   (isZero_modTensor_left A (modPowMod A M.X (k + 1))

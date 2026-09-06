@@ -20,19 +20,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-- **The conjugated permutation action**: through the twisted
 power identification, the descended action on the powers of a
 twisted module is the simultaneous action on the twisting powers
 and the module powers. -/
-theorem twistPow_perm_conj (V : D) (R : Mod D A) (k : ℕ)
+theorem twistPow_perm_conj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (V : D) (R : Mod D A) (k : ℕ)
     (σ : Equiv.Perm (Fin (k + 1))) :
     modPowPerm (A := A) (X := (tensorLeftMod A V R).X)
         (k + 1) σ ≫ ((twistPowModIso A V R k).hom).hom =
@@ -67,7 +67,13 @@ theorem twistPow_perm_conj (V : D) (R : Mod D A) (k : ℕ)
               (Category.assoc _ _ _)))))))
 
 /-- The carrier of the twisted power identification. -/
-noncomputable def twistPowCarrierIso (V : D) (R : Mod D A)
+noncomputable def twistPowCarrierIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (V : D) (R : Mod D A)
     (k : ℕ) :
     modPow A ((tensorLeftMod A V R).X) (k + 1) ≅
       tensorPow D V (k + 1) ⊗ modPow A R.X (k + 1) where
@@ -82,11 +88,16 @@ noncomputable def twistPowCarrierIso (V : D) (R : Mod D A)
 
 section Collapse
 
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- Each conjugated permutation over an odd line is the sign
 times the whiskered module action. -/
-theorem twistPow_perm_conj_oddLine (L : OddLine D) (R : Mod D A)
+theorem twistPow_perm_conj_oddLine
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : Mod D A)
     (k : ℕ) (σ : Equiv.Perm (Fin (k + 1))) :
     modPowPerm (A := A) (X := (tensorLeftMod A L.obj R).X)
         (k + 1) σ ≫ ((twistPowModIso A L.obj R k).hom).hom =
@@ -104,7 +115,14 @@ theorem twistPow_perm_conj_oddLine (L : OddLine D) (R : Mod D A)
 twisted power identification, the symmetriser of the twisted
 module powers is the whiskered antisymmetriser of the module
 powers. -/
-theorem twistPow_symIdem_conj (L : OddLine D) (R : Mod D A)
+theorem twistPow_symIdem_conj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : Mod D A)
     (k : ℕ) :
     symPowIdem A ((tensorLeftMod A L.obj R).X) (k + 1) ≫
         ((twistPowModIso A L.obj R k).hom).hom =
@@ -181,7 +199,14 @@ theorem twistPow_symIdem_conj (L : OddLine D) (R : Mod D A)
 alternating powers**: the coequalizer transports along the
 identification through the symmetriser collapse, and the twist
 passes out of the colimit. -/
-noncomputable def symPowOddTwistIso (L : OddLine D)
+noncomputable def symPowOddTwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D)
     (R : Mod D A) (k : ℕ) :
     symPow A ((tensorLeftMod A L.obj R).X) (k + 1) ≅
       tensorPow D L.obj (k + 1) ⊗ altPow A R.X (k + 1) :=
@@ -204,12 +229,11 @@ noncomputable def symPowOddTwistIso (L : OddLine D)
     (parallelPair (altPowIdem A R.X (k + 1))
       (𝟙 (modPow A R.X (k + 1))))).symm
 
-omit [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- Tensor powers of the odd line reflect vanishing. -/
-theorem OddLine.isZero_tensorPow_tensor_iff (L : OddLine D)
+theorem OddLine.isZero_tensorPow_tensor_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D]
+    (L : OddLine D)
     (n : ℕ) (Z : D) :
     IsZero (tensorPow D L.obj n ⊗ Z) ↔ IsZero Z := by
   induction n generalizing Z with
@@ -225,7 +249,14 @@ theorem OddLine.isZero_tensorPow_tensor_iff (L : OddLine D)
 /-- **The vanishing criterion for symmetric powers of an odd
 twist**: they vanish exactly when the alternating powers of the
 module do. -/
-theorem symPowOddTwist_isZero_iff (L : OddLine D) (R : Mod D A)
+theorem symPowOddTwist_isZero_iff
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : Mod D A)
     (k : ℕ) :
     IsZero (symPow A ((tensorLeftMod A L.obj R).X) (k + 1)) ↔
       IsZero (altPow A R.X (k + 1)) :=

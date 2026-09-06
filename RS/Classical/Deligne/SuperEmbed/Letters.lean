@@ -40,16 +40,19 @@ inclusions, projections, orthogonality and completeness are used. -/
 
 section Letters
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-- The letter object of a label: the line `U` when the label is
 odd, the monoidal unit when it is even. -/
-abbrev letterObj (U : A) {K : Type} (par : K → Bool) (k : K) : A :=
+abbrev letterObj [Category.{v} A] [MonoidalCategory A]
+    (U : A) {K : Type} (par : K → Bool) (k : K) : A :=
   bif par k then U else 𝟙_ A
 
 /-- **A letter system on `M`**: unit and `U`-letters included into
 and projected from `M`, orthonormally and completely. -/
-structure MixedLetters [Preadditive A] (K : Type) [Fintype K]
+structure MixedLetters
+    [Category.{v} A] [MonoidalCategory A]
+    [Preadditive A] (K : Type) [Fintype K]
     (par : K → Bool) (U M : A) where
   /-- The inclusion of the letter labelled `k`. -/
   ins : (k : K) → (letterObj U par k ⟶ M)
@@ -64,12 +67,12 @@ structure MixedLetters [Preadditive A] (K : Type) [Fintype K]
 
 namespace MixedLetters
 
-variable [Preadditive A] {K : Type} [Fintype K]
-  {par : K → Bool} {U M : A}
-
 /-- **The inclusion of a colouring**: the fold of the letterwise
 inclusions into the tensor power, in slot order. -/
-noncomputable def colourInto (S : MixedLetters K par U M) :
+noncomputable def colourInto
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) :
     (n : ℕ) → (c : Fin n → K) →
       (wordPow U (𝟙_ A) n (par ∘ c) ⟶ tensorPow A M n)
   | 0, _ => 𝟙 (𝟙_ A)
@@ -78,7 +81,10 @@ noncomputable def colourInto (S : MixedLetters K par U M) :
 
 /-- **The projection onto a colouring**: the fold of the letterwise
 projections from the tensor power. -/
-noncomputable def colourFrom (S : MixedLetters K par U M) :
+noncomputable def colourFrom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) :
     (n : ℕ) → (c : Fin n → K) →
       (tensorPow A M n ⟶ wordPow U (𝟙_ A) n (par ∘ c))
   | 0, _ => 𝟙 (𝟙_ A)
@@ -86,15 +92,18 @@ noncomputable def colourFrom (S : MixedLetters K par U M) :
       S.colourFrom n (c ∘ Fin.castSucc) ⊗ₘ S.prj (c (Fin.last n))
 
 /-- The defining recursion of `colourInto`. -/
-theorem colourInto_succ (S : MixedLetters K par U M) (n : ℕ)
+theorem colourInto_succ
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin (n + 1) → K) :
     S.colourInto (n + 1) c =
       S.colourInto n (c ∘ Fin.castSucc) ⊗ₘ S.ins (c (Fin.last n)) :=
   rfl
 
-omit [Preadditive A] in
 /-- Sections tensor to a section; stated at general objects. -/
-private theorem tensor_section {P Q R T : A} (f : P ⟶ Q) (g : Q ⟶ P)
+private theorem tensor_section [Category.{v} A] [MonoidalCategory A]
+    {P Q R T : A} (f : P ⟶ Q) (g : Q ⟶ P)
     (h : R ⟶ T) (k : T ⟶ R) (hfg : f ≫ g = 𝟙 P) (hhk : h ≫ k = 𝟙 R) :
     (f ⊗ₘ h) ≫ (g ⊗ₘ k) = 𝟙 (P ⊗ R) := by
   rw [MonoidalCategory.tensorHom_comp_tensorHom, hfg, hhk,
@@ -102,7 +111,10 @@ private theorem tensor_section {P Q R T : A} (f : P ⟶ Q) (g : Q ⟶ P)
 
 /-- **Same-colouring round trip**: a colouring included into the
 power and projected back is unchanged. -/
-theorem colourInto_colourFrom_same (S : MixedLetters K par U M) :
+theorem colourInto_colourFrom_same
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) :
     ∀ (n : ℕ) (c : Fin n → K),
       S.colourInto n c ≫ S.colourFrom n c =
         𝟙 (wordPow U (𝟙_ A) n (par ∘ c)) := by
@@ -114,10 +126,10 @@ theorem colourInto_colourFrom_same (S : MixedLetters K par U M) :
     exact tensor_section _ _ _ _ (ih (c ∘ Fin.castSucc))
       (S.ins_prj (c (Fin.last n)))
 
-omit [Fintype K] in
 /-- Two colourings of positive length differ in the last letter or
 in the rest. -/
-private theorem colour_ne_cases {n : ℕ} {c c' : Fin (n + 1) → K}
+private theorem colour_ne_cases {K : Type}
+    {n : ℕ} {c c' : Fin (n + 1) → K}
     (hcc' : c ≠ c') :
     c ∘ Fin.castSucc ≠ c' ∘ Fin.castSucc ∨
       c (Fin.last n) ≠ c' (Fin.last n) := by
@@ -131,24 +143,31 @@ private theorem colour_ne_cases {n : ℕ} {c c' : Fin (n + 1) → K}
 
 section MonPre
 
-variable [MonoidalPreadditive A]
-
 /-- A vanishing first factor kills the tensor. -/
-private theorem tensor_zero_fst {P Q R T V W : A}
+private theorem tensor_zero_fst
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    {P Q R T V W : A}
     (f : P ⟶ Q) (g : Q ⟶ R) (h : T ⟶ V) (k : V ⟶ W)
     (hfg : f ≫ g = 0) : (f ⊗ₘ h) ≫ (g ⊗ₘ k) = 0 := by
   rw [MonoidalCategory.tensorHom_comp_tensorHom, hfg,
     MonoidalPreadditive.zero_tensor]
 
 /-- A vanishing second factor kills the tensor. -/
-private theorem tensor_zero_snd {P Q R T V W : A}
+private theorem tensor_zero_snd
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    {P Q R T V W : A}
     (f : P ⟶ Q) (g : Q ⟶ R) (h : T ⟶ V) (k : V ⟶ W)
     (hhk : h ≫ k = 0) : (f ⊗ₘ h) ≫ (g ⊗ₘ k) = 0 := by
   rw [MonoidalCategory.tensorHom_comp_tensorHom, hhk,
     MonoidalPreadditive.tensor_zero]
 
 /-- **Distinct-colouring round trips vanish.** -/
-theorem colourInto_colourFrom_ne (S : MixedLetters K par U M) :
+theorem colourInto_colourFrom_ne
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A} [MonoidalPreadditive A]
+    (S : MixedLetters K par U M) :
     ∀ (n : ℕ) {c c' : Fin n → K}, c ≠ c' →
       S.colourInto n c ≫ S.colourFrom n c' = 0 := by
   intro n
@@ -162,10 +181,12 @@ theorem colourInto_colourFrom_ne (S : MixedLetters K par U M) :
     · exact tensor_zero_fst _ _ _ _ (ih h)
     · exact tensor_zero_snd _ _ _ _ (S.ins_prj_ne h)
 
-omit [MonoidalPreadditive A] in
 /-- One colouring's round trip through the full power, split into
 the shorter colouring's round trip and the last letter's. -/
-private theorem fromInto_snoc (S : MixedLetters K par U M) (n : ℕ)
+private theorem fromInto_snoc
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c' : Fin n → K) (k : K) :
     S.colourFrom (n + 1) (Fin.snoc c' k) ≫
         S.colourInto (n + 1) (Fin.snoc c' k) =
@@ -186,7 +207,10 @@ private theorem fromInto_snoc (S : MixedLetters K par U M) (n : ℕ)
 
 /-- **Completeness of the colouring decomposition**: the round
 trips through the colourings sum to the identity of the power. -/
-theorem sum_colourFrom_colourInto (S : MixedLetters K par U M) :
+theorem sum_colourFrom_colourInto
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A} [MonoidalPreadditive A]
+    (S : MixedLetters K par U M) :
     ∀ n : ℕ,
       (∑ c : Fin n → K, S.colourFrom n c ≫ S.colourInto n c) =
         𝟙 (tensorPow A M n) := by
@@ -258,11 +282,12 @@ confines every transport to powers of `U` indexed by counts. -/
 
 section Norm
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-- Absorbing one letter into a power of `U`: a `U`-letter extends
 the power, a unit letter is stripped by the right unitor. -/
-noncomputable def tailIso (U : A) (k : ℕ) : (b : Bool) →
+noncomputable def tailIso [Category.{v} A] [MonoidalCategory A]
+    (U : A) (k : ℕ) : (b : Bool) →
     (tensorPow A U k ⊗ (bif b then U else 𝟙_ A) ≅
       tensorPow A U (k + (bif b then 1 else 0)))
   | true => Iso.refl (tensorPow A U (k + 1))
@@ -270,7 +295,8 @@ noncomputable def tailIso (U : A) (k : ℕ) : (b : Bool) →
 
 /-- **The normalisation of a word power**: strip the unit letters
 by unitors, leaving the power of `U` of the word's count. -/
-noncomputable def normIso (U : A) : (n : ℕ) → (w : Fin n → Bool) →
+noncomputable def normIso [Category.{v} A] [MonoidalCategory A]
+    (U : A) : (n : ℕ) → (w : Fin n → Bool) →
     (wordPow U (𝟙_ A) n w ≅ tensorPow A U (popCount w))
   | 0, w => eqToIso (congrArg (tensorPow A U) (popCount_nil w).symm)
   | n + 1, w =>
@@ -283,10 +309,11 @@ end Norm
 
 section NormMaps
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-- The recursion of the normalisation, inverse side. -/
-private theorem normIso_inv_succ (U : A) {n : ℕ}
+private theorem normIso_inv_succ [Category.{v} A] [MonoidalCategory A]
+    (U : A) {n : ℕ}
     (w : Fin (n + 1) → Bool) :
     (normIso U (n + 1) w).inv =
       eqToHom (congrArg (tensorPow A U) (popCount_succ w)) ≫
@@ -300,7 +327,8 @@ private theorem normIso_inv_succ (U : A) {n : ℕ}
     Category.assoc]
 
 /-- The recursion of the normalisation, hom side. -/
-private theorem normIso_hom_succ (U : A) {n : ℕ}
+private theorem normIso_hom_succ [Category.{v} A] [MonoidalCategory A]
+    (U : A) {n : ℕ}
     (w : Fin (n + 1) → Bool) :
     (normIso U (n + 1) w).hom =
       ((normIso U n (w ∘ Fin.castSucc)).hom ▷
@@ -314,7 +342,8 @@ private theorem normIso_hom_succ (U : A) {n : ℕ}
 
 /-- A whisker followed by a tensor merges on the first factor.
 Stated at general objects. -/
-private theorem whisker_then_tensor {P Q R T V : A}
+private theorem whisker_then_tensor [Category.{v} A] [MonoidalCategory A]
+    {P Q R T V : A}
     (f : P ⟶ Q) (g : Q ⟶ R) (h : T ⟶ V) :
     (f ▷ T) ≫ (g ⊗ₘ h) = (f ≫ g) ⊗ₘ h := by
   rw [← MonoidalCategory.tensorHom_id f T,
@@ -322,7 +351,8 @@ private theorem whisker_then_tensor {P Q R T V : A}
 
 /-- Gluing a whisker-ended factorisation onto a tensor.  Stated at
 general objects. -/
-private theorem split_glue {W X P P' L Q Q' : A}
+private theorem split_glue [Category.{v} A] [MonoidalCategory A]
+    {W X P P' L Q Q' : A}
     (E : W ⟶ X) (T : X ⟶ P ⊗ L) (N : P ⟶ P') (I : P' ⟶ Q)
     (J : L ⟶ Q') :
     (E ≫ T ≫ (N ▷ L)) ≫ (I ⊗ₘ J) = E ≫ T ≫ ((N ≫ I) ⊗ₘ J) := by
@@ -331,7 +361,8 @@ private theorem split_glue {W X P P' L Q Q' : A}
 
 /-- A tensor followed by a whisker merges on the first factor.
 Stated at general objects. -/
-private theorem tensor_then_whisker {P Q R T V : A}
+private theorem tensor_then_whisker [Category.{v} A] [MonoidalCategory A]
+    {P Q R T V : A}
     (f : P ⟶ Q) (g : Q ⟶ R) (h : T ⟶ V) :
     (f ⊗ₘ h) ≫ (g ▷ V) = (f ≫ g) ⊗ₘ h := by
   rw [← MonoidalCategory.tensorHom_id g V,
@@ -343,30 +374,41 @@ end NormMaps
 
 namespace MixedLetters
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] {K : Type} [Fintype K] {par : K → Bool} {U M : A}
+variable {A : Type u}
 
 /-- **The normalised inclusion of a colouring**: the colouring
 inclusion, read off the `U`-power normal form of its word power. -/
-noncomputable def nIn (S : MixedLetters K par U M) (n : ℕ)
+noncomputable def nIn
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin n → K) :
     tensorPow A U (popCount (par ∘ c)) ⟶ tensorPow A M n :=
   (normIso U n (par ∘ c)).inv ≫ S.colourInto n c
 
 /-- **The normalised projection onto a colouring.** -/
-noncomputable def nOut (S : MixedLetters K par U M) (n : ℕ)
+noncomputable def nOut
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin n → K) :
     tensorPow A M n ⟶ tensorPow A U (popCount (par ∘ c)) :=
   S.colourFrom n c ≫ (normIso U n (par ∘ c)).hom
 
 /-- The colouring inclusion factors through its normalised form. -/
-theorem colourInto_eq_nIn (S : MixedLetters K par U M) (n : ℕ)
+theorem colourInto_eq_nIn
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin n → K) :
     S.colourInto n c = (normIso U n (par ∘ c)).hom ≫ S.nIn n c := by
   rw [nIn, Iso.hom_inv_id_assoc]
 
 /-- **Same-colouring round trip of the normalised maps.** -/
-theorem nIn_nOut_same (S : MixedLetters K par U M) (n : ℕ)
+theorem nIn_nOut_same
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin n → K) :
     S.nIn n c ≫ S.nOut n c =
       𝟙 (tensorPow A U (popCount (par ∘ c))) := by
@@ -376,7 +418,10 @@ theorem nIn_nOut_same (S : MixedLetters K par U M) (n : ℕ)
 
 /-- **Distinct-colouring round trips of the normalised maps
 vanish.** -/
-theorem nIn_nOut_ne [MonoidalPreadditive A]
+theorem nIn_nOut_ne
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    [MonoidalPreadditive A]
     (S : MixedLetters K par U M) (n : ℕ) {c c' : Fin n → K}
     (h : c ≠ c') : S.nIn n c ≫ S.nOut n c' = 0 := by
   rw [nIn, nOut]
@@ -385,7 +430,10 @@ theorem nIn_nOut_ne [MonoidalPreadditive A]
 
 /-- The recursion of the normalised inclusion: strip the top
 letter. -/
-theorem nIn_succ (S : MixedLetters K par U M) (n : ℕ)
+theorem nIn_succ
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin (n + 1) → K) :
     S.nIn (n + 1) c =
       eqToHom (congrArg (tensorPow A U) (popCount_succ (par ∘ c))) ≫
@@ -397,7 +445,10 @@ theorem nIn_succ (S : MixedLetters K par U M) (n : ℕ)
 
 /-- Transport of the normalised inclusion along an equality of
 colourings. -/
-theorem nIn_congr (S : MixedLetters K par U M) {n : ℕ}
+theorem nIn_congr
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) {n : ℕ}
     {c c' : Fin n → K} (h : c = c')
     (hp : popCount (par ∘ c) = popCount (par ∘ c')) :
     S.nIn n c = eqToHom (congrArg (tensorPow A U) hp) ≫ S.nIn n c'
@@ -477,19 +528,20 @@ end PermFacts
 
 section LetterSwap
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
-omit [MonoidalCategory A] in
 /-- Conjugation of a scalar of the identity by an isomorphism.
 Stated at general objects. -/
-private theorem conj_smul_id' [Preadditive A] [Linear ℂ A]
+private theorem conj_smul_id' [Category.{v} A]
+    [Preadditive A] [Linear ℂ A]
     {W V : A} (e : W ≅ V) (c : ℂ) :
     e.hom ≫ (c • 𝟙 V) ≫ e.inv = c • 𝟙 W := by
   simp
 
 /-- Exchanging a braiding of the ambient object for the braiding of
 the two included letters.  Stated at general objects. -/
-private theorem tensor_swap_exchange [BraidedCategory A]
+private theorem tensor_swap_exchange [Category.{v} A] [MonoidalCategory A]
+    [BraidedCategory A]
     {P Q N La Lb : A} (F : P ⟶ Q) (g : La ⟶ N) (h : Lb ⟶ N) :
     ((F ⊗ₘ g) ⊗ₘ h) ≫ (α_ Q N N).hom ≫ (Q ◁ (β_ N N).hom) ≫
         (α_ Q N N).inv =
@@ -522,7 +574,8 @@ private theorem tensor_swap_exchange [BraidedCategory A]
         rw [MonoidalCategory.associator_inv_naturality]
 
 /-- The conjugated braiding of two unit letters is the identity. -/
-private theorem letter_swap_unit_unit [SymmetricCategory A] (P : A) :
+private theorem letter_swap_unit_unit [Category.{v} A] [MonoidalCategory A]
+    [SymmetricCategory A] (P : A) :
     (α_ P (𝟙_ A) (𝟙_ A)).hom ≫ (P ◁ (β_ (𝟙_ A) (𝟙_ A)).hom) ≫
         (α_ P (𝟙_ A) (𝟙_ A)).inv = 𝟙 ((P ⊗ 𝟙_ A) ⊗ 𝟙_ A) := by
   rw [braiding_unit_self, MonoidalCategory.whiskerLeft_id,
@@ -530,7 +583,8 @@ private theorem letter_swap_unit_unit [SymmetricCategory A] (P : A) :
 
 /-- The conjugated braiding of two odd letters is minus the
 identity. -/
-private theorem letter_swap_odd_odd [SymmetricCategory A]
+private theorem letter_swap_odd_odd [Category.{v} A] [MonoidalCategory A]
+    [SymmetricCategory A]
     [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
     [MonoidalLinear ℂ A] (P : A) {U : A}
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) :
@@ -545,7 +599,8 @@ private theorem letter_swap_odd_odd [SymmetricCategory A]
 
 /-- The conjugated braiding of a unit letter under an odd letter is
 absorbed by unitors. -/
-private theorem letter_swap_unit_odd [SymmetricCategory A]
+private theorem letter_swap_unit_odd [Category.{v} A] [MonoidalCategory A]
+    [SymmetricCategory A]
     (P U : A) :
     ((ρ_ P).inv ▷ U) ≫ (α_ P (𝟙_ A) U).hom ≫
         (P ◁ (β_ (𝟙_ A) U).hom) ≫ (α_ P U (𝟙_ A)).inv =
@@ -558,7 +613,8 @@ private theorem letter_swap_unit_odd [SymmetricCategory A]
 
 /-- The conjugated braiding of an odd letter under a unit letter is
 absorbed by unitors. -/
-private theorem letter_swap_odd_unit [SymmetricCategory A]
+private theorem letter_swap_odd_unit [Category.{v} A] [MonoidalCategory A]
+    [SymmetricCategory A]
     (P U : A) :
     (ρ_ (P ⊗ U)).inv ≫ (α_ P U (𝟙_ A)).hom ≫
         (P ◁ (β_ U (𝟙_ A)).hom) ≫ (α_ P (𝟙_ A) U).inv =
@@ -580,21 +636,23 @@ ambient category. -/
 
 namespace MixedLetters
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  {K : Type} [Fintype K] {par : K → Bool} {U M : A}
+variable {A : Type u}
 
-omit [SymmetricCategory A] in
 /-- Scalars pull out of the first factor of a tensor. -/
-private theorem smul_tensorHom {P Q R T : A} (a : ℂ) (f : P ⟶ Q)
+private theorem smul_tensorHom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    {P Q R T : A} (a : ℂ) (f : P ⟶ Q)
     (g : R ⟶ T) : (a • f) ⊗ₘ g = a • (f ⊗ₘ g) := by
   rw [MonoidalCategory.tensorHom_def, MonoidalCategory.tensorHom_def,
     MonoidalLinear.smul_whiskerRight, Linear.smul_comp]
 
 /-- The identity-preserving statement of the sign transport for a
 single permutation, quantified over the count proof. -/
-private def SignStmt (S : MixedLetters K par U M) (n : ℕ)
+private def SignStmt [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] {K : Type} [Fintype K] {par : K → Bool}
+    {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (σ : Equiv.Perm (Fin n)) : Prop :=
   ∀ (c : Fin n → K)
     (h : popCount (par ∘ c) = popCount (par ∘ permIndex σ c)),
@@ -603,17 +661,23 @@ private def SignStmt (S : MixedLetters K par U M) (n : ℕ)
         (eqToHom (congrArg (tensorPow A U) h) ≫
           S.nIn n (permIndex σ c))
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
 /-- The sign transport for the identity permutation. -/
-private theorem signStmt_one (S : MixedLetters K par U M) (n : ℕ) :
+private theorem signStmt_one
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] {K : Type} [Fintype K] {par : K → Bool}
+    {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ) :
     S.SignStmt n 1 := by
   intro c h
   rw [permMor_one, Category.comp_id, parSign_one, one_smul]
   exact S.nIn_congr (permIndex_one c).symm h
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
 /-- The sign transport is closed under composition. -/
-private theorem signStmt_mul (S : MixedLetters K par U M) {n : ℕ}
+private theorem signStmt_mul
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] {K : Type} [Fintype K] {par : K → Bool}
+    {U : A} {M : A}
+    (S : MixedLetters K par U M) {n : ℕ}
     {g τ : Equiv.Perm (Fin n)} (hg : S.SignStmt n g)
     (hτ : S.SignStmt n τ) : S.SignStmt n (g * τ) := by
   intro c h
@@ -626,24 +690,21 @@ private theorem signStmt_mul (S : MixedLetters K par U M) {n : ℕ}
     eqToHom_trans_assoc]
   rfl
 
-omit [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
 /-- The unit-letter absorption, spelled. -/
 @[simp]
-theorem tailIso_false {U : A} (k : ℕ) :
+theorem tailIso_false [Category.{v} A] [MonoidalCategory A]
+    {U : A} (k : ℕ) :
     tailIso U k false = ρ_ (tensorPow A U k) := rfl
 
-omit [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
 /-- The `U`-letter absorption, spelled. -/
 @[simp]
-theorem tailIso_true {U : A} (k : ℕ) :
+theorem tailIso_true [Category.{v} A] [MonoidalCategory A]
+    {U : A} (k : ℕ) :
     tailIso U k true = Iso.refl (tensorPow A U (k + 1)) := rfl
 
-omit [SymmetricCategory A] [Linear ℂ A] [MonoidalPreadditive A]
-  [MonoidalLinear ℂ A] [Preadditive A] [Fintype K] in
 /-- A count transport passes the letter absorption. -/
-private theorem tailIso_inv_cast (U : A) {k k' : ℕ} (hk : k = k')
+private theorem tailIso_inv_cast [Category.{v} A] [MonoidalCategory A]
+    (U : A) {k k' : ℕ} (hk : k = k')
     (b : Bool) :
     (tailIso U k b).inv ≫
         (eqToHom (congrArg (tensorPow A U) hk) ▷
@@ -661,10 +722,9 @@ private theorem tailIso_inv_cast (U : A) {k k' : ℕ} (hk : k = k')
   rw [e1, e2, MonoidalCategory.id_whiskerRight, Category.comp_id,
     Category.id_comp]
 
-omit [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- A count transport passes the letter absorption, with a tail. -/
-private theorem tailIso_inv_cast_assoc (U : A) {k k' : ℕ}
+private theorem tailIso_inv_cast_assoc [Category.{v} A] [MonoidalCategory A]
+    (U : A) {k k' : ℕ}
     (hk : k = k') (b : Bool) {Z : A}
     (X : tensorPow A U k' ⊗ (bif b then U else 𝟙_ A) ⟶ Z) :
     (tailIso U k b).inv ≫
@@ -675,30 +735,29 @@ private theorem tailIso_inv_cast_assoc (U : A) {k k' : ℕ}
         (tailIso U k' b).inv ≫ X := by
   rw [← Category.assoc, tailIso_inv_cast U hk b, Category.assoc]
 
-omit [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- The letter count of a colouring splits off the last letter, in
 the composite spelling. -/
-theorem popCount_split {n : ℕ} (c : Fin (n + 1) → K) :
+theorem popCount_split {K : Type} {par : K → Bool}
+    {n : ℕ} (c : Fin (n + 1) → K) :
     popCount (par ∘ c) =
       popCount (par ∘ (c ∘ Fin.castSucc)) +
         (bif par (c (Fin.last n)) then 1 else 0) :=
   popCount_succ (par ∘ c)
 
-omit [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- Reindexing preserves letter counts, in the composite
 spelling. -/
-theorem popCount_permIndex' {n : ℕ} (σ : Equiv.Perm (Fin n))
+theorem popCount_permIndex' {K : Type} {par : K → Bool}
+    {n : ℕ} (σ : Equiv.Perm (Fin n))
     (c : Fin n → K) :
     popCount (par ∘ c) = popCount (par ∘ permIndex σ c) :=
   (popCount_permIndex σ (par ∘ c)).symm
 
-omit [SymmetricCategory A] [Linear ℂ A] [MonoidalPreadditive A]
-  [MonoidalLinear ℂ A] in
 /-- Splitting the normalised inclusion at the last letter, with the
 tail and last letter replaced by given values. -/
-theorem nIn_split (S : MixedLetters K par U M) (n : ℕ)
+theorem nIn_split
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (c : Fin (n + 1) → K) (c' : Fin n → K) (k : K)
     (hc : c ∘ Fin.castSucc = c') (hk : c (Fin.last n) = k)
     (h : popCount (par ∘ c) =
@@ -711,11 +770,13 @@ theorem nIn_split (S : MixedLetters K par U M) (n : ℕ)
   subst hk
   exact S.nIn_succ n c
 
-omit [SymmetricCategory A] [Fintype K] in
 /-- The complete gluing of the top-fixing case.  All specific
 morphisms enter as parameters, so the tensor-power arities never
 meet a rewrite. -/
-private theorem ext_glue {W W' Xa Xb Pd Pe Pn L N : A}
+private theorem ext_glue
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    {W W' Xa Xb Pd Pe Pn L N : A}
     (E₀ : W ⟶ Xa) (Ti : Xa ⟶ Pd ⊗ L) (I : Pd ⟶ Pn) (J : L ⟶ N)
     (G : Pn ⟶ Pn) (a : ℂ) (Ec : Pd ⟶ Pe) (I' : Pe ⟶ Pn)
     (Ed : Xa ⟶ Xb) (Ti' : Xb ⟶ Pe ⊗ L) (Eh : W ⟶ W') (E₂ : W' ⟶ Xb)
@@ -742,7 +803,12 @@ private theorem ext_glue {W W' Xa Xb Pd Pe Pn L N : A}
         simp only [Category.assoc]
 
 /-- The sign transport lifts along a top-fixing extension. -/
-private theorem signStmt_extPerm (S : MixedLetters K par U M)
+private theorem signStmt_extPerm
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] {par : K → Bool} {U : A}
+    {M : A}
+    (S : MixedLetters K par U M)
     {n : ℕ} {τ : Equiv.Perm (Fin n)} (hτ : S.SignStmt n τ)
     (hε : ∀ c : Fin (n + 1) → K,
       parSign (extPerm τ) (par ∘ c) =
@@ -775,19 +841,20 @@ private theorem signStmt_extPerm (S : MixedLetters K par U M)
       (par (c (Fin.last n))))
     (by rw [eqToHom_trans, eqToHom_trans])
 
-omit [MonoidalCategory A] [SymmetricCategory A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- Prefixing a scalar identity of chains.  Stated at general
 objects. -/
-private theorem smul_chain_glue {W X Y : A} (E E' : W ⟶ X)
+private theorem smul_chain_glue [Category.{v} A] [Preadditive A] [Linear ℂ A]
+    {W X Y : A} (E E' : W ⟶ X)
     (hE : E = E') (F G : X ⟶ Y) (a : ℂ) (hFG : F = a • G) :
     E ≫ F = a • (E' ≫ G) := by
   subst hE
   rw [hFG, Linear.comp_smul]
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- The letter-swap chain at two even letters. -/
-private theorem chain_ff (m : ℕ) (a : ℂ) (ha : a = 1)
+private theorem chain_ff
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] {U : A}
+    (m : ℕ) (a : ℂ) (ha : a = 1)
     (E : tensorPow A U m ⟶ tensorPow A U m) (hE : E = 𝟙 _) :
     (ρ_ (tensorPow A U m)).inv ≫
         ((ρ_ (tensorPow A U m)).inv ▷ 𝟙_ A) ≫
@@ -800,9 +867,11 @@ private theorem chain_ff (m : ℕ) (a : ℂ) (ha : a = 1)
   rw [hE, one_smul, Category.id_comp,
     letter_swap_unit_unit (tensorPow A U m), Category.comp_id]
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- The letter-swap chain at an even letter under an odd one. -/
-private theorem chain_ft (m : ℕ) (a : ℂ) (ha : a = 1)
+private theorem chain_ft
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] {U : A}
+    (m : ℕ) (a : ℂ) (ha : a = 1)
     (E : tensorPow A U m ⊗ U ⟶ tensorPow A U m ⊗ U) (hE : E = 𝟙 _) :
     𝟙 (tensorPow A U m ⊗ U) ≫
         ((ρ_ (tensorPow A U m)).inv ▷ U) ≫
@@ -816,9 +885,11 @@ private theorem chain_ft (m : ℕ) (a : ℂ) (ha : a = 1)
     MonoidalCategory.id_whiskerRight, Category.comp_id]
   exact letter_swap_unit_odd (tensorPow A U m) U
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- The letter-swap chain at an odd letter under an even one. -/
-private theorem chain_tf (m : ℕ) (a : ℂ) (ha : a = 1)
+private theorem chain_tf
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] {U : A}
+    (m : ℕ) (a : ℂ) (ha : a = 1)
     (E : tensorPow A U m ⊗ U ⟶ tensorPow A U m ⊗ U) (hE : E = 𝟙 _) :
     (ρ_ (tensorPow A U m ⊗ U)).inv ≫
         (𝟙 (tensorPow A U m ⊗ U) ▷ 𝟙_ A) ≫
@@ -832,9 +903,12 @@ private theorem chain_tf (m : ℕ) (a : ℂ) (ha : a = 1)
     Category.id_comp, Category.id_comp, Category.id_comp]
   exact letter_swap_odd_unit (tensorPow A U m) U
 
-omit [Fintype K] in
 /-- The letter-swap chain at two odd letters: the sign appears. -/
-private theorem chain_tt (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
+private theorem chain_tt
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {U : A}
+    (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
     (m : ℕ) (a : ℂ) (ha : a = -1)
     (E : (tensorPow A U m ⊗ U) ⊗ U ⟶ (tensorPow A U m ⊗ U) ⊗ U)
     (hE : E = 𝟙 _) :
@@ -851,12 +925,15 @@ private theorem chain_tt (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
     letter_swap_odd_odd (tensorPow A U m) hβ]
   exact (neg_one_smul ℂ _).symm
 
-omit [Fintype K] in
 /-- **The letter-swap core**: on normal forms, braiding the top two
 letters is the transport to the swapped word, with sign `−1`
 exactly when both letters are odd.  The case analysis on the two
 letters happens here, where they are free Booleans. -/
-private theorem tail_swap_core (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
+private theorem tail_swap_core
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {U : A}
+    (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
     (m : ℕ) (b₁ b₂ : Bool)
     (hQ : tensorPow A U
         (m + (bif b₁ then 1 else 0) + (bif b₂ then 1 else 0)) =
@@ -881,12 +958,14 @@ private theorem tail_swap_core (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
   · exact chain_tf m _ (by simp) _ (eqToHom_refl _ _)
   · exact chain_tt hβ m _ (by simp) _ (eqToHom_refl _ _)
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- The complete gluing of the top-transposition case: the two
 letter maps exchange through the braiding of the ambient object,
 and everything else is carried by the core hypothesis.  Stated at
 general objects. -/
-private theorem topSwap_glue {W W' Xa Xb Xc Xd Q₂ Q₁ P Pm L₁ L₂ N : A}
+private theorem topSwap_glue
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    {W W' Xa Xb Xc Xd Q₂ Q₁ P Pm L₁ L₂ N : A}
     (a : ℂ)
     (E₀ : W ⟶ Xa) (T₂i : Xa ⟶ Q₂ ⊗ L₂)
     (E₁ : Q₂ ⟶ Xc) (T₁i : Xc ⟶ P ⊗ L₁)
@@ -913,18 +992,22 @@ private theorem topSwap_glue {W W' Xa Xb Xc Xd Q₂ Q₁ P Pm L₁ L₂ N : A}
   have h1 := congrArg (fun t => t ≫ ((I ⊗ₘ J₂) ⊗ₘ J₁)) hcore
   simp only [Category.assoc, Linear.smul_comp] at h1
   exact h1
-omit [MonoidalCategory A] [SymmetricCategory A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K] in
 /-- Composing a scalar identity of chains across a transport.
 Stated at general objects. -/
-private theorem smul_cast_glue {W X X' Y : A} (E : W ⟶ X)
+private theorem smul_cast_glue [Category.{v} A] [Preadditive A] [Linear ℂ A]
+    {W X X' Y : A} (E : W ⟶ X)
     (Ecast : X ⟶ X') (E' : W ⟶ X') (F : X ⟶ Y) (G : X' ⟶ Y) (a : ℂ)
     (hEE : E ≫ Ecast = E') (hFG : F = a • (Ecast ≫ G)) :
     E ≫ F = a • (E' ≫ G) := by
   rw [hFG, Linear.comp_smul, ← Category.assoc, hEE]
 
 /-- The sign transport holds for the top transposition. -/
-private theorem signStmt_topSwap (S : MixedLetters K par U M)
+private theorem signStmt_topSwap
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] {par : K → Bool} {U : A}
+    {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) {n : ℕ} :
     S.SignStmt (n + 2) (topSwap : Equiv.Perm (Fin (n + 2))) := by
   intro c h
@@ -1007,7 +1090,12 @@ private theorem signStmt_topSwap (S : MixedLetters K par U M)
 
 /-- The sign transport holds for every permutation: generators and
 closure. -/
-private theorem signStmt_all (S : MixedLetters K par U M)
+private theorem signStmt_all
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] {par : K → Bool} {U : A}
+    {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) :
     ∀ (n : ℕ) (σ : Equiv.Perm (Fin n)), S.SignStmt n σ := by
   intro n
@@ -1060,7 +1148,11 @@ private theorem signStmt_all (S : MixedLetters K par U M)
 forms, a permutation acts on a colouring of a letter system by the
 transport to the shuffled colouring, scaled by the combinatorial
 Koszul sign of the shuffle. -/
-theorem nIn_permMor (S : MixedLetters K par U M)
+theorem nIn_permMor [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] {par : K → Bool} {U : A}
+    {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) {n : ℕ}
     (σ : Equiv.Perm (Fin n)) (c : Fin n → K)
     (h : popCount (par ∘ c) = popCount (par ∘ permIndex σ c)) :
@@ -1107,15 +1199,13 @@ namespace MixedLetters
 
 section Entries
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  {K : Type} [Fintype K] [DecidableEq K] {par : K → Bool} {U M : A}
+variable {A : Type u}
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] [Fintype K]
-  [DecidableEq K] in
 /-- The group-algebra action expanded over the group. -/
-private theorem permAlg_expand (X : A) {n : ℕ}
+private theorem permAlg_expand
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X : A) {n : ℕ}
     (x : SymGroupAlgebra n) :
     permAlg X n x = ∑ σ : Equiv.Perm (Fin n), x σ • permMor X n σ
     := by
@@ -1130,10 +1220,11 @@ private theorem permAlg_expand (X : A) {n : ℕ}
   rw [Finsupp.notMem_support_iff.mp hσ, zero_smul]
   rfl
 
-omit [SymmetricCategory A] [Linear ℂ A] [MonoidalPreadditive A]
-  [MonoidalLinear ℂ A] [DecidableEq K] in
 /-- The round trip through equal colourings is the transport. -/
-private theorem nIn_nOut_of_eq (S : MixedLetters K par U M) {n : ℕ}
+private theorem nIn_nOut_of_eq
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) {n : ℕ}
     {c' d : Fin n → K} (hcd : c' = d) :
     S.nIn n c' ≫ S.nOut n d =
       eqToHom (congrArg (fun e => tensorPow A U (popCount (par ∘ e)))
@@ -1145,7 +1236,12 @@ private theorem nIn_nOut_of_eq (S : MixedLetters K par U M) {n : ℕ}
 /-- **The entry formula**: between two colourings, the normalised
 matrix entry of a group-algebra element is the colour sum times the
 count transport. -/
-theorem nIn_permAlg_nOut (S : MixedLetters K par U M)
+theorem nIn_permAlg_nOut
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] [DecidableEq K]
+    {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) {n : ℕ}
     (x : SymGroupAlgebra n) (c d : Fin n → K) :
     S.nIn n c ≫ permAlg M n x ≫ S.nOut n d =
@@ -1183,10 +1279,11 @@ theorem nIn_permAlg_nOut (S : MixedLetters K par U M)
     rw [Linear.smul_comp, Category.assoc, S.nIn_nOut_ne n hσ,
       Limits.comp_zero, smul_zero]
 
-omit [SymmetricCategory A] [Linear ℂ A] [MonoidalPreadditive A]
-  [MonoidalLinear ℂ A] [DecidableEq K] in
 /-- The colouring projection factors through its normalised form. -/
-theorem colourFrom_eq_nOut (S : MixedLetters K par U M) (n : ℕ)
+theorem colourFrom_eq_nOut
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] {K : Type}
+    [Fintype K] {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M) (n : ℕ)
     (d : Fin n → K) :
     S.colourFrom n d = S.nOut n d ≫ (normIso U n (par ∘ d)).inv := by
   rw [nOut, Category.assoc, Iso.hom_inv_id, Category.comp_id]
@@ -1194,7 +1291,12 @@ theorem colourFrom_eq_nOut (S : MixedLetters K par U M) (n : ℕ)
 /-- **Extraction**: if a group-algebra element acts as zero on the
 tensor power of the mixed object, all its colour sums vanish —
 provided no power of the odd line is a zero object. -/
-theorem colourSum_eq_zero (S : MixedLetters K par U M)
+theorem colourSum_eq_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] [DecidableEq K]
+    {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U)))
     (hU : ∀ k : ℕ, 𝟙 (tensorPow A U k) ≠
       (0 : tensorPow A U k ⟶ tensorPow A U k))
@@ -1228,7 +1330,12 @@ theorem colourSum_eq_zero (S : MixedLetters K par U M)
 /-- **Reconstruction**: if all colour sums of a group-algebra
 element vanish, it acts as zero on the tensor power of the mixed
 object. -/
-theorem permAlg_eq_zero (S : MixedLetters K par U M)
+theorem permAlg_eq_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] {K : Type} [Fintype K] [DecidableEq K]
+    {par : K → Bool} {U : A} {M : A}
+    (S : MixedLetters K par U M)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) {n : ℕ}
     {x : SymGroupAlgebra n}
     (hx : ∀ c d : Fin n → K, colourSum par x c d = 0) :

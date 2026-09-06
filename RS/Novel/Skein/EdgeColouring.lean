@@ -23,40 +23,43 @@ namespace EdgeSubset
 
 open Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 /-- **RS21's odd colouring**: a colour on every edge of the subset,
 constant on the two flags of an edge. -/
-def EdgeOddColouring (F : EdgeSubset W) (ℓ : ℕ) : Type :=
+def EdgeOddColouring {W : Fragment α}
+    (F : EdgeSubset W) (ℓ : ℕ) : Type :=
   {φ : {f : W.Flag // f ∈ F.flags} → Fin (2 * ℓ) //
     ∀ f : {f : W.Flag // f ∈ F.flags},
       φ ⟨W.pairing f.val, F.pairing_mem f.val f.prop⟩ = φ f}
 
 open scoped Classical in
 /-- Edge odd colourings are finite in number. -/
-noncomputable instance EdgeOddColouring.instFintype
+noncomputable instance EdgeOddColouring.instFintype {W : Fragment α}
     (F : EdgeSubset W) (ℓ : ℕ) : Fintype (F.EdgeOddColouring ℓ) := by
   unfold EdgeOddColouring
   infer_instance
 
 /-- The colouring restricted to the edges with an end at a vertex —
 the ones the vertex product reads. -/
-noncomputable def EdgeOddColouring.core {F : EdgeSubset W} {ℓ : ℕ}
+noncomputable def EdgeOddColouring.core {W : Fragment α}
+    {F : EdgeSubset W} {ℓ : ℕ}
     (φ : F.EdgeOddColouring ℓ) : F.CoreOddColouring ℓ :=
   ⟨fun f => φ.val ⟨f.val, coreFlags_subset F f.prop⟩,
    fun f => φ.prop ⟨f.val, coreFlags_subset F f.prop⟩⟩
 
-omit [LinearOrder α] in
 /-- **The colour of an edge is the colour of either of its
 flags.** -/
-theorem EdgeOddColouring.pairing {F : EdgeSubset W} {ℓ : ℕ}
+theorem EdgeOddColouring.pairing {W : Fragment α}
+    {F : EdgeSubset W} {ℓ : ℕ}
     (φ : F.EdgeOddColouring ℓ) (f : {f : W.Flag // f ∈ F.flags}) :
     φ.val ⟨W.pairing f.val, F.pairing_mem f.val f.prop⟩ = φ.val f :=
   φ.prop f
 
 /-- **The boundary constraint** `φ ∼ χ₁`: at a used label the
 colouring agrees with the state. -/
-def edgeOddBoundaryMatch {k ℓ : ℕ} (F : EdgeSubset W)
+def edgeOddBoundaryMatch {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (st : GenBoundaryState k ℓ α) (φ : F.EdgeOddColouring ℓ) :
     Prop :=
   ∀ (i : α) (c : Fin (2 * ℓ)) (_ : st i = Sum.inr c)
@@ -74,7 +77,8 @@ back over the through-edges.
 open Classical in
 /-- The odd colour the state carries at a boundary flag of the
 subset. -/
-noncomputable def usedColour {k ℓ : ℕ} (F : EdgeSubset W)
+noncomputable def usedColour {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (χ : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags χ) {f : W.Flag}
     (hb : f ∈ F.boundaryFlags) : Fin (2 * ℓ) :=
@@ -82,10 +86,10 @@ noncomputable def usedColour {k ℓ : ℕ} (F : EdgeSubset W)
     rw [boundaryFlag_boundaryLabel hb]
     exact mem_flags_of_boundaryFlags F hb))
 
-omit [LinearOrder α] in
 open Classical in
 /-- The named colour is the state's. -/
-theorem usedColour_spec {k ℓ : ℕ} (F : EdgeSubset W)
+theorem usedColour_spec {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (χ : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags χ) {f : W.Flag}
     (hb : f ∈ F.boundaryFlags) :
@@ -94,11 +98,11 @@ theorem usedColour_spec {k ℓ : ℕ} (F : EdgeSubset W)
     rw [boundaryFlag_boundaryLabel hb]
     exact mem_flags_of_boundaryFlags F hb))
 
-omit [LinearOrder α] in
 open Classical in
 /-- **A matching colouring takes the named colour at every used
 flag.** -/
-theorem edgeOddColouring_eq_usedColour {k ℓ : ℕ} {F : EdgeSubset W}
+theorem edgeOddColouring_eq_usedColour {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     {φ : F.EdgeOddColouring ℓ} (hφ : edgeOddBoundaryMatch F χ φ)
@@ -122,9 +126,9 @@ then pinned by `φ ∼ χ₁`.  So two matching colourings with the same
 restriction agree.
 -/
 
-omit [LinearOrder α] in
 /-- A flag the restriction forgets is a boundary flag. -/
-theorem mem_boundaryFlags_of_not_coreFlags (F : EdgeSubset W)
+theorem mem_boundaryFlags_of_not_coreFlags {W : Fragment α}
+    (F : EdgeSubset W)
     {f : W.Flag} (hf : f ∈ F.flags) (hc : f ∉ F.coreFlags) :
     f ∈ F.boundaryFlags := by
   refine (mem_internalFlags_or_boundaryFlags F hf).resolve_left ?_
@@ -133,11 +137,11 @@ theorem mem_boundaryFlags_of_not_coreFlags (F : EdgeSubset W)
   obtain ⟨-, v, hv⟩ := EdgeSubset.mem_internalFlags_iff.mp hint
   exact ⟨v, hv⟩
 
-omit [LinearOrder α] in
 open Classical in
 /-- **Two matching colourings with the same restriction are
 equal.** -/
-theorem edgeOddColouring_ext {k ℓ : ℕ} {F : EdgeSubset W}
+theorem edgeOddColouring_ext {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     {φ₁ φ₂ : F.EdgeOddColouring ℓ}
@@ -168,10 +172,10 @@ defined exactly because those two ends agree, which is what `φ ∼ χ₁`
 forces of any colouring of the whole subset.
 -/
 
-omit [LinearOrder α] in
 /-- The flags the restriction forgets are closed under the
 pairing. -/
-theorem not_coreFlags_pairing (F : EdgeSubset W) {f : W.Flag}
+theorem not_coreFlags_pairing {W : Fragment α}
+    (F : EdgeSubset W) {f : W.Flag}
     (hf : f ∈ F.flags) (hc : f ∉ F.coreFlags) :
     W.pairing f ∉ F.coreFlags := by
   intro hx
@@ -184,16 +188,17 @@ theorem not_coreFlags_pairing (F : EdgeSubset W) {f : W.Flag}
 
 /-- **The agreement condition**: at a through-edge the state's two
 legs carry one colour. -/
-def ThroughAgree {k ℓ : ℕ} (F : EdgeSubset W)
+def ThroughAgree {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (χ : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags χ) : Prop :=
   ∀ (f : W.Flag) (hb : f ∈ F.boundaryFlags)
     (hbp : W.pairing f ∈ F.boundaryFlags),
     usedColour F χ hbnd hbp = usedColour F χ hbnd hb
 
-omit [LinearOrder α] in
 /-- Agreement reads only the state. -/
-theorem throughAgree_congr {k ℓ : ℕ} {F : EdgeSubset W}
+theorem throughAgree_congr {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ χ' : GenBoundaryState k ℓ α} (hcc : χ = χ')
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hbnd' : genBoundarySubsetMatches W F.flags χ') :
@@ -201,9 +206,9 @@ theorem throughAgree_congr {k ℓ : ℕ} {F : EdgeSubset W}
   subst hcc
   exact Iff.rfl
 
-omit [LinearOrder α] in
 /-- The named colour reads only the state's value at the label. -/
-theorem usedColour_congr {k ℓ : ℕ} {F : EdgeSubset W}
+theorem usedColour_congr {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ χ' : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hbnd' : genBoundarySubsetMatches W F.flags χ')
@@ -215,10 +220,10 @@ theorem usedColour_congr {k ℓ : ℕ} {F : EdgeSubset W}
   rw [heq, h2] at h1
   exact (Sum.inr.inj h1).symm
 
-omit [LinearOrder α] in
 /-- **Agreement reads only the through-edges' labels.**  Two states
 that agree there agree on the condition. -/
-theorem throughAgree_of_eq_on_through {k ℓ : ℕ} {F : EdgeSubset W}
+theorem throughAgree_of_eq_on_through {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ χ' : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hbnd' : genBoundarySubsetMatches W F.flags χ')
@@ -233,12 +238,12 @@ theorem throughAgree_of_eq_on_through {k ℓ : ℕ} {F : EdgeSubset W}
     ← usedColour_congr hbnd hbnd' hb (heq f hb hbp)]
   exact hag f hb hbp
 
-omit [LinearOrder α] in
 /-- **Only agreeing states are coloured at all.**  A colouring of
 the whole subset carries one colour on each edge, and `φ ∼ χ₁` pins
 it at both labelled ends of a through-edge; so a state whose two
 legs there disagree admits no colouring. -/
-theorem throughAgree_of_edgeOddBoundaryMatch {k ℓ : ℕ}
+theorem throughAgree_of_edgeOddBoundaryMatch {W : Fragment α}
+    {k ℓ : ℕ}
     {F : EdgeSubset W} {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     {φ : F.EdgeOddColouring ℓ} (hφ : edgeOddBoundaryMatch F χ φ) :
@@ -271,7 +276,8 @@ theorem throughAgree_of_edgeOddBoundaryMatch {k ℓ : ℕ}
 open Classical in
 /-- The extension's value: the core colouring where it is defined,
 and the state's own colour on a through-edge. -/
-noncomputable def extendFun {k ℓ : ℕ} {F : EdgeSubset W}
+noncomputable def extendFun {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (φ' : F.CoreOddColouring ℓ) :
@@ -281,10 +287,10 @@ noncomputable def extendFun {k ℓ : ℕ} {F : EdgeSubset W}
     else usedColour F χ hbnd
       (mem_boundaryFlags_of_not_coreFlags F f.prop hc)
 
-omit [LinearOrder α] in
 open Classical in
 /-- The extension is constant on the two flags of an edge. -/
-theorem extendFun_pairing {k ℓ : ℕ} {F : EdgeSubset W}
+theorem extendFun_pairing {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hag : ThroughAgree F χ hbnd) (φ' : F.CoreOddColouring ℓ)
@@ -300,17 +306,18 @@ theorem extendFun_pairing {k ℓ : ℕ} {F : EdgeSubset W}
 
 open Classical in
 /-- **Extend a core colouring over the through-edges.** -/
-noncomputable def CoreOddColouring.extend {k ℓ : ℕ}
+noncomputable def CoreOddColouring.extend {W : Fragment α}
+    {k ℓ : ℕ}
     {F : EdgeSubset W} {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hag : ThroughAgree F χ hbnd) (φ' : F.CoreOddColouring ℓ) :
     F.EdgeOddColouring ℓ :=
   ⟨extendFun hbnd φ', extendFun_pairing hbnd hag φ'⟩
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The extension restricts to what it extended.** -/
-theorem CoreOddColouring.core_extend {k ℓ : ℕ} {F : EdgeSubset W}
+theorem CoreOddColouring.core_extend {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hag : ThroughAgree F χ hbnd) (φ' : F.CoreOddColouring ℓ) :
@@ -321,9 +328,9 @@ theorem CoreOddColouring.core_extend {k ℓ : ℕ} {F : EdgeSubset W}
   unfold extendFun
   rw [dif_pos f.prop]
 
-omit [LinearOrder α] in
 /-- A matching colouring restricts to a matching core colouring. -/
-theorem coreOddBoundaryMatch_core {k ℓ : ℕ} {F : EdgeSubset W}
+theorem coreOddBoundaryMatch_core {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α} {φ : F.EdgeOddColouring ℓ}
     (hφ : edgeOddBoundaryMatch F χ φ) :
     F.coreOddBoundaryMatch χ φ.core := by
@@ -338,10 +345,10 @@ this makes the restriction a bijection between the matching
 colourings of the whole subset and those of its core.
 -/
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The extension matches the state.** -/
-theorem edgeOddBoundaryMatch_extend {k ℓ : ℕ} {F : EdgeSubset W}
+theorem edgeOddBoundaryMatch_extend {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hag : ThroughAgree F χ hbnd) {φ' : F.CoreOddColouring ℓ}
@@ -362,10 +369,10 @@ theorem edgeOddBoundaryMatch_extend {k ℓ : ℕ} {F : EdgeSubset W}
     rw [hli, hci] at hspec
     exact (Sum.inr.inj hspec).symm
 
-omit [LinearOrder α] in
 open Classical in
 /-- **Extending a matching colouring's restriction returns it.** -/
-theorem extend_core {k ℓ : ℕ} {F : EdgeSubset W}
+theorem extend_core {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hag : ThroughAgree F χ hbnd) {φ : F.EdgeOddColouring ℓ}
@@ -384,11 +391,11 @@ colourings of its core.  This is the theorem the flag model's split
 rests on; nothing above it assumes the split.
 -/
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The colouring sum over the whole subset is the sum over its
 core.** -/
-theorem sum_edgeOddColouring {k ℓ : ℕ} {F : EdgeSubset W}
+theorem sum_edgeOddColouring {W : Fragment α}
+    {k ℓ : ℕ} {F : EdgeSubset W}
     {χ : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags χ)
     (hag : ThroughAgree F χ hbnd) (G : F.CoreOddColouring ℓ → ℂ) :

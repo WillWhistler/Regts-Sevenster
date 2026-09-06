@@ -36,18 +36,19 @@ open CategoryTheory Limits Opposite
 
 universe v
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- The canonical embedding of a small category into its
 ind-completion: Mathlib's `Ind.yoneda`, re-exported under the name
 used throughout the Deligne development. -/
-noncomputable abbrev indOf : C ⥤ Ind C := Ind.yoneda
+noncomputable abbrev indOf [SmallCategory C] : C ⥤ Ind C := Ind.yoneda
 
 /-- Mapping out of an embedded object of `Ind C` is mapping out of
 its representable presheaf: the inclusion `Ind C ⥤ Cᵒᵖ ⥤ Type v` is
 fully faithful and carries `indOf.obj X` to an object isomorphic to
 `yoneda.obj X`. -/
-noncomputable def indOfCoyonedaIso (X : C) :
+noncomputable def indOfCoyonedaIso [SmallCategory C]
+    (X : C) :
     coyoneda.obj (op (indOf.obj X)) ≅
       Ind.inclusion C ⋙ coyoneda.obj (op (yoneda.obj X)) :=
   NatIso.ofComponents
@@ -68,7 +69,8 @@ noncomputable def indOfCoyonedaIso (X : C) :
 /-- **Objects of `C` are compact in `Ind C`**: the hom functor out
 of an embedded object preserves filtered colimits of any given small
 shape. -/
-instance preservesColimitsOfShape_coyoneda_indOf (X : C)
+instance preservesColimitsOfShape_coyoneda_indOf [SmallCategory C]
+    (X : C)
     (I : Type v) [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape I (coyoneda.obj (op (indOf.obj X))) :=
   haveI : PreservesColimitsOfShape I
@@ -78,7 +80,8 @@ instance preservesColimitsOfShape_coyoneda_indOf (X : C)
 
 /-- Compactness, packaged: the hom functor out of an embedded object
 preserves all (small) filtered colimits. -/
-instance preservesFilteredColimits_coyoneda_indOf (X : C) :
+instance preservesFilteredColimits_coyoneda_indOf [SmallCategory C]
+    (X : C) :
     PreservesFilteredColimits (coyoneda.obj (op (indOf.obj X))) where
   preserves_filtered_colimits _ _ _ := inferInstance
 
@@ -86,7 +89,8 @@ instance preservesFilteredColimits_coyoneda_indOf (X : C) :
 applied to a filtered colimit: the colimit injection of the diagram
 of hom sets is postcomposition with the colimit injection of the
 diagram, read through the preservation isomorphism. -/
-theorem ι_comp_coyoneda_indOf {I : Type v} [SmallCategory I]
+theorem ι_comp_coyoneda_indOf [SmallCategory C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (X : C) (i : I)
     (g : indOf.obj X ⟶ D.obj i) :
     colimit.ι (D ⋙ coyoneda.obj (op (indOf.obj X))) i g =
@@ -101,7 +105,8 @@ theorem ι_comp_coyoneda_indOf {I : Type v} [SmallCategory I]
 6.1.19, the surjectivity half of the compactness formula): a
 morphism from an embedded object into a filtered colimit in `Ind C`
 factors through one of the stages of the diagram. -/
-theorem exists_factor_of_hom_colimit {I : Type v} [SmallCategory I]
+theorem exists_factor_of_hom_colimit [SmallCategory C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (X : C)
     (f : indOf.obj X ⟶ colimit D) :
     ∃ (i : I) (g : indOf.obj X ⟶ D.obj i),
@@ -117,7 +122,8 @@ theorem exists_factor_of_hom_colimit {I : Type v} [SmallCategory I]
 compactness formula): two stage factorisations that agree after
 passing to the filtered colimit are merged by transition maps of the
 diagram. -/
-theorem factor_eq_of_hom_colimit {I : Type v} [SmallCategory I]
+theorem factor_eq_of_hom_colimit [SmallCategory C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (X : C) {i j : I}
     (g₁ : indOf.obj X ⟶ D.obj i) (g₂ : indOf.obj X ⟶ D.obj j)
     (h : g₁ ≫ colimit.ι D i = g₂ ≫ colimit.ι D j) :
@@ -136,7 +142,8 @@ agree after passing to the colimit iff they agree after some
 transition map.  (In an additive setting, applied with `g₂ = 0`:
 a stage morphism vanishes in the colimit iff it vanishes at some
 later stage.) -/
-theorem comp_ι_eq_comp_ι_iff {I : Type v} [SmallCategory I]
+theorem comp_ι_eq_comp_ι_iff [SmallCategory C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (X : C) {i : I}
     (g₁ g₂ : indOf.obj X ⟶ D.obj i) :
     g₁ ≫ colimit.ι D i = g₂ ≫ colimit.ι D i ↔

@@ -25,12 +25,13 @@ open Fragment Classical
 
 section Indep
 
-variable {L : Type} [LinearOrder L] [IsEmpty L] {V : Fragment L}
+variable {L : Type}
 
 /-- **At an empty label type the summand does not depend on the
 canonical data.**  The chord sign is one and the label chords are
 empty, so Proposition 3 equates the two signed values. -/
-theorem throughSummand_canon_indep {k ℓ : ℕ} (F : EdgeSubset V)
+theorem throughSummand_canon_indep [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ} (F : EdgeSubset V)
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L)
     (hbnd : genBoundarySubsetMatches V F.flags st)
     (d₁ d₂ : F.CanonData) :
@@ -49,23 +50,23 @@ end Indep
 
 section Relabel
 
-variable {L : Type} [LinearOrder L] [IsEmpty L] {V : Fragment L}
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- Every flag of a subset at an empty label type is internally
 attached. -/
-theorem attach_inl_isEmpty (F : EdgeSubset V) :
+theorem attach_inl_isEmpty [IsEmpty L] {V : Fragment L}
+    (F : EdgeSubset V) :
     ∀ f ∈ F.flags, ∃ v : V.Vertex, V.attach f = Sum.inl v := by
   intro f _
   rcases hv : V.attach f with v | i
   · exact ⟨v, rfl⟩
   · exact isEmptyElim i
 
-omit [IsEmpty L] in
 open Classical in
 /-- **The relabelled fragment's Definition 5 value is the summand
 downstairs.**  Both are RS21's `s_h(G,H)` for the same subset. -/
-theorem mixedValue_relabelUp_closed (e : L ≃o Fin 0)
+theorem mixedValue_relabelUp_closed [LinearOrder L] {V : Fragment L}
+    (e : L ≃o Fin 0)
     (F : EdgeSubset V) {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ L)
     (hbnd : genBoundarySubsetMatches V F.flags st)
@@ -106,22 +107,25 @@ theorem mixedValue_relabelUp_closed (e : L ≃o Fin 0)
   · rw [hst2]; exact hbnd
   · congr 1
 
-omit [LinearOrder L] in
 /-- At an empty label type every subset matches every state. -/
-theorem genBoundarySubsetMatches_isEmpty {k ℓ : ℕ}
+theorem genBoundarySubsetMatches_isEmpty [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ}
     (s : Finset V.Flag) (st : GenBoundaryState k ℓ L) :
     genBoundarySubsetMatches V s st :=
   fun i => isEmptyElim i
 
 /-- At an empty label type every bijection to `Fin 0` is monotone. -/
-def emptyOrderIso (ee : L ≃ Fin 0) : L ≃o Fin 0 where
+def emptyOrderIso [LinearOrder L] [IsEmpty L]
+    (ee : L ≃ Fin 0) : L ≃o Fin 0 where
   toEquiv := ee
   map_rel_iff' {a} := isEmptyElim a
 
 open Classical in
 /-- **The relabelled fragment's Definition 5 partition value is the
 constrained value downstairs**, at a monotone relabel. -/
-theorem mixedPartition_relabel_orderIso (e : L ≃o Fin 0)
+theorem mixedPartition_relabel_orderIso
+    [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    (e : L ≃o Fin 0)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ L) :
     mixedPartition h (V.relabel e.toEquiv)
@@ -171,7 +175,9 @@ open Classical in
 /-- **The relabelled fragment's Definition 5 partition value is the
 constrained value downstairs.**  Monotonicity is automatic: there is
 nothing to compare. -/
-theorem mixedPartition_relabel_closed (ee : L ≃ Fin 0)
+theorem mixedPartition_relabel_closed
+    [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    (ee : L ≃ Fin 0)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ L) :
     mixedPartition h (V.relabel ee)
@@ -183,7 +189,8 @@ open Classical in
 /-- The same identification, for a fragment presented as a relabel.
 Naming the relabelled fragment keeps the elaborator from having to
 solve for it under the relabel. -/
-theorem mixedPartition_relabel_closed_of_eq (V₀ : Fragment L)
+theorem mixedPartition_relabel_closed_of_eq [LinearOrder L] [IsEmpty L]
+    (V₀ : Fragment L)
     (ee : L ≃ Fin 0) {V' : ClosedFragment}
     (hV : V' = V₀.relabel ee) {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ L) :

@@ -37,17 +37,19 @@ universe v
 
 noncomputable section
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- Transport an isomorphism of plain presheaves to the Day synonym
 category. -/
-def dayMkIso {A B : Cᵒᵖ ⥤ Type v} (e : A ≅ B) :
+def dayMkIso [SmallCategory C] [MonoidalCategory C]
+    {A B : Cᵒᵖ ⥤ Type v} (e : A ≅ B) :
     (DayFunctor.mk A : Cᵒᵖ ⊛⥤ Type v) ≅ DayFunctor.mk B :=
   (equiv Cᵒᵖ (Type v)).inverse.mapIso e
 
 /-- Transport an isomorphism of the Day synonym category to the plain
 presheaf category. -/
-def dayFunctorIso {F G : Cᵒᵖ ⊛⥤ Type v} (e : F ≅ G) :
+def dayFunctorIso [SmallCategory C] [MonoidalCategory C]
+    {F G : Cᵒᵖ ⊛⥤ Type v} (e : F ≅ G) :
     F.functor ≅ G.functor :=
   (equiv Cᵒᵖ (Type v)).functor.mapIso e
 
@@ -56,7 +58,8 @@ presheaves at `x` and `y` is the yoneda presheaf at `x ⊗ y`.  This is
 `RS.dayCoyonedaIso` at the base `Cᵒᵖ`, transported along
 `Coyoneda.objOpOp`, using that `op x ⊗ op y = op (x ⊗ y)` holds
 definitionally in `Cᵒᵖ`. -/
-def dayYonedaIso (x y : C) :
+def dayYonedaIso [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     (DayFunctor.mk (yoneda.obj x) : Cᵒᵖ ⊛⥤ Type v) ⊗
         DayFunctor.mk (yoneda.obj y) ≅
       DayFunctor.mk (yoneda.obj (x ⊗ y)) :=
@@ -67,7 +70,8 @@ def dayYonedaIso (x y : C) :
 
 /-- The Day tensor of two representable presheaves is an
 ind-object. -/
-theorem isIndObject_day_tensor_yoneda (x y : C) :
+theorem isIndObject_day_tensor_yoneda [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     IsIndObject ((DayFunctor.mk (yoneda.obj x) ⊗
       DayFunctor.mk (yoneda.obj y) : Cᵒᵖ ⊛⥤ Type v)).functor :=
   (isIndObject_yoneda (x ⊗ y)).map (dayFunctorIso (dayYonedaIso x y).symm).hom
@@ -79,6 +83,7 @@ small filtered colimit of representables and use closure of
 ind-objects under small filtered colimits.  This is the induction step
 used twice below, for Day tensoring on either side. -/
 theorem isIndObject_obj_of_preservesColimits
+    [SmallCategory C] [MonoidalCategory C]
     (T : (Cᵒᵖ ⊛⥤ Type v) ⥤ Cᵒᵖ ⊛⥤ Type v)
     [PreservesColimitsOfSize.{v, v} T]
     (hT : ∀ y : C,
@@ -103,7 +108,9 @@ theorem isIndObject_obj_of_preservesColimits
 
 /-- The Day tensor of a representable presheaf with an ind-object is
 an ind-object. -/
-theorem isIndObject_day_tensor_yoneda_left (x : C) {G : Cᵒᵖ ⊛⥤ Type v}
+theorem isIndObject_day_tensor_yoneda_left
+    [SmallCategory C] [MonoidalCategory C]
+    (x : C) {G : Cᵒᵖ ⊛⥤ Type v}
     (hG : IsIndObject G.functor) :
     IsIndObject ((DayFunctor.mk (yoneda.obj x) ⊗ G).functor) :=
   isIndObject_obj_of_preservesColimits
@@ -111,7 +118,8 @@ theorem isIndObject_day_tensor_yoneda_left (x : C) {G : Cᵒᵖ ⊛⥤ Type v}
     (fun y => isIndObject_day_tensor_yoneda x y) hG
 
 /-- Ind-objects are closed under Day convolution. -/
-theorem isIndObject_day_tensor {F G : Cᵒᵖ ⊛⥤ Type v}
+theorem isIndObject_day_tensor [SmallCategory C] [MonoidalCategory C]
+    {F G : Cᵒᵖ ⊛⥤ Type v}
     (hF : IsIndObject F.functor) (hG : IsIndObject G.functor) :
     IsIndObject ((F ⊗ G).functor) :=
   isIndObject_obj_of_preservesColimits (tensorRight G)
@@ -120,7 +128,7 @@ theorem isIndObject_day_tensor {F G : Cᵒᵖ ⊛⥤ Type v}
 variable (C) in
 /-- The Day unit is an ind-object: by `RS.dayUnitIso` it is the
 representable at the monoidal unit of `C`. -/
-theorem isIndObject_day_unit :
+theorem isIndObject_day_unit [SmallCategory C] [MonoidalCategory C] :
     IsIndObject (𝟙_ (Cᵒᵖ ⊛⥤ Type v)).functor :=
   (isIndObject_yoneda (𝟙_ C)).map
     (dayFunctorIso (dayMkIso (Coyoneda.objOpOp (𝟙_ C)).symm ≪≫

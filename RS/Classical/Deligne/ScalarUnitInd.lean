@@ -16,12 +16,11 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [Preadditive D] [MonoidalPreadditive D]
+variable {D : Type u}
 
-omit [MonoidalPreadditive D] in
 /-- Scaling the identity of the unit recovers the scalar. -/
-theorem scalarEnd_unit (φ : ℂ ≃+* End (𝟙_ D)) (c : ℂ) :
+theorem scalarEnd_unit [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    (φ : ℂ ≃+* End (𝟙_ D)) (c : ℂ) :
     scalarEnd φ c (𝟙_ D) = scalarHom φ c := by
   rw [scalarEnd, unitors_equal, unitors_inv_equal,
     rightUnitor_naturality, ← Category.assoc, Iso.inv_hom_id,
@@ -29,7 +28,10 @@ theorem scalarEnd_unit (φ : ℂ ≃+* End (𝟙_ D)) (c : ℂ) :
 
 /-- **The scalar-unit hypothesis holds** under the induced linear
 structure. -/
-theorem hasScalarUnit_of_scalarUnit (φ : ℂ ≃+* End (𝟙_ D)) :
+theorem hasScalarUnit_of_scalarUnit
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D]
+    (φ : ℂ ≃+* End (𝟙_ D)) :
     letI := linearOfScalarUnit φ
     HasScalarUnit D := by
   letI := linearOfScalarUnit φ

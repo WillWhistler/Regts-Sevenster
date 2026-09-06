@@ -15,11 +15,12 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 open Classical in
 /-- The far end of the chord at `x`, when one exists. -/
-noncomputable def cutPartner (P : Finset (α × α)) (x : α) :
+noncomputable def cutPartner [LinearOrder α]
+    (P : Finset (α × α)) (x : α) :
     Option α :=
   if h : ∃ y, (min x y, max x y) ∈ P then
     some (Classical.choose h)
@@ -27,7 +28,8 @@ noncomputable def cutPartner (P : Finset (α × α)) (x : α) :
 
 open Classical in
 /-- The glued diagram. -/
-noncomputable def glueChords (i j : α) (P : Finset (α × α)) :
+noncomputable def glueChords [LinearOrder α]
+    (i j : α) (P : Finset (α × α)) :
     Finset (α × α) :=
   match cutPartner P i, cutPartner P j with
   | some x, some y =>
@@ -37,7 +39,8 @@ noncomputable def glueChords (i j : α) (P : Finset (α × α)) :
   | _, _ => P
 
 /-- In a well-formed diagram a chord end determines its far end. -/
-theorem cutPartner_eq_some {P : Finset (α × α)}
+theorem cutPartner_eq_some [LinearOrder α]
+    {P : Finset (α × α)}
     (hP : IsChordDiagram P) {x y : α}
     (h : (min x y, max x y) ∈ P) : cutPartner P x = some y := by
   have hex : ∃ z, (min x z, max x z) ∈ P := ⟨y, h⟩
@@ -88,14 +91,16 @@ theorem cutPartner_eq_some {P : Finset (α × α)}
         ((max_eq_left hle).trans (max_eq_left hle').symm)
 
 /-- Well-formedness is inherited by subdiagrams. -/
-theorem IsChordDiagram.mono {P Q : Finset (α × α)}
+theorem IsChordDiagram.mono [LinearOrder α]
+    {P Q : Finset (α × α)}
     (hQP : Q ⊆ P) (hP : IsChordDiagram P) : IsChordDiagram Q :=
   ⟨fun p hp => hP.ordered p (hQP hp),
     fun p hp q hq hne => hP.disjoint p (hQP hp) q (hQP hq) hne⟩
 
 /-- The glued diagram of a crossing cut: the chords at the two cut
 labels concatenate. -/
-theorem glueChords_cross {P : Finset (α × α)}
+theorem glueChords_cross [LinearOrder α]
+    {P : Finset (α × α)}
     (hP : IsChordDiagram P) {i j x y : α} (hxj : x ≠ j)
     (hi : (min i x, max i x) ∈ P) (hj : (min j y, max j y) ∈ P) :
     glueChords i j P =

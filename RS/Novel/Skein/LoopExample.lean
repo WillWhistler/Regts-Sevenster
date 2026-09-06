@@ -3,7 +3,7 @@ import RS.Novel.Skein.ConverseDischarge
 /-!
 # The loop graph, evaluated
 
-The accompanying paper's worked example of Definition 5 (§2.4),
+The accompanying paper's worked example of Definition 2.1 (§2.4),
 carried out in the flag model.  With `k = 2` and `ℓ = 1`, the
 functional
 `h(θ)` of `charPolyFunctional` has `p_{h(θ)}` equal to the
@@ -49,9 +49,9 @@ def loopGraph : ClosedFragment where
 
 The odd value carried here is the coefficient on the *sorted* wedge
 `ξ₁ ∧ ξ₂`, which is `−1`: the symplectic partner of `ξ₁` is
-`η₁ = −ξ₂`, so `ξ₁ ∧ η₁ = −ξ₁ ∧ ξ₂`.  That is the twist the
-paper's §5.4 records, and it is why the odd sector contributes
-`−2` rather than `+2` below. -/
+`η₁ = −ξ₂`, so `ξ₁ ∧ η₁ = −ξ₁ ∧ ξ₂`. These are the partner
+conventions of the paper's §2.4, and the two odd colourings each
+contribute `−1` below. -/
 def charPolyFunctional (θ : ℂ) : MixedFunctional 2 1 := fun μ w =>
   if μ.count 1 = 0 then
     (if w = ∅ then θ else if w = Finset.univ then -1 else 0)

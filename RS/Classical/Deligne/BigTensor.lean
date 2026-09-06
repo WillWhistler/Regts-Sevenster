@@ -31,34 +31,40 @@ local notation "μ[" M "]" => MonObj.mul (X := M)
 universe v u
 
 variable {ι : Type v}
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Finite tensor products -/
 
 /-- The tensor product of the factors `B i` over a list of
 indices, folded to the right with the unit object as seed. -/
-def listTensor (B : ι → D) : List ι → D
+def listTensor [Category.{v} D] [MonoidalCategory D]
+    (B : ι → D) : List ι → D
   | [] => 𝟙_ D
   | i :: l => B i ⊗ listTensor B l
 
-@[simp] lemma listTensor_nil (B : ι → D) : listTensor B [] = 𝟙_ D := rfl
+@[simp] lemma listTensor_nil [Category.{v} D] [MonoidalCategory D]
+    (B : ι → D) : listTensor B [] = 𝟙_ D := rfl
 
-@[simp] lemma listTensor_cons (B : ι → D) (i : ι) (l : List ι) :
+@[simp] lemma listTensor_cons [Category.{v} D] [MonoidalCategory D]
+    (B : ι → D) (i : ι) (l : List ι) :
     listTensor B (i :: l) = B i ⊗ listTensor B l := rfl
 
 section LinearOrder
 
-variable [LinearOrder ι]
-
 /-- The tensor product of the factors `B i` over a finite set of
 indices, in the slot order given by the linear order on `ι`. -/
-def finTensor (B : ι → D) (s : Finset ι) : D :=
+def finTensor [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    (B : ι → D) (s : Finset ι) : D :=
   listTensor B (s.sort (· ≤ ·))
 
-@[simp] lemma finTensor_empty (B : ι → D) : finTensor B ∅ = 𝟙_ D := by
+@[simp] lemma finTensor_empty
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    (B : ι → D) : finTensor B ∅ = 𝟙_ D := by
   simp [finTensor]
 
-@[simp] lemma finTensor_singleton (B : ι → D) (i : ι) :
+@[simp] lemma finTensor_singleton
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    (B : ι → D) (i : ι) :
     finTensor B {i} = B i ⊗ 𝟙_ D := by
   simp [finTensor]
 
@@ -66,18 +72,18 @@ end LinearOrder
 
 section Monoid
 
-variable [BraidedCategory D]
-
 /-- The finite tensor products of a family of monoid objects are
 monoid objects, by folding the binary braided instance. -/
-instance listTensorMon (B : ι → D) [∀ i, MonObj (B i)] :
+instance listTensorMon [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (B : ι → D) [∀ i, MonObj (B i)] :
     ∀ l : List ι, MonObj (listTensor B l)
   | [] => inferInstanceAs (MonObj (𝟙_ D))
   | i :: l =>
     letI := listTensorMon B l
     inferInstanceAs (MonObj (B i ⊗ listTensor B l))
 
-instance finTensorMon [LinearOrder ι] (B : ι → D) [∀ i, MonObj (B i)]
+instance finTensorMon [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [LinearOrder ι] (B : ι → D) [∀ i, MonObj (B i)]
     (s : Finset ι) :
     MonObj (finTensor B s) :=
   inferInstanceAs (MonObj (listTensor B (s.sort (· ≤ ·))))
@@ -86,12 +92,12 @@ end Monoid
 
 section CommMonoid
 
-variable [SymmetricCategory D]
-
 /-- Finite tensor products of commutative monoid objects are
 commutative, by folding the binary instance of the symmetric
 category. -/
-instance listTensorCommMon (B : ι → D) [∀ i, MonObj (B i)]
+instance listTensorCommMon
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (B : ι → D) [∀ i, MonObj (B i)]
     [∀ i, IsCommMonObj (B i)] :
     ∀ l : List ι, IsCommMonObj (listTensor B l)
   | [] => inferInstanceAs (IsCommMonObj (𝟙_ D))
@@ -99,7 +105,9 @@ instance listTensorCommMon (B : ι → D) [∀ i, MonObj (B i)]
     letI := listTensorCommMon B l
     inferInstanceAs (IsCommMonObj (B i ⊗ listTensor B l))
 
-instance finTensorCommMon [LinearOrder ι] (B : ι → D)
+instance finTensorCommMon
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [LinearOrder ι] (B : ι → D)
     [∀ i, MonObj (B i)] [∀ i, IsCommMonObj (B i)] (s : Finset ι) :
     IsCommMonObj (finTensor B s) :=
   inferInstanceAs (IsCommMonObj (listTensor B (s.sort (· ≤ ·))))
@@ -110,25 +118,30 @@ end CommMonoid
 
 /-- The unit `η[M] : 𝟙_ D ⟶ M` is a morphism of monoid objects
 from the trivial monoid. -/
-instance isMonHom_one (M : D) [MonObj M] : IsMonHom η[M] where
+instance isMonHom_one [Category.{v} D] [MonoidalCategory D]
+    (M : D) [MonObj M] : IsMonHom η[M] where
   one_hom := by simp
   mul_hom := by simp [unitors_equal]
 
 /-- Insertion of the unit of the monoid `M` in the front slot. -/
-def unitIncl (M X : D) [MonObj M] : X ⟶ M ⊗ X :=
+def unitIncl [Category.{v} D] [MonoidalCategory D]
+    (M X : D) [MonObj M] : X ⟶ M ⊗ X :=
   (λ_ X).inv ≫ η[M] ▷ X
 
-lemma unitIncl_eq_tensorHom (M X : D) [MonObj M] :
+lemma unitIncl_eq_tensorHom [Category.{v} D] [MonoidalCategory D]
+    (M X : D) [MonObj M] :
     unitIncl M X = (λ_ X).inv ≫ (η[M] ⊗ₘ 𝟙 X) := by
   simp [unitIncl]
 
 @[reassoc]
-lemma unitIncl_naturality (M : D) [MonObj M] {X Y : D} (f : X ⟶ Y) :
+lemma unitIncl_naturality [Category.{v} D] [MonoidalCategory D]
+    (M : D) [MonObj M] {X Y : D} (f : X ⟶ Y) :
     f ≫ unitIncl M Y = unitIncl M X ≫ (M ◁ f) := by
   simp only [unitIncl, Category.assoc]
   rw [leftUnitor_inv_naturality_assoc, whisker_exchange]
 
-instance isMonHom_unitIncl [BraidedCategory D] (M X : D) [MonObj M]
+instance isMonHom_unitIncl [Category.{v} D] [MonoidalCategory D]
+    [BraidedCategory D] (M X : D) [MonObj M]
     [MonObj X] : IsMonHom (unitIncl M X) := by
   rw [unitIncl_eq_tensorHom]
   infer_instance
@@ -142,8 +155,6 @@ the unit of each factor whose index fails `p`. -/
 
 section Insertion
 
-variable (B : ι → D) [∀ i, MonObj (B i)]
-
 /-- Insertion morphism from the tensor product over the filtered
 list into the tensor product over the full list, placing units in
 the slots dropped by the filter.
@@ -152,7 +163,9 @@ Convention: all stated morphisms have `listTensor`-form
 endpoints; the tensor-shaped intermediate objects appear only
 between explicit `eqToHom` guards, so that every composition in
 the subsequent lemmas is well typed on the nose. -/
-def inclFilter (p : ι → Bool) :
+def inclFilter
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p : ι → Bool) :
     ∀ l : List ι, listTensor B (l.filter p) ⟶ listTensor B l
   | [] => 𝟙 _
   | i :: l =>
@@ -160,19 +173,23 @@ def inclFilter (p : ι → Bool) :
       eqToHom (show listTensor B ((i :: l).filter p) =
           B i ⊗ listTensor B (l.filter p) by
         rw [List.filter_cons_of_pos h, listTensor_cons]) ≫
-        (B i ◁ inclFilter p l) ≫
+        (B i ◁ inclFilter B p l) ≫
         eqToHom (listTensor_cons B i l).symm
     else
       eqToHom (show listTensor B ((i :: l).filter p) =
           listTensor B (l.filter p) by
         rw [List.filter_cons_of_neg (by simp [h])]) ≫
-        inclFilter p l ≫ unitIncl (B i) (listTensor B l) ≫
+        inclFilter B p l ≫ unitIncl (B i) (listTensor B l) ≫
         eqToHom (listTensor_cons B i l).symm
 
-@[simp] lemma inclFilter_nil (p : ι → Bool) :
+@[simp] lemma inclFilter_nil
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p : ι → Bool) :
     inclFilter B p [] = 𝟙 (𝟙_ D) := rfl
 
-lemma inclFilter_cons_pos (p : ι → Bool) {i : ι} (l : List ι)
+lemma inclFilter_cons_pos
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p : ι → Bool) {i : ι} (l : List ι)
     (h : p i) :
     inclFilter B p (i :: l) =
       eqToHom (show listTensor B ((i :: l).filter p) =
@@ -182,7 +199,9 @@ lemma inclFilter_cons_pos (p : ι → Bool) {i : ι} (l : List ι)
         eqToHom (listTensor_cons B i l).symm := by
   rw [inclFilter, dif_pos h]
 
-lemma inclFilter_cons_neg (p : ι → Bool) {i : ι} (l : List ι)
+lemma inclFilter_cons_neg
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p : ι → Bool) {i : ι} (l : List ι)
     (h : ¬ p i) :
     inclFilter B p (i :: l) =
       eqToHom (show listTensor B ((i :: l).filter p) =
@@ -193,14 +212,18 @@ lemma inclFilter_cons_neg (p : ι → Bool) {i : ι} (l : List ι)
   rw [inclFilter, dif_neg h]
 
 /-- Equal index lists give equal (conjugated) insertions. -/
-lemma inclFilter_congr (p : ι → Bool) {l₁ l₂ : List ι} (h : l₁ = l₂) :
+lemma inclFilter_congr
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p : ι → Bool) {l₁ l₂ : List ι} (h : l₁ = l₂) :
     inclFilter B p l₁ =
       eqToHom (by rw [h]) ≫ inclFilter B p l₂ ≫ eqToHom (by rw [h]) := by
   subst h
   simp
 
 /-- Equal predicates give equal (transported) insertions. -/
-lemma inclFilter_congr_pred {p q : ι → Bool} (h : p = q)
+lemma inclFilter_congr_pred
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    {p q : ι → Bool} (h : p = q)
     (l : List ι) :
     inclFilter B p l = eqToHom (by rw [h]) ≫ inclFilter B q l := by
   subst h
@@ -208,7 +231,9 @@ lemma inclFilter_congr_pred {p q : ι → Bool} (h : p = q)
 
 /-- Transporting along an equality of index lists is a morphism
 of monoid objects. -/
-lemma isMonHom_eqToHom [BraidedCategory D] {l₁ l₂ : List ι}
+lemma isMonHom_eqToHom
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [BraidedCategory D] {l₁ l₂ : List ι}
     (h : l₁ = l₂) (q : listTensor B l₁ = listTensor B l₂) :
     IsMonHom (eqToHom q) := by
   subst h
@@ -216,11 +241,13 @@ lemma isMonHom_eqToHom [BraidedCategory D] {l₁ l₂ : List ι}
   infer_instance
 
 /-- The insertions are morphisms of monoid objects. -/
-instance isMonHom_inclFilter [BraidedCategory D] (p : ι → Bool) :
+instance isMonHom_inclFilter
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [BraidedCategory D] (p : ι → Bool) :
     ∀ l : List ι, IsMonHom (inclFilter B p l)
   | [] => inferInstanceAs (IsMonHom (𝟙 (𝟙_ D)))
   | i :: l => by
-    haveI := isMonHom_inclFilter p l
+    haveI := isMonHom_inclFilter B p l
     haveI : IsMonHom (eqToHom (listTensor_cons B i l).symm) :=
       isMonHom_eqToHom B (l₁ := i :: l) (l₂ := i :: l) rfl
         (listTensor_cons B i l).symm
@@ -248,27 +275,31 @@ instance isMonHom_inclFilter [BraidedCategory D] (p : ι → Bool) :
 
 /-- Inserting nothing: if every index passes the filter, the
 insertion is the transport of the identity. -/
-lemma inclFilter_of_forall (p : ι → Bool) :
+lemma inclFilter_of_forall
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p : ι → Bool) :
     ∀ (l : List ι) (h : ∀ i ∈ l, p i),
       inclFilter B p l = eqToHom (by rw [List.filter_eq_self.mpr h])
   | [], _ => by simp
   | i :: l, h => by
     rw [inclFilter_cons_pos B p l (h i (by simp)),
-      inclFilter_of_forall p l (fun j hj => h j (by simp [hj]))]
+      inclFilter_of_forall B p l (fun j hj => h j (by simp [hj]))]
     simp
 
 /-- The composition law for insertions: inserting the units of
 `l.filter q` past `p` and then those of `l` past `q` is the
 insertion past the conjunction.  This is the coherence heart of
 the transition maps of the big tensor product. -/
-lemma inclFilter_inclFilter (p q : ι → Bool) :
+lemma inclFilter_inclFilter
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (p q : ι → Bool) :
     ∀ l : List ι,
       inclFilter B p (l.filter q) ≫ inclFilter B q l =
         eqToHom (by rw [List.filter_filter]) ≫
           inclFilter B (fun i => p i && q i) l
   | [] => by simp
   | i :: l => by
-    have IH := inclFilter_inclFilter p q l
+    have IH := inclFilter_inclFilter B p q l
     by_cases hq : q i
     · have hfq : (i :: l).filter q = i :: l.filter q :=
         List.filter_cons_of_pos hq
@@ -307,7 +338,9 @@ lemma inclFilter_inclFilter (p q : ι → Bool) :
 
 /-- On a vanishing index list, the unit of the fold monoid is the
 canonical identification with the monoidal unit. -/
-lemma listTensor_one_eq [BraidedCategory D] {l : List ι} (h : l = []) :
+lemma listTensor_one_eq
+    [Category.{v} D] [MonoidalCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [BraidedCategory D] {l : List ι} (h : l = []) :
     η[listTensor B l] =
       eqToHom (show 𝟙_ D = listTensor B l by rw [h, listTensor_nil]) := by
   subst h
@@ -319,11 +352,10 @@ end Insertion
 
 section FinsetIncl
 
-variable [LinearOrder ι] (B : ι → D) [∀ i, MonObj (B i)]
-
 /-- Sorting commutes with restriction: the sorted list of a
 subset of `t` is the filtering of the sorted list of `t`. -/
-lemma sort_filter_of_subset {s t : Finset ι} (h : s ⊆ t) :
+lemma sort_filter_of_subset [LinearOrder ι]
+    {s t : Finset ι} (h : s ⊆ t) :
     (t.sort (· ≤ ·)).filter (fun i => decide (i ∈ s)) =
       s.sort (· ≤ ·) := by
   apply List.Perm.eq_of_pairwise' (r := (· ≤ ·))
@@ -335,7 +367,10 @@ lemma sort_filter_of_subset {s t : Finset ι} (h : s ⊆ t) :
 
 /-- The inclusion of the finite sub-tensor-product over `s ⊆ t`,
 inserting the units of the factors missing from `s`. -/
-def finTensorIncl {s t : Finset ι} (h : s ⊆ t) :
+def finTensorIncl
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)]
+    {s t : Finset ι} (h : s ⊆ t) :
     finTensor B s ⟶ finTensor B t :=
   eqToHom (show finTensor B s =
       listTensor B ((t.sort (· ≤ ·)).filter fun i => decide (i ∈ s)) by
@@ -343,7 +378,10 @@ def finTensorIncl {s t : Finset ι} (h : s ⊆ t) :
   inclFilter B (fun i => decide (i ∈ s)) (t.sort (· ≤ ·)) ≫
   eqToHom (show listTensor B (t.sort (· ≤ ·)) = finTensor B t from rfl)
 
-@[simp] lemma finTensorIncl_refl (s : Finset ι) :
+@[simp] lemma finTensorIncl_refl
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)]
+    (s : Finset ι) :
     finTensorIncl B (subset_refl s) = 𝟙 (finTensor B s) := by
   rw [finTensorIncl, inclFilter_of_forall B _ _
     (fun i hi => by simpa using hi)]
@@ -351,7 +389,10 @@ def finTensorIncl {s t : Finset ι} (h : s ⊆ t) :
 
 /-- Functoriality of the inclusions of sub-tensor-products. -/
 @[reassoc]
-lemma finTensorIncl_trans {s t u : Finset ι} (hst : s ⊆ t)
+lemma finTensorIncl_trans
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)]
+    {s t u : Finset ι} (hst : s ⊆ t)
     (htu : t ⊆ u) :
     finTensorIncl B hst ≫ finTensorIncl B htu =
       finTensorIncl B (hst.trans htu) := by
@@ -371,7 +412,10 @@ lemma finTensorIncl_trans {s t u : Finset ι} (hst : s ⊆ t)
 
 /-- The inclusions of sub-tensor-products are morphisms of monoid
 objects. -/
-instance isMonHom_finTensorIncl [BraidedCategory D] {s t : Finset ι}
+instance isMonHom_finTensorIncl
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)]
+    [BraidedCategory D] {s t : Finset ι}
     (h : s ⊆ t) : IsMonHom (finTensorIncl B h) := by
   rw [finTensorIncl]
   haveI : IsMonHom (eqToHom (show finTensor B s =
@@ -393,8 +437,6 @@ end FinsetIncl
 
 section BigTensor
 
-variable [LinearOrder ι] (B : ι → D) [∀ i, MonObj (B i)]
-
 /-- The index category of finite stages is filtered: `Finset ι`
 is a directed order with unions as upper bounds. -/
 example : IsFiltered (Finset ι) := inferInstance
@@ -402,38 +444,53 @@ example : IsFiltered (Finset ι) := inferInstance
 /-- The `Finset ι`-shaped diagram of finite sub-tensor-products,
 with the unit insertions as transition maps. -/
 @[simps]
-def finTensorDiagram : Finset ι ⥤ D where
+def finTensorDiagram
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] : Finset ι ⥤ D where
   obj s := finTensor B s
   map f := finTensorIncl B (leOfHom f)
   map_id s := finTensorIncl_refl B s
   map_comp f g :=
     (finTensorIncl_trans B (leOfHom f) (leOfHom g)).symm
 
-variable [HasColimitsOfShape (Finset ι) D]
-
 /-- The tensor product of the whole family `B`, as the filtered
 colimit of its finite sub-tensor-products. -/
-noncomputable def bigTensor : D := colimit (finTensorDiagram B)
+noncomputable def bigTensor
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] [HasColimitsOfShape (Finset ι) D] :
+    D := colimit (finTensorDiagram B)
 
 /-- The stage inclusion of a finite sub-tensor-product into the
 big tensor product. -/
-noncomputable def bigTensorStage (s : Finset ι) :
+noncomputable def bigTensorStage
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] [HasColimitsOfShape (Finset ι) D]
+    (s : Finset ι) :
     finTensor B s ⟶ bigTensor B :=
   colimit.ι (finTensorDiagram B) s
 
 /-- Stage inclusions are compatible with the insertions. -/
 @[reassoc (attr := simp)]
-lemma finTensorIncl_bigTensorStage {s t : Finset ι} (h : s ⊆ t) :
+lemma finTensorIncl_bigTensorStage
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] [HasColimitsOfShape (Finset ι) D]
+    {s t : Finset ι} (h : s ⊆ t) :
     finTensorIncl B h ≫ bigTensorStage B t = bigTensorStage B s :=
   colimit.w (finTensorDiagram B) (homOfLE h)
 
 /-- The unit of the big tensor product: the empty stage. -/
-noncomputable def bigTensorUnit : 𝟙_ D ⟶ bigTensor B :=
+noncomputable def bigTensorUnit
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] [HasColimitsOfShape (Finset ι) D] :
+    𝟙_ D ⟶ bigTensor B :=
   eqToHom (finTensor_empty B).symm ≫ bigTensorStage B ∅
 
 /-- The inclusion of a single factor, through the stage at the
 singleton. -/
-noncomputable def bigTensorOf (i : ι) : B i ⟶ bigTensor B :=
+noncomputable def bigTensorOf
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] [HasColimitsOfShape (Finset ι) D]
+    (i : ι) : B i ⟶ bigTensor B :=
   (ρ_ (B i)).inv ≫ eqToHom (finTensor_singleton B i).symm ≫
     bigTensorStage B {i}
 
@@ -443,25 +500,26 @@ end BigTensor
 
 section StageMonoid
 
-variable [LinearOrder ι] [BraidedCategory D]
-variable (B : ι → D) [∀ i, MonObj (B i)]
-
-lemma finTensor_one_def (s : Finset ι) :
+lemma finTensor_one_def [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (s : Finset ι) :
     η[finTensor B s] = η[listTensor B (s.sort (· ≤ ·))] := rfl
 
 /-- The unit of the empty stage is the canonical identification
 with the monoidal unit. -/
-lemma finTensor_one_empty :
+lemma finTensor_one_empty [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)] :
     η[finTensor B ∅] = eqToHom (finTensor_empty B).symm := by
   rw [finTensor_one_def,
     listTensor_one_eq B (Finset.sort_empty (fun a b => a ≤ b))]
   rfl
 
-variable [HasColimitsOfShape (Finset ι) D]
-
 /-- The unit of the big tensor product is reached from the unit
 of any finite stage. -/
-lemma bigTensorUnit_stage (s : Finset ι) :
+lemma bigTensorUnit_stage [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    (s : Finset ι) :
     η[finTensor B s] ≫ bigTensorStage B s = bigTensorUnit B := by
   rw [← (isMonHom_finTensorIncl B (Finset.empty_subset s)).one_hom,
     Category.assoc, finTensorIncl_bigTensorStage, finTensor_one_empty,
@@ -478,11 +536,10 @@ together with their coherence squares. -/
 
 section Merge
 
-variable [LinearOrder ι] [BraidedCategory D]
-variable (B : ι → D) [∀ i, MonObj (B i)]
-
 /-- The inclusion of the empty stage is the unit. -/
-lemma finTensorIncl_empty (u : Finset ι) :
+lemma finTensorIncl_empty [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (u : Finset ι) :
     finTensorIncl B (Finset.empty_subset u) =
       eqToHom (finTensor_empty B) ≫ η[finTensor B u] := by
   rw [← (isMonHom_finTensorIncl B (Finset.empty_subset u)).one_hom,
@@ -491,7 +548,9 @@ lemma finTensorIncl_empty (u : Finset ι) :
 
 /-- The merge map of two finite stages: include both into the
 union stage and multiply there. -/
-def finTensorMul (s t : Finset ι) :
+def finTensorMul [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (s t : Finset ι) :
     finTensor B s ⊗ finTensor B t ⟶ finTensor B (s ∪ t) :=
   (finTensorIncl B Finset.subset_union_left ⊗ₘ
     finTensorIncl B Finset.subset_union_right) ≫ μ[finTensor B (s ∪ t)]
@@ -499,7 +558,9 @@ def finTensorMul (s t : Finset ι) :
 /-- Include-then-multiply is independent of the receiving stage:
 merging and then including into any common superset is inclusion
 into the superset followed by its multiplication. -/
-lemma finTensorMul_incl {s t v : Finset ι} (hs : s ⊆ v) (ht : t ⊆ v)
+lemma finTensorMul_incl [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    {s t v : Finset ι} (hs : s ⊆ v) (ht : t ⊆ v)
     (huv : s ∪ t ⊆ v) :
     finTensorMul B s t ≫ finTensorIncl B huv =
       (finTensorIncl B hs ⊗ₘ finTensorIncl B ht) ≫
@@ -510,7 +571,9 @@ lemma finTensorMul_incl {s t v : Finset ι} (hs : s ⊆ v) (ht : t ⊆ v)
 
 /-- Naturality of the merge maps in both stages. -/
 @[reassoc]
-lemma finTensorMul_natural {s s' t t' : Finset ι} (hs : s ⊆ s')
+lemma finTensorMul_natural [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    {s s' t t' : Finset ι} (hs : s ⊆ s')
     (ht : t ⊆ t') :
     (finTensorIncl B hs ⊗ₘ finTensorIncl B ht) ≫
         finTensorMul B s' t' =
@@ -521,12 +584,13 @@ lemma finTensorMul_natural {s s' t t' : Finset ι} (hs : s ⊆ s')
     ← Category.assoc, tensorHom_comp_tensorHom, finTensorIncl_trans,
     finTensorIncl_trans]
 
-variable [HasColimitsOfShape (Finset ι) D]
-
 /-- The merge maps composed with the stage inclusions form a
 cocone in each variable: the square defining the multiplication
 of the big tensor product commutes. -/
-lemma finTensorMul_stage {s s' t t' : Finset ι} (hs : s ⊆ s')
+lemma finTensorMul_stage [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    {s s' t t' : Finset ι} (hs : s ⊆ s')
     (ht : t ⊆ t') :
     (finTensorIncl B hs ⊗ₘ finTensorIncl B ht) ≫
         finTensorMul B s' t' ≫ bigTensorStage B (s' ∪ t') =
@@ -534,20 +598,24 @@ lemma finTensorMul_stage {s s' t t' : Finset ι} (hs : s ⊆ s')
   rw [← Category.assoc, finTensorMul_natural, Category.assoc,
     finTensorIncl_bigTensorStage]
 
-omit [BraidedCategory D] [HasColimitsOfShape (Finset ι) D] in
 /-- The stage identification along an equality of finite sets is
 an inclusion. -/
-lemma eqToHom_eq_finTensorIncl {s t : Finset ι} (e : s = t)
+lemma eqToHom_eq_finTensorIncl
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)]
+    {s t : Finset ι} (e : s = t)
     (h : s ⊆ t) :
     eqToHom (show finTensor B s = finTensor B t by rw [e]) =
       finTensorIncl B h := by
   subst e
   simp
 
-omit [HasColimitsOfShape (Finset ι) D] in
 /-- Unit square: merging with the empty stage on the left is the
 left unitor followed by the inclusion. -/
-lemma finTensorMul_empty_left (t : Finset ι) :
+lemma finTensorMul_empty_left
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (t : Finset ι) :
     (eqToHom (finTensor_empty B).symm ▷ finTensor B t) ≫
         finTensorMul B ∅ t =
       (λ_ (finTensor B t)).hom ≫
@@ -557,10 +625,12 @@ lemma finTensorMul_empty_left (t : Finset ι) :
   simp only [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
   rw [MonObj.one_mul_hom]
 
-omit [HasColimitsOfShape (Finset ι) D] in
 /-- Unit square: merging with the empty stage on the right is the
 right unitor followed by the inclusion. -/
-lemma finTensorMul_empty_right (t : Finset ι) :
+lemma finTensorMul_empty_right
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (t : Finset ι) :
     (finTensor B t ◁ eqToHom (finTensor_empty B).symm) ≫
         finTensorMul B t ∅ =
       (ρ_ (finTensor B t)).hom ≫
@@ -570,10 +640,10 @@ lemma finTensorMul_empty_right (t : Finset ι) :
   simp only [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
   rw [MonObj.mul_one_hom]
 
-omit [LinearOrder ι] [BraidedCategory D] in
 /-- Three-fold multiplication of a monoid object is associative,
 in the folded form used by the merge maps. -/
-lemma tensor_mul_assoc {M X Y Z : D} [MonObj M] (a : X ⟶ M)
+lemma tensor_mul_assoc [Category.{v} D] [MonoidalCategory D]
+    {M X Y Z : D} [MonObj M] (a : X ⟶ M)
     (b : Y ⟶ M) (c : Z ⟶ M) :
     (((a ⊗ₘ b) ≫ μ[M]) ⊗ₘ c) ≫ μ[M] =
       (α_ X Y Z).hom ≫ (a ⊗ₘ ((b ⊗ₘ c) ≫ μ[M])) ≫ μ[M] := by
@@ -583,19 +653,21 @@ lemma tensor_mul_assoc {M X Y Z : D} [MonObj M] (a : X ⟶ M)
     Category.assoc, ← id_tensorHom,
     tensorHom_comp_tensorHom_assoc, Category.comp_id]
 
-omit [HasColimitsOfShape (Finset ι) D] in
 /-- Definitional unfolding of the merge map, for targeted
 rewriting. -/
-lemma finTensorMul_def (s t : Finset ι) :
+lemma finTensorMul_def [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (s t : Finset ι) :
     finTensorMul B s t =
       (finTensorIncl B Finset.subset_union_left ⊗ₘ
         finTensorIncl B Finset.subset_union_right) ≫
         μ[finTensor B (s ∪ t)] := rfl
 
-omit [HasColimitsOfShape (Finset ι) D] in
 /-- Associativity square of the merge maps. -/
 @[reassoc]
-lemma finTensorMul_assoc (s t u : Finset ι) :
+lemma finTensorMul_assoc [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    (s t u : Finset ι) :
     (finTensorMul B s t ▷ finTensor B u) ≫ finTensorMul B (s ∪ t) u =
       (α_ (finTensor B s) (finTensor B t) (finTensor B u)).hom ≫
         (finTensor B s ◁ finTensorMul B t u) ≫
@@ -635,14 +707,14 @@ merge maps assemble into the multiplication. -/
 
 section BigTensorMul
 
-variable [LinearOrder ι] [BraidedCategory D]
-variable (B : ι → D) [∀ i, MonObj (B i)]
-variable [HasColimitsOfShape (Finset ι) D]
-variable [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
-
 /-- Maps out of `bigTensor B ⊗ X` are determined by their
 restrictions to the stages. -/
-lemma bigTensor_tensorRight_hom_ext {X Z : D}
+lemma bigTensor_tensorRight_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    {X Z : D}
     {f g : bigTensor B ⊗ X ⟶ Z}
     (w : ∀ s, (bigTensorStage B s ▷ X) ≫ f =
       (bigTensorStage B s ▷ X) ≫ g) : f = g := by
@@ -653,10 +725,13 @@ lemma bigTensor_tensorRight_hom_ext {X Z : D}
   rw [ι_preservesColimitIso_inv_assoc, ι_preservesColimitIso_inv_assoc]
   exact w s
 
-omit [BraidedCategory D] in
 /-- Maps out of `X ⊗ bigTensor B` are determined by their
 restrictions to the stages. -/
-lemma tensorLeft_bigTensor_hom_ext {X Z : D}
+lemma tensorLeft_bigTensor_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι] (B : ι → D)
+    [∀ i, MonObj (B i)] [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    {X Z : D}
     {f g : X ⊗ bigTensor B ⟶ Z}
     (w : ∀ t, (X ◁ bigTensorStage B t) ≫ f =
       (X ◁ bigTensorStage B t) ≫ g) : f = g := by
@@ -667,20 +742,26 @@ lemma tensorLeft_bigTensor_hom_ext {X Z : D}
   rw [ι_preservesColimitIso_inv_assoc, ι_preservesColimitIso_inv_assoc]
   exact w t
 
-omit [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] in
 /-- Left compatibility of the merge-then-stage maps. -/
 @[reassoc]
-lemma finTensorMul_stage_left {s s' t : Finset ι} (hs : s ⊆ s') :
+lemma finTensorMul_stage_left
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    {s s' t : Finset ι} (hs : s ⊆ s') :
     (finTensorIncl B hs ▷ finTensor B t) ≫ finTensorMul B s' t ≫
         bigTensorStage B (s' ∪ t) =
       finTensorMul B s t ≫ bigTensorStage B (s ∪ t) := by
   have h := finTensorMul_stage B hs (subset_refl t)
   rwa [finTensorIncl_refl, tensorHom_id] at h
 
-omit [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] in
 /-- Right compatibility of the merge-then-stage maps. -/
 @[reassoc]
-lemma finTensorMul_stage_right {s t t' : Finset ι} (ht : t ⊆ t') :
+lemma finTensorMul_stage_right
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    {s t t' : Finset ι} (ht : t ⊆ t') :
     (finTensor B s ◁ finTensorIncl B ht) ≫ finTensorMul B s t' ≫
         bigTensorStage B (s ∪ t') =
       finTensorMul B s t ≫ bigTensorStage B (s ∪ t) := by
@@ -689,7 +770,11 @@ lemma finTensorMul_stage_right {s t t' : Finset ι} (ht : t ⊆ t') :
 
 /-- The merge maps into the big tensor product form a cocone on
 the stage diagram tensored with a fixed finite stage. -/
-noncomputable def bigTensorMulCocone (t : Finset ι) :
+noncomputable def bigTensorMulCocone
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    (t : Finset ι) :
     Cocone (finTensorDiagram B ⋙ tensorRight (finTensor B t)) where
   pt := bigTensor B
   ι :=
@@ -704,7 +789,12 @@ noncomputable def bigTensorMulCocone (t : Finset ι) :
 
 /-- Multiplication of the big tensor product against a fixed
 finite stage. -/
-noncomputable def bigTensorMulStage (t : Finset ι) :
+noncomputable def bigTensorMulStage
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (t : Finset ι) :
     bigTensor B ⊗ finTensor B t ⟶ bigTensor B :=
   ((preservesColimitIso (tensorRight (finTensor B t))
       (finTensorDiagram B)).hom ≫
@@ -714,7 +804,12 @@ noncomputable def bigTensorMulStage (t : Finset ι) :
 
 /-- On a stage, the partial multiplication is merge-then-stage. -/
 @[reassoc]
-lemma stage_bigTensorMulStage (s t : Finset ι) :
+lemma stage_bigTensorMulStage
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (s t : Finset ι) :
     (bigTensorStage B s ▷ finTensor B t) ≫ bigTensorMulStage B t =
       finTensorMul B s t ≫ bigTensorStage B (s ∪ t) := by
   show (tensorRight (finTensor B t)).map
@@ -725,7 +820,12 @@ lemma stage_bigTensorMulStage (s t : Finset ι) :
 
 /-- The partial multiplications are natural in the stage. -/
 @[reassoc]
-lemma bigTensorMulStage_natural {t t' : Finset ι} (ht : t ⊆ t') :
+lemma bigTensorMulStage_natural
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    {t t' : Finset ι} (ht : t ⊆ t') :
     (bigTensor B ◁ finTensorIncl B ht) ≫ bigTensorMulStage B t' =
       bigTensorMulStage B t := by
   apply bigTensor_tensorRight_hom_ext B
@@ -736,7 +836,11 @@ lemma bigTensorMulStage_natural {t t' : Finset ι} (ht : t ⊆ t') :
 
 /-- The partial multiplications form a cocone on the stage
 diagram tensored on the left with the big tensor product. -/
-noncomputable def bigTensorMulTotalCocone :
+noncomputable def bigTensorMulTotalCocone
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
     Cocone (finTensorDiagram B ⋙ tensorLeft (bigTensor B)) where
   pt := bigTensor B
   ι :=
@@ -749,7 +853,11 @@ noncomputable def bigTensorMulTotalCocone :
         exact bigTensorMulStage_natural B (leOfHom f) }
 
 /-- The multiplication of the big tensor product. -/
-noncomputable def bigTensorMul :
+noncomputable def bigTensorMul
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
     bigTensor B ⊗ bigTensor B ⟶ bigTensor B :=
   ((preservesColimitIso (tensorLeft (bigTensor B))
       (finTensorDiagram B)).hom ≫
@@ -760,7 +868,12 @@ noncomputable def bigTensorMul :
 /-- On a stage in the second variable, the multiplication is the
 partial multiplication. -/
 @[reassoc]
-lemma stage_bigTensorMul_right (t : Finset ι) :
+lemma stage_bigTensorMul_right
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (t : Finset ι) :
     (bigTensor B ◁ bigTensorStage B t) ≫ bigTensorMul B =
       bigTensorMulStage B t := by
   show (tensorLeft (bigTensor B)).map
@@ -773,7 +886,11 @@ lemma stage_bigTensorMul_right (t : Finset ι) :
 merge map followed by the union stage: the presentation of the
 multiplication over pairs of finite stages. -/
 @[reassoc]
-lemma stage_bigTensorMul (s t : Finset ι) :
+lemma stage_bigTensorMul [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (s t : Finset ι) :
     (bigTensorStage B s ⊗ₘ bigTensorStage B t) ≫ bigTensorMul B =
       finTensorMul B s t ≫ bigTensorStage B (s ∪ t) := by
   rw [tensorHom_def, Category.assoc, stage_bigTensorMul_right,
@@ -781,7 +898,12 @@ lemma stage_bigTensorMul (s t : Finset ι) :
 
 /-- Sandwich extension: maps out of `X ⊗ (bigTensor B ⊗ Y)` are
 determined by the stages in the middle slot. -/
-lemma bigTensor_sandwich_hom_ext (X Y : D) {Z : D}
+lemma bigTensor_sandwich_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (X Y : D) {Z : D}
     {f g : X ⊗ (bigTensor B ⊗ Y) ⟶ Z}
     (w : ∀ t, (X ◁ bigTensorStage B t ▷ Y) ≫ f =
       (X ◁ bigTensorStage B t ▷ Y) ≫ g) : f = g := by
@@ -794,7 +916,12 @@ lemma bigTensor_sandwich_hom_ext (X Y : D) {Z : D}
 
 /-- Maps out of `bigTensor B ⊗ bigTensor B` are determined by
 pairs of stages. -/
-lemma bigTensor_pair_hom_ext {Z : D}
+lemma bigTensor_pair_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    {Z : D}
     {f g : bigTensor B ⊗ bigTensor B ⟶ Z}
     (w : ∀ s t, (bigTensorStage B s ⊗ₘ bigTensorStage B t) ≫ f =
       (bigTensorStage B s ⊗ₘ bigTensorStage B t) ≫ g) : f = g := by
@@ -810,7 +937,11 @@ lemma bigTensor_pair_hom_ext {Z : D}
   exact w s t
 
 /-- The merge maps against a fixed first stage form a cocone. -/
-noncomputable def bigTensorMulLCocone (s : Finset ι) :
+noncomputable def bigTensorMulLCocone
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    (s : Finset ι) :
     Cocone (finTensorDiagram B ⋙ tensorLeft (finTensor B s)) where
   pt := bigTensor B
   ι :=
@@ -825,7 +956,12 @@ noncomputable def bigTensorMulLCocone (s : Finset ι) :
 
 /-- Multiplication of a fixed finite stage against the big tensor
 product. -/
-noncomputable def bigTensorMulStageL (s : Finset ι) :
+noncomputable def bigTensorMulStageL
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (s : Finset ι) :
     finTensor B s ⊗ bigTensor B ⟶ bigTensor B :=
   ((preservesColimitIso (tensorLeft (finTensor B s))
       (finTensorDiagram B)).hom ≫
@@ -836,7 +972,12 @@ noncomputable def bigTensorMulStageL (s : Finset ι) :
 /-- On a stage, the left partial multiplication is
 merge-then-stage. -/
 @[reassoc]
-lemma stage_bigTensorMulStageL (s t : Finset ι) :
+lemma stage_bigTensorMulStageL
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (s t : Finset ι) :
     (finTensor B s ◁ bigTensorStage B t) ≫ bigTensorMulStageL B s =
       finTensorMul B s t ≫ bigTensorStage B (s ∪ t) := by
   show (tensorLeft (finTensor B s)).map
@@ -848,7 +989,12 @@ lemma stage_bigTensorMulStageL (s t : Finset ι) :
 /-- On a stage in the first variable, the multiplication is the
 left partial multiplication. -/
 @[reassoc]
-lemma stage_bigTensorMul_left (s : Finset ι) :
+lemma stage_bigTensorMul_left
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (s : Finset ι) :
     (bigTensorStage B s ▷ bigTensor B) ≫ bigTensorMul B =
       bigTensorMulStageL B s := by
   apply tensorLeft_bigTensor_hom_ext B
@@ -860,7 +1006,10 @@ lemma stage_bigTensorMul_left (s : Finset ι) :
 /-! ## The monoid structure on the big tensor product -/
 
 /-- Left unit law of the big tensor product. -/
-lemma bigTensor_one_mul :
+lemma bigTensor_one_mul [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
     (bigTensorUnit B ▷ bigTensor B) ≫ bigTensorMul B =
       (λ_ (bigTensor B)).hom := by
   apply tensorLeft_bigTensor_hom_ext B
@@ -872,7 +1021,10 @@ lemma bigTensor_one_mul :
     finTensorIncl_bigTensorStage, leftUnitor_naturality]
 
 /-- Right unit law of the big tensor product. -/
-lemma bigTensor_mul_one :
+lemma bigTensor_mul_one [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
     (bigTensor B ◁ bigTensorUnit B) ≫ bigTensorMul B =
       (ρ_ (bigTensor B)).hom := by
   apply bigTensor_tensorRight_hom_ext B
@@ -885,7 +1037,10 @@ lemma bigTensor_mul_one :
     finTensorIncl_bigTensorStage, rightUnitor_naturality]
 
 /-- Associativity of the big tensor product multiplication. -/
-lemma bigTensor_mul_assoc :
+lemma bigTensor_mul_assoc [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
     (bigTensorMul B ▷ bigTensor B) ≫ bigTensorMul B =
       (α_ (bigTensor B) (bigTensor B) (bigTensor B)).hom ≫
         (bigTensor B ◁ bigTensorMul B) ≫ bigTensorMul B := by
@@ -926,7 +1081,12 @@ lemma bigTensor_mul_assoc :
 /-- The big tensor product of a family of monoid objects is a
 monoid object: the unit is the empty stage and the multiplication
 is assembled from the merge maps. -/
-noncomputable instance bigTensorMon : MonObj (bigTensor B) where
+noncomputable instance bigTensorMon
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
+    MonObj (bigTensor B) where
   one := bigTensorUnit B
   mul := bigTensorMul B
   one_mul := bigTensor_one_mul B
@@ -934,7 +1094,12 @@ noncomputable instance bigTensorMon : MonObj (bigTensor B) where
   mul_assoc := bigTensor_mul_assoc B
 
 /-- The stage inclusions are morphisms of monoid objects. -/
-instance isMonHom_bigTensorStage (s : Finset ι) :
+instance isMonHom_bigTensorStage
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (s : Finset ι) :
     IsMonHom (bigTensorStage B s) where
   one_hom := bigTensorUnit_stage B s
   mul_hom := by
@@ -948,7 +1113,12 @@ instance isMonHom_bigTensorStage (s : Finset ι) :
 
 /-- The single-factor inclusions are morphisms of monoid
 objects. -/
-instance isMonHom_bigTensorOf (i : ι) :
+instance isMonHom_bigTensorOf
+    [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [BraidedCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
+    (i : ι) :
     IsMonHom (bigTensorOf B i) := by
   rw [bigTensorOf]
   haveI : IsMonHom (eqToHom (finTensor_singleton B i).symm) :=
@@ -964,12 +1134,12 @@ end BigTensorMul
 
 section MergeComm
 
-variable [LinearOrder ι] [SymmetricCategory D]
-variable (B : ι → D) [∀ i, MonObj (B i)] [∀ i, IsCommMonObj (B i)]
-
 /-- Commutativity square of the merge maps. -/
 @[reassoc]
-lemma finTensorMul_comm (s t : Finset ι) :
+lemma finTensorMul_comm [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [SymmetricCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [∀ i, IsCommMonObj (B i)]
+    (s t : Finset ι) :
     (β_ (finTensor B s) (finTensor B t)).hom ≫ finTensorMul B t s =
       finTensorMul B s t ≫
         eqToHom (show finTensor B (s ∪ t) = finTensor B (t ∪ s) by
@@ -981,12 +1151,13 @@ lemma finTensorMul_comm (s t : Finset ι) :
     finTensorMul_def B t s, ← BraidedCategory.braiding_naturality_assoc,
     IsCommMonObj.mul_comm]
 
-variable [HasColimitsOfShape (Finset ι) D]
-variable [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)]
-
 /-- The big tensor product of commutative monoid objects is
 commutative. -/
-instance bigTensorCommMon : IsCommMonObj (bigTensor B) where
+instance bigTensorCommMon [Category.{v} D] [MonoidalCategory D] [LinearOrder ι]
+    [SymmetricCategory D] (B : ι → D) [∀ i, MonObj (B i)]
+    [∀ i, IsCommMonObj (B i)] [HasColimitsOfShape (Finset ι) D]
+    [∀ X : D, PreservesColimitsOfShape (Finset ι) (tensorLeft X)] :
+    IsCommMonObj (bigTensor B) where
   mul_comm := by
     show (β_ (bigTensor B) (bigTensor B)).hom ≫ bigTensorMul B =
       bigTensorMul B

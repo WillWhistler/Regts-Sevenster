@@ -42,11 +42,12 @@ Transporting along an isomorphism `𝟙 ≅ S` gives the same for
 
 section ScalarEnd
 
-variable {A : Type u} [Category.{v} A] [Preadditive A] [Linear ℂ A]
-  [MonoidalCategory A]
+variable {A : Type u}
 
 /-- Scaling the identity of the tensor unit, as a ℂ-linear map. -/
-private def unitScalarMap : ℂ →ₗ[ℂ] (𝟙_ A ⟶ 𝟙_ A) where
+private def unitScalarMap
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A] :
+    ℂ →ₗ[ℂ] (𝟙_ A ⟶ 𝟙_ A) where
   toFun c := c • 𝟙 (𝟙_ A)
   map_add' a b := add_smul a b _
   map_smul' a b := mul_smul a b _
@@ -54,27 +55,37 @@ private def unitScalarMap : ℂ →ₗ[ℂ] (𝟙_ A ⟶ 𝟙_ A) where
 /-- **The scalars exhaust the unit endomorphisms**, as a ℂ-linear
 equivalence `ℂ ≃ₗ End (𝟙_ A)`: this is exactly the content of
 `HasScalarUnit`, packaged linearly. -/
-noncomputable def unitEndEquiv (hu : HasScalarUnit A) :
+noncomputable def unitEndEquiv
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A) :
     ℂ ≃ₗ[ℂ] (𝟙_ A ⟶ 𝟙_ A) :=
   LinearEquiv.ofBijective unitScalarMap hu
 
-@[simp] theorem unitEndEquiv_apply (hu : HasScalarUnit A) (c : ℂ) :
+@[simp] theorem unitEndEquiv_apply
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A) (c : ℂ) :
     unitEndEquiv hu c = c • 𝟙 (𝟙_ A) := rfl
 
 /-- **The unit endomorphisms are one dimensional.** -/
-theorem finrank_end_unit (hu : HasScalarUnit A) :
+theorem finrank_end_unit
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A) :
     Module.finrank ℂ (𝟙_ A ⟶ 𝟙_ A) = 1 := by
   rw [← (unitEndEquiv hu).finrank_eq, Module.finrank_self]
 
 /-- An isomorphism `𝟙 ≅ S` identifies `𝟙 ⟶ S` with the unit
 endomorphisms, ℂ-linearly. -/
-noncomputable def homUnitEquivOfIso {S : A} (e : 𝟙_ A ≅ S) :
+noncomputable def homUnitEquivOfIso
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    {S : A} (e : 𝟙_ A ≅ S) :
     (𝟙_ A ⟶ S) ≃ₗ[ℂ] (𝟙_ A ⟶ 𝟙_ A) :=
   Linear.homCongr ℂ (Iso.refl (𝟙_ A)) e.symm
 
 /-- **`Hom (𝟙, S)` is a line when `S` is isomorphic to the unit**:
 it is then `End (𝟙_ A) = ℂ`. -/
-theorem finrank_hom_unit_of_iso (hu : HasScalarUnit A) {S : A}
+theorem finrank_hom_unit_of_iso
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A) {S : A}
     (e : 𝟙_ A ≅ S) : Module.finrank ℂ (𝟙_ A ⟶ S) = 1 :=
   ((homUnitEquivOfIso e).finrank_eq).trans (finrank_end_unit hu)
 
@@ -88,14 +99,15 @@ scalar multiple of it, the scalar produced by `HasScalarUnit`. -/
 
 section Proportional
 
-variable {A : Type u} [Category.{v} A] [Abelian A] [Linear ℂ A]
-  [MonoidalCategory A] [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [RigidCategory A]
+variable {A : Type u}
 
 /-- A nonzero map from the unit to a simple object is an
 isomorphism, the unit being simple; so a simple object receiving a
 nonzero map from the unit *is* the unit up to isomorphism. -/
-theorem nonempty_unitIso_of_hom_ne_zero (hu : HasScalarUnit A)
+theorem nonempty_unitIso_of_hom_ne_zero
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A)
     {S : A} [Simple S] {φ : 𝟙_ A ⟶ S} (hφ : φ ≠ 0) :
     Nonempty (𝟙_ A ≅ S) := by
   haveI : Simple (𝟙_ A) := simple_unit_of_hasScalarUnit hu
@@ -104,14 +116,20 @@ theorem nonempty_unitIso_of_hom_ne_zero (hu : HasScalarUnit A)
 
 /-- **Maps from the unit to a simple object not isomorphic to it
 vanish.** -/
-theorem hom_unit_simple_eq_zero (hu : HasScalarUnit A) {S : A}
+theorem hom_unit_simple_eq_zero
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {S : A}
     [Simple S] (h : IsEmpty (𝟙_ A ≅ S)) (φ : 𝟙_ A ⟶ S) : φ = 0 := by
   by_contra hφ
   exact h.elim (nonempty_unitIso_of_hom_ne_zero hu hφ).some
 
 /-- `Hom (𝟙, S)` is trivial for a simple `S` not isomorphic to the
 unit. -/
-theorem subsingleton_hom_unit_simple (hu : HasScalarUnit A) {S : A}
+theorem subsingleton_hom_unit_simple
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {S : A}
     [Simple S] (h : IsEmpty (𝟙_ A ≅ S)) :
     Subsingleton (𝟙_ A ⟶ S) :=
   ⟨fun f g => by
@@ -119,7 +137,10 @@ theorem subsingleton_hom_unit_simple (hu : HasScalarUnit A) {S : A}
 
 /-- **`Hom (𝟙, S)` vanishes for a simple `S` not isomorphic to the
 unit.** -/
-theorem finrank_hom_unit_simple_eq_zero (hu : HasScalarUnit A)
+theorem finrank_hom_unit_simple_eq_zero
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A)
     {S : A} [Simple S] (h : IsEmpty (𝟙_ A ≅ S)) :
     Module.finrank ℂ (𝟙_ A ⟶ S) = 0 := by
   haveI := subsingleton_hom_unit_simple hu h
@@ -138,16 +159,18 @@ above `⊥` and the length bound drops by one. -/
 
 section QuotientLength
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u}
 
 /-- The pullback of a subobject along a morphism into its ambient
 object. -/
-private noncomputable def pbSub {Z W : C} (π : Z ⟶ W)
+private noncomputable def pbSub [Category.{v} C] [Abelian C]
+    {Z W : C} (π : Z ⟶ W)
     (P : Subobject W) : Subobject Z :=
   Subobject.mk (pullback.snd P.arrow π)
 
 /-- Pulling subobjects back is monotone. -/
-private lemma pbSub_mono {Z W : C} (π : Z ⟶ W) {P Q : Subobject W}
+private lemma pbSub_mono [Category.{v} C] [Abelian C]
+    {Z W : C} (π : Z ⟶ W) {P Q : Subobject W}
     (h : P ≤ Q) : pbSub π P ≤ pbSub π Q := by
   refine Subobject.mk_le_mk_of_comm
     (pullback.lift (pullback.fst P.arrow π ≫ Subobject.ofLE P Q h)
@@ -158,7 +181,8 @@ private lemma pbSub_mono {Z W : C} (π : Z ⟶ W) {P Q : Subobject W}
 /-- Along an epimorphism, pulling subobjects back reflects
 inequalities: the pullback of `P` maps onto `P`, and a factorisation
 of pullbacks descends along that epimorphism. -/
-private lemma le_of_pbSub_le {Z W : C} (π : Z ⟶ W) [Epi π]
+private lemma le_of_pbSub_le [Category.{v} C] [Abelian C]
+    {Z W : C} (π : Z ⟶ W) [Epi π]
     {P Q : Subobject W} (h : pbSub π P ≤ pbSub π Q) : P ≤ Q := by
   have hu : Subobject.ofMkLEMk _ _ h ≫ pullback.snd Q.arrow π
       = pullback.snd P.arrow π :=
@@ -182,14 +206,16 @@ private lemma le_of_pbSub_le {Z W : C} (π : Z ⟶ W) [Epi π]
 
 /-- Along an epimorphism, pulling subobjects back is strictly
 monotone. -/
-private lemma pbSub_strictMono {Z W : C} (π : Z ⟶ W) [Epi π]
+private lemma pbSub_strictMono [Category.{v} C] [Abelian C]
+    {Z W : C} (π : Z ⟶ W) [Epi π]
     {P Q : Subobject W} (h : P < Q) : pbSub π P < pbSub π Q :=
   lt_of_le_of_ne (pbSub_mono π h.le) fun he =>
     h.ne (le_antisymm h.le (le_of_pbSub_le π he.ge))
 
 /-- Every subobject pulled back from the cokernel of `φ` contains
 the subobject `φ`. -/
-private lemma mk_le_pbSub_cokernel {U Z : C} (φ : U ⟶ Z) [Mono φ]
+private lemma mk_le_pbSub_cokernel [Category.{v} C] [Abelian C]
+    {U Z : C} (φ : U ⟶ Z) [Mono φ]
     (P : Subobject (cokernel φ)) :
     Subobject.mk φ ≤ pbSub (cokernel.π φ) P := by
   refine Subobject.mk_le_mk_of_comm (pullback.lift 0 φ ?_)
@@ -201,7 +227,8 @@ private lemma mk_le_pbSub_cokernel {U Z : C} (φ : U ⟶ Z) [Mono φ]
 `LengthLE (cokernel φ) N`.  A strict chain in the cokernel pulls
 back to a strict chain in `Z` sitting above the nonzero subobject
 `φ`, so prepending `⊥` lengthens it by one. -/
-private theorem lengthLE_cokernel {U Z : C} (φ : U ⟶ Z) [Mono φ]
+private theorem lengthLE_cokernel [Category.{v} C] [Abelian C]
+    {U Z : C} (φ : U ⟶ Z) [Mono φ]
     (hφ : φ ≠ 0) {N : ℕ} (h : LengthLE Z (N + 1)) :
     LengthLE (cokernel φ) N := by
   intro f hf
@@ -231,14 +258,14 @@ cokernel, and rank-nullity closes the induction. -/
 
 section Induction
 
-variable {A : Type u} [Category.{v} A] [Abelian A] [Linear ℂ A]
-  [MonoidalCategory A]
+variable {A : Type u}
 
 /-- A map from the unit annihilated by the projection to the
 cokernel of a monomorphism `φ` from the unit is a scalar multiple
 of `φ`: it factors through the kernel of the projection, which is
 `φ` itself, with coefficient in `End (𝟙) = ℂ`. -/
 private theorem eq_smul_of_comp_cokernel_π_zero
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
     (hu : HasScalarUnit A) {Z : A} {φ ψ : 𝟙_ A ⟶ Z} [Mono φ]
     (hψ : ψ ≫ cokernel.π φ = 0) : ∃ c : ℂ, ψ = c • φ := by
   have hlim : IsLimit (KernelFork.ofι φ (cokernel.condition φ)) :=
@@ -255,7 +282,9 @@ private theorem eq_smul_of_comp_cokernel_π_zero
 /-- The induction workhorse, with simplicity of the unit supplied as
 a hypothesis: a length bound of `N` on `Z` makes `𝟙 ⟶ Z` a finite
 dimensional ℂ-module of dimension at most `N`. -/
-private theorem homFinite_core (hu : HasScalarUnit A)
+private theorem homFinite_core
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A)
     (hs : Simple (𝟙_ A)) :
     ∀ (N : ℕ) (Z : A), LengthLE Z N →
       Module.Finite ℂ (𝟙_ A ⟶ Z)
@@ -327,14 +356,15 @@ end Induction
 
 section Main
 
-variable {A : Type u} [Category.{v} A] [Abelian A] [Linear ℂ A]
-  [MonoidalCategory A] [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [RigidCategory A]
+variable {A : Type u}
 
 /-- **Finite length bounds Hom-dimension from the unit**: in the
 setting of Deligne's theorem, a length bound of `N` on `Z` makes
 `𝟙 ⟶ Z` a finite dimensional ℂ-module of dimension at most `N`. -/
-theorem finrank_hom_unit_le (hu : HasScalarUnit A) {Z : A} {N : ℕ}
+theorem finrank_hom_unit_le
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {Z : A} {N : ℕ}
     (h : LengthLE Z N) :
     Module.Finite ℂ (𝟙_ A ⟶ Z)
       ∧ Module.finrank ℂ (𝟙_ A ⟶ Z) ≤ N :=
@@ -344,7 +374,10 @@ theorem finrank_hom_unit_le (hu : HasScalarUnit A) {Z : A} {N : ℕ}
 ℂ-linear equivalence: precomposition by the left unitor followed by
 the right-dual adjunction `tensorRightHomEquiv`.  Linearity follows
 from bilinearity of composition and of the tensor product. -/
-noncomputable def homUnitDualEquiv (X Y : A) :
+noncomputable def homUnitDualEquiv
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (X Y : A) :
     (X ⟶ Y) ≃ₗ[ℂ] (𝟙_ A ⟶ Y ⊗ Xᘁ) where
   toFun f := tensorRightHomEquiv (𝟙_ A) X (Xᘁ) Y ((λ_ X).hom ≫ f)
   map_add' f g := by simp [tensorRightHomEquiv, Preadditive.comp_add]
@@ -358,7 +391,10 @@ noncomputable def homUnitDualEquiv (X Y : A) :
 Deligne's theorem, a length bound of `N` on `Y ⊗ Xᘁ` makes `X ⟶ Y`
 a finite dimensional ℂ-module of dimension at most `N`, via the
 duality correspondence `(X ⟶ Y) ≃ₗ (𝟙 ⟶ Y ⊗ Xᘁ)`. -/
-theorem finrank_hom_le (hu : HasScalarUnit A) {X Y : A} {N : ℕ}
+theorem finrank_hom_le
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {X Y : A} {N : ℕ}
     (h : LengthLE (Y ⊗ Xᘁ) N) :
     Module.Finite ℂ (X ⟶ Y) ∧ Module.finrank ℂ (X ⟶ Y) ≤ N := by
   obtain ⟨hfin, hrk⟩ := finrank_hom_unit_le hu h
@@ -377,7 +413,10 @@ hypothesis is carried explicitly. -/
 
 /-- **Hom out of the unit is finite dimensional** whenever the
 target has finite length. -/
-theorem finiteDimensional_hom_unit (hu : HasScalarUnit A) {Z : A}
+theorem finiteDimensional_hom_unit
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {Z : A}
     (h : ∃ N : ℕ, LengthLE Z N) :
     FiniteDimensional ℂ (𝟙_ A ⟶ Z) := by
   obtain ⟨N, hN⟩ := h

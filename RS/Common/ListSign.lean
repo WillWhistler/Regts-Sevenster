@@ -12,6 +12,30 @@ functionals.
 
 namespace RS
 
+/-- Sorting signs square to one over ℂ. -/
+theorem sortSign_sq {α : Type} [LinearOrder α] (l : List α) :
+    (sortSign l : ℂ) * (sortSign l : ℂ) = 1 := by
+  rw [sortSign]
+  push_cast
+  rw [← pow_add, ← two_mul, pow_mul]
+  norm_num
+
+/-- Increasing embeddings preserve inversion counts. -/
+theorem inversions_map_orderEmbedding {α β : Type}
+    [LinearOrder α] [LinearOrder β] (e : α ↪o β) (l : List α) :
+    inversions (l.map e) = inversions l := by
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+    simp only [List.map_cons, inversions, ih, List.filter_map,
+      List.length_map, Function.comp_def, e.lt_iff_lt]
+
+/-- Increasing embeddings preserve the sorting sign. -/
+theorem sortSign_map_orderEmbedding {α β : Type}
+    [LinearOrder α] [LinearOrder β] (e : α ↪o β) (l : List α) :
+    sortSign (l.map e) = sortSign l := by
+  rw [sortSign, inversions_map_orderEmbedding, sortSign]
+
 /-- Sorted lists have no inversions. -/
 theorem inversions_eq_zero_of_sorted {α : Type} [LinearOrder α] :
     ∀ (l : List α), List.Pairwise (· ≤ ·) l → inversions l = 0

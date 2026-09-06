@@ -1,3 +1,4 @@
+import RS.Novel.Coordinates.PairList
 import RS.Novel.Coordinates.AdjSwapBmc
 import RS.Novel.Coordinates.AdjacentWord
 import RS.Novel.Coordinates.BasisCoord
@@ -99,6 +100,7 @@ import RS.Novel.Envelope.BlockAssembly
 import RS.Novel.Envelope.BlockBounds
 import RS.Novel.Envelope.BlockCycle
 import RS.Novel.Envelope.BlockFactor
+import RS.Novel.Envelope.BlockFactorialTrace
 import RS.Novel.Envelope.BlockSplice
 import RS.Novel.Envelope.BlockTower
 import RS.Novel.Envelope.CycleNormal
@@ -110,6 +112,7 @@ import RS.Novel.Envelope.EnvGenerator
 import RS.Novel.Envelope.EnvGrowth
 import RS.Novel.Envelope.EnvInstances
 import RS.Novel.Envelope.EnvSemisimple
+import RS.Novel.Envelope.FactorialTrace
 import RS.Novel.Envelope.Frobenius
 import RS.Novel.Envelope.HookConfinement
 import RS.Novel.Envelope.HookConfinementSharp
@@ -126,6 +129,7 @@ import RS.Novel.Envelope.NilpotentMatTrace
 import RS.Novel.Envelope.NilpotentTrace
 import RS.Novel.Envelope.ObjectTower
 import RS.Novel.Envelope.PermTrace
+import RS.Novel.Envelope.ScalarPermTrace
 import RS.Novel.Envelope.ScalarTrace
 import RS.Novel.Envelope.SemisimpleAll
 import RS.Novel.Envelope.SemisimpleEnd
@@ -324,3 +328,6 @@ import RS.Novel.Skein.TwoPathNonSep
 import RS.Novel.Skein.TwoPathStep
 import RS.Novel.Skein.VertexOddSign
 import RS.Novel.Skein.VertexSum
+import RS.Novel.Skein.ColourEmbedding
+import RS.Novel.Skein.ColourPadding
+import RS.Novel.Envelope.RankDimension

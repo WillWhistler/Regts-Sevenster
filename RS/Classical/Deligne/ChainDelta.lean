@@ -17,27 +17,12 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (X : D) [ModObj A X]
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- Acting across the unit context is acting after the unitor. -/
-theorem powTailAct_zero_lambda :
+theorem powTailAct_zero_lambda
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     powTailAct A X 0 ≫ (λ_ X).hom =
       (A ◁ (λ_ X).hom) ≫ actLeft A X := by
   show actAcross A (𝟙_ D) X ≫ (λ_ X).hom = _
@@ -51,12 +36,14 @@ theorem powTailAct_zero_lambda :
   rw [braiding_tensorUnit_right]
   monoidal
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The singleton projection of the module power carries the
 descended action to the action of the module. -/
-theorem modPowAct_modPowOne :
+theorem modPowAct_modPowOne
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X] :
     modPowAct A X 0 ≫ (modPowOne A X).hom =
       (A ◁ (modPowOne A X).hom) ≫ actLeft A X := by
   apply modPow_whiskerLeft_hom_ext A X A 1
@@ -71,12 +58,14 @@ theorem modPowAct_modPowOne :
     powTailAct_zero_lambda]
   rfl
 
-omit [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The singleton symmetric power carries the descended action to
 the action of the module. -/
-theorem symPowAct_symPowOne :
+theorem symPowAct_symPowOne
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X] :
     symPowAct A X 0 ≫ (symPowOne A X).hom =
       (A ◁ (symPowOne A X).hom) ≫ actLeft A X := by
   rw [symPowAct, symPowOne]
@@ -88,12 +77,14 @@ theorem symPowAct_symPowOne :
   rw [symPowπ_symPowσ_assoc, symPowIdem_one, Category.id_comp,
     modPowAct_modPowOne]
 
-omit [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The inverse of the singleton iso carries the module action to
 the descended action. -/
-theorem actLeft_symPowOne_inv :
+theorem actLeft_symPowOne_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X] :
     actLeft A X ≫ (symPowOne A X).inv =
       (A ◁ (symPowOne A X).inv) ≫ symPowAct A X 0 := by
   calc actLeft A X ≫ (symPowOne A X).inv
@@ -107,37 +98,67 @@ theorem actLeft_symPowOne_inv :
         rw [← reassoc_of% (symPowAct_symPowOne A X)]
         simp only [Iso.hom_inv_id, Category.comp_id]
 
-variable (M M' : Mod D A)
-
 /-- A module maps into the singleton stage of its symmetric-power
 tower. -/
-noncomputable def toSymPowModZero :
+noncomputable def toSymPowModZero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) :
     M ⟶ symPowMod A M.X 0 :=
   Mod.Hom.mk' ((symPowOne A M.X).inv)
     (actLeft_symPowOne_inv A M.X)
 
 /-- **The seed of the splitting chain**: the copairing lands in
 the bottom stage. -/
-noncomputable def chainSeed (d : ModDualityDatum A M M') :
+noncomputable def chainSeed
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     𝟙_ D ⟶ chainStage A M M' 0 :=
   copairUnit A M M' d ≫ modTensorSwap A M M' ≫
     modTensorMap A (toSymPowModZero A M') (toSymPowModZero A M)
 
 /-- **The chain transition**: multiplication by the seed. -/
-noncomputable def chainDelta (d : ModDualityDatum A M M')
+noncomputable def chainDelta
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (k : ℕ) : chainStage A M M' k ⟶ chainStage A M M' (k + 1) :=
   (ρ_ (chainStage A M M' k)).inv ≫
     (chainStage A M M' k ◁ chainSeed A M M' d) ≫
     chainMul A M M' k 0
 
 /-- The stage units of the splitting chain. -/
-noncomputable def chainUnitStage (d : ModDualityDatum A M M') :
+noncomputable def chainUnitStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (k : ℕ) → (𝟙_ D ⟶ chainStage A M M' k)
   | 0 => chainSeed A M M' d
-  | (k + 1) => chainUnitStage d k ≫ chainDelta A M M' d k
+  | (k + 1) => chainUnitStage A M M' d k ≫ chainDelta A M M' d k
 
 /-- The stage units ride along the transitions. -/
-theorem chainUnitStage_succ (d : ModDualityDatum A M M')
+theorem chainUnitStage_succ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (k : ℕ) :
     chainUnitStage A M M' d k ≫ chainDelta A M M' d k =
       chainUnitStage A M M' d (k + 1) :=

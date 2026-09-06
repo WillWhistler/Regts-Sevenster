@@ -14,13 +14,14 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
 /-- The crossing relation only sees the pairing. -/
-theorem chordCross_of_samePairing {κ κ' : F.RelTransitionSystem}
+theorem chordCross_of_samePairing
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (h : SamePairing κ κ')
     (b b' : {x : W.Flag // x ∈ F.boundaryFlags}) :
     ChordCross κ b b' ↔ ChordCross κ' b b' := by
@@ -29,6 +30,7 @@ theorem chordCross_of_samePairing {κ κ' : F.RelTransitionSystem}
 
 /-- **The crossing count is a pairing invariant.** -/
 theorem chordCrossingCount_of_samePairing
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     {κ κ' : F.RelTransitionSystem} (h : SamePairing κ κ') :
     chordCrossingCount κ = chordCrossingCount κ' := by
   unfold chordCrossingCount
@@ -37,7 +39,9 @@ theorem chordCrossingCount_of_samePairing
 
 /-- **The path sign is a pairing invariant**: around any
 pairing-returning block the chord signs cancel. -/
-theorem pathSign_of_samePairing {κ κ' : F.RelTransitionSystem}
+theorem pathSign_of_samePairing
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (h : SamePairing κ κ') : pathSign κ = pathSign κ' :=
   congrArg (fun n => ((-1 : ℂ)) ^ n)
     (chordCrossingCount_of_samePairing h)

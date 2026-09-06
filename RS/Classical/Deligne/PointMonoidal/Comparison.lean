@@ -578,16 +578,14 @@ noncomputable def baseNuOdd :
 variable {M N}
 
 /-- The inverse comparison in even degree, on generators. -/
-@[simp] theorem baseNuEven_tmulEE
-    (t : (M.tensor N : S.Mod.{u, u, u, u}).even)
+@[simp] theorem baseNuEven_tmulEE (t : (M.tensor N : S.Mod.{u, u, u, u}).even)
     (a : (pointMod P : S.Mod.{u, u, u, u}).even) :
     baseNuEven P M N (tmulEE (M.tensor N) (pointMod P) t a) =
       baseNuInnerEven P M N t a :=
   liftEven_tmulEE _ _ _ _ _ _ _ _ t a
 
 /-- The inverse comparison in odd degree, on generators. -/
-@[simp] theorem baseNuOdd_tmulOE
-    (t : (M.tensor N : S.Mod.{u, u, u, u}).odd)
+@[simp] theorem baseNuOdd_tmulOE (t : (M.tensor N : S.Mod.{u, u, u, u}).odd)
     (a : (pointMod P : S.Mod.{u, u, u, u}).even) :
     baseNuOdd P M N (tmulOE (M.tensor N) (pointMod P) t a) =
       baseNuInnerOdd P M N t a :=
@@ -604,12 +602,6 @@ open scoped TensorProduct
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
 
 variable (M N : S.Mod.{u, u, u, u})
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
 
 /-- **The comparison morphism in super vector spaces**, in even
 degree, before the coordinates are installed. -/
@@ -635,7 +627,11 @@ noncomputable def superVectMuOddRaw :
 
 /-- The coordinates on the even part of the tensor product of the
 two base changes. -/
-noncomputable def superVectPairEvenEquiv :
+noncomputable def superVectPairEvenEquiv
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd] :
     basePairEven P M N ≃ₗ[ℂ]
       (toSuperVect P M ⊗ toSuperVect P N).even :=
   LinearEquiv.prodCongr
@@ -646,7 +642,11 @@ noncomputable def superVectPairEvenEquiv :
 
 /-- The coordinates on the odd part of the tensor product of the
 two base changes. -/
-noncomputable def superVectPairOddEquiv :
+noncomputable def superVectPairOddEquiv
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd] :
     basePairOdd P M N ≃ₗ[ℂ]
       (toSuperVect P M ⊗ toSuperVect P N).odd :=
   LinearEquiv.prodCongr
@@ -659,7 +659,12 @@ noncomputable def superVectPairOddEquiv :
 product of the base changes maps to the base change of the tensor
 product.  It is the raw comparison, read in the coordinates that
 `RS.toSuperVect` installs. -/
-noncomputable def superVectMu :
+noncomputable def superVectMu [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd] :
     toSuperVect P M ⊗ toSuperVect P N ⟶ toSuperVect P (M.tensor N) where
   evenMap :=
     (toSuperVectEvenEquiv P (M.tensor N)).toLinearMap ∘ₗ
@@ -721,17 +726,18 @@ open scoped TensorProduct
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   (M N : S.Mod.{u, u, u, u})
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
 
 variable {M N}
 
 /-- The comparison on an even-even generator. -/
-theorem superVectMu_evenMap_ee (x : (toSuperVect P M).even)
+theorem superVectMu_evenMap_ee
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    (x : (toSuperVect P M).even)
     (y : (toSuperVect P N).even) :
     (superVectMu P M N).evenMap (svEvenInl (x ⊗ₜ[ℂ] y)) =
       toSuperVectEvenEquiv P (M.tensor N)
@@ -741,7 +747,14 @@ theorem superVectMu_evenMap_ee (x : (toSuperVect P M).even)
             ((toSuperVectEvenEquiv P N).symm y))) := rfl
 
 /-- The comparison on an odd-odd generator. -/
-theorem superVectMu_evenMap_oo (x : (toSuperVect P M).odd)
+theorem superVectMu_evenMap_oo
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    (x : (toSuperVect P M).odd)
     (y : (toSuperVect P N).odd) :
     (superVectMu P M N).evenMap (svEvenInr (x ⊗ₜ[ℂ] y)) =
       toSuperVectEvenEquiv P (M.tensor N)
@@ -751,7 +764,13 @@ theorem superVectMu_evenMap_oo (x : (toSuperVect P M).odd)
             ((toSuperVectOddEquiv P N).symm y))) := rfl
 
 /-- The comparison on an even-odd generator. -/
-theorem superVectMu_oddMap_eo (x : (toSuperVect P M).even)
+theorem superVectMu_oddMap_eo [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    (x : (toSuperVect P M).even)
     (y : (toSuperVect P N).odd) :
     (superVectMu P M N).oddMap (svOddInl (x ⊗ₜ[ℂ] y)) =
       toSuperVectOddEquiv P (M.tensor N)
@@ -761,7 +780,13 @@ theorem superVectMu_oddMap_eo (x : (toSuperVect P M).even)
             ((toSuperVectOddEquiv P N).symm y))) := rfl
 
 /-- The comparison on an odd-even generator. -/
-theorem superVectMu_oddMap_oe (x : (toSuperVect P M).odd)
+theorem superVectMu_oddMap_oe [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    (x : (toSuperVect P M).odd)
     (y : (toSuperVect P N).even) :
     (superVectMu P M N).oddMap (svOddInr (x ⊗ₜ[ℂ] y)) =
       toSuperVectOddEquiv P (M.tensor N)

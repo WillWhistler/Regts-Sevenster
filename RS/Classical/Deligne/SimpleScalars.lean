@@ -35,18 +35,20 @@ universe v u
 
 section Ungraded
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- Whiskering a morphism into the algebra and multiplying is the
 convolution with the identity. -/
-theorem whiskerLeft_comp_mul {X : D} (k : X ⟶ R) :
+theorem whiskerLeft_comp_mul
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {X : D} (k : X ⟶ R) :
     (R ◁ k) ≫ μ[R] = gmul (𝟙 R) k := by
   rw [gmul_def, id_tensorHom]
 
 /-- The convolution of the identity with itself is the
 multiplication. -/
-theorem gmul_id_id : gmul (𝟙 R) (𝟙 R) = μ[R] := by
+theorem gmul_id_id [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R] :
+    gmul (𝟙 R) (𝟙 R) = μ[R] := by
   rw [gmul_def, id_tensorHom, MonoidalCategory.whiskerLeft_id,
     Category.id_comp]
 
@@ -54,12 +56,12 @@ end Ungraded
 
 section UngradedAdditive
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- Convolution with a zero morphism vanishes. -/
-theorem zero_gmul {X Y : D} (b : Y ⟶ R) :
+theorem zero_gmul [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R]
+    {X Y : D} (b : Y ⟶ R) :
     gmul (0 : X ⟶ R) b = 0 := by
   rw [gmul_def, tensorHom_def, MonoidalPreadditive.zero_whiskerRight,
     zero_comp, zero_comp]
@@ -70,13 +72,14 @@ end UngradedAdditive
 
 section Commutative
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D]
-variable (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- Convolution with an even scalar reads the same on either side,
 once the source is identified with its tensor with the unit. -/
-theorem leftUnitor_inv_gmul_comm {X : D} (a : X ⟶ R)
+theorem leftUnitor_inv_gmul_comm
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {X : D} (a : X ⟶ R)
     (g : 𝟙_ D ⟶ R) :
     (λ_ X).inv ≫ gmul g a = (ρ_ X).inv ≫ gmul a g := by
   have hb : (ρ_ X).inv ≫ (β_ X (𝟙_ D)).hom = (λ_ X).inv := by
@@ -85,14 +88,20 @@ theorem leftUnitor_inv_gmul_comm {X : D} (a : X ⟶ R)
   rw [gmul_comm a g, ← Category.assoc, hb]
 
 /-- Multiplication by an even scalar, written on the other side. -/
-theorem mulBy_eq_gmul_id (g : 𝟙_ D ⟶ R) :
+theorem mulBy_eq_gmul_id
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (g : 𝟙_ D ⟶ R) :
     mulBy R g = (ρ_ R).inv ≫ gmul (𝟙 R) g :=
   leftUnitor_inv_gmul_comm R (𝟙 R) g
 
 /-- **Multiplication by an even scalar is a module
 endomorphism**: it commutes with the multiplication of the algebra
 in the second variable.  Both sides say `g·(a·b) = a·(g·b)`. -/
-theorem mul_comp_mulBy (g : 𝟙_ D ⟶ R) :
+theorem mul_comp_mulBy
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (g : 𝟙_ D ⟶ R) :
     μ[R] ≫ mulBy R g = (R ◁ mulBy R g) ≫ μ[R] := by
   have h5 : gmul (𝟙 R) (gmul (𝟙 R) g) =
       (α_ R R (𝟙_ D)).inv ≫ gmul μ[R] g := by
@@ -109,7 +118,10 @@ theorem mul_comp_mulBy (g : 𝟙_ D ⟶ R) :
 /-- **The action of a fixed element is a module map.**  For any
 `f : X ⟶ R` the convolution `gmul f (𝟙 R)` absorbs multiplication
 by the algebra: `a·(f·b) = f·(a·b)`. -/
-theorem act_comp_gmul_id {X : D} (f : X ⟶ R) :
+theorem act_comp_gmul_id
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {X : D} (f : X ⟶ R) :
     ((β_ R (X ⊗ R)).hom ≫ (α_ X R R).hom ≫ (X ◁ μ[R])) ≫
         gmul f (𝟙 R) =
       (R ◁ gmul f (𝟙 R)) ≫ μ[R] := by
@@ -125,54 +137,53 @@ end Commutative
 
 section Ind
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- The factorisation of a morphism through its image, read as a
 morphism into the image subobject. -/
-noncomputable def imageFactor {X Y : Ind C} (k : X ⟶ Y) :
+noncomputable def imageFactor [SmallCategory C] [Abelian C]
+    {X Y : Ind C} (k : X ⟶ Y) :
     X ⟶ ((Subobject.mk (image.ι k) : Subobject Y) : Ind C) :=
   factorThruImage k ≫ (Subobject.underlyingIso (image.ι k)).inv
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- The factorisation through the image subobject recovers the
 morphism. -/
-theorem imageFactor_arrow {X Y : Ind C} (k : X ⟶ Y) :
+theorem imageFactor_arrow [SmallCategory C] [Abelian C]
+    {X Y : Ind C} (k : X ⟶ Y) :
     imageFactor k ≫ (Subobject.mk (image.ι k)).arrow = k := by
   rw [imageFactor, Category.assoc, Subobject.underlyingIso_arrow,
     image.fac]
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- The factorisation through the image subobject is an
 epimorphism. -/
-instance epi_imageFactor {X Y : Ind C} (k : X ⟶ Y) :
+instance epi_imageFactor [SmallCategory C] [Abelian C]
+    {X Y : Ind C} (k : X ⟶ Y) :
     Epi (imageFactor k) := by
   show Epi (factorThruImage k ≫ _)
   exact epi_comp _ _
 
 /-! ## Kernel and image are ideals -/
 
-variable (R : Ind C) [MonObj R] [IsCommMonObj R]
-
-omit [RigidCategory C] in
 /-- **The kernel of multiplication by a scalar is an ideal**:
 multiplication by a scalar is a module endomorphism, so anything it
 kills stays killed after multiplying by the algebra. -/
-theorem isIdeal_kernelSubobject_mulBy (g : 𝟙_ (Ind C) ⟶ R) :
+theorem isIdeal_kernelSubobject_mulBy
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] (R : Ind C) [MonObj R] [IsCommMonObj R]
+    (g : 𝟙_ (Ind C) ⟶ R) :
     IsIdeal R (kernelSubobject (mulBy R g)) := by
   refine (kernelSubobject_factors_iff _ _).2 ?_
   rw [Category.assoc, mul_comp_mulBy, ← Category.assoc,
     ← MonoidalCategory.whiskerLeft_comp, kernelSubobject_arrow_comp,
     MonoidalPreadditive.whiskerLeft_zero, zero_comp]
 
-omit [SymmetricCategory C] [IsCommMonObj R] in
 /-- **The image of a module map is an ideal.**  If a morphism into
 the algebra absorbs multiplication by the algebra, its image does
 too: tensoring preserves the covering epimorphism onto the image. -/
-theorem isIdeal_imageSubobject_of {X : Ind C} (k : X ⟶ R)
+theorem isIdeal_imageSubobject_of
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    {X : Ind C} (k : X ⟶ R)
     (θ : R ⊗ X ⟶ X) (hθ : θ ≫ k = (R ◁ k) ≫ μ[R]) :
     IsIdeal R (Subobject.mk (image.ι k)) := by
   haveI : Epi (R ◁ imageFactor k) :=
@@ -183,24 +194,26 @@ theorem isIdeal_imageSubobject_of {X : Ind C} (k : X ⟶ R)
     ← MonoidalCategory.whiskerLeft_comp, imageFactor_arrow]
 
 /-- **The image of multiplication by a scalar is an ideal.** -/
-theorem isIdeal_imageSubobject_mulBy (g : 𝟙_ (Ind C) ⟶ R) :
+theorem isIdeal_imageSubobject_mulBy
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    [IsCommMonObj R]
+    (g : 𝟙_ (Ind C) ⟶ R) :
     IsIdeal R (Subobject.mk (image.ι (mulBy R g))) :=
   isIdeal_imageSubobject_of R (mulBy R g) μ[R] (mul_comp_mulBy R g)
 
 /-! ## Simplicity makes multiplication invertible -/
 
-omit [MonoidalCategory C] [SymmetricCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- A subobject equal to `⊥` has a zero arrow, so a morphism whose
 image it is vanishes. -/
-theorem eq_zero_of_imageSubobject_eq_bot {X Y : Ind C} {k : X ⟶ Y}
+theorem eq_zero_of_imageSubobject_eq_bot [SmallCategory C] [Abelian C]
+    {X Y : Ind C} {k : X ⟶ Y}
     (h : Subobject.mk (image.ι k) = ⊥) : k = 0 := by
   rw [← image.fac k, Subobject.mk_eq_bot_iff_zero.1 h, comp_zero]
 
-omit [MonoidalCategory C] [SymmetricCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- A morphism whose image subobject is `⊤` is an epimorphism. -/
-theorem epi_of_imageSubobject_eq_top {X Y : Ind C} {k : X ⟶ Y}
+theorem epi_of_imageSubobject_eq_top [SmallCategory C] [Abelian C]
+    {X Y : Ind C} {k : X ⟶ Y}
     (h : Subobject.mk (image.ι k) = ⊤) : Epi k := by
   haveI : IsIso (Subobject.mk (image.ι k)).arrow :=
     (Subobject.isIso_arrow_iff_eq_top _).2 h
@@ -218,6 +231,9 @@ and the image is `⊤`, and a monomorphism which is an epimorphism of
 an abelian category is an isomorphism.  No hypothesis on the unit is
 needed: a nonzero scalar already rules out both bad alternatives. -/
 theorem isIso_mulBy_of_simple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    [IsCommMonObj R]
     (hsimple : ∀ I : Subobject R, IsIdeal R I → I = ⊥ ∨ I = ⊤)
     {g : 𝟙_ (Ind C) ⟶ R} (hg : g ≠ 0) :
     IsIso (mulBy R g) := by
@@ -247,6 +263,9 @@ theorem isIso_mulBy_of_simple
 invertible**: the preimage of the unit under multiplication by the
 scalar is its inverse. -/
 theorem exists_inverse_of_simple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    [IsCommMonObj R]
     (hsimple : ∀ I : Subobject R, IsIdeal R I → I = ⊥ ∨ I = ⊤)
     {g : 𝟙_ (Ind C) ⟶ R} (hg : g ≠ 0) :
     ∃ g' : 𝟙_ (Ind C) ⟶ R,
@@ -256,12 +275,14 @@ theorem exists_inverse_of_simple
   rw [← comp_mulBy, Category.assoc, IsIso.inv_hom_id,
     Category.comp_id]
 
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
-
 /-- **The even part of the Γ-algebra of a simple algebra is a
 field.** -/
-theorem isField_gammaEven (L : OddLine (Ind C))
+theorem isField_gammaEven
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    [IsCommMonObj R] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject R, IsIdeal R I → I = ⊥ ∨ I = ⊤)
     (hne : η[R] ≠ 0) :
     IsField ((gammaAlgebra (Ind C) L R).even) := by
@@ -274,14 +295,18 @@ theorem isField_gammaEven (L : OddLine (Ind C))
 
 /-- The even part of the Γ-algebra of a simple algebra, as a
 field. -/
-@[reducible] noncomputable def gammaEvenField (L : OddLine (Ind C))
+@[reducible] noncomputable def gammaEvenField
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    [IsCommMonObj R] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject R, IsIdeal R I → I = ⊥ ∨ I = ⊤)
     (hne : η[R] ≠ 0) : Field ((gammaAlgebra (Ind C) L R).even) :=
   (isField_gammaEven R L hsimple hne).toField
 
 /-! ## The odd part vanishes -/
 
-omit [MonoidalLinear ℂ (Ind C)] in
 /-- **The odd part of the Γ-algebra of a simple algebra
 vanishes.**  An odd element `f` acts on the algebra by
 `gmul f (𝟙 R)`, whose image is an ideal, so simplicity leaves two
@@ -290,7 +315,11 @@ alternatives and the action vanishes under both: if the image is
 is an epimorphism, which the square-zero law of an odd element
 makes annihilate itself.  Evaluating the zero action at the unit
 returns `f`. -/
-theorem hom_oddLine_eq_zero_of_simple (L : OddLine (Ind C))
+theorem hom_oddLine_eq_zero_of_simple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (R : Ind C) [MonObj R]
+    [IsCommMonObj R] [CategoryTheory.Linear ℂ (Ind C)]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject R, IsIdeal R I → I = ⊥ ∨ I = ⊤)
     (f : L.obj ⟶ R) : f = 0 := by
   have hid : IsIdeal R (Subobject.mk (image.ι (gmul f (𝟙 R)))) :=

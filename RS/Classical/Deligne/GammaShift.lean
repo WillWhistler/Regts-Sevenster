@@ -38,25 +38,32 @@ attribute [local instance] CategoryTheory.ModObj.regular
 
 section Cap
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D]
+variable {D : Type u}
 
 /-- **The odd cap**: contract the two twisting legs of a doubly
 twisted object against the square trivialisation of the odd
 line. -/
-def OddLine.cap (L : OddLine D) (Z : D) :
+def OddLine.cap [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (Z : D) :
     (Z ⊗ L.obj) ⊗ L.obj ⟶ Z :=
   (α_ Z L.obj L.obj).hom ≫ (Z ◁ L.sq.hom) ≫ (ρ_ Z).hom
 
 /-- The odd cap unfolded. -/
-theorem OddLine.cap_def (L : OddLine D) (Z : D) :
+theorem OddLine.cap_def
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (Z : D) :
     L.cap Z =
       (α_ Z L.obj L.obj).hom ≫ (Z ◁ L.sq.hom) ≫ (ρ_ Z).hom :=
   rfl
 
 /-- **The odd cap is natural** in the capped object: a morphism
 whiskered by the two legs passes through the contraction. -/
-theorem OddLine.cap_naturality (L : OddLine D) {Z Z' : D}
+theorem OddLine.cap_naturality
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) {Z Z' : D}
     (f : Z ⟶ Z') :
     ((f ▷ L.obj) ▷ L.obj) ≫ L.cap Z' = L.cap Z ≫ f := by
   simp only [OddLine.cap_def, Category.assoc]
@@ -66,7 +73,10 @@ theorem OddLine.cap_naturality (L : OddLine D) {Z Z' : D}
 /-- **The odd cap is compatible with the associator**: capping a
 tensor product is capping the right-hand factor inside the
 left-hand one. -/
-theorem OddLine.cap_tensor (L : OddLine D) (A B : D) :
+theorem OddLine.cap_tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (A B : D) :
     ((α_ A B L.obj).inv ▷ L.obj) ≫ L.cap (A ⊗ B) =
       (α_ A (B ⊗ L.obj) L.obj).hom ≫ (A ◁ L.cap B) := by
   have hpre : ((α_ A B L.obj).inv ▷ L.obj) ≫
@@ -84,17 +94,22 @@ theorem OddLine.cap_tensor (L : OddLine D) (A B : D) :
 
 /-! ## The two parity swaps, capped -/
 
-variable [CategoryTheory.Linear ℂ D] [MonoidalPreadditive D]
-  [MonoidalLinear ℂ D]
-
 /-- The even parity swap is a whiskering followed by the cap. -/
-theorem rhoEvenOdd_eq_cap (L : OddLine D) (Z : D)
+theorem rhoEvenOdd_eq_cap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [CategoryTheory.Linear ℂ D] [MonoidalPreadditive D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Z : D)
     (f : 𝟙_ D ⟶ Z ⊗ L.obj) :
     rhoEvenOdd L Z f = (λ_ L.obj).inv ≫ (f ▷ L.obj) ≫ L.cap Z :=
   rfl
 
 /-- The odd parity swap is a whiskering followed by the cap. -/
-theorem rhoOddOdd_eq_cap (L : OddLine D) (Z : D)
+theorem rhoOddOdd_eq_cap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [CategoryTheory.Linear ℂ D] [MonoidalPreadditive D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Z : D)
     (g : L.obj ⟶ Z ⊗ L.obj) :
     rhoOddOdd L Z g = L.sq.inv ≫ (g ▷ L.obj) ≫ L.cap Z := by
   rw [rhoOddOdd, LinearEquiv.trans_apply, Linear.homCongr_apply]
@@ -108,16 +123,17 @@ end Cap
 
 section Slide
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D]
-variable (L : OddLine D) (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- **The sliding lemma**: the free action of a scalar on the free
 module of the odd line, capped, is the convolution product by that
 scalar, up to the associator of the three sources.  This is `μ`
 sliding past an associator and the square trivialisation, and it
 is the whole content of the parity shift. -/
-theorem free_cap_slide {W X : D} (a : W ⟶ R)
+theorem free_cap_slide
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R]
+    {W X : D} (a : W ⟶ R)
     (m : X ⟶ R ⊗ L.obj) :
     (((a ⊗ₘ m) ≫ (α_ R R L.obj).inv ≫ μ[R] ▷ L.obj) ▷ L.obj) ≫
         L.cap R =
@@ -139,7 +155,10 @@ reassociating the chosen sources, the swap of a free action is the
 transported convolution product against the swap.  The four action
 compatibilities of `RS.gammaShiftHom` are the four instances of
 this. -/
-theorem free_cap_slide' {W X U V V' : D} (a : W ⟶ R)
+theorem free_cap_slide'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R]
+    {W X U V V' : D} (a : W ⟶ R)
     (m : X ⟶ R ⊗ L.obj) (s₁ : U ⟶ W ⊗ X) (p : V ⟶ U ⊗ L.obj)
     (q : V' ⟶ X ⊗ L.obj) (s₂ : V ⟶ W ⊗ V')
     {Φ : (U ⟶ R ⊗ L.obj) → (V ⟶ R)}
@@ -159,15 +178,17 @@ end Slide
 
 section Shift
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+variable {D : Type u}
 
 /-- **The parity swap is a morphism of Γ-modules**: the two
 parity swaps of `RS.RhoTwist` intertwine the four action blocks of
 the Γ-module of the free module on the odd line with the four
 relabelled blocks of the parity shift of the Γ-module of `R`. -/
-noncomputable def gammaShiftHom (L : OddLine D) (R : D) [MonObj R]
+noncomputable def gammaShiftHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D) [MonObj R]
     [IsCommMonObj R] :
     gammaModule D L R ((freeMod R L.obj).X) ⟶
       SuperCommAlgebra.Mod.shift (gammaModule D L R R) where
@@ -210,7 +231,11 @@ noncomputable def gammaShiftHom (L : OddLine D) (R : D) [MonObj R]
 /-- **The realization of an odd twist is the parity shift of the
 realization**: the Γ-module of the free `R`-module on the odd line
 is the parity shift of the Γ-module of `R`. -/
-noncomputable def gammaShiftIso (L : OddLine D) (R : D) [MonObj R]
+noncomputable def gammaShiftIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D) [MonObj R]
     [IsCommMonObj R] :
     gammaModule D L R ((freeMod R L.obj).X) ≅
       SuperCommAlgebra.Mod.shift (gammaModule D L R R) :=

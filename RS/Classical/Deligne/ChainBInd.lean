@@ -55,17 +55,17 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
-variable (A : Ind C) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod (Ind C) A)
+variable {C : Type v}
 
 /-- **Unit-vanishing detection for the splitting-chain algebra**:
 over the ind-category, the unit of the algebra `chainB` vanishes
 exactly when the unit dies at a finite stage of the chain. -/
-theorem chainBUnit_eq_zero_iff (d : ModDualityDatum A M M') :
+theorem chainBUnit_eq_zero_iff
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (A : Ind C) [MonObj A] [IsCommMonObj A]
+    (M : Mod (Ind C) A) (M' : Mod (Ind C) A)
+    (d : ModDualityDatum A M M') :
     chainBUnit A M M' d = 0 ↔
       ∃ n, chainUnitStage A M M' d n = 0 :=
   chainColimitUnit_eq_zero_iff (chainStage A M M')
@@ -78,14 +78,29 @@ The full assembly of `ChainB` synthesises over the ind-category:
 the algebra, its monoid structure and its commutativity all
 instantiate at `D := Ind C`. -/
 
-noncomputable example (d : ModDualityDatum A M M') : Ind C :=
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (A : Ind C) [MonObj A] [IsCommMonObj A]
+    (M : Mod (Ind C) A) (M' : Mod (Ind C) A)
+    (d : ModDualityDatum A M M') : Ind C :=
   chainB A M M' d
 
-noncomputable example (d : ModDualityDatum A M M') :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (A : Ind C) [MonObj A] [IsCommMonObj A]
+    (M : Mod (Ind C) A) (M' : Mod (Ind C) A)
+    (d : ModDualityDatum A M M') :
     MonObj (chainB A M M' d) :=
   chainBMonObj A M M' d
 
-example (d : ModDualityDatum A M M') :
+example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (A : Ind C) [MonObj A] [IsCommMonObj A]
+    (M : Mod (Ind C) A) (M' : Mod (Ind C) A)
+    (d : ModDualityDatum A M M') :
     letI := chainBMonObj A M M' d
     IsCommMonObj (chainB A M M' d) :=
   chainB_isCommMonObj A M M' d

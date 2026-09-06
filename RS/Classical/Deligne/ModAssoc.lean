@@ -30,23 +30,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M N P : Mod D A)
+variable {D : Type u}
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The braided right action on the tensor product of modules,
 precomposed with the projection, is the right action on the second
 factor. -/
 @[reassoc]
-theorem modTensorπ_actRight :
+theorem modTensorπ_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A) :
     (modTensorπ A M N ▷ A) ≫ (β_ (modTensor A M N) A).hom ≫
         modTensorAct A M N =
       (α_ M.X N.X A).hom ≫ (M.X ◁ actRight A N.X) ≫
@@ -64,23 +58,28 @@ theorem modTensorπ_actRight :
   rw [← MonoidalCategory.whiskerLeft_comp_assoc]
   rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- Companion form of `modTensorπ_actRight`: the right action on
 the second factor descends to the braided right action on the
 tensor product of modules. -/
 @[reassoc]
-theorem whiskerLeft_actRight_modTensorπ :
+theorem whiskerLeft_actRight_modTensorπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A) :
     (M.X ◁ actRight A N.X) ≫ modTensorπ A M N =
       (α_ M.X N.X A).inv ≫ (modTensorπ A M N ▷ A) ≫
         (β_ (modTensor A M N) A).hom ≫ modTensorAct A M N := by
   rw [modTensorπ_actRight, Iso.inv_hom_id_assoc]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The coequalizer condition of the right-nested tensor product,
 stated over the underlying objects. -/
-theorem modTensor_condition_right :
+theorem modTensor_condition_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (actRight A M.X ▷ modTensor A N P) ≫
         modTensorπ A M (modTensorMod A N P) =
       (α_ M.X A (modTensor A N P)).hom ≫
@@ -90,11 +89,14 @@ theorem modTensor_condition_right :
   rw [modTensorLegM, modTensorLegN, Category.assoc] at h
   exact h
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The coequalizer condition of the left-nested tensor product,
 stated over the underlying objects. -/
-theorem modTensor_condition_left :
+theorem modTensor_condition_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (((β_ (modTensor A M N) A).hom ≫ modTensorAct A M N) ▷ P.X) ≫
         modTensorπ A (modTensorMod A M N) P =
       (α_ (modTensor A M N) A P.X).hom ≫
@@ -106,17 +108,25 @@ theorem modTensor_condition_left :
 
 /-- The cover of the associator: reassociate and project through
 both tensor products of the right-nested side. -/
-noncomputable def modTensorAssocCover :
+noncomputable def modTensorAssocCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (M.X ⊗ N.X) ⊗ P.X ⟶ modTensor A M (modTensorMod A N P) :=
   (α_ M.X N.X P.X).hom ≫ (M.X ◁ modTensorπ A N P) ≫
     modTensorπ A M (modTensorMod A N P)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The cover of the associator coequalizes the whiskered inner
 balance relation: the monoid sliding between `M` and `N` slides
 onto `N` through the conditions of the target. -/
-theorem modTensorAssocCover_cond :
+theorem modTensorAssocCover_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (modTensorLegM A M N ▷ P.X) ≫ modTensorAssocCover A M N P =
       (modTensorLegN A M N ▷ P.X) ≫ modTensorAssocCover A M N P := by
   rw [modTensorLegM, modTensorLegN, modTensorAssocCover]
@@ -132,14 +142,26 @@ theorem modTensorAssocCover_cond :
 
 /-- The half-descended associator, on the cover of the outer
 coequalizer of the left-nested side. -/
-noncomputable def modTensorAssocMid :
+noncomputable def modTensorAssocMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensor A M N ⊗ P.X ⟶ modTensor A M (modTensorMod A N P) :=
   modTensorWhiskerRDesc A M N P.X (modTensorAssocCover A M N P)
     (modTensorAssocCover_cond A M N P)
 
 /-- Defining equation of the half-descended associator. -/
 @[reassoc (attr := simp)]
-theorem whiskerRight_modTensorπ_assocMid :
+theorem whiskerRight_modTensorπ_assocMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (modTensorπ A M N ▷ P.X) ≫ modTensorAssocMid A M N P =
       modTensorAssocCover A M N P :=
   whiskerRight_modTensorπ_whiskerRDesc A M N P.X _ _
@@ -148,7 +170,13 @@ theorem whiskerRight_modTensorπ_assocMid :
 relation: the monoid sliding between the `(M, N)`-block and `P`
 slides between `N` and `P` through the inner condition of the
 target. -/
-theorem modTensorAssocMid_cond :
+theorem modTensorAssocMid_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorLegM A (modTensorMod A M N) P ≫
         modTensorAssocMid A M N P =
       modTensorLegN A (modTensorMod A M N) P ≫
@@ -182,7 +210,13 @@ theorem modTensorAssocMid_cond :
 
 /-- **The associator of the tensor product of modules**: the
 descent of the ambient associator to the relative tensors. -/
-noncomputable def modTensorAssocHom :
+noncomputable def modTensorAssocHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensor A (modTensorMod A M N) P ⟶
       modTensor A M (modTensorMod A N P) :=
   modTensorDesc A (modTensorMod A M N) P
@@ -190,27 +224,39 @@ noncomputable def modTensorAssocHom :
 
 /-- Defining equation of the associator. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_assocHom :
+theorem modTensorπ_assocHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorπ A (modTensorMod A M N) P ≫
         modTensorAssocHom A M N P =
       modTensorAssocMid A M N P :=
   modTensorπ_desc A _ _ _ _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The cover of the inverse associator: reassociate backwards and
 project through both tensor products of the left-nested side. -/
-noncomputable def modTensorAssocInvCover :
+noncomputable def modTensorAssocInvCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     M.X ⊗ (N.X ⊗ P.X) ⟶ modTensor A (modTensorMod A M N) P :=
   (α_ M.X N.X P.X).inv ≫ (modTensorπ A M N ▷ P.X) ≫
     modTensorπ A (modTensorMod A M N) P
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The inverse cover coequalizes the whiskered inner balance
 relation: the monoid sliding between `N` and `P` slides onto the
 `(M, N)`-block through the conditions of the target. -/
-theorem modTensorAssocInvCover_cond :
+theorem modTensorAssocInvCover_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (M.X ◁ modTensorLegM A N P) ≫
         modTensorAssocInvCover A M N P =
       (M.X ◁ modTensorLegN A N P) ≫
@@ -228,31 +274,40 @@ theorem modTensorAssocInvCover_cond :
     Category.assoc, associator_inv_naturality_right_assoc]
   rw [pentagon_inv_inv_hom_hom_inv_assoc]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The half-descended inverse associator, on the cover of the
 outer coequalizer of the right-nested side. -/
-noncomputable def modTensorAssocInvMid :
+noncomputable def modTensorAssocInvMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     M.X ⊗ modTensor A N P ⟶ modTensor A (modTensorMod A M N) P :=
   modTensorWhiskerDesc A N P M.X (modTensorAssocInvCover A M N P)
     (modTensorAssocInvCover_cond A M N P)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- Defining equation of the half-descended inverse associator. -/
 @[reassoc (attr := simp)]
-theorem whiskerLeft_modTensorπ_assocInvMid :
+theorem whiskerLeft_modTensorπ_assocInvMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     (M.X ◁ modTensorπ A N P) ≫ modTensorAssocInvMid A M N P =
       modTensorAssocInvCover A M N P :=
   whiskerLeft_modTensorπ_whiskerDesc A N P M.X _ _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The half-descended inverse associator coequalizes the outer
 balance relation: the monoid sliding between `M` and the
 `(N, P)`-block slides between `M` and `N` through the inner
 condition of the target. -/
-theorem modTensorAssocInvMid_cond :
+theorem modTensorAssocInvMid_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorLegM A M (modTensorMod A N P) ≫
         modTensorAssocInvMid A M N P =
       modTensorLegN A M (modTensorMod A N P) ≫
@@ -285,21 +340,27 @@ theorem modTensorAssocInvMid_cond :
     associator_inv_naturality_middle_assoc]
   rw [← pentagon_hom_inv_inv_inv_hom_assoc]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The inverse associator of the tensor product of modules.** -/
-noncomputable def modTensorAssocInv :
+noncomputable def modTensorAssocInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensor A M (modTensorMod A N P) ⟶
       modTensor A (modTensorMod A M N) P :=
   modTensorDesc A M (modTensorMod A N P)
     (modTensorAssocInvMid A M N P)
     (modTensorAssocInvMid_cond A M N P)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- Defining equation of the inverse associator. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_assocInv :
+theorem modTensorπ_assocInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorπ A M (modTensorMod A N P) ≫
         modTensorAssocInv A M N P =
       modTensorAssocInvMid A M N P :=
@@ -307,7 +368,13 @@ theorem modTensorπ_assocInv :
 
 /-- The associator retracts the inverse associator. -/
 @[reassoc (attr := simp)]
-theorem modTensorAssocHom_assocInv :
+theorem modTensorAssocHom_assocInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorAssocHom A M N P ≫ modTensorAssocInv A M N P =
       𝟙 (modTensor A (modTensorMod A M N) P) := by
   apply modTensor_hom_ext A (modTensorMod A M N) P
@@ -325,7 +392,13 @@ theorem modTensorAssocHom_assocInv :
 
 /-- The inverse associator retracts the associator. -/
 @[reassoc (attr := simp)]
-theorem modTensorAssocInv_assocHom :
+theorem modTensorAssocInv_assocHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorAssocInv A M N P ≫ modTensorAssocHom A M N P =
       𝟙 (modTensor A M (modTensorMod A N P)) := by
   apply modTensor_hom_ext A M (modTensorMod A N P)
@@ -345,7 +418,13 @@ theorem modTensorAssocInv_assocHom :
 /-- **The associator isomorphism of the tensor product of
 modules** (Deligne 2002, §2.3): the relative tensor is associative
 up to the descended ambient associator. -/
-noncomputable def modTensorAssocIso :
+noncomputable def modTensorAssocIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensor A (modTensorMod A M N) P ≅
       modTensor A M (modTensorMod A N P) where
   hom := modTensorAssocHom A M N P
@@ -356,7 +435,13 @@ noncomputable def modTensorAssocIso :
 /-- **The associator is a morphism of modules**: it intertwines
 the descended actions of the two nestings. -/
 @[reassoc]
-theorem modTensorAssocHom_act :
+theorem modTensorAssocHom_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorAct A (modTensorMod A M N) P ≫
         modTensorAssocHom A M N P =
       (A ◁ modTensorAssocHom A M N P) ≫
@@ -408,7 +493,13 @@ theorem modTensorAssocHom_act :
 
 /-- The inverse associator intertwines the actions. -/
 @[reassoc]
-theorem modTensorAssocInv_act :
+theorem modTensorAssocInv_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorAct A M (modTensorMod A N P) ≫
         modTensorAssocInv A M N P =
       (A ◁ modTensorAssocInv A M N P) ≫
@@ -425,14 +516,26 @@ theorem modTensorAssocInv_act :
     Category.id_comp]
 
 /-- The associator as a morphism of bundled modules. -/
-noncomputable def modTensorAssocModHom :
+noncomputable def modTensorAssocModHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorMod A (modTensorMod A M N) P ⟶
       modTensorMod A M (modTensorMod A N P) :=
   Mod.Hom.mk' (modTensorAssocHom A M N P)
     (modTensorAssocHom_act A M N P)
 
 /-- The inverse associator as a morphism of bundled modules. -/
-noncomputable def modTensorAssocModInv :
+noncomputable def modTensorAssocModInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorMod A M (modTensorMod A N P) ⟶
       modTensorMod A (modTensorMod A M N) P :=
   Mod.Hom.mk' (modTensorAssocInv A M N P)
@@ -440,7 +543,13 @@ noncomputable def modTensorAssocModInv :
 
 /-- **The associator of the tensor product of modules, as an
 isomorphism of bundled modules.** -/
-noncomputable def modTensorAssocModIso :
+noncomputable def modTensorAssocModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (N : Mod D A)
+    (P : Mod D A) :
     modTensorMod A (modTensorMod A M N) P ≅
       modTensorMod A M (modTensorMod A N P) where
   hom := modTensorAssocModHom A M N P

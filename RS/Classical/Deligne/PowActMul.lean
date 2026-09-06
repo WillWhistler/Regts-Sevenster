@@ -35,18 +35,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## The action through the right factor against a concatenation -/
 
 section RawConcat
 
-variable [BraidedCategory D] (A : D) [MonObj A]
-
 /-- The action through the right factor of a tensor pair, with the
 pair reassociated: carry the monoid past the first factor and act
 through the second. -/
-theorem actAcross_split_pair (V₁ V₂ X : D) [ModObj A X] :
+theorem actAcross_split_pair
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A]
+    (V₁ V₂ X : D) [ModObj A X] :
     (A ◁ (α_ V₁ V₂ X).inv) ≫ actAcross A (V₁ ⊗ V₂) X =
       (braidPast A V₁ (V₂ ⊗ X)).hom ≫ (V₁ ◁ actAcross A V₂ X) ≫
         (α_ V₁ V₂ X).inv := by
@@ -59,7 +60,10 @@ theorem actAcross_split_pair (V₁ V₂ X : D) [ModObj A X] :
 through the second factor of a pair and collapsing the pair onto a
 codomain equals collapsing first and acting through the right factor
 of the codomain. -/
-theorem actAcross_concat_context (V₁ V₂ Q : D) (c : V₁ ⊗ V₂ ⟶ Q)
+theorem actAcross_concat_context
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A]
+    (V₁ V₂ Q : D) (c : V₁ ⊗ V₂ ⟶ Q)
     (X : D) [ModObj A X] :
     (braidPast A V₁ (V₂ ⊗ X)).hom ≫ (V₁ ◁ actAcross A V₂ X) ≫
         ((α_ V₁ V₂ X).inv ≫ (c ▷ X)) =
@@ -68,14 +72,15 @@ theorem actAcross_concat_context (V₁ V₂ Q : D) (c : V₁ ⊗ V₂ ⟶ Q)
   simp only [Category.comp_id] at h
   rw [h, reassoc_of% (actAcross_split_pair A V₁ V₂ X)]
 
-variable (X : D) [ModObj A X]
-
 /-- **The tail action passes the concatenation**: carrying the
 monoid to the tail of the second block and concatenating equals
 concatenating and acting on the tail of the product.  The
 concatenation folds on the right, so the tail of the product is the
 tail of the second block and no arity transport is needed. -/
-theorem powTailAct_concat (m n : ℕ) :
+theorem powTailAct_concat
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     (braidPast A (tensorPow D X (m + 1))
           (tensorPow D X (n + 1))).hom ≫
         (tensorPow D X (m + 1) ◁ powTailAct A X n) ≫
@@ -92,14 +97,14 @@ end RawConcat
 
 section ModLevel
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Y : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
-
 /-- Morphisms out of a whiskered tensor pair of module powers are
 determined by their composites with the tensored projections. -/
-theorem modPowTensorLeft_hom_ext (P : D) (m n : ℕ) {Z : D}
+theorem modPowTensorLeft_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (P : D) (m n : ℕ) {Z : D}
     {k l : P ⊗ (modPow A X m ⊗ modPow A X n) ⟶ Z}
     (h : (P ◁ (modPowπ A X m ⊗ₘ modPowπ A X n)) ≫ k =
       (P ◁ (modPowπ A X m ⊗ₘ modPowπ A X n)) ≫ l) : k = l := by
@@ -111,10 +116,14 @@ theorem modPowTensorLeft_hom_ext (P : D) (m n : ℕ) {Z : D}
   simp only [associator_naturality_right_assoc]
   rw [h₂]
 
-variable [MonoidalPreadditive D] [IsCommMonObj A]
-
 /-- The descended action passes an arity transport. -/
-theorem modPowAct_cast {a b : ℕ} (h : a + 1 = b + 1) :
+theorem modPowAct_cast
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    [MonoidalPreadditive D] [IsCommMonObj A]
+    {a b : ℕ} (h : a + 1 = b + 1) :
     (A ◁ modPowCast A X h) ≫ modPowAct A X b =
       modPowAct A X a ≫ modPowCast A X h := by
   obtain rfl : a = b := by omega
@@ -124,7 +133,13 @@ theorem modPowAct_cast {a b : ℕ} (h : a + 1 = b + 1) :
 /-- **The raw multiplication is a module map in the right factor**:
 acting on the right factor, with the monoid carried past the left
 factor, equals multiplying and acting on the product. -/
-theorem modPowMul_actRight (m n : ℕ) :
+theorem modPowMul_actRight
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    [MonoidalPreadditive D] [IsCommMonObj A]
+    (m n : ℕ) :
     (braidPast A (modPow A X (m + 1)) (modPow A X (n + 1))).hom ≫
         (modPow A X (m + 1) ◁ modPowAct A X n) ≫
         modPowMul A X (m + 1) (n + 1) =
@@ -156,13 +171,13 @@ end ModLevel
 
 section BraidCancel
 
-variable [BraidedCategory D]
-
 /-- Braiding a pair with the monoid attached to its first factor,
 then carrying the monoid back out of the second factor, is braiding
 the bare pair under the monoid. -/
 @[reassoc]
-theorem associator_inv_braiding_braidPast_inv (A V T : D) :
+theorem associator_inv_braiding_braidPast_inv
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A V T : D) :
     (α_ A V T).inv ≫ (β_ (A ⊗ V) T).hom ≫ (braidPast A T V).inv =
       A ◁ (β_ V T).hom := by
   rw [← cancel_mono (braidPast A T V).hom]
@@ -176,16 +191,15 @@ end BraidCancel
 
 section ModLeftLevel
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [MonoidalPreadditive D]
-variable [∀ Y : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
-
 /-- **The braiding of module powers is a block permutation across
 the multiplications**: the descent of
 `tensorPowConcat_braiding_exists` through the projections. -/
-theorem modPowMul_braiding_exists (m n : ℕ) :
+theorem modPowMul_braiding_exists
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (m n : ℕ) :
     ∃ σ : Equiv.Perm (Fin (n + m)),
       (β_ (modPow A X m) (modPow A X n)).hom ≫ modPowMul A X n m =
         modPowMul A X m n ≫
@@ -201,8 +215,6 @@ theorem modPowMul_braiding_exists (m n : ℕ) :
     modPowπ_perm]
   rw [reassoc_of% hσ]
 
-variable [IsCommMonObj A]
-
 /-- **The raw multiplication is a module map in the left factor**:
 acting on the left factor equals multiplying and acting on the
 product, with no braiding of the monoid past anything.  The action
@@ -210,7 +222,13 @@ slides from the tail of the left block to the tail of the product;
 the slide is packaged through the braiding of the blocks, the
 right-factor statement, and the equivariance of the descended
 action. -/
-theorem modPowMul_actLeft (m n : ℕ) :
+theorem modPowMul_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    [IsCommMonObj A]
+    (m n : ℕ) :
     (α_ A (modPow A X (m + 1)) (modPow A X (n + 1))).inv ≫
         (modPowAct A X m ▷ modPow A X (n + 1)) ≫
         modPowMul A X (m + 1) (n + 1) =
@@ -264,19 +282,14 @@ end ModLeftLevel
 
 section SymLevel
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Y : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
-
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)] in
 /-- Morphisms out of a whiskered tensor pair of symmetric powers
 are determined by their composites with the tensored projections,
 which are jointly split epi. -/
-theorem symPowTensorLeft_hom_ext (P : D) (m n : ℕ) {Z : D}
+theorem symPowTensorLeft_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (P : D) (m n : ℕ) {Z : D}
     {k l : P ⊗ (symPow A X m ⊗ symPow A X n) ⟶ Z}
     (h : (P ◁ (symPowπ A X m ⊗ₘ symPowπ A X n)) ≫ k =
       (P ◁ (symPowπ A X m ⊗ₘ symPowπ A X n)) ≫ l) : k = l := by
@@ -293,12 +306,17 @@ theorem symPowTensorLeft_hom_ext (P : D) (m n : ℕ) {Z : D}
         rw [Category.assoc, Category.assoc, h]
     _ = l := by rw [hsec, Category.id_comp]
 
-variable [IsCommMonObj A]
-
 /-- **The symmetric multiplication is a module map in the right
 factor**: acting on the right factor, with the monoid carried past
 the left factor, equals multiplying and acting on the product. -/
-theorem symMul_actRight (m n : ℕ) :
+theorem symMul_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    [IsCommMonObj A]
+    (m n : ℕ) :
     (braidPast A (symPow A X (m + 1)) (symPow A X (n + 1))).hom ≫
         (symPow A X (m + 1) ◁ symPowAct A X n) ≫
         symMul A X (m + 1) (n + 1) =
@@ -327,7 +345,14 @@ theorem symMul_actRight (m n : ℕ) :
 /-- **The symmetric multiplication is a module map in the left
 factor**: acting on the left factor equals multiplying and acting
 on the product, with no braiding of the monoid past anything. -/
-theorem symMul_actLeft (m n : ℕ) :
+theorem symMul_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    [IsCommMonObj A]
+    (m n : ℕ) :
     (α_ A (symPow A X (m + 1)) (symPow A X (n + 1))).inv ≫
         (symPowAct A X m ▷ symPow A X (n + 1)) ≫
         symMul A X (m + 1) (n + 1) =

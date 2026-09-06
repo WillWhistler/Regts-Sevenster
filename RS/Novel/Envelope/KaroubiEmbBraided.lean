@@ -15,25 +15,27 @@ open CategoryTheory.MonoidalCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u}
 
-private theorem tk_mu_f (X Y : C) :
+private theorem tk_mu_f [Category.{v} C] [MonoidalCategory C]
+    (X Y : C) :
     (Functor.LaxMonoidal.μ (toKaroubi C) X Y).f = 𝟙 (X ⊗ Y) :=
   rfl
 
-omit [MonoidalCategory C] in
-private theorem tk_map_f {X Y : C} (g : X ⟶ Y) :
+private theorem tk_map_f [Category.{v} C]
+    {X Y : C} (g : X ⟶ Y) :
     ((toKaroubi C).map g).f = g := rfl
 
 section Braided
 
-variable [BraidedCategory C]
-
-private theorem tk_braiding_f (X Y : Karoubi C) :
+private theorem tk_braiding_f
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (β_ X Y).hom.f = (X.p ⊗ₘ Y.p) ≫ (β_ X.X Y.X).hom := rfl
 
 /-- **The Karoubi embedding is braided.** -/
-noncomputable instance toKaroubiBraided :
+noncomputable instance toKaroubiBraided
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] :
     Functor.Braided (toKaroubi C) where
   braided X Y := by
     apply Karoubi.hom_ext
@@ -50,10 +52,10 @@ end Braided
 
 section LinearEmb
 
-variable [Preadditive C] [CategoryTheory.Linear ℂ C]
-
 /-- **The Karoubi embedding is ℂ-linear.** -/
-instance toKaroubiLinear : (toKaroubi C).Linear ℂ where
+instance toKaroubiLinear
+    [Category.{v} C] [Preadditive C] [CategoryTheory.Linear ℂ C] :
+    (toKaroubi C).Linear ℂ where
   map_smul _ _ := rfl
 
 end LinearEmb

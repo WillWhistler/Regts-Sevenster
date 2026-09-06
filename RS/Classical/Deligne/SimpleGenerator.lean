@@ -23,16 +23,17 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **A simple algebra splitting a chosen object**, obtained from a
 countably presented splitting algebra by passing to the quotient by
 a maximal ideal.  The countably presented algebra above is kept,
 together with the projection, because the dimension count for the
 scalars of the quotient runs through it. -/
-theorem exists_simple_generator_algebra (ψ : ℂ ≃+* End (𝟙_ C))
+theorem exists_simple_generator_algebra
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (L : OddLine (Ind C)) (X₀ : C) (lam : YoungDiagram)
     (hkill : letI := linearOfScalarUnit ψ; SchurKilled P X₀ lam)

@@ -18,22 +18,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The arity-one power pairing is the pairing, through the
 comparison isomorphisms. -/
-theorem modPowPairing_zero (d : ModDualityDatum A M M') :
+theorem modPowPairing_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     modPowPairing A M M' d 0 =
       modTensorMap A (fromModPowModZero A M')
         (fromModPowModZero A M) ≫ d.pair := by
@@ -55,12 +50,13 @@ theorem modPowPairing_zero (d : ModDualityDatum A M M') :
       from rfl, Category.assoc]
   rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Duality data with equal pairings and copairings are equal. -/
-theorem ModDualityDatum.ext' {N N' : Mod D A}
+theorem ModDualityDatum.ext'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    {N N' : Mod D A}
     {x y : ModDualityDatum A N N'}
     (hp : x.pair = y.pair) (hc : x.copair = y.copair) :
     x = y := by
@@ -74,7 +70,14 @@ theorem ModDualityDatum.ext' {N N' : Mod D A}
 /-- **The bottom power datum is the transferred datum**: the
 arity-one comparison isomorphisms carry the datum to its zeroth
 power. -/
-theorem powDualityDatum_zero (d : ModDualityDatum A M M') :
+theorem powDualityDatum_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     powDualityDatum A M M' d 0 =
       d.transfer A (fromModPowModZero A M) (fromModPowModZero A M')
         (toModPowModZero A M) (toModPowModZero A M') :=
@@ -82,7 +85,14 @@ theorem powDualityDatum_zero (d : ModDualityDatum A M M') :
     (powCopairA_zero A M M' d)
 
 /-- **The bottom power datum satisfies the zigzag laws.** -/
-theorem powDualityDatum_zigzag_zero (d : ModDualityDatum A M M')
+theorem powDualityDatum_zigzag_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d) :
     ModZigzagDatum A (powDualityDatum A M M' d 0) := by
   rw [powDualityDatum_zero A M M' d]

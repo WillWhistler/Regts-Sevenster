@@ -37,14 +37,16 @@ abbrev mixParity (r s : ℕ) : Fin r ⊕ Fin s → Bool :=
 
 section AmbientLetters
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [Preadditive D] [HasFiniteBiproducts D] [SymmetricCategory D]
+variable {D : Type u}
 
 /-- **The letter system of a mixed sum**, read off from the
 indexed biproduct: the inclusions and projections of the summands,
 with the unit summands even and the line summands odd.  No
 positivity of the counts is involved. -/
-noncomputable def OddLine.mixLetters (L : OddLine D) (r s : ℕ) :
+noncomputable def OddLine.mixLetters
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasFiniteBiproducts D] [SymmetricCategory D]
+    (L : OddLine D) (r s : ℕ) :
     MixedLetters (Fin r ⊕ Fin s) (mixParity r s) L.obj
       (L.mix r s) where
   ins k :=

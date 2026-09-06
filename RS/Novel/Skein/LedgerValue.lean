@@ -33,8 +33,7 @@ def PairedValueLedger : Prop :=
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 /-- The paired step and its value form are equivalent. -/
 theorem pairedLedger_iff_value :
@@ -59,6 +58,7 @@ theorem pairedLedger_iff_value :
 step**: the full well-definedness with the paired input in
 value form. -/
 theorem signedValueAt_samePairing_of_value
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     (HPaired : PairedValueLedger) {k ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)

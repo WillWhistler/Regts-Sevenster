@@ -27,18 +27,9 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section Data
-
-variable [BraidedCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
 
 /-- **The conclusion of the Key Lemma** (Deligne 2.8), in the
 insertion form of the source: a commutative algebra `B` under
@@ -48,7 +39,12 @@ element to the unit of `B`.  The insertions are linear over the
 base through the structure morphism, and their product on the
 relative tensor is packaged as the descended map `pairMul` with
 its defining equation. -/
-structure SplittingData {M M' : Mod D A}
+structure SplittingData
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    {M M' : Mod D A}
     (d : ModDualityDatum A M M') where
   /-- The underlying object of the splitting algebra. -/
   carrier : D
@@ -93,21 +89,18 @@ end Data
 
 section Statement
 
-variable [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-
 /-- **The Key Lemma statement of record** (Deligne 2.8, the
 consumed direction): a duality datum with the zigzag laws, over
 a nonzero base whose symmetric powers of the module never
 vanish, admits splitting data. -/
-def KeyLemmaDataStatement {M M' : Mod D A}
+def KeyLemmaDataStatement
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [CategoryTheory.Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    {M M' : Mod D A}
     (d : ModDualityDatum A M M') : Prop :=
   ModZigzagDatum A d → η[A] ≠ 0 →
     (∀ n : ℕ, ¬ Limits.IsZero (symPow A M.X n)) →

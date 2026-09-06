@@ -21,36 +21,27 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable {M M' : Mod D A}
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (v : M.X ⟶ B) (w : M'.X ⟶ B)
-variable (d : ModDualityDatum A M M')
+variable {D : Type u}
 
 /-- **The dual coevaluation core**: push the primal factor into
 the algebra — the module tensor product lands in the base change
 of the dual module.  No swap is needed: the primal factor is
 already on the left. -/
 noncomputable def splitCoevalCoreDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (v : M.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     modTensor A M M' ⟶ baseChange φ M' :=
   modTensorMap A (insHom A B φ v hv) (𝟙 M')
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Defining equation of the dual coevaluation core. -/
 @[reassoc]
 theorem modTensorπ_splitCoevalCoreDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (v : M.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     modTensorπ A M M' ≫ splitCoevalCoreDual A B φ v hv =
@@ -60,14 +51,14 @@ theorem modTensorπ_splitCoevalCoreDual
     (modTensorπ_map A (insHom A B φ v hv) (𝟙 M')) ?_
   exact eq_whisker (by simp) _
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- **Evaluating the dual coevaluation core multiplies the two
 insertions**: the core composite is any descended pair product.
 Unlike the primal statement, no braiding step is needed. -/
 theorem splitCoevalCoreDual_splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -92,6 +83,12 @@ theorem splitCoevalCoreDual_splitEval
 primal factor pushed into the algebra, multiplied against the
 algebra. -/
 noncomputable def splitCoevalDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     B ⟶ baseChange φ M' :=
@@ -100,10 +97,15 @@ noncomputable def splitCoevalDual
       splitCoevalCoreDual A B φ v hv)) ≫
     baseChangeAct φ M'
 
-omit [Preadditive D] [MonoidalPreadditive D] in
 /-- **The dual coevaluation is linear over the algebra.** -/
 @[reassoc]
 theorem mul_splitCoevalDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     μ[B] ≫ splitCoevalDual A B φ v d hv =
@@ -124,12 +126,17 @@ theorem mul_splitCoevalDual
   rw [reassoc_of% (show (ρ_ (B ⊗ B)).inv ≫
     (α_ B B (𝟙_ D)).hom = B ◁ (ρ_ B).inv from by monoidal)]
 
-omit [Preadditive D] [MonoidalPreadditive D] in
 /-- **The dual retract identity**: over splitting data, the dual
 coevaluation followed by the dual evaluation is the identity —
 the algebra is a direct factor of the base change of the dual
 module. -/
 theorem splitCoevalDual_splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -168,6 +175,12 @@ theorem splitCoevalDual_splitEval
 /-- The dual coevaluation, as a module morphism from the regular
 module. -/
 noncomputable def splitCoevalDualMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     regularMod B ⟶ baseChangeMod φ M' :=
@@ -177,6 +190,12 @@ noncomputable def splitCoevalDualMod
 /-- **The dual split idempotent** on the base change of the dual
 module: evaluate, then coevaluate. -/
 noncomputable def splitIdemDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -184,9 +203,14 @@ noncomputable def splitIdemDual
     baseChange φ M' ⟶ baseChange φ M' :=
   splitEval A B φ w hw ≫ splitCoevalDual A B φ v d hv
 
-omit [Preadditive D] [MonoidalPreadditive D] in
 /-- The dual split idempotent is idempotent. -/
 theorem splitIdemDual_idem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -202,9 +226,14 @@ theorem splitIdemDual_idem
     splitCoevalDual_splitEval A B φ v w d hv hw p hp hδ,
     Category.id_comp]
 
-omit [Preadditive D] [MonoidalPreadditive D] in
 /-- The dual split idempotent is linear over the algebra. -/
 theorem baseChangeAct_splitIdemDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -220,11 +249,15 @@ theorem baseChangeAct_splitIdemDual
 
 section Complement
 
-variable [HasKernels D]
-
 /-- **The dual complement carrier**: the kernel of the dual
 split idempotent. -/
 noncomputable def splitComplDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    {M : Mod D A} {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -234,6 +267,12 @@ noncomputable def splitComplDual
 /-- The action of the algebra descends to the dual
 complement. -/
 noncomputable def splitComplActDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -259,6 +298,12 @@ noncomputable def splitComplActDual
 /-- Defining equation of the dual complement action. -/
 @[reassoc]
 theorem splitComplActDual_ι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -271,6 +316,12 @@ theorem splitComplActDual_ι
 
 /-- The unit law of the dual complement action. -/
 theorem splitComplActDual_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -300,6 +351,12 @@ theorem splitComplActDual_one
 
 /-- The multiplication law of the dual complement action. -/
 theorem splitComplActDual_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -352,6 +409,12 @@ theorem splitComplActDual_mul
 /-- The dual complement, as a module over the algebra. -/
 @[implicit_reducible]
 noncomputable def splitComplModObjDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -363,6 +426,12 @@ noncomputable def splitComplModObjDual
 
 /-- The dual complement, bundled. -/
 noncomputable def splitComplModDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -373,6 +442,12 @@ noncomputable def splitComplModDual
 /-- The projection onto the dual complement: the complementary
 idempotent, corestricted to the kernel. -/
 noncomputable def splitComplProjDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    {M : Mod D A} {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -387,10 +462,15 @@ noncomputable def splitComplProjDual
       splitIdemDual_idem A B φ v w d hv hw p hp hδ,
       sub_self])
 
-omit [MonoidalPreadditive D] in
 /-- Defining equation of the dual projection. -/
 @[reassoc]
 theorem splitComplProjDual_ι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    {M : Mod D A} {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -404,11 +484,16 @@ theorem splitComplProjDual_ι
         splitIdemDual A B φ v w d hv hw :=
   kernel.lift_ι _ _ _
 
-variable [HasBinaryBiproducts D]
-
 /-- **The decomposition of the dual base change**, carrier
 level: the algebra summand against the dual complement. -/
 noncomputable def splitDecompDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    {M : Mod D A} {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
+    [HasBinaryBiproducts D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -482,10 +567,15 @@ noncomputable def splitDecompDual
         refine Eq.trans (sub_zero _) ?_
         exact (Category.id_comp _).symm
 
-omit [HasBinaryBiproducts D] in
 /-- The dual projection is linear over the algebra. -/
 @[reassoc]
 theorem baseChangeAct_splitComplProjDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -535,12 +625,12 @@ theorem baseChangeAct_splitComplProjDual
       MonoidalCategory.whiskerLeft_id, Category.id_comp]
   exact hL.trans hR.symm
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [HasKernels D] in
 /-- Morphisms out of a tensored biproduct are determined by the
 two whiskered injections. -/
-private theorem whisker_biprod_ext {P X Y Z : D}
+private theorem whisker_biprod_ext
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D]
+    {P X Y Z : D}
     {f g : P ⊗ (X ⊞ Y) ⟶ Z}
     (h1 : (P ◁ biprod.inl) ≫ f = (P ◁ biprod.inl) ≫ g)
     (h2 : (P ◁ biprod.inr) ≫ f = (P ◁ biprod.inr) ≫ g) :
@@ -571,6 +661,13 @@ private theorem whisker_biprod_ext {P X Y Z : D}
 /-- The dual decomposition intertwines the actions, forward
 direction. -/
 theorem baseChangeAct_splitDecompDualHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
+    [HasBinaryBiproducts D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -622,6 +719,13 @@ theorem baseChangeAct_splitDecompDualHom
 /-- The dual decomposition intertwines the actions, inverse
 direction. -/
 theorem modBiprodAct_splitDecompDualInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
+    [HasBinaryBiproducts D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -669,11 +773,15 @@ end Complement
 
 section RetractDual
 
-variable [HasKernels D]
-
 /-- The kernel inclusion of the dual complement, as a module
 map. -/
 noncomputable def splitComplInclDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -685,6 +793,12 @@ noncomputable def splitComplInclDual
 
 /-- The projection onto the dual complement, as a module map. -/
 noncomputable def splitComplProjModDual
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -699,10 +813,15 @@ noncomputable def splitComplProjModDual
       exact baseChangeAct_splitComplProjDual A B φ v w d
         hv hw p hp hδ)
 
-omit [MonoidalPreadditive D] in
 /-- **The dual complement is a retract of the base change**, at
 the carrier. -/
 theorem splitComplDual_ι_proj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A]
+    {M : Mod D A} {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -730,6 +849,12 @@ theorem splitComplDual_ι_proj
 /-- **The dual complement is a retract of the base change**, as
 modules. -/
 theorem splitComplInclDual_proj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A} (B : D)
+    [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M') [HasKernels D]
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =

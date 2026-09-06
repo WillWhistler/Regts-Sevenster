@@ -19,23 +19,25 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [HasFiniteBiproducts D]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **A splitting algebra**: every object becomes a mixed sum of
 copies of the unit and of the odd line after base change. -/
-def Splits : Prop :=
+def Splits [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] : Prop :=
   ∀ X : D, ∃ p q : ℕ,
     Nonempty (freeMod R X ≅ freeMod R (L.mix p q))
 
 /-- Over a splitting algebra the monoidal comparison is invertible
 at every pair of objects. -/
-theorem isIso_fibreMu_of_splits (hsp : Splits L R) (V W : D) :
+theorem isIso_fibreMu_of_splits
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (hsp : Splits L R) (V W : D) :
     IsIso (fibreMu L R V W) := by
   obtain ⟨p, q, ⟨eV⟩⟩ := hsp V
   obtain ⟨p', q', ⟨eW⟩⟩ := hsp W
@@ -44,7 +46,13 @@ theorem isIso_fibreMu_of_splits (hsp : Splits L R) (V W : D) :
 /-- **Over a splitting algebra the fibre functor is strong
 monoidal.** -/
 @[implicit_reducible]
-noncomputable def fibreOverMonoidal (hsp : Splits L R) :
+noncomputable def fibreOverMonoidal
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (hsp : Splits L R) :
     (fibreOver L R).Monoidal := by
   haveI : IsIso (CategoryTheory.Functor.LaxMonoidal.ε
       (fibreOver L R)) := by

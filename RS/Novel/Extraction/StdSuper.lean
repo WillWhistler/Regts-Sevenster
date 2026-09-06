@@ -172,9 +172,7 @@ theorem stdFormOdd_stdG_left (ℓ : ℕ) (j : Fin (2 * ℓ))
     exact absurd (Finset.mem_univ (oddPartner ℓ j)) hmem
 
 /-- **The even contraction identity** (accompanying paper,
-Lemma 6.2(ii), even
-part): contracting the even copairing through the form is the
-identity. -/
+§5.2): contracting the even copairing through the form is the identity. -/
 theorem sum_stdFormEven_smul (k : ℕ) (x : Fin k → ℂ) :
     (∑ i, stdFormEven k (stdE k i) x • stdE k i) = x := by
   funext j

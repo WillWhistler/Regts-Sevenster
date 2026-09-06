@@ -23,18 +23,17 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
-variable (V W : D)
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
 /-- **The monoidal comparison of the fibre functor.** -/
-noncomputable def fibreMu :
+noncomputable def fibreMu
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     (gammaModule D L R (freeMod R V).X).tensor
         (gammaModule D L R (freeMod R W).X) ⟶
       gammaModule D L R (freeMod R (V ⊗ W)).X :=
@@ -42,7 +41,13 @@ noncomputable def fibreMu :
     gammaFunMap L R (freeModTensorIso R V W).hom
 
 /-- The monoidal comparison on even-even generators. -/
-@[simp] theorem fibreMu_evenMap_tmulEE (m : 𝟙_ D ⟶ R ⊗ V)
+@[simp] theorem fibreMu_evenMap_tmulEE
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D)
+    (m : 𝟙_ D ⟶ R ⊗ V)
     (n : 𝟙_ D ⟶ R ⊗ W) :
     (fibreMu L R V W).evenMap
         (tmulEE (gammaModule D L R (freeMod R V).X)
@@ -59,7 +64,13 @@ noncomputable def fibreMu :
     (whisker_eq _ (freeModTensorIso_gpair R V W m n))
 
 /-- The monoidal comparison on odd-odd generators. -/
-@[simp] theorem fibreMu_evenMap_tmulOO (m : L.obj ⟶ R ⊗ V)
+@[simp] theorem fibreMu_evenMap_tmulOO
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D)
+    (m : L.obj ⟶ R ⊗ V)
     (n : L.obj ⟶ R ⊗ W) :
     (fibreMu L R V W).evenMap
         (tmulOO (gammaModule D L R (freeMod R V).X)
@@ -76,7 +87,13 @@ noncomputable def fibreMu :
     (whisker_eq _ (freeModTensorIso_gpair R V W m n))
 
 /-- The monoidal comparison on even-odd generators. -/
-@[simp] theorem fibreMu_oddMap_tmulEO (m : 𝟙_ D ⟶ R ⊗ V)
+@[simp] theorem fibreMu_oddMap_tmulEO
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D)
+    (m : 𝟙_ D ⟶ R ⊗ V)
     (n : L.obj ⟶ R ⊗ W) :
     (fibreMu L R V W).oddMap
         (tmulEO (gammaModule D L R (freeMod R V).X)
@@ -93,7 +110,13 @@ noncomputable def fibreMu :
     (whisker_eq _ (freeModTensorIso_gpair R V W m n))
 
 /-- The monoidal comparison on odd-even generators. -/
-@[simp] theorem fibreMu_oddMap_tmulOE (m : L.obj ⟶ R ⊗ V)
+@[simp] theorem fibreMu_oddMap_tmulOE
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D)
+    (m : L.obj ⟶ R ⊗ V)
     (n : 𝟙_ D ⟶ R ⊗ W) :
     (fibreMu L R V W).oddMap
         (tmulOE (gammaModule D L R (freeMod R V).X)
@@ -112,6 +135,11 @@ noncomputable def fibreMu :
 /-- **The monoidal comparison is invertible as soon as the
 comparison map of (2.11.1) is.** -/
 theorem isIso_fibreMu
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D)
     (h : IsIso (gammaPairComparison L R (freeMod R V)
       (freeMod R W))) : IsIso (fibreMu L R V W) := by
   haveI := h

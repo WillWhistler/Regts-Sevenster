@@ -17,14 +17,13 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable (A : D) [MonObj A]
-
-variable [HasFiniteBiproducts D]
+variable {D : Type u}
 
 /-- **The free-module retracts of a finite biproduct are total.** -/
-theorem freeModMap_biproduct_total {ι : Type} [Fintype ι]
+theorem freeModMap_biproduct_total
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (A : D) [MonObj A] [HasFiniteBiproducts D]
+    {ι : Type} [Fintype ι]
     [DecidableEq ι] (f : ι → D) :
     ∑ i : ι, (freeModMap A (biproduct.π f i)).hom ≫
         (freeModMap A (biproduct.ι f i)).hom =

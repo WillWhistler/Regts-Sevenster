@@ -21,22 +21,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-- **The chain unit stage is the symmetric copair element**, up
 to the braiding of the module tensor product: Deligne's 1.15.1
 composite. -/
-theorem chainUnitStage_eq_symCopair (d : ModDualityDatum A M M')
+theorem chainUnitStage_eq_symCopair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     chainUnitStage A M M' d n =
       η[A] ≫ (symDualityDatum A M M' d n).copair ≫
@@ -58,7 +55,14 @@ theorem chainUnitStage_eq_symCopair (d : ModDualityDatum A M M')
 /-- **Nonvanishing of the chain unit stages**: once the
 symmetric-power datum satisfies the zigzag laws, the stage unit
 detects the symmetric power. -/
-theorem chainUnitStage_ne_zero (d : ModDualityDatum A M M')
+theorem chainUnitStage_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ)
     (hz : ModZigzagDatum A (symDualityDatum A M M' d n))
     (hS : ¬ IsZero (symPow A M.X (n + 1))) :
@@ -89,7 +93,14 @@ theorem chainUnitStage_ne_zero (d : ModDualityDatum A M M')
 
 /-- **Nonvanishing from the power-level zigzags**: composing the
 detection with the symmetric-power inheritance. -/
-theorem chainUnitStage_ne_zero' (d : ModDualityDatum A M M')
+theorem chainUnitStage_ne_zero'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ)
     (hz : ModZigzagDatum A (powDualityDatum A M M' d n))
     (hS : ¬ IsZero (symPow A M.X (n + 1))) :

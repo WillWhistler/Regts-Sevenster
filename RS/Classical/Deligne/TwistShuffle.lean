@@ -20,45 +20,38 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (V W : D) (R S : Mod D A)
+variable {D : Type u}
 
 /-- The twist of a module by an object on the left, bundled. -/
-noncomputable def tensorLeftMod (V : D) (M : Mod D A) :
+noncomputable def tensorLeftMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V : D) (M : Mod D A) :
     Mod D A :=
   letI := tensorLeftModObj A V M.X
   ⟨V ⊗ M.X⟩
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
-@[simp] lemma tensorLeftMod_X (V : D) (M : Mod D A) :
+@[simp] lemma tensorLeftMod_X
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V : D) (M : Mod D A) :
     (tensorLeftMod A V M).X = V ⊗ M.X :=
   rfl
 
 /-- The cover map of the twist shuffle: the middle-four
 interchange followed by the projection under the twists. -/
-noncomputable def twistShuffleCover :
+noncomputable def twistShuffleCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     (V ⊗ R.X) ⊗ (W ⊗ S.X) ⟶ (V ⊗ W) ⊗ modTensor A R S :=
   tensorμ V R.X W S.X ≫ ((V ⊗ W) ◁ modTensorπ A R S)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The cover map coequalizes the twisted balance relation. -/
-theorem twistShuffleCover_cond :
+theorem twistShuffleCover_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     modTensorLegM A (tensorLeftMod A V R) (tensorLeftMod A W S) ≫
         twistShuffleCover A V W R S =
       modTensorLegN A (tensorLeftMod A V R)
@@ -128,21 +121,22 @@ theorem twistShuffleCover_cond :
 
 /-- **The twist shuffle**: the relative tensor of two twisted
 modules maps to the twist of the relative tensor. -/
-noncomputable def twistShuffleHom :
+noncomputable def twistShuffleHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     modTensor A (tensorLeftMod A V R) (tensorLeftMod A W S) ⟶
       (V ⊗ W) ⊗ modTensor A R S :=
   modTensorDesc A (tensorLeftMod A V R) (tensorLeftMod A W S)
     (twistShuffleCover A V W R S)
     (twistShuffleCover_cond A V W R S)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- Defining equation of the twist shuffle. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_twistShuffleHom :
+theorem modTensorπ_twistShuffleHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     modTensorπ A (tensorLeftMod A V R) (tensorLeftMod A W S) ≫
         twistShuffleHom A V W R S =
       twistShuffleCover A V W R S :=
@@ -150,26 +144,27 @@ theorem modTensorπ_twistShuffleHom :
 
 /-- The cover map of the inverse twist shuffle: split into the
 twisted pairs and project. -/
-noncomputable def twistShuffleInvCover :
+noncomputable def twistShuffleInvCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     (V ⊗ W) ⊗ (R.X ⊗ S.X) ⟶
       modTensor A (tensorLeftMod A V R) (tensorLeftMod A W S) :=
   tensorδ V R.X W S.X ≫
     modTensorπ A (tensorLeftMod A V R) (tensorLeftMod A W S)
 
 /-- The interchange splitting is invertible. -/
-instance isIso_tensorμ (X₁ X₂ Y₁ Y₂ : D) :
+instance isIso_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X₁ X₂ Y₁ Y₂ : D) :
     IsIso (tensorμ X₁ X₂ Y₁ Y₂) :=
   ⟨tensorδ X₁ X₂ Y₁ Y₂,
     tensorμ_tensorδ X₁ X₂ Y₁ Y₂, tensorδ_tensorμ X₁ X₂ Y₁ Y₂⟩
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The second-slot action slides through the splitting. -/
-theorem tensorδ_slide_snd :
+theorem tensorδ_slide_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) (W : D) (R : Mod D A) (S : Mod D A) :
     ((V ⊗ W) ◁ (R.X ◁ actLeft A S.X)) ≫
         tensorδ V R.X W S.X =
       tensorδ V R.X W (A ⊗ S.X) ≫
@@ -184,14 +179,10 @@ theorem tensorδ_slide_snd :
     Category.assoc, tensorδ_tensorμ, Category.comp_id, hN,
     ← Category.assoc, tensorδ_tensorμ, Category.id_comp]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The first-slot action slides through the splitting. -/
-theorem tensorδ_slide_fst :
+theorem tensorδ_slide_fst
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) (W : D) (R : Mod D A) (S : Mod D A) :
     ((V ⊗ W) ◁ (actLeft A R.X ▷ S.X)) ≫
         tensorδ V R.X W S.X =
       tensorδ V (A ⊗ R.X) W S.X ≫
@@ -206,14 +197,12 @@ theorem tensorδ_slide_fst :
     Category.assoc, tensorδ_tensorμ, Category.comp_id, hM,
     ← Category.assoc, tensorδ_tensorμ, Category.id_comp]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The inverse cover coequalizes the whiskered balance
 relation. -/
-theorem twistShuffleInvCover_cond :
+theorem twistShuffleInvCover_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     ((V ⊗ W) ◁ modTensorLegM A R S) ≫
         twistShuffleInvCover A V W R S =
       ((V ⊗ W) ◁ modTensorLegN A R S) ≫
@@ -306,29 +295,35 @@ theorem twistShuffleInvCover_cond :
   rw [htail, reassoc_of% hmirror]
 
 /-- **The inverse twist shuffle.** -/
-noncomputable def twistShuffleInv :
+noncomputable def twistShuffleInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A) (S : Mod D A) :
     (V ⊗ W) ⊗ modTensor A R S ⟶
       modTensor A (tensorLeftMod A V R) (tensorLeftMod A W S) :=
   modTensorWhiskerDesc A R S (V ⊗ W)
     (twistShuffleInvCover A V W R S)
     (twistShuffleInvCover_cond A V W R S)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- Defining equation of the inverse twist shuffle. -/
 @[reassoc]
-theorem whiskerLeft_π_twistShuffleInv :
+theorem whiskerLeft_π_twistShuffleInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A) (S : Mod D A) :
     ((V ⊗ W) ◁ modTensorπ A R S) ≫ twistShuffleInv A V W R S =
       twistShuffleInvCover A V W R S :=
   whiskerLeft_modTensorπ_whiskerDesc A R S (V ⊗ W) _ _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The twist shuffle retracts the inverse shuffle. -/
 @[reassoc (attr := simp)]
-theorem twistShuffleHom_twistShuffleInv :
+theorem twistShuffleHom_twistShuffleInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A) (S : Mod D A) :
     twistShuffleHom A V W R S ≫ twistShuffleInv A V W R S =
       𝟙 (modTensor A (tensorLeftMod A V R)
         (tensorLeftMod A W S)) := by
@@ -344,12 +339,13 @@ theorem twistShuffleHom_twistShuffleInv :
     twistShuffleInvCover, ← Category.assoc, tensorμ_tensorδ,
     Category.id_comp]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The inverse shuffle retracts the twist shuffle. -/
 @[reassoc (attr := simp)]
-theorem twistShuffleInv_twistShuffleHom :
+theorem twistShuffleInv_twistShuffleHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (V : D) (W : D) (R : Mod D A) (S : Mod D A) :
     twistShuffleInv A V W R S ≫ twistShuffleHom A V W R S =
       𝟙 ((V ⊗ W) ⊗ modTensor A R S) := by
   apply modTensor_whisker_hom_ext A R S (V ⊗ W)
@@ -365,12 +361,15 @@ theorem twistShuffleInv_twistShuffleHom :
   rw [twistShuffleCover, ← Category.assoc, tensorδ_tensorμ,
     Category.id_comp]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The twist shuffle is a module map**: it intertwines the
 descended action of the twisted pair with the twist action of
 the shuffled pair. -/
-theorem twistShuffleHom_act :
+theorem twistShuffleHom_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     letI := modTensorModObj A R S
     modTensorAct A (tensorLeftMod A V R) (tensorLeftMod A W S) ≫
         twistShuffleHom A V W R S =
@@ -438,16 +437,24 @@ theorem twistShuffleHom_act :
 
 /-- **The twist shuffle as a module map**: the shuffled pair maps
 to the twist of the relative tensor. -/
-noncomputable def twistShuffleModHom :
+noncomputable def twistShuffleModHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     modTensorMod A (tensorLeftMod A V R) (tensorLeftMod A W S) ⟶
       tensorLeftMod A (V ⊗ W) (modTensorMod A R S) :=
   Mod.Hom.mk' (twistShuffleHom A V W R S)
     (twistShuffleHom_act A V W R S)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The inverse twist shuffle intertwines the actions. -/
-theorem twistShuffleInv_act :
+theorem twistShuffleInv_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     letI := modTensorModObj A R S
     actAcross A (V ⊗ W) (modTensor A R S) ≫
         twistShuffleInv A V W R S =
@@ -468,14 +475,24 @@ theorem twistShuffleInv_act :
     MonoidalCategory.whiskerLeft_id, Category.id_comp]
 
 /-- The inverse twist shuffle as a module map. -/
-noncomputable def twistShuffleModInv :
+noncomputable def twistShuffleModInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     tensorLeftMod A (V ⊗ W) (modTensorMod A R S) ⟶
       modTensorMod A (tensorLeftMod A V R) (tensorLeftMod A W S) :=
   Mod.Hom.mk' (twistShuffleInv A V W R S)
     (twistShuffleInv_act A V W R S)
 
 /-- The module-level twist shuffle is an isomorphism. -/
-noncomputable def twistShuffleModIso :
+noncomputable def twistShuffleModIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (W : D) (R : Mod D A)
+    (S : Mod D A) :
     modTensorMod A (tensorLeftMod A V R) (tensorLeftMod A W S) ≅
       tensorLeftMod A (V ⊗ W) (modTensorMod A R S) where
   hom := twistShuffleModHom A V W R S
@@ -487,7 +504,10 @@ noncomputable def twistShuffleModIso :
 
 /-- An object map in the twist slot, as a module map: the twist
 action carries past the context naturally. -/
-noncomputable def tensorLeftModContextHom {V V' : D}
+noncomputable def tensorLeftModContextHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    {V V' : D}
     (f : V ⟶ V') (M : Mod D A) :
     tensorLeftMod A V M ⟶ tensorLeftMod A V' M :=
   Mod.Hom.mk' (f ▷ M.X)
@@ -497,7 +517,10 @@ noncomputable def tensorLeftModContextHom {V V' : D}
       exact (actAcross_natural A f M.X).symm)
 
 /-- A module map under the twist, as a module map. -/
-noncomputable def tensorLeftModWhiskerHom (V : D)
+noncomputable def tensorLeftModWhiskerHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V : D)
     {M N : Mod D A} (g : M ⟶ N) :
     tensorLeftMod A V M ⟶ tensorLeftMod A V N :=
   Mod.Hom.mk' (V ◁ g.hom)
@@ -512,7 +535,10 @@ noncomputable def tensorLeftModWhiskerHom (V : D)
         ← braidPast_natural_tail, Category.assoc])
 
 /-- The twist-slot transport of an object isomorphism. -/
-noncomputable def tensorLeftModContextIso {V V' : D}
+noncomputable def tensorLeftModContextIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    {V V' : D}
     (e : V ≅ V') (M : Mod D A) :
     tensorLeftMod A V M ≅ tensorLeftMod A V' M where
   hom := tensorLeftModContextHom A e.hom M
@@ -527,7 +553,10 @@ noncomputable def tensorLeftModContextIso {V V' : D}
       MonoidalCategory.id_whiskerRight])
 
 /-- The twist of a module isomorphism. -/
-noncomputable def tensorLeftModWhiskerIso (V : D)
+noncomputable def tensorLeftModWhiskerIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V : D)
     {M N : Mod D A} (f : M ≅ N) :
     tensorLeftMod A V M ≅ tensorLeftMod A V N where
   hom := tensorLeftModWhiskerHom A V f.hom

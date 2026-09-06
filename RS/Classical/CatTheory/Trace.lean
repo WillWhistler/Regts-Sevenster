@@ -20,33 +20,32 @@ open CategoryTheory.BraidedCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
-  [SymmetricCategory C] [Preadditive C] [Linear ℂ C]
-  [MonoidalPreadditive C] [MonoidalLinear ℂ C] [RigidCategory C]
+variable {C : Type u}
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- The categorical trace of an endomorphism: coevaluate, act, cross
 the strand over the right dual, and evaluate. -/
-def catTrace {X : C} (f : X ⟶ X) : End (𝟙_ C) :=
+def catTrace [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {X : C} (f : X ⟶ X) : End (𝟙_ C) :=
   η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- The categorical dimension of an object: the closed loop obtained
 by crossing the coevaluation strand over the dual and evaluating. -/
-def catDim (X : C) : End (𝟙_ C) :=
+def catDim [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (X : C) : End (𝟙_ C) :=
   η_ X Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- The trace of the identity is the categorical dimension. -/
-theorem catTrace_id (X : C) : catTrace (𝟙 X) = catDim X := by
+theorem catTrace_id [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (X : C) : catTrace (𝟙 X) = catDim X := by
   simp [catTrace, catDim]
 
-omit [Linear ℂ C] [MonoidalLinear ℂ C] in
 /-- The trace is additive. -/
-theorem catTrace_add {X : C} (f g : X ⟶ X) :
+theorem catTrace_add [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [Preadditive C] [MonoidalPreadditive C] [RigidCategory C]
+    {X : C} (f g : X ⟶ X) :
     catTrace (f + g) = catTrace f + catTrace g := by
   show η_ X Xᘁ ≫ (f + g) ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ =
     (η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ) +
@@ -54,18 +53,23 @@ theorem catTrace_add {X : C} (f g : X ⟶ X) :
   simp [MonoidalPreadditive.add_whiskerRight]
 
 /-- The trace is homogeneous for the ℂ-linear structure. -/
-theorem catTrace_smul {X : C} (a : ℂ) (f : X ⟶ X) :
+theorem catTrace_smul
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
+    [MonoidalLinear ℂ C] [RigidCategory C]
+    {X : C} (a : ℂ) (f : X ⟶ X) :
     catTrace (a • f) = a • catTrace f := by
   show η_ X Xᘁ ≫ (a • f) ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ =
     a • (η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ)
   simp [MonoidalLinear.smul_whiskerRight]
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- **Cyclicity of the categorical trace.**  Both composites close to
 the same loop: pass the strands across the pairing with the adjoint
 mates and slide the braiding along. -/
-theorem catTrace_comp_comm {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) :
+theorem catTrace_comp_comm
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) :
     catTrace (f ≫ g) = catTrace (g ≫ f) := by
   show η_ X Xᘁ ≫ (f ≫ g) ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ =
     η_ Y Yᘁ ≫ (g ≫ f) ▷ Yᘁ ≫ (β_ Y Yᘁ).hom ≫ ε_ Y Yᘁ
@@ -79,29 +83,28 @@ theorem catTrace_comp_comm {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) :
     rightAdjointMate_comp_evaluation (g ≫ f),
     ← braiding_naturality_left_assoc]
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- The loop form of the trace: the braiding may be taken first and
 the endomorphism absorbed into the evaluation. -/
-theorem catTrace_eq_loop {X : C} (f : X ⟶ X) :
+theorem catTrace_eq_loop
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {X : C} (f : X ⟶ X) :
     catTrace f = η_ X Xᘁ ≫ (β_ X Xᘁ).hom ≫ Xᘁ ◁ f ≫ ε_ X Xᘁ := by
   show η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ = _
   rw [braiding_naturality_left_assoc]
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C] in
 /-- The trace computed against a chosen exact pairing. -/
-def pairTrace {X D : C} (p : ExactPairing X D) (f : X ⟶ X) :
+def pairTrace [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    {X D : C} (p : ExactPairing X D) (f : X ⟶ X) :
     End (𝟙_ C) :=
   letI := p
   η_ X D ≫ f ▷ D ≫ (β_ X D).hom ≫ ε_ X D
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C] in
 /-- The trace does not depend on the choice of exact pairing: the
 comparison morphism between two right duals carries one pairing's
 coevaluation and evaluation to the other's. -/
-theorem pairTrace_eq {X D₁ D₂ : C} (p₁ : ExactPairing X D₁)
+theorem pairTrace_eq [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    {X D₁ D₂ : C} (p₁ : ExactPairing X D₁)
     (p₂ : ExactPairing X D₂) (f : X ⟶ X) :
     pairTrace p₂ f = pairTrace p₁ f := by
   letI := p₁
@@ -119,21 +122,22 @@ theorem pairTrace_eq {X D₁ D₂ : C} (p₁ : ExactPairing X D₁)
   rw [← hA, assoc, whisker_exchange_assoc,
     braiding_naturality_right_assoc, hB]
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- The categorical trace is the pairing trace of the canonical
 pairing supplied by rigidity. -/
-theorem catTrace_eq_pairTrace {X : C} (f : X ⟶ X) :
+theorem catTrace_eq_pairTrace
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {X : C} (f : X ⟶ X) :
     catTrace f = pairTrace HasRightDual.exact f :=
   rfl
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- The block braiding carries the nested coevaluations of a tensor
 pairing to nested kinked cups: the strands of each loop cross the
 other loop twice with opposite senses, so the two crossings cancel
 by symmetry and the loops disentangle. -/
-theorem nested_cups (X Y : C) :
+theorem nested_cups [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (X Y : C) :
     (η_ X Xᘁ ⊗≫ (X ◁ η_ Y Yᘁ) ▷ Xᘁ ⊗≫ 𝟙 ((X ⊗ Y) ⊗ Yᘁ ⊗ Xᘁ)) ≫
         (β_ (X ⊗ Y) (Yᘁ ⊗ Xᘁ)).hom =
       (η_ Y Yᘁ ≫ (β_ Y Yᘁ).hom) ⊗≫
@@ -243,12 +247,12 @@ theorem nested_cups (X Y : C) :
         rw [braiding_tensorUnit_right]
         monoidal
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C] in
 /-- A scalar whiskered on the right of an object may be moved to the
 left: naturality of the braiding at the tensor unit, where the
 braiding itself is coherence. -/
-private theorem scalar_shift (s : 𝟙_ C ⟶ 𝟙_ C) (Y : C) :
+private theorem scalar_shift
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    (s : 𝟙_ C ⟶ 𝟙_ C) (Y : C) :
     s ▷ Y = 𝟙 (𝟙_ C ⊗ Y) ⊗≫ Y ◁ s ⊗≫ 𝟙 (𝟙_ C ⊗ Y) := by
   have h := braiding_naturality_left s Y
   rw [braiding_tensorUnit_left] at h
@@ -260,14 +264,15 @@ private theorem scalar_shift (s : 𝟙_ C ⟶ 𝟙_ C) (Y : C) :
     _ = 𝟙 (𝟙_ C ⊗ Y) ⊗≫ Y ◁ s ⊗≫ 𝟙 (𝟙_ C ⊗ Y) := by
         monoidal
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- **Multiplicativity of the categorical trace.**  The trace of a
 tensor product of endomorphisms is the product of the traces in the
 scalar monoid `End (𝟙_ C)`.  The trace of the tensor product may be
 computed against the tensor pairing; there the two loops disentangle
 by symmetry and the inner loop contracts to a scalar. -/
-theorem catTrace_tensorHom {X Y : C} (f : X ⟶ X) (g : Y ⟶ Y) :
+theorem catTrace_tensorHom
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {X Y : C} (f : X ⟶ X) (g : Y ⟶ Y) :
     catTrace (f ⊗ₘ g) = catTrace f * catTrace g := by
   rw [End.mul_def, catTrace_eq_pairTrace (f ⊗ₘ g),
     pairTrace_eq (ExactPairing.tensor : ExactPairing (X ⊗ Y) (Yᘁ ⊗ Xᘁ))
@@ -350,13 +355,12 @@ theorem catTrace_tensorHom {X Y : C} (f : X ⟶ X) (g : Y ⟶ Y) :
     _ = catTrace g ≫ catTrace f := by
         rw [catTrace_eq_loop g, catTrace_eq_loop f, hs, ht]
 
-omit [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] in
 /-- **The dimension of the tensor unit is one.**  Computed against
 the unit's pairing with itself, the loop closes to the identity
 scalar. -/
 @[simp]
-theorem catDim_unit : catDim (𝟙_ C) = 1 := by
+theorem catDim_unit [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C] : catDim (𝟙_ C) = 1 := by
   have h : catDim (𝟙_ C) = pairTrace exactPairingUnit (𝟙 (𝟙_ C)) := by
     rw [← catTrace_id, catTrace_eq_pairTrace]
     exact pairTrace_eq _ _ _
@@ -367,7 +371,10 @@ theorem catDim_unit : catDim (𝟙_ C) = 1 := by
   monoidal
 
 /-- **The trace as a ℂ-linear map** into the scalar monoid. -/
-def catTraceLin (X : C) : End X →ₗ[ℂ] End (𝟙_ C) where
+def catTraceLin [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
+    [MonoidalLinear ℂ C] [RigidCategory C]
+    (X : C) : End X →ₗ[ℂ] End (𝟙_ C) where
   toFun := catTrace
   map_add' := catTrace_add
   map_smul' := catTrace_smul

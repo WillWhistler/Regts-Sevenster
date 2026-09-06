@@ -23,30 +23,30 @@ open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u}
 
-omit [Abelian C] in
 /-- The length bound is monotone: a bound at `k` is a bound at any
 `k' ≥ k`. -/
-theorem LengthLE.mono {Y : C} {k k' : ℕ} (h : LengthLE Y k)
+theorem LengthLE.mono [Category.{v} C]
+    {Y : C} {k k' : ℕ} (h : LengthLE Y k)
     (hk : k ≤ k') : LengthLE Y k' := by
   intro f hf
   exact h (f ∘ Fin.castLE (by omega))
     (hf.comp (Fin.strictMono_castLE (by omega)))
 
-omit [Abelian C] in
 /-- The length bound transfers along an isomorphism of the ambient
 object, via the induced order isomorphism of subobject lattices. -/
-theorem LengthLE.of_iso {Y Z : C} (e : Y ≅ Z) {k : ℕ}
+theorem LengthLE.of_iso [Category.{v} C]
+    {Y Z : C} (e : Y ≅ Z) {k : ℕ}
     (h : LengthLE Y k) : LengthLE Z k := by
   intro f hf
   exact h (fun i => (Subobject.mapIsoToOrderIso e).symm (f i))
     ((Subobject.mapIsoToOrderIso e).symm.strictMono.comp hf)
 
-omit [Abelian C] in
 /-- A zero object has length at most `0`: its subobject order is a
 singleton, so it carries no strictly increasing pair. -/
-theorem lengthLE_of_isZero {Y : C} (hY : IsZero Y) : LengthLE Y 0 := by
+theorem lengthLE_of_isZero [Category.{v} C]
+    {Y : C} (hY : IsZero Y) : LengthLE Y 0 := by
   intro f hf
   haveI := Subobject.subsingleton_of_isZero hY
   exact (hf (show (0 : Fin 2) < 1 by decide)).ne
@@ -54,7 +54,8 @@ theorem lengthLE_of_isZero {Y : C} (hY : IsZero Y) : LengthLE Y 0 := by
 
 /-- A simple object has length at most `1`: its subobjects are only
 `⊥` and `⊤`, so no chain has three distinct terms. -/
-theorem lengthLE_of_simple {Y : C} [Simple Y] : LengthLE Y 1 := by
+theorem lengthLE_of_simple [Category.{v} C] [Abelian C]
+    {Y : C} [Simple Y] : LengthLE Y 1 := by
   intro f hf
   have h01 : f 0 < f 1 := hf (show (0 : Fin 3) < 1 by decide)
   have h12 : f 1 < f 2 := hf (show (1 : Fin 3) < 2 by decide)
@@ -66,10 +67,9 @@ theorem lengthLE_of_simple {Y : C} [Simple Y] : LengthLE Y 1 := by
 
 section Chains
 
-variable {A : Type*} {B : Type*} [PartialOrder A] [PartialOrder B]
-
 /-- Appending a strictly larger element to a strict chain. -/
-private lemma strictMono_snoc {p : ℕ} {g : Fin (p + 1) → A} {y : A}
+private lemma strictMono_snoc {A : Type*} [PartialOrder A]
+    {p : ℕ} {g : Fin (p + 1) → A} {y : A}
     (hg : StrictMono g) (hy : g (Fin.last p) < y) :
     StrictMono (Fin.snoc g y : Fin (p + 2) → A) := by
   rw [Fin.strictMono_iff_lt_succ]
@@ -83,7 +83,9 @@ private lemma strictMono_snoc {p : ℕ} {g : Fin (p + 1) → A} {y : A}
 /-- A strict chain in a product of partial orders splits into strict
 chains in the two factors whose numbers of steps sum to at least the
 number of steps of the original chain. -/
-private lemma pair_chains {n : ℕ} :
+private lemma pair_chains
+    {A : Type*} {B : Type*} [PartialOrder A] [PartialOrder B]
+    {n : ℕ} :
     ∀ w : Fin (n + 1) → A × B, StrictMono w →
       ∃ p q, n ≤ p + q ∧
         (∃ g : Fin (p + 1) → A, StrictMono g ∧
@@ -133,7 +135,8 @@ end Chains
 
 /-- A morphism into a binary biproduct that vanishes on the second
 projection factors through the first inclusion. -/
-private lemma comp_fst_inl {Y Z T : C} (g : T ⟶ Y ⊞ Z)
+private lemma comp_fst_inl [Category.{v} C] [Abelian C]
+    {Y Z T : C} (g : T ⟶ Y ⊞ Z)
     (hg : g ≫ biprod.snd = 0) :
     (g ≫ biprod.fst) ≫ biprod.inl = g := by
   conv_rhs => rw [← Category.comp_id g, ← biprod.total]
@@ -142,18 +145,21 @@ private lemma comp_fst_inl {Y Z T : C} (g : T ⟶ Y ⊞ Z)
 
 /-- The part of a subobject of `Y ⊞ Z` lying over `Y`: the pullback
 of the subobject along the first inclusion. -/
-private noncomputable def kerPart {Y Z : C} (P : Subobject (Y ⊞ Z)) :
+private noncomputable def kerPart [Category.{v} C] [Abelian C]
+    {Y Z : C} (P : Subobject (Y ⊞ Z)) :
     Subobject Y :=
   Subobject.mk (pullback.fst (biprod.inl : Y ⟶ Y ⊞ Z) P.arrow)
 
 /-- The image of a subobject of `Y ⊞ Z` under the second
 projection. -/
-private noncomputable def imgPart {Y Z : C} (P : Subobject (Y ⊞ Z)) :
+private noncomputable def imgPart [Category.{v} C] [Abelian C]
+    {Y Z : C} (P : Subobject (Y ⊞ Z)) :
     Subobject Z :=
   Subobject.mk (image.ι (P.arrow ≫ biprod.snd))
 
 /-- The `Y`-part is monotone in the subobject. -/
-private lemma kerPart_mono {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
+private lemma kerPart_mono [Category.{v} C] [Abelian C]
+    {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
     (h : P ≤ Q) : kerPart P ≤ kerPart Q := by
   unfold kerPart
   refine Subobject.mk_le_mk_of_comm
@@ -163,7 +169,8 @@ private lemma kerPart_mono {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
   rw [Category.assoc, Subobject.ofLE_arrow, pullback.condition]
 
 /-- The `Z`-image is monotone in the subobject. -/
-private lemma imgPart_mono {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
+private lemma imgPart_mono [Category.{v} C] [Abelian C]
+    {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
     (h : P ≤ Q) : imgPart P ≤ imgPart Q := by
   unfold imgPart
   refine Subobject.mk_le_mk_of_comm
@@ -177,7 +184,8 @@ private lemma imgPart_mono {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
 
 /-- Nested subobjects of a binary biproduct with the same part over
 `Y` and the same image in `Z` coincide. -/
-private lemma eq_of_parts {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
+private lemma eq_of_parts [Category.{v} C] [Abelian C]
+    {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
     (hPQ : P ≤ Q) (hker : kerPart P = kerPart Q)
     (himg : imgPart P = imgPart Q) : P = Q := by
   unfold kerPart at hker
@@ -282,7 +290,8 @@ private lemma eq_of_parts {Y Z : C} {P Q : Subobject (Y ⊞ Z)}
 strict chain of subobjects of `Y ⊞ Z` is traced by its parts over
 `Y` and its images in `Z`, and each strict step moves at least one
 of the two. -/
-theorem LengthLE.biprod {Y Z : C} {j k : ℕ} (hY : LengthLE Y j)
+theorem LengthLE.biprod [Category.{v} C] [Abelian C]
+    {Y Z : C} {j k : ℕ} (hY : LengthLE Y j)
     (hZ : LengthLE Z k) : LengthLE (Y ⊞ Z) (j + k) := by
   intro f hf
   have hwmono : StrictMono (fun i : Fin (j + k + 1 + 1) =>

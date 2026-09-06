@@ -16,14 +16,7 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
+variable {D : Type u}
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
@@ -31,6 +24,11 @@ attribute [local instance]
 /-- **Transport of a dévissage state along an isomorphism** of
 the object being decomposed. -/
 noncomputable def DevissageState.transportObj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
     {L : OddLine D} {X Y : D} (e : X ≅ Y)
     (st : DevissageState D L X) : DevissageState D L Y :=
   letI := st.monObj
@@ -50,12 +48,22 @@ noncomputable def DevissageState.transportObj
 
 /-- Transport leaves the unit count untouched. -/
 @[simp] theorem DevissageState.transportObj_units
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
     {L : OddLine D} {X Y : D} (e : X ≅ Y)
     (st : DevissageState D L X) :
     (st.transportObj e).units = st.units := rfl
 
 /-- Transport leaves the line count untouched. -/
 @[simp] theorem DevissageState.transportObj_lines
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
     {L : OddLine D} {X Y : D} (e : X ≅ Y)
     (st : DevissageState D L X) :
     (st.transportObj e).lines = st.lines := rfl

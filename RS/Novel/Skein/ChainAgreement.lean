@@ -43,19 +43,17 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 namespace EdgeSubset
 
-variable {F : EdgeSubset W}
-
 /-! ### 1. From terminating chains to walk exit data -/
 
-omit [LinearOrder α] in
 /-- A terminating chain yields walk data: an exit step `k` whose
 earlier pairings are all internal and whose pairing at `k` is the
 boundary result. -/
-theorem traceChain_some_exit (κ : F.RelTransitionSystem) :
+theorem traceChain_some_exit {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) :
     ∀ (fuel : ℕ) (f b : W.Flag), traceChain κ fuel f = some b →
       ∃ k, (∀ j, j < k →
           W.pairing (iterWalk κ f j) ∈ F.internalFlags) ∧
@@ -86,11 +84,11 @@ theorem traceChain_some_exit (κ : F.RelTransitionSystem) :
 
 /-! ### 2. Rigid propagation of orientation values along a chain -/
 
-omit [LinearOrder α] in
 /-- **Match-side propagation**: along a walk with internal pairings
 up to step `k`, every visited flag (step `1 ≤ j ≤ k`) carries the
 negated seed value, for any orientation. -/
-theorem isOut_iterWalk_eq_not_seed {κ : F.RelTransitionSystem}
+theorem isOut_iterWalk_eq_not_seed {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     (o : κ.Orientation) {b : W.Flag} {k : ℕ}
     (hcont : ∀ t, t < k →
       W.pairing (iterWalk κ b t) ∈ F.internalFlags) :
@@ -113,11 +111,11 @@ theorem isOut_iterWalk_eq_not_seed {κ : F.RelTransitionSystem}
         o.pairing_flip _ hwj hpj, Bool.not_not]
       exact ih hj1 (by omega)
 
-omit [LinearOrder α] in
 /-- **Pairing-side propagation**: along a walk with internal
 pairings up to step `k`, every intermediate pairing (step `j < k`)
 carries the seed value, for any orientation. -/
-theorem isOut_pairing_iterWalk_eq_seed {κ : F.RelTransitionSystem}
+theorem isOut_pairing_iterWalk_eq_seed {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     (o : κ.Orientation) {b : W.Flag} {k : ℕ}
     (hcont : ∀ t, t < k →
       W.pairing (iterWalk κ b t) ∈ F.internalFlags) :
@@ -142,7 +140,9 @@ on every pairing-side flag of a boundary-terminated chain — whichever
 end has the lower label, canonicality pins its entry value to
 incoming for both orientations, and rigid propagation transports the
 pinned seed to the given flag. -/
-theorem pathCanonical_agree_on_chain {κ : F.RelTransitionSystem}
+theorem pathCanonical_agree_on_chain
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o o' : κ.Orientation}
     (hc : PathCanonical o) (hc' : PathCanonical o')
     {b : W.Flag} (hb : b ∈ F.boundaryFlags) {k : ℕ}
@@ -232,7 +232,9 @@ theorem pathCanonical_agree_on_chain {κ : F.RelTransitionSystem}
 /-- **Chain agreement of path-canonical orientations**: two
 path-canonical orientations of one relative transition system agree
 on every non-periodic internal flag. -/
-theorem pathCanonical_agree_nonperiodic {κ : F.RelTransitionSystem}
+theorem pathCanonical_agree_nonperiodic
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o o' : κ.Orientation}
     (hc : PathCanonical o) (hc' : PathCanonical o') :
     ∀ f ∈ F.internalFlags, ¬ κ.PeriodicFlag f →
@@ -277,7 +279,9 @@ theorem pathCanonical_agree_nonperiodic {κ : F.RelTransitionSystem}
 path-canonical orientations disagree, the flag is periodic, so its
 pairing is internal — exactly the `hchain` hypothesis of
 `throughSummand_canonical_unique`. -/
-theorem pathCanonical_diff_pairing_closed {κ : F.RelTransitionSystem}
+theorem pathCanonical_diff_pairing_closed
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o o' : κ.Orientation}
     (hc : PathCanonical o) (hc' : PathCanonical o') :
     ∀ f ∈ F.internalFlags, o.isOut f ≠ o'.isOut f →
@@ -292,7 +296,9 @@ theorem pathCanonical_diff_pairing_closed {κ : F.RelTransitionSystem}
 /-- **Well-definedness of the canonical summand**: the constrained
 summand agrees across all path-canonical orientations of one
 relative transition system, unconditionally. -/
-theorem throughSummand_pathCanonical {k ℓ : ℕ}
+theorem throughSummand_pathCanonical
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} {o o' : κ.Orientation}

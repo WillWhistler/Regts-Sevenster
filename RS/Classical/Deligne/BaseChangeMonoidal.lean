@@ -19,21 +19,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
+variable {D : Type u}
 
 /-- **The structure map of base change, as an isomorphism of
 modules over the new base.** -/
-noncomputable def projFormulaMod (M N : Mod D A) :
+noncomputable def projFormulaMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M N : Mod D A) :
     modTensorMod B (baseChangeMod φ M) (baseChangeMod φ N) ≅
       baseChangeMod φ (modTensorMod A M N) where
   hom := Mod.Hom.mk' (projFormula A B φ M N).hom (by
@@ -48,10 +45,15 @@ noncomputable def projFormulaMod (M N : Mod D A) :
     apply Mod.Hom.ext
     exact (projFormula A B φ M N).inv_hom_id
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- **The structure map is natural in the second slot.** -/
-theorem projFormula_natural_right (M : Mod D A)
+theorem projFormula_natural_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M : Mod D A)
     {N N' : Mod D A} (g : N ⟶ N') :
     modTensorMap B (𝟙 (baseChangeMod φ M))
         (baseChangeMapMod A B φ g) ≫
@@ -134,10 +136,15 @@ theorem projFormula_natural_right (M : Mod D A)
   simp only [Category.assoc]
   rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- **The structure map is natural in the first slot.** -/
-theorem projFormula_natural_left {M M' : Mod D A} (f : M ⟶ M')
+theorem projFormula_natural_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    {M M' : Mod D A} (f : M ⟶ M')
     (N : Mod D A) :
     modTensorMap B (baseChangeMapMod A B φ f)
         (𝟙 (baseChangeMod φ N)) ≫
@@ -221,13 +228,15 @@ theorem projFormula_natural_left {M M' : Mod D A} (f : M ⟶ M')
 
 section Assoc
 
-variable (M N P : Mod D A)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- The left-nested side of the associator square, evaluated on
 the triple cover. -/
-theorem projFormula_assoc_leftCover :
+theorem projFormula_assoc_leftCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) (P : Mod D A) :
     ((modTensorπ A (restrictRegular φ) M ▷ (B ⊗ N.X)) ▷
         (B ⊗ P.X)) ≫
       (((baseChangeMod φ M).X ◁
@@ -376,11 +385,15 @@ theorem projFormula_assoc_leftCover :
   refine Eq.trans (hcore2 _) ?_
   exact whisker_eq _ hcore3
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- The right-nested side of the associator square, evaluated on
 the triple cover. -/
-theorem projFormula_assoc_rightCover :
+theorem projFormula_assoc_rightCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) (P : Mod D A) :
     ((modTensorπ A (restrictRegular φ) M ▷ (B ⊗ N.X)) ▷
         (B ⊗ P.X)) ≫
       (((baseChangeMod φ M).X ◁
@@ -553,12 +566,16 @@ theorem projFormula_assoc_rightCover :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ hfoldM
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- **The associator coherence of the projection formula**: base
 change carries the module associator to the module associator
 through the structure map. -/
-theorem projFormula_assoc :
+theorem projFormula_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) (P : Mod D A) :
     modTensorMap B (projFormulaMod A B φ M N).hom
         (𝟙 (baseChangeMod φ P)) ≫
       (projFormula A B φ (modTensorMod A M N) P).hom ≫

@@ -19,26 +19,27 @@ universe v₂ u₂ v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [HasFiniteBiproducts D]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
-variable {C : Type u₂} [Category.{v₂} C] [MonoidalCategory C]
-variable (F : C ⥤ D) [F.Monoidal]
+variable {D : Type u}
 
 /-- **The algebra splits the image of a functor**: every object in
 the image becomes a mixed sum of copies of the unit and of the odd
 line after base change. -/
-def SplitsOn : Prop :=
+def SplitsOn [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] {C : Type u₂} [Category.{v₂} C] (F : C ⥤ D) : Prop :=
   ∀ X : C, ∃ p q : ℕ,
     Nonempty (freeMod R (F.obj X) ≅ freeMod R (L.mix p q))
 
 /-- **The restricted fibre functor is strong monoidal.** -/
 @[implicit_reducible]
-noncomputable def fibreRestrictMonoidal (hsp : SplitsOn L R F) :
+noncomputable def fibreRestrictMonoidal
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] {C : Type u₂}
+    [Category.{v₂} C] [MonoidalCategory C] (F : C ⥤ D) [F.Monoidal]
+    (hsp : SplitsOn L R F) :
     (F ⋙ fibreOver L R).Monoidal := by
   have hεF : IsIso (CategoryTheory.Functor.LaxMonoidal.ε F) :=
     ⟨CategoryTheory.Functor.OplaxMonoidal.η F,

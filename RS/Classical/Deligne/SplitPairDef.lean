@@ -20,39 +20,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [HasColimitsOfShape (Discrete ℤ) D]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)]
+variable {D : Type u}
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- A component insertion followed by the carrier inclusion,
 transported along an equality of degrees. -/
-private theorem compι_ι_degCast (d : ModDualityDatum A M M')
+private theorem compι_ι_degCast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M')
     {x y : ℤ} (h : x = y) (k : ℕ) :
     chainBGrCompι A M M' d x k ≫ chainBGrι A M M' d x =
       chainStage2Cast A M M'
@@ -66,15 +46,24 @@ private theorem compι_ι_degCast (d : ModDualityDatum A M M')
     (chainBGrCompι_eqToHom A M M' d h k) _) ?_
   exact Category.assoc _ _ _
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 -- Raised budget: the relative tensor projection unfolds against
 -- the pair multiplication on one generator.
 set_option maxHeartbeats 1600000 in
 /-- **Defining equation of the carrier-level pair product**:
 through the projection of the relative tensor product, the pair
 product is the graded product of the two module entries. -/
-theorem modTensorπ_splitPairMul (d : ModDualityDatum A M M') :
+theorem modTensorπ_splitPairMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     modTensorπ A M M' ≫ splitPairMul A M M' d =
       (splitIns A M M' d ⊗ₘ splitIns' A M M' d) ≫
         (letI := chainBGrMonObj A M M' d;

@@ -26,15 +26,13 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D]
-variable (R : D) [MonObj R] (V W : D)
+variable {D : Type u}
 
-omit [HasBinaryBiproducts D] in
 /-- **The free module on a zero object is zero**: the vanishing of
 a tensor product, retyped at the carrier of the free module. -/
-theorem freeModZeroIso {V : D} (h : IsZero V) :
+theorem freeModZeroIso [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R]
+    {V : D} (h : IsZero V) :
     IsZero (freeMod R V).X :=
   isZero_whiskerLeft R h
 

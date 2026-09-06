@@ -19,7 +19,7 @@ open CategoryTheory
 
 variable {R : ℕ} (f : EdgeRankParameter R)
 
-/-! ### Trace cyclicity (local copies, deduplicated at fold) -/
+/-! ### Trace cyclicity -/
 
 /-- The skein trace is cyclic. -/
 private theorem skeinTrace_mul_comm' (n : ℕ)
@@ -77,24 +77,6 @@ private theorem endCast_permClass {a b : ℕ} (h : a = b)
   show permClass f a σ = permClass f a _
   congr 1
 
-/-- The block tensor product satisfies the interchange law. -/
-private theorem blockTensorEnd_mulF {a b : ℕ}
-    (u₁ u₂ : skeinEnd f a) (v₁ v₂ : skeinEnd f b) :
-    blockTensorEnd f u₁ v₁ * blockTensorEnd f u₂ v₂ =
-      blockTensorEnd f (u₁ * u₂) (v₁ * v₂) :=
-  MonoidalCategory.tensorHom_comp_tensorHom
-    (u₂ : SkeinObj.mk (f := f) a ⟶ SkeinObj.mk a)
-    (v₂ : SkeinObj.mk (f := f) b ⟶ SkeinObj.mk b)
-    (u₁ : SkeinObj.mk (f := f) a ⟶ SkeinObj.mk a)
-    (v₁ : SkeinObj.mk (f := f) b ⟶ SkeinObj.mk b)
-
-/-- The trace of a block tensor product factors. -/
-private theorem skeinTrace_blockTensorEndF {a b : ℕ}
-    (u : skeinEnd f a) (v : skeinEnd f b) :
-    skeinTrace f (a + b) (blockTensorEnd f u v) =
-      skeinTrace f a u * skeinTrace f b v :=
-  skeinTrace_tensorHom f u v
-
 /-- `permClass_sumCongr` stated for `blockTensorEnd`. -/
 private theorem permClass_blockTensorEnd (a b : ℕ)
     (σ : Equiv.Perm (Fin a)) (τ : Equiv.Perm (Fin b)) :
@@ -109,7 +91,7 @@ private theorem blockTensorEnd_comm {a b : ℕ}
     (hPG : P * G = G * P) (hQH : Q * H = H * Q) :
     blockTensorEnd f P Q * blockTensorEnd f G H =
       blockTensorEnd f G H * blockTensorEnd f P Q := by
-  rw [blockTensorEnd_mulF, hPG, hQH, ← blockTensorEnd_mulF]
+  rw [blockTensorEnd_mul, hPG, hQH, ← blockTensorEnd_mul]
 
 /-- `bundleMapClass` of a self-cast is the identity class. -/
 private theorem bmc_finCongr_self {n : ℕ} (h : n = n) :
@@ -918,8 +900,8 @@ theorem skeinTrace_blockCycles_mul_pow (n : ℕ)
         have h4 := congrArg (endCast f H.symm) h3
         rw [endCast_trans, endCast_rfl] at h4
         exact h4
-      rw [hpow, ← endCast_mul, blockTensorEnd_mulF,
-        skeinTrace_endCast, skeinTrace_blockTensorEndF,
+      rw [hpow, ← endCast_mul, blockTensorEnd_mul,
+        skeinTrace_endCast, skeinTrace_blockTensorEnd,
         ih hrest]
       -- First factor is skeinTrace_blockCycle
       cases c with

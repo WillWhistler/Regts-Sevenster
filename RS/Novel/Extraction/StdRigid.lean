@@ -66,7 +66,8 @@ private theorem std_coev_ev (k ℓ : ℕ) :
     stdSuperPair k ℓ ◁ (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ
       from stdCopair k ℓ) ≫
       (α_ (stdSuperPair k ℓ) (stdSuperPair k ℓ) (stdSuperPair k ℓ)).inv ≫
-      (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect from stdForm k ℓ) ▷
+      (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect from
+        stdForm k ℓ) ▷
         stdSuperPair k ℓ =
     (ρ_ (stdSuperPair k ℓ)).hom ≫ (λ_ (stdSuperPair k ℓ)).inv := by
   apply SuperVect.Hom.ext
@@ -168,10 +169,12 @@ set_option maxHeartbeats 1600000 in
 open MonoidalCategory in
 /-- The second snake identity for the standard pairing. -/
 private theorem std_ev_coev (k ℓ : ℕ) :
-    (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ from stdCopair k ℓ) ▷
+    (show 𝟙_ SuperVect ⟶ stdSuperPair k ℓ ⊗ stdSuperPair k ℓ from
+      stdCopair k ℓ) ▷
       stdSuperPair k ℓ ≫
       (α_ (stdSuperPair k ℓ) (stdSuperPair k ℓ) (stdSuperPair k ℓ)).hom ≫
-      stdSuperPair k ℓ ◁ (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect
+      stdSuperPair k ℓ ◁
+        (show stdSuperPair k ℓ ⊗ stdSuperPair k ℓ ⟶ 𝟙_ SuperVect
         from stdForm k ℓ) =
     (λ_ (stdSuperPair k ℓ)).hom ≫ (ρ_ (stdSuperPair k ℓ)).inv := by
   apply SuperVect.Hom.ext

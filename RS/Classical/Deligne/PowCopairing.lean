@@ -24,30 +24,32 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## The copairing unit -/
 
 section Braided
 
-variable [BraidedCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-
 /-- **The copairing unit**: the copairing of the datum evaluated
 at the unit of the base.  The seed of the chain units of the Key
 Lemma. -/
-noncomputable def copairUnit (d : ModDualityDatum A M M') :
+noncomputable def copairUnit
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     𝟙_ D ⟶ modTensor A M M' :=
   η[A] ≫ d.copair
 
 /-- Linearity of the copairing, phrased at the descended action:
 multiplying before the copairing is acting after it. -/
 @[reassoc]
-theorem copair_act (d : ModDualityDatum A M M') :
+theorem copair_act [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     μ[A] ≫ d.copair =
       (A ◁ d.copair) ≫ modTensorAct A M M' :=
   d.copair_linear
@@ -56,7 +58,12 @@ theorem copair_act (d : ModDualityDatum A M M') :
 carries right multiplication to the braided right action on the
 module tensor product. -/
 @[reassoc]
-theorem copair_braid_act (d : ModDualityDatum A M M') :
+theorem copair_braid_act
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (d.copair ▷ A) ≫ (β_ (modTensor A M M') A).hom ≫
         modTensorAct A M M' =
       μ[A] ≫ d.copair := by
@@ -67,7 +74,11 @@ theorem copair_braid_act (d : ModDualityDatum A M M') :
 copairing: the copairing unit is a relative invariant of the
 module tensor product. -/
 @[reassoc]
-theorem copairUnit_act (d : ModDualityDatum A M M') :
+theorem copairUnit_act [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (A ◁ copairUnit A M M' d) ≫ modTensorAct A M M' =
       (ρ_ A).hom ≫ d.copair := by
   rw [copairUnit, MonoidalCategory.whiskerLeft_comp,
@@ -88,12 +99,12 @@ the symmetric base — the generality of the Key Lemma itself.
 
 section Symmetric
 
-variable [SymmetricCategory D]
-
 /-- The strand crossing behind the braiding of the module tensor
 product: crossing the pair as a block and braiding back across
 the first factor equals crossing the second factor alone. -/
-private theorem swap_cross (P Q R : D) :
+private theorem swap_cross
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (P Q R : D) :
     (α_ P Q R).inv ≫ (β_ (P ⊗ Q) R).hom ≫ (α_ R P Q).inv ≫
         ((β_ R P).hom ▷ Q) =
       (P ◁ (β_ Q R).hom) ≫ (α_ P R Q).inv := by
@@ -104,17 +115,14 @@ private theorem swap_cross (P Q R : D) :
     SymmetricCategory.symmetry, MonoidalCategory.id_whiskerRight,
     Category.comp_id]
 
-variable [HasCoequalizers D]
-variable (A : D) [MonObj A]
-
 section Swap
-
-variable (M N : Mod D A)
 
 /-- **The braiding of the module tensor product**: the braiding
 of the underlying factors descends through the coequalizers, the
 relation carried across by the window exchange. -/
-noncomputable def modTensorSwap :
+noncomputable def modTensorSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (M : Mod D A) (N : Mod D A) :
     modTensor A M N ⟶ modTensor A N M :=
   modTensorDesc A M N ((β_ M.X N.X).hom ≫ modTensorπ A N M)
     (by rw [modWinSwap_legM_assoc, modWinSwap_legN_assoc,
@@ -123,7 +131,9 @@ noncomputable def modTensorSwap :
 /-- Defining equation of the braiding of the module tensor
 product: on the projection it is the braiding of the factors. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_swap :
+theorem modTensorπ_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (M : Mod D A) (N : Mod D A) :
     modTensorπ A M N ≫ modTensorSwap A M N =
       (β_ M.X N.X).hom ≫ modTensorπ A N M :=
   modTensorπ_desc A M N _ _
@@ -131,7 +141,9 @@ theorem modTensorπ_swap :
 /-- The braiding of the module tensor product is an
 involution. -/
 @[reassoc (attr := simp)]
-theorem modTensorSwap_modTensorSwap :
+theorem modTensorSwap_modTensorSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (M : Mod D A) (N : Mod D A) :
     modTensorSwap A M N ≫ modTensorSwap A N M =
       𝟙 (modTensor A M N) := by
   apply modTensor_hom_ext
@@ -143,15 +155,14 @@ end Swap
 
 section SwapLinear
 
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [IsCommMonObj A]
-variable (M N : Mod D A)
-
 /-- **The braiding of the module tensor product is a module
 map**: it intertwines the descended actions. -/
 @[reassoc]
-theorem modTensorAct_swap :
+theorem modTensorAct_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [IsCommMonObj A] (M : Mod D A) (N : Mod D A) :
     modTensorAct A M N ≫ modTensorSwap A M N =
       (A ◁ modTensorSwap A M N) ≫ modTensorAct A N M := by
   apply modTensor_whisker_hom_ext A M N A
@@ -186,21 +197,25 @@ hypothesis; it is not derivable from the bare datum.
 
 section Zigzag
 
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [IsCommMonObj A]
-variable (M M' : Mod D A)
-
 /-- **The zigzag scalar** of a duality datum: the copairing
 unit, braided across the module tensor product and consumed by
 the pairing. -/
-noncomputable def zig (d : ModDualityDatum A M M') :
+noncomputable def zig
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     𝟙_ D ⟶ A :=
   copairUnit A M M' d ≫ modTensorSwap A M M' ≫ d.pair
 
 /-- **The retraction law**: under the zigzag identity of the
 datum, the zigzag scalar is the unit of the base. -/
-theorem zig_eq_unit (d : ModDualityDatum A M M')
+theorem zig_eq_unit [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (hzig : d.copair ≫ modTensorSwap A M M' ≫ d.pair = 𝟙 A) :
     zig A M M' d = η[A] := by
   rw [zig, copairUnit, Category.assoc, hzig, Category.comp_id]

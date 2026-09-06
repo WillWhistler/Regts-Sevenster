@@ -27,8 +27,7 @@ open scoped Classical
 /-- The canonical constrained value agrees with the Definition 5
 value on closed Eulerian subsets — unconditionally: closed chord
 diagrams are empty, so all canonical data share one fibre. -/
-theorem EdgeSubset.throughValueC_eq_mixedValue
-    {W : ClosedFragment}
+theorem EdgeSubset.throughValueC_eq_mixedValue {W : ClosedFragment}
     (F : EdgeSubset W) {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ (Fin 0))
     (hbnd : genBoundarySubsetMatches W F.flags st)
@@ -199,8 +198,7 @@ theorem rightDescend_mem (κ : F.RelTransitionSystem)
 
 /-- A left flag is periodic for the product system exactly when it is
 periodic for the left factor: the walk never crosses components. -/
-theorem inl_mem_periodic
-    {κ₁ : (leftSub F).RelTransitionSystem}
+theorem inl_mem_periodic {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem} {g : W₁.Flag} :
     (Sum.inl g : (W₁.disjUnion W₂).Flag) ∈
         (prodRel (F := F) κ₁ κ₂).periodicFlags ↔
@@ -230,8 +228,7 @@ theorem inl_mem_periodic
 
 /-- A right flag is periodic for the product system exactly when it is
 periodic for the right factor. -/
-theorem inr_mem_periodic
-    {κ₁ : (leftSub F).RelTransitionSystem}
+theorem inr_mem_periodic {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem} {g : W₂.Flag} :
     (Sum.inr g : (W₁.disjUnion W₂).Flag) ∈
         (prodRel (F := F) κ₁ κ₂).periodicFlags ↔
@@ -261,8 +258,7 @@ theorem inr_mem_periodic
 
 /-- The product system's periodic flags are the disjoint sum of the
 two factors' periodic flags. -/
-noncomputable def periodicSumEquiv
-    (κ₁ : (leftSub F).RelTransitionSystem)
+noncomputable def periodicSumEquiv (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) :
     {f : (W₁.disjUnion W₂).Flag //
         f ∈ (prodRel (F := F) κ₁ κ₂).periodicFlags} ≃
@@ -284,8 +280,7 @@ noncomputable def periodicSumEquiv
 
 /-- Under that identification the product system's walk permutation is
 the sum of the two factors' walk permutations. -/
-theorem walkPermPeriodic_prodRel
-    (κ₁ : (leftSub F).RelTransitionSystem)
+theorem walkPermPeriodic_prodRel (κ₁ : (leftSub F).RelTransitionSystem)
     (κ₂ : (rightSub F).RelTransitionSystem) :
     (prodRel (F := F) κ₁ κ₂).walkPermPeriodic =
       (periodicSumEquiv κ₁ κ₂).symm.permCongr
@@ -302,9 +297,7 @@ section ThroughSplit
 
 open EdgeSubset
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β]
-  {W₁ : Fragment α} {W₂ : Fragment β}
-  {F : EdgeSubset (W₁.disjUnion W₂)}
+variable {α β : Type}
 
 end ThroughSplit
 /-! ## Componentwise colourings -/
@@ -397,8 +390,7 @@ noncomputable def joinEven {k : ℕ}
 
 /-- Even colourings of a union subset are pairs of even colourings of
 the two restrictions. -/
-noncomputable def joinEvenEquiv
-    (F : EdgeSubset (W₁.disjUnion W₂)) (k : ℕ) :
+noncomputable def joinEvenEquiv (F : EdgeSubset (W₁.disjUnion W₂)) (k : ℕ) :
     ((leftSub F).EvenColouring k × (rightSub F).EvenColouring k) ≃
       F.EvenColouring k where
   toFun p := joinEven p.1 p.2
@@ -472,8 +464,7 @@ noncomputable def joinCore {ℓ : ℕ}
 
 /-- Core odd colourings of a union subset are pairs of core odd
 colourings of the two restrictions. -/
-noncomputable def joinCoreEquiv
-    (F : EdgeSubset (W₁.disjUnion W₂)) (ℓ : ℕ) :
+noncomputable def joinCoreEquiv (F : EdgeSubset (W₁.disjUnion W₂)) (ℓ : ℕ) :
     ((leftSub F).CoreOddColouring ℓ ×
         (rightSub F).CoreOddColouring ℓ) ≃
       F.CoreOddColouring ℓ where
@@ -574,8 +565,7 @@ theorem coreOddBoundaryMatch_join {k ℓ : ℕ}
 
 /-- The left injection embeds the left restriction's
 non-participating flags into the union's. -/
-noncomputable def leftComplEmb
-    (F : EdgeSubset (W₁.disjUnion W₂)) :
+noncomputable def leftComplEmb (F : EdgeSubset (W₁.disjUnion W₂)) :
     {g : W₁.Flag // g ∉ (leftSub F).flags} ↪
       {f : (W₁.disjUnion W₂).Flag // f ∉ F.flags} :=
   ⟨fun g => ⟨Sum.inl g.val, notmem_left' g.prop⟩,
@@ -584,8 +574,7 @@ noncomputable def leftComplEmb
 
 /-- The right injection embeds the right restriction's
 non-participating flags into the union's. -/
-noncomputable def rightComplEmb
-    (F : EdgeSubset (W₁.disjUnion W₂)) :
+noncomputable def rightComplEmb (F : EdgeSubset (W₁.disjUnion W₂)) :
     {g : W₂.Flag // g ∉ (rightSub F).flags} ↪
       {f : (W₁.disjUnion W₂).Flag // f ∉ F.flags} :=
   ⟨fun g => ⟨Sum.inr g.val, notmem_right' g.prop⟩,
@@ -686,8 +675,7 @@ theorem evenColoursAt_join_inr {k : ℕ}
 
 /-- At a left vertex, the product orientation's in-flags are the left
 factor's, injected — up to the enumeration order. -/
-theorem relInFlagsAt_join_perm_inl
-    {κ₁ : (leftSub F).RelTransitionSystem}
+theorem relInFlagsAt_join_perm_inl {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem}
     (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation) (v : W₁.Vertex) :
     (F.relInFlagsAt (prodOrient o₁ o₂) (Sum.inl v)).Perm
@@ -724,8 +712,7 @@ theorem relInFlagsAt_join_perm_inl
 
 /-- At a right vertex, the product orientation's in-flags are the
 right factor's, injected — up to the enumeration order. -/
-theorem relInFlagsAt_join_perm_inr
-    {κ₁ : (leftSub F).RelTransitionSystem}
+theorem relInFlagsAt_join_perm_inr {κ₁ : (leftSub F).RelTransitionSystem}
     {κ₂ : (rightSub F).RelTransitionSystem}
     (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation) (v : W₂.Vertex) :
     (F.relInFlagsAt (prodOrient o₁ o₂) (Sum.inr v)).Perm
@@ -989,8 +976,7 @@ theorem joinCoreEquiv_apply {ℓ : ℕ}
 
 /-- A product over the union's vertices splits into the two
 components' products. -/
-theorem prod_vertex_split
-    (X : (W₁.disjUnion W₂).Vertex → ℂ) :
+theorem prod_vertex_split (X : (W₁.disjUnion W₂).Vertex → ℂ) :
     ∏ v : (W₁.disjUnion W₂).Vertex, X v =
       (∏ v : W₁.Vertex, X (Sum.inl v)) *
         ∏ v : W₂.Vertex, X (Sum.inr v) :=
@@ -1011,16 +997,14 @@ section CanonMigration
 
 open EdgeSubset
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β]
-  {W₁ : Fragment α} {W₂ : Fragment β}
-  {F : EdgeSubset (W₁.disjUnion W₂)}
+variable {α β : Type}
 
 /-! ### The product system's chain matching -/
 
-omit [LinearOrder α] in
-omit [LinearOrder β] in
 /-- The boundary label of a left-summand boundary flag. -/
-theorem boundaryLabel_inl [LinearOrder (α ⊕ β)] {g : W₁.Flag}
+theorem boundaryLabel_inl
+    {W₁ : Fragment α} {W₂ : Fragment β} {F : EdgeSubset (W₁.disjUnion W₂)}
+    [LinearOrder (α ⊕ β)] {g : W₁.Flag}
     (hb : (Sum.inl g : (W₁.disjUnion W₂).Flag) ∈ F.boundaryFlags)
     (hb' : g ∈ (leftSub F).boundaryFlags) :
     F.boundaryLabel hb = Sum.inl ((leftSub F).boundaryLabel hb') := by
@@ -1030,10 +1014,10 @@ theorem boundaryLabel_inl [LinearOrder (α ⊕ β)] {g : W₁.Flag}
   rw [EdgeSubset.attach_boundaryLabel hb']
   rfl
 
-omit [LinearOrder β] in
-omit [LinearOrder α] in
 /-- The boundary label of a right-summand boundary flag. -/
-theorem boundaryLabel_inr [LinearOrder (α ⊕ β)] {g : W₂.Flag}
+theorem boundaryLabel_inr
+    {W₁ : Fragment α} {W₂ : Fragment β} {F : EdgeSubset (W₁.disjUnion W₂)}
+    [LinearOrder (α ⊕ β)] {g : W₂.Flag}
     (hb : (Sum.inr g : (W₁.disjUnion W₂).Flag) ∈ F.boundaryFlags)
     (hb' : g ∈ (rightSub F).boundaryFlags) :
     F.boundaryLabel hb = Sum.inr ((rightSub F).boundaryLabel hb') := by

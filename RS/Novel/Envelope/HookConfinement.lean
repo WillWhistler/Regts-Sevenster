@@ -40,17 +40,18 @@ structure PermTower (E : ℕ → Type u) [∀ n, Ring (E n)]
 
 namespace PermTower
 
-variable {E : ℕ → Type u} [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)]
-  {A : ℝ}
+variable {E : ℕ → Type u}
 
 /-- A shape is alive in a tower when its idempotent is not killed. -/
-def Alive (T : PermTower E A) (P : SchurPackage.{u})
+def Alive [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    (T : PermTower E A) (P : SchurPackage.{u})
     (μ : YoungDiagram) : Prop :=
   T.rep μ.card (P.e μ) ≠ 0
 
 /-- The growth constant of a tower is nonnegative: it dominates the
 dimension at one strand. -/
-theorem growth_nonneg (T : PermTower E A) : 0 ≤ A := by
+theorem growth_nonneg [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    (T : PermTower E A) : 0 ≤ A := by
   have h := T.bound 1
   rw [pow_one] at h
   exact le_trans (Nat.cast_nonneg _) h
@@ -59,7 +60,8 @@ theorem growth_nonneg (T : PermTower E A) : 0 ≤ A := by
 its block dimension squared exceeds the tower's dimension bound at
 `s²` strands.  This is the accompanying paper's hypothesis verbatim:
 `dim² ≤ finrank ≤ A ^ (s²) < dim²`. -/
-theorem not_alive_square [∀ n, Module.Finite ℂ (E n)]
+theorem not_alive_square [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    [∀ n, Module.Finite ℂ (E n)]
     (T : PermTower E A) (P : SchurPackage.{u}) {s : ℕ}
     (hs : A ^ (s ^ 2) < ((P.dim (squareDiagram s) : ℕ) : ℝ) ^ 2) :
     ¬ T.Alive P (squareDiagram s) := by
@@ -75,7 +77,8 @@ theorem not_alive_square [∀ n, Module.Finite ℂ (E n)]
   linarith
 
 /-- No shape containing a dead shape is alive. -/
-theorem not_alive_of_le (T : PermTower E A) (P : SchurPackage.{u})
+theorem not_alive_of_le [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    (T : PermTower E A) (P : SchurPackage.{u})
     {lam mu : YoungDiagram} (hle : lam ≤ mu)
     (hdead : ¬ T.Alive P lam) : ¬ T.Alive P mu := by
   intro halive
@@ -88,7 +91,8 @@ theorem not_alive_of_le (T : PermTower E A) (P : SchurPackage.{u})
 /-- **Hook confinement**: every shape alive in a tower lies in the
 hook `IsInHook (s − 1) (s − 1)` for a side `s` given by the
 package's growth field at the tower's bound. -/
-theorem hook_confinement [∀ n, Module.Finite ℂ (E n)]
+theorem hook_confinement [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    [∀ n, Module.Finite ℂ (E n)]
     (T : PermTower E A) (P : SchurPackage.{u}) :
     ∃ s : ℕ,
       ∀ μ : YoungDiagram, T.Alive P μ → IsInHook (s - 1) (s - 1) μ := by

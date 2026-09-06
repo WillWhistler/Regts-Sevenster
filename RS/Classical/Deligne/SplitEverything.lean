@@ -26,13 +26,14 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] [HasFiniteBiproducts C]
+variable {C : Type v}
 
 /-- **One simple algebra splits everything, and its Γ-algebra has a
 complex point.** -/
-theorem exists_splitting_simple_algebra (ψ : ℂ ≃+* End (𝟙_ C))
+theorem exists_splitting_simple_algebra
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [HasFiniteBiproducts C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (L : OddLine (Ind C)) (X : C)
     (hgen : TensorGeneratedBy C X)

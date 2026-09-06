@@ -13,43 +13,50 @@ namespace RS
 
 open Finset LinearMap
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
-
-variable (S T : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+variable {G : Type*}
 
 /-- The character of a submodule of the regular module. -/
-noncomputable def nChar (g : G) : ℂ :=
+noncomputable def nChar
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (g : G) : ℂ :=
   (rhoS S).character g
 
 /-- The dimension of a submodule of the regular module. -/
-noncomputable def nDim : ℕ :=
+noncomputable def nDim
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) : ℕ :=
   Module.finrank ℂ (subCarrier S)
 
 /-- The normalized projector coefficient. -/
-noncomputable def nCoeff : G → ℂ :=
+noncomputable def nCoeff [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) : G → ℂ :=
   fun g => ((nDim S : ℂ) / (Fintype.card G : ℂ)) * nChar S g⁻¹
 
 /-- The normalized projector. -/
-noncomputable def nProjector : MonoidAlgebra ℂ G :=
+noncomputable def nProjector [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
+    MonoidAlgebra ℂ G :=
   classElem (nCoeff S)
 
-omit [DecidableEq G] in
 /-- The native projector's coefficient is a class function. -/
-theorem nCoeff_classFun (g h : G) :
+theorem nCoeff_classFun [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (g h : G) :
     nCoeff S (h * g * h⁻¹) = nCoeff S g := by
   rw [nCoeff, nCoeff]
   congr 1
   rw [show (h * g * h⁻¹)⁻¹ = h * g⁻¹ * h⁻¹ from by group]
   exact (rhoS S).char_conj g⁻¹ h
 
-omit [Fintype G] [DecidableEq G] in
 /-- Membership transfer to the restricted-scalars form. -/
-theorem mem_subCarrier {t : MonoidAlgebra ℂ G} (ht : t ∈ S) :
+theorem mem_subCarrier
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    {t : MonoidAlgebra ℂ G} (ht : t ∈ S) :
     t ∈ S.restrictScalars ℂ := ht
 
 /-- **The native scalar action**: a class element multiplies each
 element of a simple submodule by the character-pairing scalar. -/
-theorem classElem_mul_mem_native
+theorem classElem_mul_mem_native [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S)
     (c : G → ℂ) (hc : ∀ g h : G, c (h * g * h⁻¹) = c g)
     (t : MonoidAlgebra ℂ G) (ht : t ∈ S) :
@@ -70,10 +77,10 @@ theorem classElem_mul_mem_native
   rw [h2]
   rfl
 
-omit [Fintype G] [DecidableEq G] in
 /-- The native representation of a simple submodule is
 irreducible in the subrepresentation-lattice sense. -/
 theorem rhoS_isIrreducible
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     (rhoS S).IsIrreducible := by
   have hirr := isIrredRep_rhoS S hS
@@ -107,7 +114,9 @@ open scoped Classical in
 /-- **The native action table**: the projector of a simple
 submodule acts on each simple submodule as `1` or `0` by
 equivalence. -/
-theorem nProjector_mul_mem
+theorem nProjector_mul_mem [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (T : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S)
     (hT : IsSimpleModule (MonoidAlgebra ℂ G) T)
     (t : MonoidAlgebra ℂ G) (ht : t ∈ T) :
@@ -161,7 +170,8 @@ theorem nProjector_mul_mem
 
 open scoped Classical in
 /-- **Idempotency of the native projector.** -/
-theorem nProjector_idem
+theorem nProjector_idem [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     nProjector S * nProjector S = nProjector S := by
   have hkill : ∀ T : Submodule (MonoidAlgebra ℂ G)
@@ -181,12 +191,15 @@ theorem nProjector_idem
   exact sub_eq_zero.mp h0
 
 /-- Centrality of the native projector. -/
-theorem nProjector_central (y : MonoidAlgebra ℂ G) :
+theorem nProjector_central [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y : MonoidAlgebra ℂ G) :
     nProjector S * y = y * nProjector S :=
   classElem_mul_comm (nCoeff S) (nCoeff_classFun S) y
 
 /-- The projector's coefficient at the identity. -/
-theorem nProjector_coeff_one :
+theorem nProjector_coeff_one [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
     (nProjector S).coeff 1 =
       ((nDim S : ℂ) ^ 2) / (Fintype.card G : ℂ) := by
   rw [nProjector, classElem_coeff, nCoeff, inv_one]
@@ -195,7 +208,8 @@ theorem nProjector_coeff_one :
   ring
 
 /-- **The native block rank.** -/
-theorem nProjector_block_rank
+theorem nProjector_block_rank [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     Module.finrank ℂ
       (LinearMap.range (mulLeft ℂ (nProjector S))) =

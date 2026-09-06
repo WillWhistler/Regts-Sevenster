@@ -64,8 +64,7 @@ instance finiteDimensional_tensor_base_odd (M N : S.Mod.{u, u, u, u})
     (superVectMuOddRaw_bijective P M N)).finiteDimensional
 
 /-- The same, for the monoidal notation. -/
-instance finiteDimensional_tensorObj_base_even
-    (M N : S.Mod.{u, u, u, u})
+instance finiteDimensional_tensorObj_base_even (M N : S.Mod.{u, u, u, u})
     [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
     [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
     [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
@@ -74,8 +73,7 @@ instance finiteDimensional_tensorObj_base_even
   finiteDimensional_tensor_base_even P M N
 
 /-- The same in odd degree, for the monoidal notation. -/
-instance finiteDimensional_tensorObj_base_odd
-    (M N : S.Mod.{u, u, u, u})
+instance finiteDimensional_tensorObj_base_odd (M N : S.Mod.{u, u, u, u})
     [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
     [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
     [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
@@ -83,22 +81,21 @@ instance finiteDimensional_tensorObj_base_odd
     FiniteDimensional ℂ ((M ⊗ N).tensor (pointMod P)).odd :=
   finiteDimensional_tensor_base_odd P M N
 
-variable {E : Type u₂} [Category.{v₂} E] [MonoidalCategory E]
-  (G : E ⥤ S.Mod.{u, u, u, u}) [G.LaxMonoidal]
-  [hE : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).even]
-  [hO : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd]
+variable {E : Type u₂}
 
 /-- **The fibre functor at a point is lax monoidal** whenever the
 functor it is applied to is: the comparison of the base change is
 composed with the comparison upstream. -/
 @[implicit_reducible]
-noncomputable def superVectFunctorLaxMonoidal :
+noncomputable def superVectFunctorLaxMonoidal
+    [Category.{v₂} E] [MonoidalCategory E] (G : E ⥤ S.Mod.{u, u, u, u})
+    [G.LaxMonoidal]
+    [hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even]
+    [hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     (superVectFunctor P G hE hO).LaxMonoidal where
   ε := superVectEps P ≫ superVectHom P (Functor.LaxMonoidal.ε G)
   μ X Y := superVectMu P (G.obj X) (G.obj Y) ≫
@@ -149,10 +146,6 @@ noncomputable def superVectFunctorLaxMonoidal :
     rw [← Functor.LaxMonoidal.right_unitality]
     exact superVectMu_right_unitality P (G.obj X)
 
-omit [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd] in
 /-- **Base change carries an isomorphism to an isomorphism.** -/
 instance isIso_superVectHom {M N : S.Mod.{u, u, u, u}} (u : M ⟶ N)
     [IsIso u]
@@ -172,23 +165,21 @@ section StrongMonoidal
 
 open scoped TensorProduct
 
-variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
-  {E : Type u₂} [Category.{v₂} E] [MonoidalCategory E]
-  (G : E ⥤ S.Mod.{u, u, u, u}) [G.Monoidal]
-  [hE : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).even]
-  [hO : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd]
+variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S) {E : Type u₂}
 
 /-- **The fibre functor at a point is strong monoidal** whenever
 the functor it is applied to is: both comparisons are invertible,
 the one of the base change unconditionally. -/
 @[implicit_reducible]
-noncomputable def superVectFunctorMonoidal :
+noncomputable def superVectFunctorMonoidal
+    [Category.{v₂} E] [MonoidalCategory E] (G : E ⥤ S.Mod.{u, u, u, u})
+    [G.Monoidal]
+    [hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even]
+    [hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     (superVectFunctor P G hE hO).Monoidal := by
   letI : (superVectFunctor P G hE hO).LaxMonoidal :=
     superVectFunctorLaxMonoidal P G
@@ -216,24 +207,21 @@ section BraidedStructure
 
 open scoped TensorProduct
 
-variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
-  {E : Type u₂} [Category.{v₂} E] [MonoidalCategory E]
-  [BraidedCategory E]
-  (G : E ⥤ S.Mod.{u, u, u, u}) [G.Braided]
-  [hE : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).even]
-  [hO : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd]
+variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S) {E : Type u₂}
 
 /-- **The fibre functor at a point is braided** whenever the functor
 it is applied to is: the comparison of the base change intertwines
 the braidings, and so does the comparison upstream. -/
 @[implicit_reducible]
-noncomputable def superVectFunctorBraided :
+noncomputable def superVectFunctorBraided
+    [Category.{v₂} E] [MonoidalCategory E] [BraidedCategory E]
+    (G : E ⥤ S.Mod.{u, u, u, u}) [G.Braided]
+    [hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even]
+    [hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     (superVectFunctor P G hE hO).Braided where
   toMonoidal := superVectFunctorMonoidal P G
   braided X Y := by
@@ -254,11 +242,7 @@ section DeligneFibreBraided
 
 open scoped MonObj
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-  [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
+variable {C : Type v}
 
 /-- **The fibre functor of a splitting algebra at a complex point is
 braided.**  Upstream, the restriction of the fibre functor along the
@@ -267,6 +251,10 @@ change at the point is strong monoidal and intertwines the Koszul
 sign of the super vector spaces with the sign of the braiding of the
 super modules. -/
 theorem nonempty_braided_deligneFibre
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (pt : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) :
     Nonempty (deligneFibre L 𝔸 hsp pt).Braided := by

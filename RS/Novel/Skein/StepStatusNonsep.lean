@@ -51,14 +51,11 @@ private theorem prop_xor_cancel {P Q : Prop} :
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 /-! ## The toggle set of the anchored chain flip -/
 
 section ToggleSet
-
-variable {κ : F.RelTransitionSystem}
 
 /-- **The chain flip toggles exactly the anchor chord's ends**: a
 ported flip set realized by the boundary chain of `β₂` contains the
@@ -67,6 +64,8 @@ of `β₂`'s chord.  The two anchor ends' entry edges lie on the chain
 by construction; any other participating end's entry edge is on a
 genuinely distinct chain (`onBoundaryChain_disjoint`). -/
 theorem pairing_mem_flipSet_iff
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {S : Finset W.Flag} {p₁ p₂ : W.Flag} {i₁ i₂ : α}
     (_ : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     {β₂ : W.Flag} (hβ₂ : β₂ ∈ F.boundaryFlags)
@@ -106,9 +105,6 @@ end ToggleSet
 
 section StepStatusNonsep
 
-variable {κ : F.RelTransitionSystem} {a b c d : W.Flag}
-  {v : W.Vertex}
-
 /-- **The per-chord XOR evaluation**: for a participating boundary
 end `x`, some end of `x`'s *new* chord is anti-canonical for the
 anchored transported frame iff the direction toggle at `x` (entry
@@ -119,6 +115,9 @@ rigidity pairs the two ends' directions, so exactly the low end of
 an "old-dir-still-up" chord is anti — the XOR of new-status with
 toggled old-status. -/
 private theorem anti_ends_iff_toggle_xor_status
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     {S : Finset W.Flag} {p₁ p₂ : W.Flag} {i₁ i₂ : α}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hc : PathCanonical o)
@@ -280,6 +279,9 @@ pair is `β₂`'s chord in the *source* system; the list pairs are
 anti-low chords of the *repaired* system at the transported
 frame. -/
 theorem nonsep_labels_eq_statusChange
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     {S : Finset W.Flag} {p₁ p₂ : W.Flag} {iβ iγ : α}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hc : PathCanonical o)

@@ -23,7 +23,7 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 /-! ## The bridge between the two crossing predicates -/
 
@@ -31,7 +31,8 @@ variable {α : Type} [LinearOrder α]
 `ChordParity.lean` agrees with the chord-style crossing predicate
 of `PathLedger.lean`, for a chord recorded low-to-high whose ends
 avoid the matching ends of the cut. -/
-theorem crossesCut_iff_chordPairCross {x y u w : α}
+theorem crossesCut_iff_chordPairCross [LinearOrder α]
+    {x y u w : α}
     (huw : u < w) (hux : u ≠ x) (hwy : w ≠ y) :
     CrossesCut x y (u, w) ↔ ChordPairCross x y u w := by
   rw [chordPairCross_iff_xor huw hux hwy]

@@ -20,7 +20,7 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-! ## The splitting isomorphism -/
 
@@ -29,7 +29,8 @@ by recursion on the upper block.  At `q = 0` it is the right
 unitor's inverse; each further factor is carried across by the
 associator, so the isomorphism is built from unitors and
 associators alone. -/
-noncomputable def splitPow (X : A) : (p q : ℕ) →
+noncomputable def splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) : (p q : ℕ) →
     (tensorPow A X (p + q) ≅ tensorPow A X p ⊗ tensorPow A X q)
   | p, 0 => (ρ_ (tensorPow A X p)).symm
   | p, q + 1 =>
@@ -38,12 +39,14 @@ noncomputable def splitPow (X : A) : (p q : ℕ) →
 
 /-- The empty upper block splits off along the right unitor. -/
 @[simp]
-theorem splitPow_zero (X : A) (p : ℕ) :
+theorem splitPow_zero [Category.{v} A] [MonoidalCategory A]
+    (X : A) (p : ℕ) :
     splitPow (A := A) X p 0 = (ρ_ (tensorPow A X p)).symm := rfl
 
 /-- The recursion equation: one more factor is carried across by
 the associator. -/
-theorem splitPow_succ (X : A) (p q : ℕ) :
+theorem splitPow_succ [Category.{v} A] [MonoidalCategory A]
+    (X : A) (p q : ℕ) :
     splitPow (A := A) X p (q + 1) =
       whiskerRightIso (splitPow X p q) X ≪≫
         α_ (tensorPow A X p) (tensorPow A X q) X := rfl
@@ -142,14 +145,16 @@ theorem restPerm_blockSum {p q : ℕ} (σ : Equiv.Perm (Fin p))
 /-! ## The braiding respects the splitting -/
 
 /-- Braiding the last two factors over a general base. -/
-private noncomputable def swapBase (T X : A) [SymmetricCategory A] :
+private noncomputable def swapBase [Category.{v} A] [MonoidalCategory A]
+    (T X : A) [SymmetricCategory A] :
     (T ⊗ X) ⊗ X ⟶ (T ⊗ X) ⊗ X :=
   (α_ T X X).hom ≫ (T ◁ (β_ X X).hom) ≫ (α_ T X X).inv
 
 /-- **The braiding of the last two factors is natural in the base.**
 The braiding touches only those two factors, so a morphism of the
 base passes through. -/
-private theorem swapBase_naturality {T T' : A} (X : A)
+private theorem swapBase_naturality [Category.{v} A] [MonoidalCategory A]
+    {T T' : A} (X : A)
     [SymmetricCategory A] (f : T ⟶ T') :
     ((f ▷ X) ▷ X) ≫ swapBase T' X = swapBase T X ≫ ((f ▷ X) ▷ X) := by
   show ((f ▷ X) ▷ X) ≫
@@ -163,7 +168,8 @@ private theorem swapBase_naturality {T T' : A} (X : A)
 /-- **The braiding of the last two factors passes a left factor of
 the base.**  Both sides carry the same braiding on the same two
 strands; only the bracketing of the base differs. -/
-private theorem swapBase_tensor (P Q X : A) [SymmetricCategory A] :
+private theorem swapBase_tensor [Category.{v} A] [MonoidalCategory A]
+    (P Q X : A) [SymmetricCategory A] :
     swapBase (P ⊗ Q) X ≫ ((α_ P Q X).hom ▷ X) ≫
         (α_ P (Q ⊗ X) X).hom =
       ((α_ P Q X).hom ▷ X) ≫ (α_ P (Q ⊗ X) X).hom ≫
@@ -180,7 +186,8 @@ private theorem swapBase_tensor (P Q X : A) [SymmetricCategory A] :
 
 /-- **The braiding respects the splitting**: braiding the last two
 factors of a tensor power is braiding them inside the upper block. -/
-theorem swapTop_comp_splitPow (X : A) [SymmetricCategory A]
+theorem swapTop_comp_splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) [SymmetricCategory A]
     (p q : ℕ) :
     swapTop X (p + q) ≫ (splitPow X p (q + 1 + 1)).hom =
       (splitPow X p (q + 1 + 1)).hom ≫
@@ -206,7 +213,8 @@ theorem swapTop_comp_splitPow (X : A) [SymmetricCategory A]
 /-- **One more factor**: a morphism that respects the splitting
 whiskered by one further factor still respects it.  This is the
 inductive step every splitting statement below is proved by. -/
-private theorem whiskerRight_comp_splitPow (X : A) (p q : ℕ)
+private theorem whiskerRight_comp_splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) (p q : ℕ)
     {u : tensorPow A X (p + q) ⟶ tensorPow A X (p + q)}
     {v : tensorPow A X q ⟶ tensorPow A X q}
     (h : u ≫ (splitPow X p q).hom =
@@ -230,7 +238,8 @@ private theorem whiskerRight_comp_splitPow (X : A) (p q : ℕ)
 /-- **Bubbling respects the splitting**: bubbling the top factor
 down at most `q` slots never reaches the lower block, so it is
 bubbling inside the upper block. -/
-theorem insertTop_comp_splitPow (X : A) [SymmetricCategory A]
+theorem insertTop_comp_splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) [SymmetricCategory A]
     (p : ℕ) :
     ∀ (k q : ℕ), k ≤ q →
       insertTop X (p + q) k ≫ (splitPow X p (q + 1)).hom =
@@ -280,7 +289,8 @@ theorem insertTop_comp_splitPow (X : A) [SymmetricCategory A]
 /-- **One more factor, in tensor form**: a morphism that respects
 the splitting, tensored with a morphism of the new factor, still
 respects it. -/
-private theorem tensorHom_comp_splitPow (X : A) (p q : ℕ)
+private theorem tensorHom_comp_splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) (p q : ℕ)
     {u : tensorPow A X (p + q) ⟶ tensorPow A X (p + q)}
     {a : tensorPow A X p ⟶ tensorPow A X p}
     {b : tensorPow A X q ⟶ tensorPow A X q} {c : X ⟶ X}
@@ -322,7 +332,8 @@ private theorem tensorHom_comp_splitPow (X : A) (p q : ℕ)
 
 /-- **The tensor power of an endomorphism respects the splitting.**
 -/
-theorem powHom_comp_splitPow (X : A) (g : End X) (p : ℕ) :
+theorem powHom_comp_splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) (g : End X) (p : ℕ) :
     ∀ q : ℕ,
       powHom X g (p + q) ≫ (splitPow X p q).hom =
         (splitPow X p q).hom ≫ (powHom X g p ⊗ₘ powHom X g q)
@@ -341,7 +352,8 @@ theorem powHom_comp_splitPow (X : A) (g : End X) (p : ℕ) :
 /-- **The action respects the splitting**: a block sum of
 permutations acts as the two permutations acting on the two
 blocks. -/
-theorem permMor_comp_splitPow (X : A) [SymmetricCategory A] {p : ℕ}
+theorem permMor_comp_splitPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) [SymmetricCategory A] {p : ℕ}
     (σ : Equiv.Perm (Fin p)) :
     ∀ (q : ℕ) (τ : Equiv.Perm (Fin q)),
       permMor X (p + q) (blockSum σ τ) ≫ (splitPow X p q).hom =

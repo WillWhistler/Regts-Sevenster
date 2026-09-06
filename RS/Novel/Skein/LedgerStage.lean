@@ -20,7 +20,7 @@ open Fragment Equiv Classical
 
 section StageOpen
 
-variable {α : Type} [LinearOrder α] [Fintype α] {W : Fragment α}
+variable {α : Type} {W : Fragment α}
   {i j : α} (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -38,7 +38,9 @@ local notation "Fl" =>
 
 /-- **One stage at an open cut the subset uses.**  The circuit count
 and the number of components of the union move together. -/
-theorem ledgerStage_open {γ : Type} [LinearOrder γ] [Fintype γ]
+theorem ledgerStage_open
+    [LinearOrder α] [Fintype α]
+    {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueOpen hij hopen s' hc'
@@ -78,7 +80,9 @@ theorem ledgerStage_open {γ : Type} [LinearOrder γ] [Fintype γ]
 /-- **One stage at an open cut the subset misses.**  Nothing moves:
 the two glued labels are unused, so the chord matching and the
 interface matching both simply transport. -/
-theorem ledgerStage_open_miss {γ : Type} [LinearOrder γ] [Fintype γ]
+theorem ledgerStage_open_miss
+    [LinearOrder α] [Fintype α]
+    {γ : Type} [LinearOrder γ] [Fintype γ]
     (hni : partnerSurvI hopen ∉ s')
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
@@ -117,7 +121,7 @@ end StageOpen
 
 section StageClosed
 
-variable {α : Type} [LinearOrder α] [Fintype α] {W : Fragment α}
+variable {α : Type} {W : Fragment α}
   {i j : α}
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -133,7 +137,9 @@ local notation "FlT" =>
 
 /-- **One stage at a closed cut the subset carries.**  One component
 of the union disappears, into the free circle the glue creates. -/
-theorem ledgerStage_closed {γ : Type} [LinearOrder γ] [Fintype γ]
+theorem ledgerStage_closed
+    [LinearOrder α] [Fintype α]
+    {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (FlT).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueClosed hclosed true s' hc'
@@ -178,7 +184,7 @@ end StageClosed
 
 section StageClosedMiss
 
-variable {α : Type} [LinearOrder α] [Fintype α] {W : Fragment α}
+variable {α : Type} {W : Fragment α}
   {i j : α} (hij : i ≠ j)
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -195,7 +201,9 @@ local notation "FlF" =>
 include hij in
 /-- **One stage at a closed cut the subset leaves out.**  Nothing
 moves; the free circle the glue creates carries no chord. -/
-theorem ledgerStage_closed_miss {γ : Type} [LinearOrder γ]
+theorem ledgerStage_closed_miss
+    [LinearOrder α] [Fintype α]
+    {γ : Type} [LinearOrder γ]
     [Fintype γ] (E : SurvivingLabel α i j ≃o γ)
     (κ : (FlF).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueClosed hclosed false s' hc'
@@ -244,7 +252,7 @@ the subset carries its edge.
 
 section StageOpenAny
 
-variable {α : Type} [LinearOrder α] [Fintype α] {W : Fragment α}
+variable {α : Type} {W : Fragment α}
   {i j : α} (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -262,7 +270,9 @@ local notation "Fl" =>
 
 /-- **One stage at an open cut.**  Nothing moves, whether or not the
 subset uses the cut. -/
-theorem ledgerStage_open_any {γ : Type} [LinearOrder γ] [Fintype γ]
+theorem ledgerStage_open_any
+    [LinearOrder α] [Fintype α]
+    {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueOpen hij hopen s' hc'
@@ -299,7 +309,7 @@ end StageOpenAny
 
 section StageClosedBit
 
-variable {α : Type} [LinearOrder α] [Fintype α] {W : Fragment α}
+variable {α : Type} {W : Fragment α}
   {i j : α} (hij : i ≠ j)
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j)) (b : Bool)
@@ -316,7 +326,9 @@ local notation "Flb" =>
 include hij in
 /-- **One stage at a closed cut.**  A component of the union
 disappears exactly when the subset carries the cut's own edge. -/
-theorem ledgerStage_closed_bit {γ : Type} [LinearOrder γ] [Fintype γ]
+theorem ledgerStage_closed_bit
+    [LinearOrder α] [Fintype α]
+    {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (Flb).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueClosed hclosed b s' hc'
@@ -370,9 +382,8 @@ label maps, with the subset's own data nowhere in it.
 
 section PairedGlue
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
 
-omit [LinearOrder α] in
 /-- **Pairing across a closed glue.** -/
 theorem swapPaired_glueClosed
     (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
@@ -391,7 +402,9 @@ theorem swapPaired_glueClosed
     hcomp hp
 
 /-- **Pairing across an open glue.** -/
-theorem swapPaired_glueOpen (hij : i ≠ j)
+theorem swapPaired_glueOpen
+    [LinearOrder α]
+    (hij : i ≠ j)
     (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
     (s' : Finset (SurvivingFlag W i j))
     (hc' : ∀ f ∈ s', (W.gluePairOpen i j hij hopen).pairing f ∈ s')

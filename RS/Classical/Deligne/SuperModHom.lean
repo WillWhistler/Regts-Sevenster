@@ -192,16 +192,11 @@ section Realize
 
 universe v
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj R] in
 /-- The convolution action is natural in the module object. -/
-theorem gact_naturality {M N : D} [ModObj R M] [ModObj R N]
+theorem gact_naturality [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {M N : D} [ModObj R M] [ModObj R N]
     (f : M ⟶ N) [IsModHom R f] {X Y : D} (a : X ⟶ R)
     (m : Y ⟶ M) :
     gact (R := R) a m ≫ f = gact (R := R) a (m ≫ f) := by
@@ -212,7 +207,11 @@ theorem gact_naturality {M N : D} [ModObj R M] [ModObj R N]
     MonoidalCategory.tensorHom_comp_tensorHom, Category.comp_id]
 
 /-- **Postcomposition realizes a morphism of super modules.** -/
-noncomputable def gammaModuleMap {M N : D} [ModObj R M]
+noncomputable def gammaModuleMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {M N : D} [ModObj R M]
     [ModObj R N] (f : M ⟶ N) [IsModHom R f] :
     gammaModule D L R M ⟶ gammaModule D L R N where
   evenMap := Linear.rightComp ℂ _ f

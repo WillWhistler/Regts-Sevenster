@@ -55,13 +55,6 @@ noncomputable instance matLinear :
     refine Finset.sum_congr rfl fun j _ => ?_
     rw [CategoryTheory.Linear.comp_smul]
 
-/-- The underlying-morphism additive map (local copy). -/
-private def matKF {P Q : Karoubi (SkeinObj f)} :
-    (P ⟶ Q) →+ (P.X ⟶ Q.X) where
-  toFun g := g.f
-  map_zero' := rfl
-  map_add' _ _ := rfl
-
 /-! ### The diagonal trace -/
 
 /-- The diagonal trace on matrix-envelope endomorphisms. -/
@@ -106,7 +99,7 @@ theorem matTrace_comp_comm {M N : Mat_ (Karoubi (SkeinObj f))}
     rw [show (((∑ j : N.ι, α i j ≫ β j i :
         M.X i ⟶ M.X i))).f =
       ∑ j : N.ι, ((α i j ≫ β j i :
-        M.X i ⟶ M.X i)).f from map_sum (matKF f) _ _]
+        M.X i ⟶ M.X i)).f from map_sum (karoubiHomAddHom _ _) _ _]
     rw [map_sum]
     rfl
   have hN : ∀ j : N.ι,
@@ -120,7 +113,7 @@ theorem matTrace_comp_comm {M N : Mat_ (Karoubi (SkeinObj f))}
     rw [show (((∑ i : M.ι, β j i ≫ α i j :
         N.X j ⟶ N.X j))).f =
       ∑ i : M.ι, ((β j i ≫ α i j :
-        N.X j ⟶ N.X j)).f from map_sum (matKF f) _ _]
+        N.X j ⟶ N.X j)).f from map_sum (karoubiHomAddHom _ _) _ _]
     rw [map_sum]
     rfl
   rw [Finset.sum_congr rfl fun i _ => hM i,
@@ -161,7 +154,7 @@ private theorem matTrace_matSingle_mul
       rw [show (((∑ l : M.ι, φ k l ≫ matSingle f j i b l k :
           M.X k ⟶ M.X k))).f =
         ∑ l : M.ι, ((φ k l ≫ matSingle f j i b l k :
-          M.X k ⟶ M.X k)).f from map_sum (matKF f) _ _]
+          M.X k ⟶ M.X k)).f from map_sum (karoubiHomAddHom _ _) _ _]
       rw [Finset.sum_eq_zero, map_zero]
       intro l _
       rw [show matSingle f j i b l k = 0 from
@@ -177,7 +170,7 @@ private theorem matTrace_matSingle_mul
   rw [show (((∑ l : M.ι, φ i l ≫ matSingle f j i b l i :
       M.X i ⟶ M.X i))).f =
     ∑ l : M.ι, ((φ i l ≫ matSingle f j i b l i :
-      M.X i ⟶ M.X i)).f from map_sum (matKF f) _ _]
+      M.X i ⟶ M.X i)).f from map_sum (karoubiHomAddHom _ _) _ _]
   rw [map_sum]
   rw [Finset.sum_eq_single j
     (fun l _ hl => by
@@ -212,14 +205,6 @@ theorem matEnd_eq_zero_of_traces_vanish
 
 /-! ### Finiteness and the semisimplicity criterion -/
 
-/-- The Karoubi-hom underlying map, linearly. -/
-private noncomputable def karoubiHomLin
-    (P Q : Karoubi (SkeinObj f)) :
-    (P ⟶ Q) →ₗ[ℂ] (P.X ⟶ Q.X) where
-  toFun g := g.f
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
 /-- Karoubi hom-spaces are finite-dimensional, being subspaces of
 the skein hom-spaces. -/
 noncomputable instance karoubiHomFinite
@@ -228,7 +213,7 @@ noncomputable instance karoubiHomFinite
   haveI : FiniteDimensional ℂ (P.X ⟶ Q.X) :=
     inferInstanceAs (Module.Finite ℂ
       (HomSpace f.val (P.X.arity + Q.X.arity)))
-  exact FiniteDimensional.of_injective (karoubiHomLin f P Q)
+  exact FiniteDimensional.of_injective (karoubiHomLinearMap P Q)
     (fun _ _ h => Karoubi.Hom.ext h)
 
 /-- The matrix-envelope Hom underlying map, linearly. -/

@@ -12,16 +12,18 @@ namespace RS
 
 open Finset
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
+variable {G : Type*}
 
 /-- The group-algebra element attached to a coefficient
 function. -/
-noncomputable def classElem (c : G → ℂ) : MonoidAlgebra ℂ G :=
+noncomputable def classElem [Group G] [Fintype G]
+    (c : G → ℂ) : MonoidAlgebra ℂ G :=
   ∑ g : G, c g • MonoidAlgebra.single g 1
 
 /-- The element built from a coefficient function has exactly those
 coefficients. -/
-theorem classElem_coeff (c : G → ℂ) (k : G) :
+theorem classElem_coeff [Group G] [Fintype G] [DecidableEq G]
+    (c : G → ℂ) (k : G) :
     (classElem c).coeff k = c k := by
   classical
   rw [classElem]
@@ -42,7 +44,8 @@ theorem classElem_coeff (c : G → ℂ) (k : G) :
   rw [if_pos (Finset.mem_univ k)]
 
 /-- **Class functions give central elements.** -/
-theorem classElem_mul_comm (c : G → ℂ)
+theorem classElem_mul_comm [Group G] [Fintype G] [DecidableEq G]
+    (c : G → ℂ)
     (hc : ∀ g h : G, c (h * g * h⁻¹) = c g)
     (y : MonoidAlgebra ℂ G) :
     classElem c * y = y * classElem c := by

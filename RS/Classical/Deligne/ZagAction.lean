@@ -16,8 +16,7 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- Pure braid coherence for the zag prefix: reassociating and
 braiding the block `P ⊗ Q` past `P'`, then swapping `P'` back past
@@ -27,7 +26,9 @@ The block braiding decomposes into the elementary crossings
 `β_ P' P` by the symmetry axiom, leaving exactly the single
 crossing carried by `tensorμ`. -/
 @[reassoc]
-theorem zag_prefix_coherence (P Q P' R : D) :
+theorem zag_prefix_coherence
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (P Q P' R : D) :
     (α_ (P ⊗ Q) P' R).inv ≫
       ((β_ (P ⊗ Q) P').hom ▷ R) ≫
       ((α_ P' P Q).inv ▷ R) ≫
@@ -50,16 +51,16 @@ theorem zag_prefix_coherence (P Q P' R : D) :
           dsimp only [tensorμ]
           monoidal
 
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-
 /-- **Paired left actions descend to the joint action**: acting on
 both carriers on the left and projecting is multiplying the
 scalars and acting on the projected pair — the zag companion of
 the paired right action relation of the relative tensor. -/
-theorem tensorHom_actLeft_π (N₁ N₂ : Mod D A) :
+theorem tensorHom_actLeft_π
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (N₁ N₂ : Mod D A) :
     (actLeft A N₁.X ⊗ₘ actLeft A N₂.X) ≫ modTensorπ A N₁ N₂ =
       tensorμ A N₁.X A N₂.X ≫
         (μ[A] ▷ (N₁.X ⊗ N₂.X)) ≫

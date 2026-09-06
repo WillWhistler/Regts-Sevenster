@@ -28,32 +28,33 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
 /-! ## The regular module on the left -/
 
-omit [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] in
 /-- Pairing against the regular module and collapsing is the
 convolution action. -/
-theorem gpair_unitLeft (N : Mod D R) {X Y : D} (a : X ⟶ R)
+theorem gpair_unitLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) {X Y : D} (a : X ⟶ R)
     (m : Y ⟶ N.X) :
     gpair (M := regularMod R) (N := N) a m ≫
         (modTensorUnitLeftMod R N).hom.hom = gact a m := by
   rw [gpair_def, Category.assoc]
   exact whisker_eq _ (modTensorπ_desc R (regularMod R) N _ _)
 
-omit [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] in
 /-- The reindexed form of `RS.gpair_unitLeft`. -/
-theorem gpair_unitLeft' (N : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
+theorem gpair_unitLeft'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
     (a : X ⟶ R) (m : Y ⟶ N.X) :
     (s ≫ gpair (M := regularMod R) (N := N) a m) ≫
         (modTensorUnitLeftMod R N).hom.hom = s ≫ gact a m :=
@@ -62,7 +63,13 @@ theorem gpair_unitLeft' (N : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
 
 /-- **The comparison map at the regular module on the left is the
 left unitor.** -/
-theorem gammaPairComparison_unitLeft (N : Mod D R) :
+theorem gammaPairComparison_unitLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) :
     gammaPairComparison L R (regularMod R) N ≫
         (gammaModuleFunctor L R).map
           (modTensorUnitLeftMod R N).hom =
@@ -112,11 +119,14 @@ theorem gammaPairComparison_unitLeft (N : Mod D R) :
 
 /-! ## The regular module on the right -/
 
-omit [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] in
 /-- Pairing with the regular module on the right and collapsing is
 the convolution action after a braiding. -/
-theorem gpair_unitRight (M : Mod D R) {X Y : D} (m : X ⟶ M.X)
+theorem gpair_unitRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) {X Y : D} (m : X ⟶ M.X)
     (a : Y ⟶ R) :
     gpair (M := M) (N := regularMod R) m a ≫
         (modTensorUnitRightMod R M).hom.hom =
@@ -131,10 +141,13 @@ theorem gpair_unitRight (M : Mod D R) {X Y : D} (m : X ⟶ M.X)
     BraidedCategory.braiding_naturality]
   exact Category.assoc _ _ _
 
-omit [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] in
 /-- The reindexed form of `RS.gpair_unitRight`. -/
-theorem gpair_unitRight' (M : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
+theorem gpair_unitRight'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
     (t : W ⟶ Y ⊗ X) (hst : s ≫ (β_ X Y).hom = t) (m : X ⟶ M.X)
     (a : Y ⟶ R) :
     (s ≫ gpair (M := M) (N := regularMod R) m a) ≫
@@ -147,7 +160,13 @@ theorem gpair_unitRight' (M : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
 /-- **The comparison map at the regular module on the right is the
 right unitor**, Koszul sign and all: the sign is the self-braiding
 of the odd line. -/
-theorem gammaPairComparison_unitRight (M : Mod D R) :
+theorem gammaPairComparison_unitRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) :
     gammaPairComparison L R M (regularMod R) ≫
         (gammaModuleFunctor L R).map
           (modTensorUnitRightMod R M).hom =
@@ -206,7 +225,13 @@ theorem gammaPairComparison_unitRight (M : Mod D R) :
 
 /-- The comparison isomorphism at the regular module on the
 left. -/
-noncomputable def gammaPairIsoUnitLeft (N : Mod D R) :
+noncomputable def gammaPairIsoUnitLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) :
     ((gammaModuleFunctor L R).obj (regularMod R)).tensor
         ((gammaModuleFunctor L R).obj N) ≅
       (gammaModuleFunctor L R).obj
@@ -215,7 +240,13 @@ noncomputable def gammaPairIsoUnitLeft (N : Mod D R) :
     ((gammaModuleFunctor L R).mapIso
       (modTensorUnitLeftMod R N)).symm
 
-theorem gammaPairIsoUnitLeft_hom (N : Mod D R) :
+theorem gammaPairIsoUnitLeft_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) :
     (gammaPairIsoUnitLeft L R N).hom =
       gammaPairComparison L R (regularMod R) N := by
   have key : (gammaModuleFunctor L R).map (modTensorUnitLeftMod R N).hom ≫
@@ -229,14 +260,26 @@ theorem gammaPairIsoUnitLeft_hom (N : Mod D R) :
 
 /-- **The comparison map is an isomorphism when the left argument
 is the regular module.** -/
-instance isIso_gammaPairComparison_unitLeft (N : Mod D R) :
+instance isIso_gammaPairComparison_unitLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (N : Mod D R) :
     IsIso (gammaPairComparison L R (regularMod R) N) := by
   rw [← gammaPairIsoUnitLeft_hom]
   infer_instance
 
 /-- The comparison isomorphism at the regular module on the
 right. -/
-noncomputable def gammaPairIsoUnitRight (M : Mod D R) :
+noncomputable def gammaPairIsoUnitRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) :
     ((gammaModuleFunctor L R).obj M).tensor
         ((gammaModuleFunctor L R).obj (regularMod R)) ≅
       (gammaModuleFunctor L R).obj
@@ -245,7 +288,13 @@ noncomputable def gammaPairIsoUnitRight (M : Mod D R) :
     ((gammaModuleFunctor L R).mapIso
       (modTensorUnitRightMod R M)).symm
 
-theorem gammaPairIsoUnitRight_hom (M : Mod D R) :
+theorem gammaPairIsoUnitRight_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) :
     (gammaPairIsoUnitRight L R M).hom =
       gammaPairComparison L R M (regularMod R) := by
   have key : (gammaModuleFunctor L R).map (modTensorUnitRightMod R M).hom ≫
@@ -259,7 +308,13 @@ theorem gammaPairIsoUnitRight_hom (M : Mod D R) :
 
 /-- **The comparison map is an isomorphism when the right argument
 is the regular module.** -/
-instance isIso_gammaPairComparison_unitRight (M : Mod D R) :
+instance isIso_gammaPairComparison_unitRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) :
     IsIso (gammaPairComparison L R M (regularMod R)) := by
   rw [← gammaPairIsoUnitRight_hom]
   infer_instance

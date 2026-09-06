@@ -21,30 +21,34 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [HasColimitsOfShape (Discrete ℤ) D]
+variable {D : Type u}
 
 /-- **The base entry on the carrier**: the base algebra enters
 the degree-zero component at the bottom stage. -/
-noncomputable def splitOfBase (d : ModDualityDatum A M M') :
+noncomputable def splitOfBase
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     A ⟶ chainBGr A M M' d :=
   chainBaseStage A M M' d ≫ chainBGrCompι A M M' d 0 0 ≫
     chainBGrι A M M' d 0
 
 /-- **The module entry on the carrier**: the module enters the
 degree `+1` component at the bottom stage. -/
-noncomputable def splitIns (d : ModDualityDatum A M M') :
+noncomputable def splitIns
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     M.X ⟶ chainBGr A M M' d :=
   chainSeedQ A M M' d ≫ chainBGrCompι A M M' d 1 0 ≫
     chainBGrι A M M' d 1
@@ -52,7 +56,15 @@ noncomputable def splitIns (d : ModDualityDatum A M M') :
 /-- **The dual entry on the carrier**: the dual module enters the
 degree `−1` component at the bottom stage, through the arity
 transport identifying the bottom stage of the `−1` line. -/
-noncomputable def splitIns' (d : ModDualityDatum A M M') :
+noncomputable def splitIns'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     M'.X ⟶ chainBGr A M M' d :=
   chainSeedP A M M' d ≫
     chainStage2Cast A M M'
@@ -63,7 +75,15 @@ noncomputable def splitIns' (d : ModDualityDatum A M M') :
 
 /-- **The base entry carries the unit to the unit**: the carrier
 entry of the base algebra is unital. -/
-theorem splitOfBase_unit (d : ModDualityDatum A M M') :
+theorem splitOfBase_unit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     η[A] ≫ splitOfBase A M M' d = chainBGrUnit A M M' d := by
   have h1 : η[A] ≫ splitOfBase A M M' d =
       chainSeed A M M' d ≫ chainBGrCompι A M M' d 0 0 ≫
@@ -79,24 +99,24 @@ theorem splitOfBase_unit (d : ModDualityDatum A M M') :
 
 section Linear
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)]
-
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)] in
 -- Raised budget: linearity of the insertion unfolds the module
 -- action through the duality datum on one generator.
 set_option maxHeartbeats 1600000 in
 /-- **The module entry is linear over the base**, through the
 carrier entry of the base algebra: the splitting-data shape of
 the linearity law. -/
-theorem splitIns_linear (d : ModDualityDatum A M M') :
+theorem splitIns_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     actLeft A M.X ≫ splitIns A M M' d =
       (A ◁ splitIns A M M' d) ≫
         (splitOfBase A M M' d ▷ chainBGr A M M' d) ≫
@@ -241,15 +261,24 @@ theorem splitIns_linear (d : ModDualityDatum A M M') :
   refine Eq.trans (whisker_eq _ habs) ?_
   exact Category.assoc _ _ _
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)] in
 -- Raised budget: linearity of the insertion unfolds the module
 -- action through the duality datum on one generator.
 set_option maxHeartbeats 1600000 in
 /-- **The dual entry is linear over the base**, through the
 carrier entry of the base algebra: the splitting-data shape of
 the linearity law for the dual module. -/
-theorem splitIns'_linear (d : ModDualityDatum A M M') :
+theorem splitIns'_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     actLeft A M'.X ≫ splitIns' A M M' d =
       (A ◁ splitIns' A M M' d) ≫
         (splitOfBase A M M' d ▷ chainBGr A M M' d) ≫

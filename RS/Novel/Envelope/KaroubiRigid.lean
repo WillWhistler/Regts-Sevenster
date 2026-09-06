@@ -22,54 +22,56 @@ open CategoryTheory.MonoidalCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
-  [RightRigidCategory C]
+variable {C : Type u}
 
 /-! ### Componentwise access to the Karoubi monoidal data -/
 
-omit [RightRigidCategory C] in
-private theorem kwl_f (P : Karoubi C) {Q R : Karoubi C}
+private theorem kwl_f [Category.{v} C] [MonoidalCategory C]
+    (P : Karoubi C) {Q R : Karoubi C}
     (g : Q ⟶ R) : (P ◁ g).f = P.p ⊗ₘ g.f := rfl
 
-omit [RightRigidCategory C] in
-private theorem kwr_f {Q R : Karoubi C} (g : Q ⟶ R)
+private theorem kwr_f [Category.{v} C] [MonoidalCategory C]
+    {Q R : Karoubi C} (g : Q ⟶ R)
     (P : Karoubi C) : (g ▷ P).f = g.f ⊗ₘ P.p := rfl
 
-omit [RightRigidCategory C] in
-private theorem kassoc_inv_f (P Q R : Karoubi C) :
+private theorem kassoc_inv_f [Category.{v} C] [MonoidalCategory C]
+    (P Q R : Karoubi C) :
     (α_ P Q R).inv.f =
       (P.p ⊗ₘ (Q.p ⊗ₘ R.p)) ≫ (α_ P.X Q.X R.X).inv := rfl
 
-omit [RightRigidCategory C] in
-private theorem kassoc_hom_f (P Q R : Karoubi C) :
+private theorem kassoc_hom_f [Category.{v} C] [MonoidalCategory C]
+    (P Q R : Karoubi C) :
     (α_ P Q R).hom.f =
       ((P.p ⊗ₘ Q.p) ⊗ₘ R.p) ≫ (α_ P.X Q.X R.X).hom := rfl
 
-omit [RightRigidCategory C] in
-private theorem krho_hom_f (P : Karoubi C) :
+private theorem krho_hom_f [Category.{v} C] [MonoidalCategory C]
+    (P : Karoubi C) :
     (ρ_ P).hom.f = (P.p ⊗ₘ 𝟙 (𝟙_ C)) ≫ (ρ_ P.X).hom := rfl
 
-omit [RightRigidCategory C] in
-private theorem krho_inv_f (P : Karoubi C) :
+private theorem krho_inv_f [Category.{v} C] [MonoidalCategory C]
+    (P : Karoubi C) :
     (ρ_ P).inv.f = P.p ≫ (ρ_ P.X).inv := rfl
 
-omit [RightRigidCategory C] in
-private theorem klam_hom_f (P : Karoubi C) :
+private theorem klam_hom_f [Category.{v} C] [MonoidalCategory C]
+    (P : Karoubi C) :
     (λ_ P).hom.f = (𝟙 (𝟙_ C) ⊗ₘ P.p) ≫ (λ_ P.X).hom := rfl
 
-omit [RightRigidCategory C] in
-private theorem klam_inv_f (P : Karoubi C) :
+private theorem klam_inv_f [Category.{v} C] [MonoidalCategory C]
+    (P : Karoubi C) :
     (λ_ P).inv.f = P.p ≫ (λ_ P.X).inv := rfl
 
 /-! ### The dual idempotent -/
 
 /-- The adjoint mate of an idempotent is idempotent. -/
-theorem mate_idem (P : Karoubi C) :
+theorem mate_idem [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     (P.p)ᘁ ≫ (P.p)ᘁ = (P.p)ᘁ := by
   rw [← comp_rightAdjointMate, P.idem]
 
 /-- The right dual object in the Karoubi envelope. -/
-noncomputable def karoubiRightDualObj (P : Karoubi C) :
+noncomputable def karoubiRightDualObj
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     Karoubi C :=
   ⟨(P.X)ᘁ, (P.p)ᘁ, mate_idem P⟩
 
@@ -77,7 +79,9 @@ noncomputable def karoubiRightDualObj (P : Karoubi C) :
 
 /-- The corrected coevaluation absorbs into a single whisker on
 the dual leg. -/
-theorem coev_corr_left (P : Karoubi C) :
+theorem coev_corr_left
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ) =
       η_ P.X (P.X)ᘁ ≫ P.X ◁ (P.p)ᘁ := by
   rw [tensorHom_def, ← assoc, ← coevaluation_comp_rightAdjointMate,
@@ -85,14 +89,18 @@ theorem coev_corr_left (P : Karoubi C) :
 
 /-- The corrected coevaluation absorbs into a single whisker on
 the primal leg. -/
-theorem coev_corr_right (P : Karoubi C) :
+theorem coev_corr_right
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ) =
       η_ P.X (P.X)ᘁ ≫ P.p ▷ (P.X)ᘁ := by
   rw [coev_corr_left, coevaluation_comp_rightAdjointMate]
 
 /-- The corrected evaluation absorbs into a single whisker on the
 primal leg. -/
-theorem ev_corr_left (P : Karoubi C) :
+theorem ev_corr_left
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     ((P.p)ᘁ ⊗ₘ P.p) ≫ ε_ P.X (P.X)ᘁ =
       (P.X)ᘁ ◁ P.p ≫ ε_ P.X (P.X)ᘁ := by
   rw [tensorHom_def, assoc, ← rightAdjointMate_comp_evaluation,
@@ -101,19 +109,25 @@ theorem ev_corr_left (P : Karoubi C) :
 
 /-- The corrected evaluation absorbs into a single whisker on the
 dual leg. -/
-theorem ev_corr_right (P : Karoubi C) :
+theorem ev_corr_right
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     ((P.p)ᘁ ⊗ₘ P.p) ≫ ε_ P.X (P.X)ᘁ =
       (P.p)ᘁ ▷ P.X ≫ ε_ P.X (P.X)ᘁ := by
   rw [ev_corr_left, ← rightAdjointMate_comp_evaluation]
 
 /-- The corrected coevaluation is stable under the correction. -/
-theorem coev_corr_idem (P : Karoubi C) :
+theorem coev_corr_idem
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     (η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ)) ≫ (P.p ⊗ₘ (P.p)ᘁ) =
       η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ) := by
   rw [assoc, tensorHom_comp_tensorHom, P.idem, mate_idem]
 
 /-- The corrected evaluation is stable under the correction. -/
-theorem ev_corr_idem (P : Karoubi C) :
+theorem ev_corr_idem
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     ((P.p)ᘁ ⊗ₘ P.p) ≫ (((P.p)ᘁ ⊗ₘ P.p) ≫ ε_ P.X (P.X)ᘁ) =
       ((P.p)ᘁ ⊗ₘ P.p) ≫ ε_ P.X (P.X)ᘁ := by
   rw [← assoc, tensorHom_comp_tensorHom, P.idem, mate_idem]
@@ -122,7 +136,9 @@ theorem ev_corr_idem (P : Karoubi C) :
 
 /-- **The first snake** in the base category, with corrections:
 collapses onto the defining formula of the adjoint mate. -/
-theorem karoubi_snake_one (P : Karoubi C) :
+theorem karoubi_snake_one
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     ((P.p)ᘁ ⊗ₘ (η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ))) ≫
       (((P.p)ᘁ ⊗ₘ (P.p ⊗ₘ (P.p)ᘁ)) ≫
         (α_ (P.X)ᘁ P.X (P.X)ᘁ).inv) ≫
@@ -181,7 +197,9 @@ theorem karoubi_snake_one (P : Karoubi C) :
 
 /-- **The second snake** in the base category, with corrections:
 collapses onto the base snake identity. -/
-theorem karoubi_snake_two (P : Karoubi C) :
+theorem karoubi_snake_two
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     ((η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ)) ⊗ₘ P.p) ≫
       (((P.p ⊗ₘ (P.p)ᘁ) ⊗ₘ P.p) ≫
         (α_ P.X (P.X)ᘁ P.X).hom) ≫
@@ -239,7 +257,9 @@ theorem karoubi_snake_two (P : Karoubi C) :
 
 set_option warn.classDefReducibility false in
 /-- The exact pairing between an idempotent and its mate dual. -/
-noncomputable def karoubiExactPairing (P : Karoubi C) :
+noncomputable def karoubiExactPairing
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     ExactPairing P (karoubiRightDualObj P) where
   coevaluation' :=
     ⟨η_ P.X (P.X)ᘁ ≫ (P.p ⊗ₘ (P.p)ᘁ), by
@@ -268,19 +288,24 @@ noncomputable def karoubiExactPairing (P : Karoubi C) :
 
 /-- Every Karoubi object has a right dual: the ambient dual, cut by
 the dual idempotent. -/
-noncomputable instance karoubiHasRightDual (P : Karoubi C) :
+noncomputable instance karoubiHasRightDual
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (P : Karoubi C) :
     HasRightDual P where
   rightDual := karoubiRightDualObj P
   exact := karoubiExactPairing P
 
 /-- **The Karoubi envelope of a right rigid category is right
 rigid.** -/
-noncomputable instance karoubiRightRigid :
+noncomputable instance karoubiRightRigid
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C] :
     RightRigidCategory (Karoubi C) where
 
 /-- **The Karoubi envelope of a braided right rigid category is
 rigid.** -/
-noncomputable instance karoubiRigid [BraidedCategory C] :
+noncomputable instance karoubiRigid
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    [BraidedCategory C] :
     RigidCategory (Karoubi C) :=
   BraidedCategory.rigidCategoryOfRightRigidCategory
 

@@ -21,12 +21,13 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **The fibre algebra of a Schur-killed category.** -/
-theorem exists_fibre_algebra (ψ : ℂ ≃+* End (𝟙_ C))
+theorem exists_fibre_algebra
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (L : OddLine (Ind C))
     (hkill : letI := linearOfScalarUnit ψ

@@ -1,11 +1,12 @@
 # Build, lint and certify the development.
 #
-# Three layers of checking, in one job so the build is shared:
+# Four layers of checking, in one job so the build is shared:
 #
-#  1. `lake build` — the whole tree, including the `#guard_msgs`-pinned
+#  1. `python3 scripts/check_style.py` — source layout and typeclass scope.
+#  2. `lake build` — the whole tree, including the `#guard_msgs`-pinned
 #     statement and axiom audits, with zero warnings.
-#  2. `lake exe runLinter RS` — the Batteries environment-linter suite.
-#  3. comparator (github.com/leanprover/comparator) — builds the
+#  3. `lake exe runLinter RS` — the Batteries environment-linter suite.
+#  4. comparator (github.com/leanprover/comparator) — builds the
 #     sorried `Challenge` and the proving `Solution` separately,
 #     confirms at the kernel-export level that the theorems of
 #     record match their pinned statements, checks the axiom
@@ -31,6 +32,9 @@ jobs:
     timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check source style
+        run: python3 scripts/check_style.py
 
       - name: Install elan
         run: |

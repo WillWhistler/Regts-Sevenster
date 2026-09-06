@@ -19,27 +19,18 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  [SymmetricCategory (Ind C)]
-variable [HasCoequalizers (Ind C)]
-variable [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable [HasFiniteBiproducts (Ind C)]
+variable {C : Type v}
 
-omit [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The splitting algebra**: one nonzero commutative algebra that
 splits every embedded object into a mixed sum and splits every
 chosen epimorphism. -/
-theorem exists_splitting_algebra (hu : HasScalarUnit C)
+theorem exists_splitting_algebra
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [SymmetricCategory (Ind C)] [HasCoequalizers (Ind C)]
+    [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair (tensorLeft
+      Z)] [HasFiniteBiproducts (Ind C)]
+    (hu : HasScalarUnit C)
     (L : OddLine (Ind C)) {K : Type v} (V W : K → Ind C)
     (g : ∀ k, V k ⟶ W k)
     (hmix : ∀ X : C, L.LocallyMixed ((indOf : C ⥤ Ind C).obj X))

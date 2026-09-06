@@ -17,25 +17,23 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (N₁ N₂ P₁ P₂ : Mod D A)
-
+variable {D : Type u}
 
 /-- The raw interchange: cross the middle factors. -/
-def rawInterchange :
+def rawInterchange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (N₁ : Mod D A) (N₂ : Mod D A) (P₁ : Mod D A) (P₂ : Mod D A) :
     (N₁.X ⊗ N₂.X) ⊗ (P₁.X ⊗ P₂.X) ⟶
       (N₁.X ⊗ P₁.X) ⊗ (N₂.X ⊗ P₂.X) :=
   tensorμ N₁.X N₂.X P₁.X P₂.X
 
 /-- The raw interchange followed by the projections. -/
-noncomputable def rawInterchangeπ :
+noncomputable def rawInterchangeπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (N₁.X ⊗ N₂.X) ⊗ (P₁.X ⊗ P₂.X) ⟶
       modTensor A (modTensorMod A N₁ P₁) (modTensorMod A N₂ P₂) :=
   rawInterchange A N₁ N₂ P₁ P₂ ≫
@@ -45,20 +43,19 @@ noncomputable def rawInterchangeπ :
 /-- The scalar-carrying rearrangement: the interchange at the
 scalar-extended first block, the scalar crossing to the block
 boundary. -/
-noncomputable def midArrange :
+noncomputable def midArrange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (N₁ : Mod D A) (N₂ : Mod D A) (P₁ : Mod D A) (P₂ : Mod D A) :
     ((N₁.X ⊗ A) ⊗ N₂.X) ⊗ (P₁.X ⊗ P₂.X) ⟶
       ((N₁.X ⊗ P₁.X) ⊗ A) ⊗ (N₂.X ⊗ P₂.X) :=
   tensorμ (N₁.X ⊗ A) N₂.X P₁.X P₂.X ≫
     (((α_ N₁.X A P₁.X).hom ≫ (N₁.X ◁ (β_ A P₁.X).hom) ≫
       (α_ N₁.X P₁.X A).inv) ▷ (N₂.X ⊗ P₂.X))
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [MonObj A] in
 /-- The coherence core of the left leg identification. -/
-private theorem legM_core {V₁ W₁ U Q₁ Q₂ Z : D}
+private theorem legM_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    {V₁ W₁ U Q₁ Q₂ Z : D}
     (act : A ⊗ V₁ ⟶ V₁) (q₁ : V₁ ⊗ W₁ ⟶ Q₁) (q₂ : U ⟶ Q₂)
     (out : Q₁ ⊗ Q₂ ⟶ Z) :
     ((((β_ V₁ A).hom ≫ act) ▷ W₁) ▷ U) ≫
@@ -89,13 +86,10 @@ private theorem legM_core {V₁ W₁ U Q₁ Q₂ Z : D}
     comp_whiskerRight]
   simp only [Iso.hom_inv_id_assoc]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [MonObj A] in
 /-- The coherence core of the right leg identification. -/
-private theorem legN_core {V₁ V₂ W₁ W₂ Q₁ Q₂ Z : D}
+private theorem legN_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    {V₁ V₂ W₁ W₂ Q₁ Q₂ Z : D}
     (act : A ⊗ V₂ ⟶ V₂) (q₁ : V₁ ⊗ W₁ ⟶ Q₁)
     (q₂ : V₂ ⊗ W₂ ⟶ Q₂) (out : Q₁ ⊗ Q₂ ⟶ Z) :
     ((α_ V₁ A V₂).hom ▷ (W₁ ⊗ W₂)) ≫
@@ -119,11 +113,14 @@ private theorem legN_core {V₁ V₂ W₁ W₂ Q₁ Q₂ Z : D}
   rw [BraidedCategory.braiding_tensor_left_hom A V₂ W₁]
   monoidal
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The left slide of the first factors becomes the outer left
 slide of the target. -/
-theorem interchange_legM :
+theorem interchange_legM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensorLegM A N₁ N₂ ▷ (P₁.X ⊗ P₂.X)) ≫
         rawInterchangeπ A N₁ N₂ P₁ P₂ =
       midArrange A N₁ N₂ P₁ P₂ ≫
@@ -184,12 +181,14 @@ theorem interchange_legM :
   simp only [Category.assoc] at hc
   exact hc
 
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The right slide of the second factors becomes the outer right
 slide of the target. -/
-theorem interchange_legN :
+theorem interchange_legN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensorLegN A N₁ N₂ ▷ (P₁.X ⊗ P₂.X)) ≫
         rawInterchangeπ A N₁ N₂ P₁ P₂ =
       midArrange A N₁ N₂ P₁ P₂ ≫
@@ -272,25 +271,23 @@ theorem interchange_legN :
       (modTensorMod A N₂ P₂))
   exact hc
 
-
 /-- The scalar-carrying rearrangement from the second block: the
 interchange at the scalar-extended second block, the scalar
 reassociating to the block boundary. -/
-noncomputable def midArrangeP :
+noncomputable def midArrangeP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (N₁ : Mod D A) (N₂ : Mod D A) (P₁ : Mod D A) (P₂ : Mod D A) :
     (N₁.X ⊗ N₂.X) ⊗ ((P₁.X ⊗ A) ⊗ P₂.X) ⟶
       ((N₁.X ⊗ P₁.X) ⊗ A) ⊗ (N₂.X ⊗ P₂.X) :=
   tensorμ N₁.X N₂.X (P₁.X ⊗ A) P₂.X ≫
     ((α_ N₁.X P₁.X A).inv ▷ (N₂.X ⊗ P₂.X))
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [MonObj A] in
 /-- The coherence core of the second-block left leg
 identification: the module condition on the first pair transports
 the scalar action across the pair. -/
-private theorem legMP_core {V₁ W₁ U Q₁ Q₂ Z : D}
+private theorem legMP_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    {V₁ W₁ U Q₁ Q₂ Z : D}
     (actN : A ⊗ V₁ ⟶ V₁) (actW : A ⊗ W₁ ⟶ W₁)
     (q₁ : V₁ ⊗ W₁ ⟶ Q₁) (q₂ : U ⟶ Q₂) (out : Q₁ ⊗ Q₂ ⟶ Z)
     (hcond : (((β_ V₁ A).hom ≫ actN) ▷ W₁) ≫ q₁ =
@@ -324,11 +321,14 @@ private theorem legMP_core {V₁ W₁ U Q₁ Q₂ Z : D}
     (α_ V₁ W₁ A).hom, Iso.inv_hom_id,
     MonoidalCategory.id_whiskerRight, Category.id_comp]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The second-block left slide becomes the outer left slide of
 the target. -/
-theorem interchange_legMP :
+theorem interchange_legMP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     ((N₁.X ⊗ N₂.X) ◁ modTensorLegM A P₁ P₂) ≫
         rawInterchangeπ A N₁ N₂ P₁ P₂ =
       midArrangeP A N₁ N₂ P₁ P₂ ≫
@@ -397,15 +397,12 @@ theorem interchange_legMP :
   simp only [Category.assoc] at hb
   exact hb
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [MonObj A] in
 /-- The coherence core of the second-block right leg
 identification: the module condition on the second pair
 transports the scalar action across the pair. -/
-private theorem legNP_core {V₁ V₂ W₁ W₂ Q₁ Q₂ Z : D}
+private theorem legNP_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    {V₁ V₂ W₁ W₂ Q₁ Q₂ Z : D}
     (actN : A ⊗ V₂ ⟶ V₂) (actW : A ⊗ W₂ ⟶ W₂)
     (q₁ : V₁ ⊗ W₁ ⟶ Q₁) (q₂ : V₂ ⊗ W₂ ⟶ Q₂)
     (out : Q₁ ⊗ Q₂ ⟶ Z)
@@ -456,11 +453,14 @@ private theorem legNP_core {V₁ V₂ W₁ W₂ Q₁ Q₂ Z : D}
   rw [BraidedCategory.braiding_tensor_right_hom V₂ W₁ A]
   monoidal
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The second-block right slide becomes the outer right slide of
 the target. -/
-theorem interchange_legNP :
+theorem interchange_legNP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     ((N₁.X ⊗ N₂.X) ◁ modTensorLegN A P₁ P₂) ≫
         rawInterchangeπ A N₁ N₂ P₁ P₂ =
       midArrangeP A N₁ N₂ P₁ P₂ ≫
@@ -550,11 +550,14 @@ theorem interchange_legNP :
       (modTensorMod A N₂ P₂)) hcond
   exact hb
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The two first-block legs agree after the raw interchange
 projection. -/
-theorem rawInterchangeπ_condN :
+theorem rawInterchangeπ_condN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensorLegM A N₁ N₂ ▷ (P₁.X ⊗ P₂.X)) ≫
         rawInterchangeπ A N₁ N₂ P₁ P₂ =
       (modTensorLegN A N₁ N₂ ▷ (P₁.X ⊗ P₂.X)) ≫
@@ -564,11 +567,14 @@ theorem rawInterchangeπ_condN :
     (congrArg (CategoryStruct.comp _) (modTensor_condition A
       (modTensorMod A N₁ P₁) (modTensorMod A N₂ P₂)))
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The two second-block legs agree after the raw interchange
 projection. -/
-theorem rawInterchangeπ_condP :
+theorem rawInterchangeπ_condP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     ((N₁.X ⊗ N₂.X) ◁ modTensorLegM A P₁ P₂) ≫
         rawInterchangeπ A N₁ N₂ P₁ P₂ =
       ((N₁.X ⊗ N₂.X) ◁ modTensorLegN A P₁ P₂) ≫
@@ -580,7 +586,13 @@ theorem rawInterchangeπ_condP :
 
 /-- First-stage descent of the interchange, through the
 coequalizer of the first block. -/
-noncomputable def interchangeStage1 :
+noncomputable def interchangeStage1
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     modTensor A N₁ N₂ ⊗ (P₁.X ⊗ P₂.X) ⟶
       modTensor A (modTensorMod A N₁ P₁) (modTensorMod A N₂ P₂) :=
   modTensorWhiskerRDesc A N₁ N₂ (P₁.X ⊗ P₂.X)
@@ -589,14 +601,26 @@ noncomputable def interchangeStage1 :
 
 /-- Defining equation of the first-stage descent. -/
 @[reassoc]
-theorem whiskerRight_π_interchangeStage1 :
+theorem whiskerRight_π_interchangeStage1
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensorπ A N₁ N₂ ▷ (P₁.X ⊗ P₂.X)) ≫
         interchangeStage1 A N₁ N₂ P₁ P₂ =
       rawInterchangeπ A N₁ N₂ P₁ P₂ :=
   whiskerRight_modTensorπ_whiskerRDesc A N₁ N₂ _ _ _
 
 /-- The second-block legs agree after the first-stage descent. -/
-theorem interchangeStage1_condP :
+theorem interchangeStage1_condP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensor A N₁ N₂ ◁ modTensorLegM A P₁ P₂) ≫
         interchangeStage1 A N₁ N₂ P₁ P₂ =
       (modTensor A N₁ N₂ ◁ modTensorLegN A P₁ P₂) ≫
@@ -610,7 +634,13 @@ theorem interchangeStage1_condP :
 /-- The interchange of module tensor products: the tensor product
 of two module tensor products maps to the module tensor product
 of the crossed pairs. -/
-noncomputable def interchange :
+noncomputable def interchange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     modTensor A N₁ N₂ ⊗ modTensor A P₁ P₂ ⟶
       modTensor A (modTensorMod A N₁ P₁) (modTensorMod A N₂ P₂) :=
   modTensorWhiskerDesc A P₁ P₂ (modTensor A N₁ N₂)
@@ -619,7 +649,13 @@ noncomputable def interchange :
 
 /-- Defining equation of the interchange. -/
 @[reassoc (attr := simp)]
-theorem tensorHom_π_interchange :
+theorem tensorHom_π_interchange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensorπ A N₁ N₂ ⊗ₘ modTensorπ A P₁ P₂) ≫
         interchange A N₁ N₂ P₁ P₂ =
       rawInterchangeπ A N₁ N₂ P₁ P₂ := by

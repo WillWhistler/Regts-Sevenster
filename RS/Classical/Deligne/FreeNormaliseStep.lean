@@ -30,23 +30,25 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Carrying a head past a block -/
 
 section HeadSwap
 
-variable [BraidedCategory D]
-
 /-- **The head swap**: carry the head factor past a block and land
 it on the tail of that block. -/
-private noncomputable def headSwap (B P V : D) :
+private noncomputable def headSwap
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (B P V : D) :
     B ⊗ (P ⊗ V) ⟶ P ⊗ (B ⊗ V) :=
   (α_ B P V).inv ≫ ((β_ B P).hom ▷ V) ≫ (α_ P B V).hom
 
 /-- The head swap is natural in the head. -/
 @[reassoc]
-private theorem headSwap_naturality {B B' : D} (f : B ⟶ B')
+private theorem headSwap_naturality
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    {B B' : D} (f : B ⟶ B')
     (P V : D) :
     (f ▷ (P ⊗ V)) ≫ headSwap B' P V =
       headSwap B P V ≫ (P ◁ (f ▷ V)) := by
@@ -59,7 +61,9 @@ private theorem headSwap_naturality {B B' : D} (f : B ⟶ B')
 /-- **Splitting the block**: carrying a head past a two-block is
 carrying it past each block in turn. -/
 @[reassoc]
-private theorem headSwap_tensor_block (B P V W : D) :
+private theorem headSwap_tensor_block
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (B P V W : D) :
     (α_ B (P ⊗ V) W).hom ≫ headSwap B (P ⊗ V) W =
       (headSwap B P V ▷ W) ≫ (α_ P (B ⊗ V) W).hom ≫
         (P ◁ ((α_ B V W).hom ≫ headSwap B V W)) ≫
@@ -71,14 +75,14 @@ end HeadSwap
 
 section HeadSwapSymm
 
-variable [SymmetricCategory D]
-
 /-- **The interchange is a head swap under a head**: gathering two
 heads and then carrying the pair past a block is carrying the first
 head past the block and gathering afterwards.  The two braidings the
 interchange introduces below the block cancel by symmetry. -/
 @[reassoc]
-private theorem tensorμ_headSwap (B P C V : D) :
+private theorem tensorμ_headSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (B P C V : D) :
     tensorμ B P C V ≫ headSwap (B ⊗ C) P V =
       (α_ B P (C ⊗ V)).hom ≫ headSwap B P (C ⊗ V) ≫
         (P ◁ (α_ B C V).inv) := by
@@ -100,12 +104,12 @@ end HeadSwapSymm
 
 section Step
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (V : D)
-
 /-- **The slide window as a head swap**: the window carries the head
 of the first letter past the ambient factor and acts with it on the
 second letter, leaving the unit behind. -/
-private theorem freeSlideWin_eq :
+private theorem freeSlideWin_eq
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) :
     freeSlideWin A V =
       (α_ A V (A ⊗ V)).hom ≫ headSwap A V (A ⊗ V) ≫
         (V ◁ ((α_ A A V).inv ≫ (μ[A] ▷ V))) ≫
@@ -122,7 +126,10 @@ as inserting on the penultimate letter and sliding.  This is the
 whole content of the normalisation step, with the lower block left
 generic. -/
 @[reassoc]
-private theorem freeModShuffle_headSwap (P : D) :
+private theorem freeModShuffle_headSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D)
+    (P : D) :
     freeModShuffle A (P ⊗ V) V ≫ headSwap A (P ⊗ V) V ≫
         ((P ◁ ((λ_ V).inv ≫ (η[A] ▷ V))) ▷ (A ⊗ V)) =
       (headSwap A P V ▷ (A ⊗ V)) ≫ (α_ P (A ⊗ V) (A ⊗ V)).hom ≫
@@ -139,7 +146,10 @@ private theorem freeModShuffle_headSwap (P : D) :
 
 /-- The step with the insertion of the lower block carried along,
 spelt out as the free insertion spells it. -/
-private theorem freeModShuffle_insert {P Q : D} (u : P ⟶ Q) :
+private theorem freeModShuffle_insert
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D)
+    {P Q : D} (u : P ⟶ Q) :
     freeModShuffle A (P ⊗ V) V ≫
         ((α_ A (P ⊗ V) V).inv ≫ ((β_ A (P ⊗ V)).hom ▷ V) ≫
           (α_ (P ⊗ V) A V).hom ≫
@@ -166,13 +176,13 @@ end Step
 
 section Normalise
 
-variable [SymmetricCategory D]
-
 /-- **The normalisation step**: gathering every head of a word of
 free letters onto the last letter is gathering the heads of all but
 the last onto the penultimate letter and then sliding that head one
 place along. -/
-theorem freeCollapse_freeInsert_succ (A : D) [MonObj A]
+theorem freeCollapse_freeInsert_succ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A : D) [MonObj A]
     [IsCommMonObj A] (V : D) (k : ℕ) :
     freeCollapse A V (k + 2) ≫ freeInsert A V (k + 1) =
       ((freeCollapse A V (k + 1) ≫ freeInsert A V k) ▷ (A ⊗ V)) ≫

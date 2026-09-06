@@ -25,14 +25,16 @@ open CategoryTheory.BraidedCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [RigidCategory A]
+variable {A : Type u}
 
 /-! ## The trace of a tensor power -/
 
 /-- **The trace of a tensor power** of an endomorphism is the power
 of its trace. -/
-theorem catTrace_powHom (X : A) (g : End X) :
+theorem catTrace_powHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) :
     ∀ n : ℕ, catTrace (powHom X g n) = catTrace g ^ n
   | 0 => by
       show catTrace (𝟙 (𝟙_ A)) = catTrace g ^ 0
@@ -43,10 +45,11 @@ theorem catTrace_powHom (X : A) (g : End X) :
 
 /-! ## Bubbling one slot down -/
 
-omit [RigidCategory A] in
 /-- The top factor's endomorphism passes the top braiding onto the
 factor below it. -/
-private theorem whiskerLeft_swapTop (Q X : A) (h : X ⟶ X) :
+private theorem whiskerLeft_swapTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (Q X : A) (h : X ⟶ X) :
     ((Q ⊗ X) ◁ h) ≫
         ((α_ Q X X).hom ≫ (Q ◁ (β_ X X).hom) ≫ (α_ Q X X).inv) =
       ((α_ Q X X).hom ≫ (Q ◁ (β_ X X).hom) ≫ (α_ Q X X).inv) ≫
@@ -68,7 +71,10 @@ the top factor of a braiding followed by a morphism of the factors
 below it and a tensor power leaves the same data one arity down,
 with the two endomorphisms of the traced factor composed onto the
 factor that remains. -/
-private theorem ptr_cycle_step (Q X : A) (g h : X ⟶ X)
+private theorem ptr_cycle_step
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (Q X : A) (g h : X ⟶ X)
     (v a : Q ⊗ X ⟶ Q ⊗ X) :
     ptr (((Q ⊗ X) ◁ h) ≫
         ((α_ Q X X).hom ≫ (Q ◁ (β_ X X).hom) ≫ (α_ Q X X).inv) ≫
@@ -90,16 +96,19 @@ private theorem ptr_cycle_step (Q X : A) (g h : X ⟶ X)
 
 /-- The descent step at a tensor power, where the braiding is
 `swapTop`. -/
-private theorem ptr_cycle_step_swapTop (X : A) (g h : End X) (m : ℕ)
+private theorem ptr_cycle_step_swapTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g h : End X) (m : ℕ)
     (v a : tensorPow A X (m + 1) ⟶ tensorPow A X (m + 1)) :
     ptr ((tensorPow A X (m + 1) ◁ h) ≫ swapTop X m ≫ (v ▷ X) ≫
         (a ⊗ₘ g)) =
       (tensorPow A X m ◁ (g ≫ h)) ≫ v ≫ a :=
   ptr_cycle_step (tensorPow A X m) X g h v a
 
-omit [MonoidalCategory A] [SymmetricCategory A] [RigidCategory A] in
 /-- Composing one more copy on the right of a power. -/
-private theorem pow_comp_self {X : A} (g : End X) (k : ℕ) :
+private theorem pow_comp_self [Category.{v} A]
+    {X : A} (g : End X) (k : ℕ) :
     (g ^ (k + 1)) ≫ g = g ^ (k + 2) := by
   show (g ^ (k + 1)) ≫ g = g ^ (k + 1 + 1)
   rw [pow_succ' g (k + 1)]
@@ -112,7 +121,10 @@ Bubbling the top factor down `k` slots and letting `g` act on every
 factor, with a further endomorphism `h` on the top factor, traces to
 `tr (h ∘ g ^ (k + 1))` times one copy of `tr g` for each factor the
 bubbling does not reach. -/
-theorem catTrace_insertTop_powHom (X : A) (g : End X) :
+theorem catTrace_insertTop_powHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) :
     ∀ (k n : ℕ), k ≤ n → ∀ h : End X,
       catTrace ((tensorPow A X n ◁ h) ≫
           insertTop X n k ≫ powHom X g (n + 1)) =
@@ -149,7 +161,10 @@ theorem catTrace_insertTop_powHom (X : A) (g : End X) :
 top factor down `k` slots and letting `g` act on every factor traces
 to `tr (g ^ (k + 1))` times one copy of `tr g` for each factor the
 bubbling does not reach. -/
-theorem catTrace_insertTop (X : A) (g : End X) {k n : ℕ}
+theorem catTrace_insertTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) {k n : ℕ}
     (hk : k ≤ n) :
     catTrace (insertTop X n k ≫ powHom X g (n + 1)) =
       catTrace g ^ (n - k) * catTrace (g ^ (k + 1)) := by

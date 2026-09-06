@@ -63,10 +63,11 @@ a matrix `T` with `K * T * K = K`.  The two directions are
 
 section Certificate
 
-variable {A : Type*} [CommRing A]
+variable {A : Type*}
 
 /-- Matrices inducing the same linear map are equal. -/
-theorem matrix_eq_of_mulVecLin_eq {p q : ℕ}
+theorem matrix_eq_of_mulVecLin_eq [CommRing A]
+    {p q : ℕ}
     {K L : Matrix (Fin p) (Fin q) A}
     (h : K.mulVecLin = L.mulVecLin) : K = L := by
   ext a b
@@ -78,7 +79,8 @@ theorem matrix_eq_of_mulVecLin_eq {p q : ℕ}
 
 /-- The matrix assembled from the prescribed columns
 `t 0, …, t (q-1)` sends the `j`-th basis vector to `t j`. -/
-theorem mulVecLin_ofCols_single {p q : ℕ} (t : Fin q → Fin p → A)
+theorem mulVecLin_ofCols_single [CommRing A]
+    {p q : ℕ} (t : Fin q → Fin p → A)
     (j : Fin q) :
     (Matrix.of fun a b => t b a).mulVecLin (Pi.single j (1 : A))
       = t j := by
@@ -91,7 +93,8 @@ certificate `K * T * K = K` splits the presentation, so any module
 presented by `K` is a direct summand of `A ^ n` and therefore
 projective.  Combined with `Module.Flat.of_projective` (outside
 the funnel) this shows certified modules are flat. -/
-theorem projective_of_matrix_certificate {m n : ℕ}
+theorem projective_of_matrix_certificate [CommRing A]
+    {m n : ℕ}
     {M : Type*} [AddCommGroup M] [Module A M]
     {K : Matrix (Fin n) (Fin m) A} {π : (Fin n → A) →ₗ[A] M}
     (hsurj : Function.Surjective π)
@@ -133,7 +136,8 @@ projective module presented by `K` yields a certificate
 `Module.Flat.projective_of_finitePresentation` (outside the
 funnel) the hypothesis holds for any finitely presented flat
 module. -/
-theorem matrix_certificate_of_projective {m n : ℕ}
+theorem matrix_certificate_of_projective [CommRing A]
+    {m n : ℕ}
     {M : Type*} [AddCommGroup M] [Module A M]
     [Module.Projective A M]
     {K : Matrix (Fin n) (Fin m) A} {π : (Fin n → A) →ₗ[A] M}
@@ -198,8 +202,7 @@ stage.  `Ring.DirectLimit` satisfies all three.
 
 section Colimit
 
-variable {ι : Type*} [Preorder ι] {F : ι → Type*}
-variable [∀ i, CommRing (F i)]
+variable {ι : Type*}
 
 /-- A presentation of the commutative ring `R` as the directed
 colimit of the system `F` with transition maps `f`: a compatible
@@ -207,6 +210,7 @@ cocone which is jointly surjective and detects equalities at a
 finite stage.  These are the only properties of a filtered colimit
 of rings used by the limit theorem. -/
 structure DirectedColimitPresentation
+    [Preorder ι] {F : ι → Type*} [∀ i, CommRing (F i)]
     (f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j)
     (R : Type*) [CommRing R] where
   /-- The cocone maps from the stages to the colimit. -/
@@ -220,13 +224,12 @@ structure DirectedColimitPresentation
   eventuallyEq : ∀ i (x y : F i), toColim i x = toColim i y →
     ∃ j, ∃ h : i ≤ j, f h x = f h y
 
-variable [Nonempty ι] [IsDirectedOrder ι]
-variable {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j}
-variable {R : Type*} [CommRing R]
-
 /-- Every finite family of elements of the colimit lifts jointly
 to a single stage. -/
 theorem DirectedColimitPresentation.exists_stage_family
+    [Preorder ι] {F : ι → Type*} [∀ i, CommRing (F i)] [Nonempty ι]
+    [IsDirectedOrder ι] {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j} {R : Type*}
+    [CommRing R]
     (P : DirectedColimitPresentation f R)
     {κ : Type*} [Fintype κ] (x : κ → R) :
     ∃ i, ∃ y : κ → F i, ∀ k, P.toColim i (y k) = x k := by
@@ -241,6 +244,9 @@ theorem DirectedColimitPresentation.exists_stage_family
 /-- Finitely many equalities holding in the colimit hold
 simultaneously at some common later stage. -/
 theorem DirectedColimitPresentation.exists_stage_eq
+    [Preorder ι] {F : ι → Type*} [∀ i, CommRing (F i)] [Nonempty ι]
+    [IsDirectedOrder ι] {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j} {R : Type*}
+    [CommRing R]
     (P : DirectedColimitPresentation f R)
     (hDS : DirectedSystem F fun _ _ h => f h)
     {κ : Type*} [Fintype κ] {i : ι} {a b : κ → F i}
@@ -262,6 +268,9 @@ theorem DirectedColimitPresentation.exists_stage_eq
 /-- Every matrix over the colimit lifts to a matrix at some
 stage. -/
 theorem DirectedColimitPresentation.exists_stage_matrix
+    [Preorder ι] {F : ι → Type*} [∀ i, CommRing (F i)] [Nonempty ι]
+    [IsDirectedOrder ι] {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j} {R : Type*}
+    [CommRing R]
     (P : DirectedColimitPresentation f R)
     {p q : ℕ} (X : Matrix (Fin p) (Fin q) R) :
     ∃ i, ∃ Y : Matrix (Fin p) (Fin q) (F i),
@@ -275,6 +284,9 @@ theorem DirectedColimitPresentation.exists_stage_matrix
 /-- An equality of matrices in the colimit holds at some later
 stage. -/
 theorem DirectedColimitPresentation.exists_stage_matrix_eq
+    [Preorder ι] {F : ι → Type*} [∀ i, CommRing (F i)] [Nonempty ι]
+    [IsDirectedOrder ι] {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j} {R : Type*}
+    [CommRing R]
     (P : DirectedColimitPresentation f R)
     (hDS : DirectedSystem F fun _ _ h => f h)
     {p q : ℕ} {i : ι} {Xa Xb : Matrix (Fin p) (Fin q) (F i)}
@@ -296,10 +308,7 @@ end Colimit
 
 section Limit
 
-variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
-variable {F : ι → Type*} [∀ i, CommRing (F i)]
-variable {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j}
-variable {R : Type*} [CommRing R]
+variable {ι : Type*}
 
 /-- Certificates descend to a finite stage: when the base change
 to the colimit of a stage-`i₀` presentation matrix admits a
@@ -309,6 +318,9 @@ heart of the limit theorem for flatness: the certificate is a
 finite system of ring equations, its entries live at a finite
 stage, and the equations hold at a further stage. -/
 theorem DirectedColimitPresentation.exists_stage_matrix_certificate
+    [Preorder ι] [Nonempty ι] [IsDirectedOrder ι] {F : ι → Type*}
+    [∀ i, CommRing (F i)] {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j} {R : Type*}
+    [CommRing R]
     (P : DirectedColimitPresentation f R)
     (hDS : DirectedSystem F fun _ _ h => f h)
     {m n : ℕ} {i₀ : ι} (K₀ : Matrix (Fin n) (Fin m) (F i₀))
@@ -359,6 +371,9 @@ matrix `K₀.map (f hij)` — in particular the base change
 exactness of the tensor product — is projective, hence flat via
 `Module.Flat.of_projective`. -/
 theorem DirectedColimitPresentation.exists_stage_projective
+    [Preorder ι] [Nonempty ι] [IsDirectedOrder ι] {F : ι → Type*}
+    [∀ i, CommRing (F i)] {f : ∀ ⦃i j : ι⦄, i ≤ j → F i →+* F j} {R : Type*}
+    [CommRing R]
     (P : DirectedColimitPresentation f R)
     (hDS : DirectedSystem F fun _ _ h => f h)
     {m n : ℕ} {i₀ : ι} (K₀ : Matrix (Fin n) (Fin m) (F i₀))

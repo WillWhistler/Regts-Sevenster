@@ -50,12 +50,13 @@ variable {S : SuperCommAlgebra.{u, u}}
 
 section Blocks
 
-variable {A E F : Type*} [AddCommGroup A] [Module ℂ A]
-  [AddCommGroup E] [Module ℂ E] [AddCommGroup F] [Module ℂ F]
+variable {A E F : Type*}
 
 /-- **The restriction of an action block** to a pair of submodules
 carried into one another by it. -/
-def actRestrict (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
+def actRestrict [AddCommGroup A] [Module ℂ A] [AddCommGroup E] [Module ℂ E]
+    [AddCommGroup F] [Module ℂ F]
+    (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
     {q : Submodule ℂ F} (h : ∀ a : A, ∀ e ∈ p, φ a e ∈ q) :
     A →ₗ[ℂ] p →ₗ[ℂ] q where
   toFun a :=
@@ -69,14 +70,19 @@ def actRestrict (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
     simp
 
 @[simp]
-theorem actRestrict_coe (φ : A →ₗ[ℂ] E →ₗ[ℂ] F)
+theorem actRestrict_coe
+    [AddCommGroup A] [Module ℂ A] [AddCommGroup E] [Module ℂ E]
+    [AddCommGroup F] [Module ℂ F]
+    (φ : A →ₗ[ℂ] E →ₗ[ℂ] F)
     {p : Submodule ℂ E} {q : Submodule ℂ F}
     (h : ∀ a : A, ∀ e ∈ p, φ a e ∈ q) (a : A) (e : p) :
     (actRestrict φ h a e : F) = φ a e := rfl
 
 /-- **The descent of an action block** to a pair of quotients, the
 first by a submodule carried by the block into the second. -/
-def actQuot (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
+def actQuot [AddCommGroup A] [Module ℂ A] [AddCommGroup E] [Module ℂ E]
+    [AddCommGroup F] [Module ℂ F]
+    (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
     {q : Submodule ℂ F} (h : ∀ a : A, ∀ e ∈ p, φ a e ∈ q) :
     A →ₗ[ℂ] (E ⧸ p) →ₗ[ℂ] (F ⧸ q) :=
   (p.liftQ (LinearMap.compr₂ φ q.mkQ).flip
@@ -86,14 +92,17 @@ def actQuot (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
       exact (Submodule.Quotient.mk_eq_zero q).2 (h a e he))).flip
 
 @[simp]
-theorem actQuot_mk (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
+theorem actQuot_mk [AddCommGroup A] [Module ℂ A] [AddCommGroup E] [Module ℂ E]
+    [AddCommGroup F] [Module ℂ F]
+    (φ : A →ₗ[ℂ] E →ₗ[ℂ] F) {p : Submodule ℂ E}
     {q : Submodule ℂ F} (h : ∀ a : A, ∀ e ∈ p, φ a e ∈ q) (a : A)
     (e : E) :
     actQuot φ h a (Submodule.Quotient.mk e)
       = (Submodule.Quotient.mk (φ a e) : F ⧸ q) := rfl
 
 /-- Congruence for the class map of a quotient module. -/
-theorem quotMk_congr {q : Submodule ℂ F} {a b : F} (h : a = b) :
+theorem quotMk_congr [AddCommGroup F] [Module ℂ F]
+    {q : Submodule ℂ F} {a b : F} (h : a = b) :
     (Submodule.Quotient.mk a : F ⧸ q) = Submodule.Quotient.mk b :=
   congrArg _ h
 
@@ -103,19 +112,24 @@ end Blocks
 
 section Factor
 
-variable {E F G : Type*} [AddCommGroup E] [Module ℂ E]
-  [AddCommGroup F] [Module ℂ F] [AddCommGroup G] [Module ℂ G]
+variable {E F G : Type*}
 
 /-- **The factorisation of a linear map through an injective one**
 whose range contains its values. -/
-noncomputable def preimageMap (g : E →ₗ[ℂ] G) (φ : F →ₗ[ℂ] G)
+noncomputable def preimageMap
+    [AddCommGroup E] [Module ℂ E] [AddCommGroup F] [Module ℂ F]
+    [AddCommGroup G] [Module ℂ G]
+    (g : E →ₗ[ℂ] G) (φ : F →ₗ[ℂ] G)
     (hφ : Function.Injective φ)
     (h : ∀ e, g e ∈ LinearMap.range φ) : E →ₗ[ℂ] F :=
   (LinearEquiv.ofInjective φ hφ).symm.toLinearMap.comp
     (LinearMap.codRestrict (LinearMap.range φ) g h)
 
 @[simp]
-theorem preimageMap_spec (g : E →ₗ[ℂ] G) (φ : F →ₗ[ℂ] G)
+theorem preimageMap_spec
+    [AddCommGroup E] [Module ℂ E] [AddCommGroup F] [Module ℂ F]
+    [AddCommGroup G] [Module ℂ G]
+    (g : E →ₗ[ℂ] G) (φ : F →ₗ[ℂ] G)
     (hφ : Function.Injective φ)
     (h : ∀ e, g e ∈ LinearMap.range φ) (e : E) :
     φ (preimageMap g φ hφ h e) = g e :=
@@ -123,7 +137,9 @@ theorem preimageMap_spec (g : E →ₗ[ℂ] G) (φ : F →ₗ[ℂ] G)
 
 /-- A linear map annihilating the kernel of another has a larger
 kernel. -/
-theorem ker_le_ker (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
+theorem ker_le_ker [AddCommGroup E] [Module ℂ E] [AddCommGroup F] [Module ℂ F]
+    [AddCommGroup G] [Module ℂ G]
+    (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
     (h : ∀ e, φ e = 0 → g e = 0) :
     LinearMap.ker φ ≤ LinearMap.ker g := by
   intro e he
@@ -131,14 +147,20 @@ theorem ker_le_ker (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
 
 /-- **The factorisation of a linear map through a surjective one**
 whose kernel it annihilates. -/
-noncomputable def quotientMap (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
+noncomputable def quotientMap
+    [AddCommGroup E] [Module ℂ E] [AddCommGroup F] [Module ℂ F]
+    [AddCommGroup G] [Module ℂ G]
+    (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
     (hφ : Function.Surjective φ)
     (h : ∀ e, φ e = 0 → g e = 0) : F →ₗ[ℂ] G :=
   (Submodule.liftQ (LinearMap.ker φ) g (ker_le_ker g φ h)).comp
     (LinearMap.quotKerEquivOfSurjective φ hφ).symm.toLinearMap
 
 @[simp]
-theorem quotientMap_spec (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
+theorem quotientMap_spec
+    [AddCommGroup E] [Module ℂ E] [AddCommGroup F] [Module ℂ F]
+    [AddCommGroup G] [Module ℂ G]
+    (g : E →ₗ[ℂ] G) (φ : E →ₗ[ℂ] F)
     (hφ : Function.Surjective φ)
     (h : ∀ e, φ e = 0 → g e = 0) (e : E) :
     quotientMap g φ hφ h (φ e) = g e := by
@@ -551,8 +573,7 @@ theorem oddMap_mem_range {W : S.Mod.{u, u, u, u}} (k : W ⟶ N)
 /-- **A degreewise injective morphism of super modules is the
 kernel of its cokernel.** -/
 @[implicit_reducible]
-noncomputable def normalMonoOfInjective
-    (he : Function.Injective f.evenMap)
+noncomputable def normalMonoOfInjective (he : Function.Injective f.evenMap)
     (ho : Function.Injective f.oddMap) : NormalMono f where
   Z := cokerMod f
   g := cokerProj f
@@ -621,8 +642,7 @@ theorem oddMap_eq_zero_of_comp {W : S.Mod.{u, u, u, u}}
 /-- **A degreewise surjective morphism of super modules is the
 cokernel of its kernel.** -/
 @[implicit_reducible]
-noncomputable def normalEpiOfSurjective
-    (he : Function.Surjective f.evenMap)
+noncomputable def normalEpiOfSurjective (he : Function.Surjective f.evenMap)
     (ho : Function.Surjective f.oddMap) : NormalEpi f where
   W := kerMod f
   g := kerIncl f

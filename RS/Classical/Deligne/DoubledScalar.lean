@@ -15,13 +15,14 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [CategoryTheory.Linear ℂ A]
-  [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A]
+variable {A : Type u}
 
 /-- **The scalar-unit hypothesis passes to the doubling.** -/
-theorem hasScalarUnit_doubled (hu : HasScalarUnit A) :
+theorem hasScalarUnit_doubled
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [CategoryTheory.Linear ℂ A] [MonoidalPreadditive A]
+    [HasBinaryBiproducts A] [HasZeroObject A]
+    (hu : HasScalarUnit A) :
     HasScalarUnit (Doubled A) := by
   constructor
   · intro c c' h

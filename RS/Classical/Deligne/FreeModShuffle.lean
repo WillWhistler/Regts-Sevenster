@@ -18,16 +18,12 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D]
-variable (B : D) [MonObj B]
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D] in
 /-- The right unitor intertwines the free action on the unit
 with the regular action. -/
-theorem freeModUnit_linear :
+theorem freeModUnit_linear
+    [Category.{v} D] [MonoidalCategory D] (B : D) [MonObj B] :
     ((α_ B B (𝟙_ D)).inv ≫ μ[B] ▷ (𝟙_ D)) ≫
         (ρ_ B).hom =
       (B ◁ (ρ_ B).hom) ≫ μ[B] := by
@@ -37,7 +33,8 @@ theorem freeModUnit_linear :
     B ◁ (ρ_ B).hom from by monoidal]
 
 /-- **The free module on the unit is the regular module.** -/
-noncomputable def freeModUnitIso :
+noncomputable def freeModUnitIso
+    [Category.{v} D] [MonoidalCategory D] (B : D) [MonObj B] :
     freeMod B (𝟙_ D) ≅ regularMod B where
   hom := Mod.Hom.mk' (ρ_ B).hom (by
     show ((α_ B B (𝟙_ D)).inv ≫ μ[B] ▷ (𝟙_ D)) ≫
@@ -69,11 +66,10 @@ noncomputable def freeModUnitIso :
 
 section Biprod
 
-variable (X Y : D)
-
-omit [MonoidalPreadditive D] in
 /-- The distributor intertwines the free actions. -/
-theorem freeModBiprod_linear :
+theorem freeModBiprod_linear
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (B : D) [MonObj B] (X : D) (Y : D) :
     ((α_ B B (X ⊞ Y)).inv ≫ μ[B] ▷ (X ⊞ Y)) ≫
         biprod.lift (B ◁ biprod.fst) (B ◁ biprod.snd) =
       (B ◁ biprod.lift (B ◁ biprod.fst) (B ◁ biprod.snd)) ≫
@@ -120,10 +116,9 @@ theorem freeModBiprod_linear :
         (B ◁ (biprod.snd : X ⊞ Y ⟶ Y)))) _) ?_
     rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D] [MonObj B] in
 /-- The inverse of a linear isomorphism is linear. -/
-theorem act_inv_of_act_hom {P Q : D} {actP : B ⊗ P ⟶ P}
+theorem act_inv_of_act_hom [Category.{v} D] [MonoidalCategory D] (B : D)
+    {P Q : D} {actP : B ⊗ P ⟶ P}
     {actQ : B ⊗ Q ⟶ Q} (e : P ≅ Q)
     (h : actP ≫ e.hom = (B ◁ e.hom) ≫ actQ) :
     actQ ≫ e.inv = (B ◁ e.inv) ≫ actP := by
@@ -137,7 +132,10 @@ theorem act_inv_of_act_hom {P Q : D} {actP : B ⊗ P ⟶ P}
 
 /-- **The free module on a biproduct is the biproduct of the
 free modules.** -/
-noncomputable def freeModBiprodIso :
+noncomputable def freeModBiprodIso
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] (B : D) [MonObj B]
+    (X : D) (Y : D) :
     freeMod B (X ⊞ Y) ≅
       modBiprod B (freeMod B X) (freeMod B Y) where
   hom := Mod.Hom.mk' (tensorBiprodIso B X Y).hom (by
@@ -163,7 +161,9 @@ noncomputable def freeModBiprodIso :
 end Biprod
 
 /-- The free module on an isomorphism. -/
-noncomputable def freeModMapIso {V W : D} (e : V ≅ W) :
+noncomputable def freeModMapIso
+    [Category.{v} D] [MonoidalCategory D] (B : D) [MonObj B]
+    {V W : D} (e : V ≅ W) :
     freeMod B V ≅ freeMod B W where
   hom := freeModMap B e.hom
   inv := freeModMap B e.inv

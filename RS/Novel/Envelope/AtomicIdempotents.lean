@@ -14,27 +14,27 @@ namespace RS
 
 universe u
 
-variable {A : Type u} [Ring A] [Algebra ℂ A]
+variable {A : Type u}
 
 /-- An idempotent is *atomic* if it is nonzero and its corner is
 the scalar line it spans. -/
-structure IsAtomicIdempotent (e : A) : Prop where
+structure IsAtomicIdempotent
+    [Ring A] [Algebra ℂ A]
+    (e : A) : Prop where
   idem : IsIdempotentElem e
   ne_zero : e ≠ 0
   corner_scalar : ∀ x : A, ∃ c : ℂ, e * x * e = c • e
 
 section PiMatrix
 
-variable {n : ℕ} {d : Fin n → ℕ}
-
 /-- The diagonal matrix-unit family in a product of matrix
 algebras. -/
-private noncomputable def matUnit
+private noncomputable def matUnit {n : ℕ} {d : Fin n → ℕ}
     (p : (i : Fin n) × Fin (d i)) :
     Π i, Matrix (Fin (d i)) (Fin (d i)) ℂ :=
   Pi.single p.1 (Matrix.single p.2 p.2 1)
 
-private theorem matUnit_mul_matUnit
+private theorem matUnit_mul_matUnit {n : ℕ} {d : Fin n → ℕ}
     (p q : (i : Fin n) × Fin (d i)) :
     matUnit p * matUnit q =
       if p = q then matUnit p else 0 := by
@@ -70,7 +70,7 @@ private theorem matUnit_mul_matUnit
     · rw [Pi.single_eq_of_ne hk, Matrix.zero_mul]
       simp
 
-private theorem matUnit_sum :
+private theorem matUnit_sum {n : ℕ} {d : Fin n → ℕ} :
     ∑ p : (i : Fin n) × Fin (d i), matUnit p = 1 := by
   classical
   funext k
@@ -112,7 +112,7 @@ private theorem matUnit_sum :
       rintro ⟨hbr, hbs⟩
       exact hrs (hbr ▸ hbs))]
 
-private theorem matUnit_corner
+private theorem matUnit_corner {n : ℕ} {d : Fin n → ℕ}
     (p : (i : Fin n) × Fin (d i))
     (x : Π i, Matrix (Fin (d i)) (Fin (d i)) ℂ) :
     matUnit p * x * matUnit p =
@@ -132,7 +132,8 @@ private theorem matUnit_corner
     ring
   · simp [Pi.single_eq_of_ne hk]
 
-private theorem matUnit_ne_zero [∀ i, NeZero (d i)]
+private theorem matUnit_ne_zero {n : ℕ} {d : Fin n → ℕ}
+    [∀ i, NeZero (d i)]
     (p : (i : Fin n) × Fin (d i)) : matUnit p ≠ 0 := by
   intro h
   have h2 := congrFun h p.1
@@ -145,7 +146,7 @@ end PiMatrix
 /-- **Atomic decomposition** of a finite-dimensional semisimple
 complex algebra: the identity splits into a complete orthogonal
 family of atomic idempotents. -/
-theorem exists_completeOrthogonal_atomic
+theorem exists_completeOrthogonal_atomic [Ring A] [Algebra ℂ A]
     [FiniteDimensional ℂ A] [IsSemisimpleRing A] :
     ∃ (ι : Type) (_ : Fintype ι) (e : ι → A),
       CompleteOrthogonalIdempotents e ∧

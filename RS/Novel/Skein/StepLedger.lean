@@ -63,19 +63,17 @@ open scoped Classical
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 /-! ## Entry flags: non-periodicity and segment avoidance -/
 
 section EntryFlags
 
-variable {κ : F.RelTransitionSystem}
-
-omit [LinearOrder α] in
 /-- The entry edge of a participating boundary flag is not periodic:
 it is the step-`0` pairing argument of a boundary-terminated chain. -/
-theorem entry_not_periodic {i : α}
+theorem entry_not_periodic
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (hint : W.pairing (W.boundaryFlag i) ∈ F.internalFlags) :
     ¬ κ.PeriodicFlag (W.pairing (W.boundaryFlag i)) := by
@@ -92,11 +90,12 @@ theorem entry_not_periodic {i : α}
   rw [iterWalk_zero] at h
   exact h rfl
 
-omit [LinearOrder α] in
 /-- A reversal segment carries no entry flag: the segment is
 pairing-closed and internal, while the pairing of an entry flag is a
 boundary flag. -/
-theorem entry_notMem_repairSegment {a b c d : W.Flag}
+theorem entry_notMem_repairSegment
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {a b c d : W.Flag}
     {S : Finset W.Flag} (hseg : RepairSegment κ a b c d S) (i : α) :
     W.pairing (W.boundaryFlag i) ∉ S := by
   intro hmem
@@ -107,7 +106,10 @@ theorem entry_notMem_repairSegment {a b c d : W.Flag}
 /-- **Canonicality transfer**: an orientation of a system with the
 same path matching, agreeing with a path-canonical orientation on
 every entry flag, is path-canonical. -/
-theorem pathCanonical_of_entry_eq {κ' : F.RelTransitionSystem}
+theorem pathCanonical_of_entry_eq
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {κ' : F.RelTransitionSystem}
     {o : κ.Orientation} {o' : κ'.Orientation}
     (hpm : ∀ (δ : W.Flag) (hδ : δ ∈ F.boundaryFlags),
       κ'.pathMatch δ hδ = κ.pathMatch δ hδ)
@@ -126,12 +128,11 @@ end EntryFlags
 
 section TwoPathExclusion
 
-variable {κ : F.RelTransitionSystem}
-
-omit [LinearOrder α] in
 /-- Chain membership from the exit end of a terminating forward
 walk. -/
-theorem onBoundaryChain_of_exit {f : W.Flag}
+theorem onBoundaryChain_of_exit
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {f : W.Flag}
     (hf : f ∈ F.internalFlags) {m : ℕ}
     (hcont : ∀ j, j < m →
       W.pairing (iterWalk κ f j) ∈ F.internalFlags)
@@ -158,14 +159,14 @@ theorem onBoundaryChain_of_exit {f : W.Flag}
     reverse_chain_terminates κ hcont
   exact ⟨k', m, by omega, hcont', hterm', Or.inr hfeq.symm⟩
 
-variable {a b c d : W.Flag} {v : W.Vertex}
-
-omit [LinearOrder α] in
 /-- **The tail exit**: after the walk flag following the square hit,
 the repaired walk follows the old chain tail and exits at the old
 chain's far end, so that walk flag lies on the repaired chain of the
 far end. -/
-private theorem tail_exits_repair (hsq : RepairSquare κ a b c d v)
+private theorem tail_exits_repair
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {a : W.Flag} {b : W.Flag} {c : W.Flag} {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     {β : W.Flag} {k s : ℕ}
     (hcont : ∀ j, j < k →
       W.pairing (iterWalk κ β j) ∈ F.internalFlags)
@@ -214,7 +215,10 @@ private theorem tail_exits_repair (hsq : RepairSquare κ a b c d v)
 /-- **The hit membership**: on a two-chain square, the `X`-flag of
 the matched pair carried by `β`'s chain lies, after the repair, on
 the repaired chain of `β` or of `β`'s far end. -/
-theorem hit_membership (hsq : RepairSquare κ a b c d v)
+theorem hit_membership [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     {β βo X Y Z₁ Z₂ : W.Flag}
     (hβ : β ∈ F.boundaryFlags) (hβo : βo ∈ F.boundaryFlags)
     (hne1 : β ≠ βo) (hne2 : β ≠ κ.pathMatch βo hβo)
@@ -294,6 +298,9 @@ path matching is localized.  On a non-localized square the repaired
 `a`-flag and its repaired match `c` land on the repaired chains of
 two genuinely distinct pairs of ends, which share no flag. -/
 theorem squareLocalized_of_pathMatch_eq
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v)
     (hpres : ∀ (δ : W.Flag) (hδ : δ ∈ F.boundaryFlags),
       (κ.repair a b c d v hsq).pathMatch δ hδ =
@@ -355,15 +362,14 @@ end TwoPathExclusion
 
 section SameChainReach
 
-variable {κ : F.RelTransitionSystem}
-
-omit [LinearOrder α] in
 /-- **Same-chain reach**: two distinct coherently oriented internal
 flags on one boundary chain see one another along the walk.
 Orientation rigidity (walk-side flags carry the negated seed,
 pairing-side flags the seed) excludes the mixed cases; on a common
 side the walk runs from the earlier to the later position. -/
-theorem walkReach_or_walkReach_of_chain {β f g : W.Flag}
+theorem walkReach_or_walkReach_of_chain
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {β f g : W.Flag}
     (hβ : β ∈ F.boundaryFlags) (o : κ.Orientation)
     (hsame : o.isOut f = o.isOut g) (hfg : f ≠ g)
     (hf : f ∈ F.internalFlags) (hg : g ∈ F.internalFlags)
@@ -472,8 +478,6 @@ end SameChainReach
 
 section StepLedger
 
-variable {k ℓ : ℕ}
-
 private theorem neg_one_pow_congr_of_even {m n : ℕ}
     (h : Even (n + m)) : ((-1 : ℂ)) ^ m = ((-1 : ℂ)) ^ n := by
   have h1 : ((-1 : ℂ)) ^ n * ((-1 : ℂ)) ^ m = 1 := by
@@ -490,7 +494,9 @@ private theorem neg_one_pow_congr_of_even {m n : ℕ}
 
 /-- Transport of the canonical signed conclusion across the
 `MatchEq` slack of the step relation. -/
-private theorem step_conclusion (hM : MixedFunctional k ℓ)
+private theorem step_conclusion
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ₁ κ₂ κ' : F.RelTransitionSystem}
@@ -530,7 +536,9 @@ count parities are `separatedCountParity`,
 `nonSeparatedSegmentParity`, and `nonSeparatedMergeParity`; in
 every case the produced orientation agrees with the input on all
 entry flags, so canonicality transfers. -/
-theorem stepLedger_single (hM : MixedFunctional k ℓ)
+theorem stepLedger_single
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (κ₁ κ₂ : F.RelTransitionSystem)

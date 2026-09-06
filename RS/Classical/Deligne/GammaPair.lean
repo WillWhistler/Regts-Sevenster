@@ -60,23 +60,28 @@ universe v u
 
 section Pairing
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] [HasCoequalizers D]
-variable {R : D} [MonObj R] {M N : Mod D R}
+variable {D : Type u}
 
 /-- The *pairing* of a morphism into one module object with a
 morphism into another, taken at arbitrary sources: tensor the two
 morphisms and project to the relative tensor product. -/
-noncomputable def gpair {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
+noncomputable def gpair
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     X ⊗ Y ⟶ modTensor R M N :=
   (m ⊗ₘ n) ≫ modTensorπ R M N
 
 /-- The pairing unfolded. -/
-theorem gpair_def {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
+theorem gpair_def [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     gpair m n = (m ⊗ₘ n) ≫ modTensorπ R M N := rfl
 
 /-- Reindexing the left source of a pairing. -/
-theorem comp_gpair {W X Y : D} (f : W ⟶ X) (m : X ⟶ M.X)
+theorem comp_gpair [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    {W X Y : D} (f : W ⟶ X) (m : X ⟶ M.X)
     (n : Y ⟶ N.X) :
     gpair (f ≫ m) n = f ▷ Y ≫ gpair (M := M) (N := N) m n := by
   have h : f ▷ Y ≫ (m ⊗ₘ n) = (f ≫ m) ⊗ₘ n := by
@@ -84,7 +89,9 @@ theorem comp_gpair {W X Y : D} (f : W ⟶ X) (m : X ⟶ M.X)
   rw [gpair_def, gpair_def, ← h, Category.assoc]
 
 /-- Reindexing the right source of a pairing. -/
-theorem gpair_comp {X Y Z : D} (m : X ⟶ M.X) (g : Z ⟶ Y)
+theorem gpair_comp [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    {X Y Z : D} (m : X ⟶ M.X) (g : Z ⟶ Y)
     (n : Y ⟶ N.X) :
     gpair m (g ≫ n) = X ◁ g ≫ gpair (M := M) (N := N) m n := by
   have h : X ◁ g ≫ (m ⊗ₘ n) = m ⊗ₘ (g ≫ n) := by
@@ -93,16 +100,20 @@ theorem gpair_comp {X Y Z : D} (m : X ⟶ M.X) (g : Z ⟶ Y)
 
 section Additive
 
-variable [Preadditive D] [MonoidalPreadditive D]
-
 /-- The pairing is additive in its left argument. -/
-theorem add_gpair {X Y : D} (m m' : X ⟶ M.X) (n : Y ⟶ N.X) :
+theorem add_gpair [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D]
+    {X Y : D} (m m' : X ⟶ M.X) (n : Y ⟶ N.X) :
     gpair (m + m') n = gpair (N := N) m n + gpair (N := N) m' n := by
   rw [gpair_def, gpair_def, gpair_def, MonoidalPreadditive.add_tensor,
     Preadditive.add_comp]
 
 /-- The pairing is additive in its right argument. -/
-theorem gpair_add {X Y : D} (m : X ⟶ M.X) (n n' : Y ⟶ N.X) :
+theorem gpair_add [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D]
+    {X Y : D} (m : X ⟶ M.X) (n n' : Y ⟶ N.X) :
     gpair m (n + n') = gpair (M := M) m n + gpair (M := M) m n' := by
   rw [gpair_def, gpair_def, gpair_def, MonoidalPreadditive.tensor_add,
     Preadditive.add_comp]
@@ -111,11 +122,12 @@ end Additive
 
 section Homogeneous
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- The pairing is ℂ-homogeneous in its left argument. -/
-theorem smul_gpair (r : ℂ) {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
+theorem smul_gpair [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (r : ℂ) {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     gpair (r • m) n = r • gpair (M := M) (N := N) m n := by
   have h : (r • m) ⊗ₘ n = r • (m ⊗ₘ n) := by
     rw [tensorHom_def, tensorHom_def,
@@ -123,7 +135,11 @@ theorem smul_gpair (r : ℂ) {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
   rw [gpair_def, gpair_def, h, Linear.smul_comp]
 
 /-- The pairing is ℂ-homogeneous in its right argument. -/
-theorem gpair_smul (r : ℂ) {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
+theorem gpair_smul [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (r : ℂ) {X Y : D} (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     gpair m (r • n) = r • gpair (M := M) (N := N) m n := by
   have h : m ⊗ₘ (r • n) = r • (m ⊗ₘ n) := by
     rw [tensorHom_def', tensorHom_def',
@@ -136,15 +152,16 @@ end Homogeneous
 
 section Bundled
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- The pairing as a ℂ-bilinear map of hom-modules, transported
 along a chosen morphism `s` from the intended source into the
 tensor product of the two given sources.  The four graded blocks of
 the comparison map of `RS.gammaPairComparison` are the four
 instances of this construction. -/
-noncomputable def gpairLin (M N : Mod D R) {W X Y : D}
+noncomputable def gpairLin
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (M N : Mod D R) {W X Y : D}
     (s : W ⟶ X ⊗ Y) :
     (X ⟶ M.X) →ₗ[ℂ] (Y ⟶ N.X) →ₗ[ℂ] (W ⟶ modTensor R M N) :=
   LinearMap.mk₂ ℂ (fun m n => s ≫ gpair m n)
@@ -154,7 +171,10 @@ noncomputable def gpairLin (M N : Mod D R) {W X Y : D}
     (fun r m n => by rw [gpair_smul, Linear.comp_smul])
 
 @[simp]
-theorem gpairLin_apply (M N : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
+theorem gpairLin_apply [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (M N : Mod D R) {W X Y : D} (s : W ⟶ X ⊗ Y)
     (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     gpairLin M N s m n = s ≫ gpair m n := rfl
 
@@ -166,16 +186,17 @@ end Pairing
 
 section Balance
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [HasCoequalizers D]
-variable {R : D} [MonObj R] {M N : Mod D R}
+variable {D : Type u}
 
 /-- **The balance law**: a scalar may be moved from the left
 argument of the pairing to the right one, at the cost of braiding
 the scalar past the left source.  This is the defining relation of
 the relative tensor product, `RS.modTensor_condition`, written in
 the language of the pairing. -/
-theorem gpair_balance {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
+theorem gpair_balance
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
     (n : Z ⟶ N.X) :
     gpair (gact a m) n =
       (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
@@ -216,13 +237,15 @@ theorem gpair_balance {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
 
 section Bundled
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- The balance law with both sources reindexed, in the form used
 to discharge the eight balancing hypotheses: the two source
 identifications may be replaced by a single comparison morphism. -/
-theorem gpairLin_balance_comp {W V X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
+theorem gpairLin_balance_comp
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W V X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
     (s₂ : V ⟶ X ⊗ Y) (a : X ⟶ R) (m : Y ⟶ M.X) (n : Z ⟶ N.X) :
     gpairLin M N s₁ (gactLin s₂ a m) n =
       (s₁ ≫ (s₂ ≫ (β_ X Y).hom) ▷ Z ≫ (α_ Y X Z).hom) ≫
@@ -234,7 +257,12 @@ theorem gpairLin_balance_comp {W V X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
 /-- **The transported balance law**: given a coherence identity
 between the two ways of reindexing the sources, a scalar may be
 moved from the left argument of the pairing to the right one. -/
-theorem gpairLin_balance {W V U X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
+theorem gpairLin_balance
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W V U X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
     (s₂ : V ⟶ X ⊗ Y) (s₃ : W ⟶ Y ⊗ U) (s₄ : U ⟶ X ⊗ Z)
     (h : s₁ ≫ (s₂ ≫ (β_ X Y).hom) ▷ Z ≫ (α_ Y X Z).hom =
       s₃ ≫ Y ◁ s₄)
@@ -250,7 +278,12 @@ coherence identity may hold only up to sign, and then so does the
 balance law.  The sign arises from `RS.OddLine.braid_neg`, in
 exactly the two cases where the scalar and the left argument are
 both odd. -/
-theorem gpairLin_balance_neg {W V U X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
+theorem gpairLin_balance_neg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] {R : D} [MonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W V U X Y Z : D} (s₁ : W ⟶ V ⊗ Z)
     (s₂ : V ⟶ X ⊗ Y) (s₃ : W ⟶ Y ⊗ U) (s₄ : U ⟶ X ⊗ Z)
     (h : s₁ ≫ (s₂ ≫ (β_ X Y).hom) ▷ Z ≫ (α_ Y X Z).hom =
       -(s₃ ≫ Y ◁ s₄))
@@ -269,16 +302,16 @@ end Balance
 
 section ActLaw
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable {R : D} [MonObj R] [IsCommMonObj R] {M N : Mod D R}
+variable {D : Type u}
 
 /-- **The action law**: the descended action of `R` on the
 relative tensor product is the action on the left factor of a
 pairing, up to the associator of the three sources. -/
-theorem gact_gpair {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
+theorem gact_gpair [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    {R : D} [MonObj R] [IsCommMonObj R] {M : Mod D R} {N : Mod D R}
+    {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
     (n : Z ⟶ N.X) :
     gact (M := (modTensorMod R M N).X) a (gpair m n) =
       (α_ X Y Z).inv ≫ gpair (gact a m) n := by
@@ -300,7 +333,12 @@ theorem gact_gpair {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
 /-- The action law with the descended action named explicitly.
 This is `RS.gact_gpair` retyped along `RS.modTensorMod_X`, and is
 the form in which the law is transported. -/
-theorem gpair_modTensorAct {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
+theorem gpair_modTensorAct
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    {R : D} [MonObj R] [IsCommMonObj R] {M : Mod D R} {N : Mod D R}
+    {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
     (n : Z ⟶ N.X) :
     (a ⊗ₘ gpair (M := M) (N := N) m n) ≫ modTensorAct R M N =
       (α_ X Y Z).inv ≫ gpair (gact a m) n :=
@@ -308,13 +346,16 @@ theorem gpair_modTensorAct {X Y Z : D} (a : X ⟶ R) (m : Y ⟶ M.X)
 
 section Bundled
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- **The transported action law**: given a coherence identity
 between the two ways of reindexing the sources, acting on the
 relative tensor product is acting on the left factor. -/
-theorem gpairLin_act {W V U X Y Z : D} (s₁ : W ⟶ X ⊗ V)
+theorem gpairLin_act [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    {R : D} [MonObj R] [IsCommMonObj R] {M : Mod D R} {N : Mod D R}
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W V U X Y Z : D} (s₁ : W ⟶ X ⊗ V)
     (s₂ : V ⟶ Y ⊗ Z) (s₃ : W ⟶ U ⊗ Z) (s₄ : U ⟶ X ⊗ Y)
     (h : s₁ ≫ X ◁ s₂ ≫ (α_ X Y Z).inv = s₃ ≫ s₄ ▷ Z)
     (a : X ⟶ R) (m : Y ⟶ M.X) (n : Z ⟶ N.X) :
@@ -337,36 +378,41 @@ end ActLaw
 
 section Coherence
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D] in
 /-- Braiding past the unit on the left turns the left unitor into
 the right one. -/
-theorem leftUnitor_inv_braiding (Y : D) :
+theorem leftUnitor_inv_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (Y : D) :
     (λ_ Y).inv ≫ (β_ (𝟙_ D) Y).hom = (ρ_ Y).inv := by
   rw [← cancel_mono (ρ_ Y).hom, Category.assoc, braiding_rightUnitor,
     Iso.inv_hom_id, Iso.inv_hom_id]
 
-omit [Preadditive D] [MonoidalPreadditive D] in
 /-- Braiding past the unit on the right turns the right unitor into
 the left one. -/
-theorem rightUnitor_inv_braiding (Y : D) :
+theorem rightUnitor_inv_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (Y : D) :
     (ρ_ Y).inv ≫ (β_ Y (𝟙_ D)).hom = (λ_ Y).inv := by
   rw [← cancel_mono (λ_ Y).hom, Category.assoc, braiding_leftUnitor,
     Iso.inv_hom_id, Iso.inv_hom_id]
 
-omit [MonoidalPreadditive D] in
 /-- **The Koszul sign**: braiding the square trivialisation of the
 odd line past itself is `RS.OddLine.braid_neg`. -/
-theorem oddLine_sq_inv_braiding (L : OddLine D) :
+theorem oddLine_sq_inv_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) :
     L.sq.inv ≫ (β_ L.obj L.obj).hom = -L.sq.inv := by
   rw [L.braid_neg, Preadditive.comp_neg, Category.comp_id]
 
-omit [MonoidalPreadditive D] in
 /-- Reassociating the square trivialisation against a left unitor:
 the odd-even-odd source identifications agree. -/
-theorem oddLine_sq_leftUnitor (L : OddLine D) :
+theorem oddLine_sq_leftUnitor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) :
     L.sq.inv ≫ (λ_ L.obj).inv ▷ L.obj ≫
         (α_ (𝟙_ D) L.obj L.obj).hom =
       (λ_ (𝟙_ D)).inv ≫ (𝟙_ D) ◁ L.sq.inv := by
@@ -376,19 +422,23 @@ theorem oddLine_sq_leftUnitor (L : OddLine D) :
   rw [hc]
   exact leftUnitor_inv_naturality L.sq.inv
 
-omit [MonoidalPreadditive D] in
 /-- The same identity read from the other end. -/
-theorem oddLine_sq_leftUnitor' (L : OddLine D) :
+theorem oddLine_sq_leftUnitor'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) :
     (λ_ (𝟙_ D)).inv ≫ (𝟙_ D) ◁ L.sq.inv ≫
         (α_ (𝟙_ D) L.obj L.obj).inv =
       L.sq.inv ≫ (λ_ L.obj).inv ▷ L.obj := by
   rw [← reassoc_of% oddLine_sq_leftUnitor L, Iso.hom_inv_id,
     Category.comp_id]
 
-omit [MonoidalPreadditive D] in
 /-- Reassociating the square trivialisation against a right
 unitor: the odd-odd-even source identifications agree. -/
-theorem oddLine_sq_rightUnitor (L : OddLine D) :
+theorem oddLine_sq_rightUnitor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) :
     (λ_ (𝟙_ D)).inv ≫ L.sq.inv ▷ (𝟙_ D) ≫
         (α_ L.obj L.obj (𝟙_ D)).hom =
       L.sq.inv ≫ L.obj ◁ (ρ_ L.obj).inv := by
@@ -398,9 +448,11 @@ theorem oddLine_sq_rightUnitor (L : OddLine D) :
   rw [unitors_inv_equal, ← Category.assoc,
     ← rightUnitor_inv_naturality, Category.assoc, hc]
 
-omit [MonoidalPreadditive D] in
 /-- The same identity read from the other end. -/
-theorem oddLine_sq_rightUnitor' (L : OddLine D) :
+theorem oddLine_sq_rightUnitor'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) :
     L.sq.inv ≫ L.obj ◁ (ρ_ L.obj).inv ≫
         (α_ L.obj L.obj (𝟙_ D)).inv =
       (λ_ (𝟙_ D)).inv ≫ L.sq.inv ▷ (𝟙_ D) := by
@@ -410,7 +462,10 @@ theorem oddLine_sq_rightUnitor' (L : OddLine D) :
 /-- **The odd-odd-odd coherence identity**, the one identity not
 implied by coherence alone: it is the first triangle identity of
 the self-duality of the odd line. -/
-theorem oddLine_sq_assoc (L : OddLine D) :
+theorem oddLine_sq_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D]
+    (L : OddLine D) :
     (λ_ L.obj).inv ≫ L.sq.inv ▷ L.obj ≫
         (α_ L.obj L.obj L.obj).hom =
       (ρ_ L.obj).inv ≫ L.obj ◁ L.sq.inv := by
@@ -422,7 +477,10 @@ theorem oddLine_sq_assoc (L : OddLine D) :
   rw [h2, ← Category.assoc, Iso.inv_hom_id, Category.id_comp]
 
 /-- The same identity read from the other end. -/
-theorem oddLine_sq_assoc' (L : OddLine D) :
+theorem oddLine_sq_assoc'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D]
+    (L : OddLine D) :
     (ρ_ L.obj).inv ≫ L.obj ◁ L.sq.inv ≫
         (α_ L.obj L.obj L.obj).inv =
       (λ_ L.obj).inv ≫ L.sq.inv ▷ L.obj := by
@@ -435,13 +493,15 @@ end Coherence
 
 section Eight
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable (L : OddLine D) {R : D} [MonObj R] (M N : Mod D R)
+variable {D : Type u}
 
 /-- Balancing at parity pattern even-even-even. -/
-theorem gpair_balanced_eee (b : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_balanced_eee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] {R : D} [MonObj R]
+    (M : Mod D R) (N : Mod D R)
+    (b : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gpairLin M N (λ_ (𝟙_ D)).inv (gactLin (λ_ (𝟙_ D)).inv b m) n =
       gpairLin M N (λ_ (𝟙_ D)).inv m
@@ -451,7 +511,12 @@ theorem gpair_balanced_eee (b : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
   monoidal
 
 /-- Balancing at parity pattern even-odd-odd. -/
-theorem gpair_balanced_eoo (b : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_balanced_eoo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (b : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gpairLin M N L.sq.inv (gactLin (λ_ L.obj).inv b m) n =
       gpairLin M N L.sq.inv m (gactLin (λ_ L.obj).inv b n) := by
@@ -461,7 +526,12 @@ theorem gpair_balanced_eoo (b : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
 
 /-- Balancing at parity pattern odd-even-odd: the scalar is odd and
 the left argument even, so there is no sign. -/
-theorem gpair_balanced_oeo (c : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_balanced_oeo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (c : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gpairLin M N L.sq.inv (gactLin (ρ_ L.obj).inv c m) n =
       gpairLin M N (λ_ (𝟙_ D)).inv m (gactLin L.sq.inv c n) := by
@@ -471,7 +541,12 @@ theorem gpair_balanced_oeo (c : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
 
 /-- Balancing at parity pattern odd-odd-even: the scalar and the
 left argument are both odd, so the Koszul sign appears. -/
-theorem gpair_balanced_ooe (c : L.obj ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_balanced_ooe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (c : L.obj ⟶ R) (m : L.obj ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gpairLin M N (λ_ (𝟙_ D)).inv (gactLin L.sq.inv c m) n =
       -gpairLin M N L.sq.inv m (gactLin (ρ_ L.obj).inv c n) := by
@@ -481,7 +556,12 @@ theorem gpair_balanced_ooe (c : L.obj ⟶ R) (m : L.obj ⟶ M.X)
   exact oddLine_sq_rightUnitor L
 
 /-- Balancing at parity pattern even-even-odd. -/
-theorem gpair_balanced_eeo (b : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_balanced_eeo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (b : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gpairLin M N (λ_ L.obj).inv (gactLin (λ_ (𝟙_ D)).inv b m) n =
       gpairLin M N (λ_ L.obj).inv m (gactLin (λ_ L.obj).inv b n) := by
@@ -490,7 +570,12 @@ theorem gpair_balanced_eeo (b : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
   monoidal
 
 /-- Balancing at parity pattern even-odd-even. -/
-theorem gpair_balanced_eoe (b : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_balanced_eoe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (b : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gpairLin M N (ρ_ L.obj).inv (gactLin (λ_ L.obj).inv b m) n =
       gpairLin M N (ρ_ L.obj).inv m
@@ -501,7 +586,12 @@ theorem gpair_balanced_eoe (b : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
 
 /-- Balancing at parity pattern odd-even-even: the left argument is
 even, so there is no sign. -/
-theorem gpair_balanced_oee (c : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_balanced_oee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (c : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gpairLin M N (ρ_ L.obj).inv (gactLin (ρ_ L.obj).inv c m) n =
       gpairLin M N (λ_ L.obj).inv m (gactLin (ρ_ L.obj).inv c n) := by
@@ -511,7 +601,12 @@ theorem gpair_balanced_oee (c : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
 
 /-- Balancing at parity pattern odd-odd-odd: the scalar and the
 left argument are both odd, so the Koszul sign appears. -/
-theorem gpair_balanced_ooo (c : L.obj ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_balanced_ooo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] (L : OddLine D) {R : D}
+    [MonObj R] (M : Mod D R) (N : Mod D R)
+    (c : L.obj ⟶ R) (m : L.obj ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gpairLin M N (λ_ L.obj).inv (gactLin L.sq.inv c m) n =
       -gpairLin M N (ρ_ L.obj).inv m (gactLin L.sq.inv c n) := by
@@ -526,16 +621,16 @@ end Eight
 
 section EightAct
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R]
-variable (M N : Mod D R)
+variable {D : Type u}
 
 /-- The action law at parity pattern even-even-even. -/
-theorem gpair_act_eee (x : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_act_eee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R) (N : Mod D R)
+    (x : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) (λ_ (𝟙_ D)).inv x
         (gpairLin M N (λ_ (𝟙_ D)).inv m n) =
@@ -544,7 +639,14 @@ theorem gpair_act_eee (x : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
   gpairLin_act _ _ _ _ (by monoidal) x m n
 
 /-- The action law at parity pattern even-odd-odd. -/
-theorem gpair_act_eoo (x : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_act_eoo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (x : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) (λ_ (𝟙_ D)).inv x
         (gpairLin M N L.sq.inv m n) =
@@ -552,7 +654,14 @@ theorem gpair_act_eoo (x : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
   gpairLin_act _ _ _ _ (oddLine_sq_leftUnitor' L) x m n
 
 /-- The action law at parity pattern even-even-odd. -/
-theorem gpair_act_eeo (x : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_act_eeo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (x : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) (λ_ L.obj).inv x
         (gpairLin M N (λ_ L.obj).inv m n) =
@@ -560,7 +669,14 @@ theorem gpair_act_eeo (x : 𝟙_ D ⟶ R) (m : 𝟙_ D ⟶ M.X)
   gpairLin_act _ _ _ _ (by monoidal) x m n
 
 /-- The action law at parity pattern even-odd-even. -/
-theorem gpair_act_eoe (x : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_act_eoe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (x : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) (λ_ L.obj).inv x
         (gpairLin M N (ρ_ L.obj).inv m n) =
@@ -568,7 +684,14 @@ theorem gpair_act_eoe (x : 𝟙_ D ⟶ R) (m : L.obj ⟶ M.X)
   gpairLin_act _ _ _ _ (by monoidal) x m n
 
 /-- The action law at parity pattern odd-even-even. -/
-theorem gpair_act_oee (u : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_act_oee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (u : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) (ρ_ L.obj).inv u
         (gpairLin M N (λ_ (𝟙_ D)).inv m n) =
@@ -576,7 +699,14 @@ theorem gpair_act_oee (u : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
   gpairLin_act _ _ _ _ (by monoidal) u m n
 
 /-- The action law at parity pattern odd-odd-odd. -/
-theorem gpair_act_ooo (u : L.obj ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_act_ooo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (u : L.obj ⟶ R) (m : L.obj ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) (ρ_ L.obj).inv u
         (gpairLin M N L.sq.inv m n) =
@@ -584,7 +714,14 @@ theorem gpair_act_ooo (u : L.obj ⟶ R) (m : L.obj ⟶ M.X)
   gpairLin_act _ _ _ _ (oddLine_sq_assoc' L) u m n
 
 /-- The action law at parity pattern odd-even-odd. -/
-theorem gpair_act_oeo (u : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
+theorem gpair_act_oeo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (u : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
     (n : L.obj ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) L.sq.inv u
         (gpairLin M N (λ_ L.obj).inv m n) =
@@ -592,7 +729,14 @@ theorem gpair_act_oeo (u : L.obj ⟶ R) (m : 𝟙_ D ⟶ M.X)
   gpairLin_act _ _ _ _ (by monoidal) u m n
 
 /-- The action law at parity pattern odd-odd-even. -/
-theorem gpair_act_ooe (u : L.obj ⟶ R) (m : L.obj ⟶ M.X)
+theorem gpair_act_ooe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) {R : D} [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (u : L.obj ⟶ R) (m : L.obj ⟶ M.X)
     (n : 𝟙_ D ⟶ N.X) :
     gactLin (M := (modTensorMod R M N).X) L.sq.inv u
         (gpairLin M N (ρ_ L.obj).inv m n) =
@@ -605,20 +749,20 @@ end EightAct
 
 section Comparison
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
-variable (M N : Mod D R)
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
 /-- The even block of the comparison map: the pairing on the
 even-even and odd-odd blocks, factored through the even part of
 the tensor product of super modules by its universal property. -/
-noncomputable def gammaPairEven :
+noncomputable def gammaPairEven
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R) :
     ((gammaModule D L R M.X).tensor (gammaModule D L R N.X)).even
       →ₗ[ℂ] (gammaModule D L R (modTensorMod R M N).X).even :=
   liftEven (gammaModule D L R M.X) (gammaModule D L R N.X)
@@ -629,7 +773,13 @@ noncomputable def gammaPairEven :
 /-- The odd block of the comparison map: the pairing on the
 even-odd and odd-even blocks, factored through the odd part of the
 tensor product of super modules by its universal property. -/
-noncomputable def gammaPairOdd :
+noncomputable def gammaPairOdd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R) :
     ((gammaModule D L R M.X).tensor (gammaModule D L R N.X)).odd
       →ₗ[ℂ] (gammaModule D L R (modTensorMod R M N).X).odd :=
   liftOdd (gammaModule D L R M.X) (gammaModule D L R N.X)
@@ -638,7 +788,14 @@ noncomputable def gammaPairOdd :
     (gpair_balanced_oee L M N) (gpair_balanced_ooo L M N)
 
 /-- The even block on even-even generators. -/
-@[simp] theorem gammaPairEven_tmulEE (m : 𝟙_ D ⟶ M.X) (n : 𝟙_ D ⟶ N.X) :
+@[simp] theorem gammaPairEven_tmulEE
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (m : 𝟙_ D ⟶ M.X) (n : 𝟙_ D ⟶ N.X) :
     gammaPairEven L R M N
         (tmulEE (gammaModule D L R M.X) (gammaModule D L R N.X)
           m n) = gpairLin M N (λ_ (𝟙_ D)).inv m n :=
@@ -648,7 +805,14 @@ noncomputable def gammaPairOdd :
     (gpair_balanced_oeo L M N) (gpair_balanced_ooe L M N) m n
 
 /-- The even block on odd-odd generators. -/
-@[simp] theorem gammaPairEven_tmulOO (m : L.obj ⟶ M.X) (n : L.obj ⟶ N.X) :
+@[simp] theorem gammaPairEven_tmulOO
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (m : L.obj ⟶ M.X) (n : L.obj ⟶ N.X) :
     gammaPairEven L R M N
         (tmulOO (gammaModule D L R M.X) (gammaModule D L R N.X)
           m n) = gpairLin M N L.sq.inv m n :=
@@ -658,7 +822,14 @@ noncomputable def gammaPairOdd :
     (gpair_balanced_oeo L M N) (gpair_balanced_ooe L M N) m n
 
 /-- The odd block on even-odd generators. -/
-@[simp] theorem gammaPairOdd_tmulEO (m : 𝟙_ D ⟶ M.X) (n : L.obj ⟶ N.X) :
+@[simp] theorem gammaPairOdd_tmulEO
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (m : 𝟙_ D ⟶ M.X) (n : L.obj ⟶ N.X) :
     gammaPairOdd L R M N
         (tmulEO (gammaModule D L R M.X) (gammaModule D L R N.X)
           m n) = gpairLin M N (λ_ L.obj).inv m n :=
@@ -668,7 +839,14 @@ noncomputable def gammaPairOdd :
     (gpair_balanced_oee L M N) (gpair_balanced_ooo L M N) m n
 
 /-- The odd block on odd-even generators. -/
-@[simp] theorem gammaPairOdd_tmulOE (m : L.obj ⟶ M.X) (n : 𝟙_ D ⟶ N.X) :
+@[simp] theorem gammaPairOdd_tmulOE
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (m : L.obj ⟶ M.X) (n : 𝟙_ D ⟶ N.X) :
     gammaPairOdd L R M N
         (tmulOE (gammaModule D L R M.X) (gammaModule D L R N.X)
           m n) = gpairLin M N (ρ_ L.obj).inv m n :=
@@ -678,7 +856,14 @@ noncomputable def gammaPairOdd :
     (gpair_balanced_oee L M N) (gpair_balanced_ooo L M N) m n
 
 /-- The even block intertwines the action of an even scalar. -/
-theorem gammaPairEven_actEE (x : 𝟙_ D ⟶ R)
+theorem gammaPairEven_actEE
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (x : 𝟙_ D ⟶ R)
     (t : ((gammaModule D L R M.X).tensor
       (gammaModule D L R N.X)).even) :
     gammaPairEven L R M N
@@ -709,7 +894,14 @@ theorem gammaPairEven_actEE (x : 𝟙_ D ⟶ R)
   exact LinearMap.congr_fun key t
 
 /-- The odd block intertwines the action of an even scalar. -/
-theorem gammaPairOdd_actEO (x : 𝟙_ D ⟶ R)
+theorem gammaPairOdd_actEO
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (x : 𝟙_ D ⟶ R)
     (t : ((gammaModule D L R M.X).tensor
       (gammaModule D L R N.X)).odd) :
     gammaPairOdd L R M N
@@ -741,7 +933,14 @@ theorem gammaPairOdd_actEO (x : 𝟙_ D ⟶ R)
 
 /-- The two blocks intertwine the action of an odd scalar on the
 even part. -/
-theorem gammaPairOdd_actOE (u : L.obj ⟶ R)
+theorem gammaPairOdd_actOE
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (u : L.obj ⟶ R)
     (t : ((gammaModule D L R M.X).tensor
       (gammaModule D L R N.X)).even) :
     gammaPairOdd L R M N
@@ -773,7 +972,14 @@ theorem gammaPairOdd_actOE (u : L.obj ⟶ R)
 
 /-- The two blocks intertwine the action of an odd scalar on the
 odd part. -/
-theorem gammaPairEven_actOO (u : L.obj ⟶ R)
+theorem gammaPairEven_actOO
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R)
+    (u : L.obj ⟶ R)
     (t : ((gammaModule D L R M.X).tensor
       (gammaModule D L R N.X)).odd) :
     gammaPairEven L R M N
@@ -812,7 +1018,13 @@ source identifications, and they descend by the universal property
 of `RS.SuperCommAlgebra.Mod.tensor` because the eight balancing
 laws hold; that they are morphisms of super modules is the eight
 action laws. -/
-noncomputable def gammaPairComparison :
+noncomputable def gammaPairComparison
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] (M : Mod D R)
+    (N : Mod D R) :
     (gammaModule D L R M.X).tensor (gammaModule D L R N.X) ⟶
       gammaModule D L R (modTensorMod R M N).X where
   evenMap := gammaPairEven L R M N

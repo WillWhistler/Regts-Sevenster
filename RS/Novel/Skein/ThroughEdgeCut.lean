@@ -23,7 +23,7 @@ open Fragment
 
 /-! ## The shared participating context -/
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -69,7 +69,9 @@ theorem multiset_map_eq_of_bijT {γ δ X : Type _}
   exact hg y (Finset.mem_val.mp hy)
 
 /-- The even colour multiset agrees (participating case). -/
-theorem evenColoursAt_transport_T {k : ℕ}
+theorem evenColoursAt_transport_T
+    [LinearOrder α]
+    {k : ℕ}
     (ψW : (Fl).EvenColouring k) (ψ' : (Fg).EvenColouring k)
     (hψ : ∀ (g : SurvivingFlag W i j)
       (h1 : g.val ∉ liftSubsetOpen hopen s') (h2 : g ∉ s'),
@@ -127,7 +129,9 @@ local notation "oW" =>
   unglueOrientationOpen hij hopen s' hc' hc κ' o'
 
 /-- **The vertex factor transport (participating case).** -/
-theorem vertexFactor_transport_T {k ℓ : ℕ}
+theorem vertexFactor_transport_T
+    [LinearOrder α]
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (ψW : (Fl).EvenColouring k) (ψ' : (Fg).EvenColouring k)
     (hψ : ∀ (g : SurvivingFlag W i j)

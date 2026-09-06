@@ -61,45 +61,54 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## The underlying tensor fold -/
 
 section ModList
 
-variable (A : D) [MonObj A]
-
 /-- The tensor fold of the underlying objects of a list of modules,
 folded to the right with the monoidal unit as seed. -/
-def modList : List (Mod D A) → D
+def modList [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
+    List (Mod D A) → D
   | [] => 𝟙_ D
-  | M :: l => M.X ⊗ modList l
+  | M :: l => M.X ⊗ modList A l
 
-@[simp] lemma modList_nil : modList A ([] : List (Mod D A)) = 𝟙_ D :=
+@[simp] lemma modList_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
+    modList A ([] : List (Mod D A)) = 𝟙_ D :=
   rfl
 
-@[simp] lemma modList_cons (M : Mod D A) (l : List (Mod D A)) :
+@[simp] lemma modList_cons
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M : Mod D A) (l : List (Mod D A)) :
     modList A (M :: l) = M.X ⊗ modList A l :=
   rfl
 
 /-- Transport of the tensor fold along an equality of lists.  It is
 an `eqToHom`, so it composes and cancels by `eqToHom` simp lemmas. -/
-def modListCast {l₁ l₂ : List (Mod D A)} (h : l₁ = l₂) :
+def modListCast [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {l₁ l₂ : List (Mod D A)} (h : l₁ = l₂) :
     modList A l₁ ⟶ modList A l₂ :=
   eqToHom (congrArg (modList A) h)
 
-@[simp] lemma modListCast_rfl (l : List (Mod D A)) :
+@[simp] lemma modListCast_rfl
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (l : List (Mod D A)) :
     modListCast A (rfl : l = l) = 𝟙 _ :=
   rfl
 
 @[reassoc (attr := simp)]
-lemma modListCast_comp {l₁ l₂ l₃ : List (Mod D A)} (h : l₁ = l₂)
+lemma modListCast_comp [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {l₁ l₂ l₃ : List (Mod D A)} (h : l₁ = l₂)
     (h' : l₂ = l₃) :
     modListCast A h ≫ modListCast A h' = modListCast A (h.trans h') := by
   simp [modListCast]
 
 /-- Whiskering a list transport is a list transport. -/
-lemma modListCast_whiskerLeft (M : Mod D A) {l₁ l₂ : List (Mod D A)}
+lemma modListCast_whiskerLeft
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M : Mod D A) {l₁ l₂ : List (Mod D A)}
     (h : l₁ = l₂) :
     M.X ◁ modListCast A h =
       modListCast A (congrArg (M :: ·) h) := by
@@ -118,20 +127,23 @@ are typed at the fold on the nose, with no transport. -/
 
 section Slots
 
-variable (A : D) [MonObj A]
-
 /-- The relation object of a slot: the ambient fold with the monoid
 inserted between the two factors of the slot. -/
-def modMultiMid : List (Mod D A) → Mod D A → Mod D A →
+def modMultiMid [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
+    List (Mod D A) → Mod D A → Mod D A →
     List (Mod D A) → D
   | [], M, N, post => ((M.X ⊗ A) ⊗ N.X) ⊗ modList A post
-  | P :: rest, M, N, post => P.X ⊗ modMultiMid rest M N post
+  | P :: rest, M, N, post => P.X ⊗ modMultiMid A rest M N post
 
-@[simp] lemma modMultiMid_nil (M N : Mod D A) (post : List (Mod D A)) :
+@[simp] lemma modMultiMid_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post : List (Mod D A)) :
     modMultiMid A [] M N post = ((M.X ⊗ A) ⊗ N.X) ⊗ modList A post :=
   rfl
 
-@[simp] lemma modMultiMid_cons (P : Mod D A) (pre : List (Mod D A))
+@[simp] lemma modMultiMid_cons
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (P : Mod D A) (pre : List (Mod D A))
     (M N : Mod D A) (post : List (Mod D A)) :
     modMultiMid A (P :: pre) M N post =
       P.X ⊗ modMultiMid A pre M N post :=
@@ -140,38 +152,44 @@ def modMultiMid : List (Mod D A) → Mod D A → Mod D A →
 /-- Assemble a window morphism on `(M.X ⊗ A) ⊗ N.X` into a relation
 leg over a prefix: resolve the window, reassociate the second factor
 onto the suffix, and whisker through the prefix. -/
-def modMultiLegOf (M N : Mod D A) (post : List (Mod D A))
+def modMultiLegOf [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post : List (Mod D A))
     (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X) :
     (pre : List (Mod D A)) →
       modMultiMid A pre M N post ⟶ modList A (pre ++ M :: N :: post)
   | [] => (w ▷ modList A post) ≫ (α_ M.X N.X (modList A post)).hom
-  | P :: rest => P.X ◁ modMultiLegOf M N post w rest
+  | P :: rest => P.X ◁ modMultiLegOf A M N post w rest
 
-@[simp] lemma modMultiLegOf_nil (M N : Mod D A) (post : List (Mod D A))
+@[simp] lemma modMultiLegOf_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post : List (Mod D A))
     (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X) :
     modMultiLegOf A M N post w [] =
       (w ▷ modList A post) ≫ (α_ M.X N.X (modList A post)).hom :=
   rfl
 
-@[simp] lemma modMultiLegOf_cons (M N : Mod D A)
+@[simp] lemma modMultiLegOf_cons
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A)
     (post : List (Mod D A)) (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X)
     (P : Mod D A) (pre : List (Mod D A)) :
     modMultiLegOf A M N post w (P :: pre) =
       P.X ◁ modMultiLegOf A M N post w pre :=
   rfl
 
-variable [BraidedCategory D]
-
 /-- The first relation leg at a slot: act on the left factor of the
 window through the braided right action. -/
-def modMultiLegM (pre : List (Mod D A)) (M N : Mod D A)
+def modMultiLegM [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D]
+    (pre : List (Mod D A)) (M N : Mod D A)
     (post : List (Mod D A)) :
     modMultiMid A pre M N post ⟶ modList A (pre ++ M :: N :: post) :=
   modMultiLegOf A M N post (modTensorLegM A M N) pre
 
 /-- The second relation leg at a slot: associate and act on the
 right factor of the window. -/
-def modMultiLegN (pre : List (Mod D A)) (M N : Mod D A)
+def modMultiLegN [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (pre : List (Mod D A)) (M N : Mod D A)
     (post : List (Mod D A)) :
     modMultiMid A pre M N post ⟶ modList A (pre ++ M :: N :: post) :=
   modMultiLegOf A M N post (modTensorLegN A M N) pre
@@ -184,7 +202,9 @@ section SlotList
 
 /-- An adjacent slot of a list of modules: a decomposition into a
 prefix, two adjacent factors, and a suffix. -/
-structure ModSlot {A : D} [MonObj A] (Xs : List (Mod D A)) where
+structure ModSlot
+    [Category.{v} D] [MonoidalCategory D]
+    {A : D} [MonObj A] (Xs : List (Mod D A)) where
   /-- The factors below the slot. -/
   pre : List (Mod D A)
   /-- The first factor of the slot. -/
@@ -196,32 +216,38 @@ structure ModSlot {A : D} [MonObj A] (Xs : List (Mod D A)) where
   /-- The decomposition of the ambient list. -/
   eq : Xs = pre ++ fst :: snd :: post
 
-variable (A : D) [MonObj A]
-
 variable {A} in
 /-- Extend a slot by one factor below. -/
-def ModSlot.consSlot (P : Mod D A) {Xs : List (Mod D A)}
+def ModSlot.consSlot [Category.{v} D] [MonoidalCategory D] {A : D} [MonObj A]
+    (P : Mod D A) {Xs : List (Mod D A)}
     (s : ModSlot Xs) : ModSlot (P :: Xs) :=
   ⟨P :: s.pre, s.fst, s.snd, s.post, congrArg (List.cons P) s.eq⟩
 
 /-- The list of all adjacent slots of a list of modules. -/
-def modSlots : (Xs : List (Mod D A)) → List (ModSlot Xs)
+def modSlots [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
+    (Xs : List (Mod D A)) → List (ModSlot Xs)
   | [] => []
   | [_] => []
   | M :: N :: post =>
     ⟨[], M, N, post, rfl⟩ ::
-      (modSlots (N :: post)).map (ModSlot.consSlot M)
+      (modSlots A (N :: post)).map (ModSlot.consSlot M)
 
-@[simp] lemma modSlots_nil : modSlots A ([] : List (Mod D A)) = [] :=
+@[simp] lemma modSlots_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
+    modSlots A ([] : List (Mod D A)) = [] :=
   rfl
 
-@[simp] lemma modSlots_singleton (M : Mod D A) :
+@[simp] lemma modSlots_singleton
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M : Mod D A) :
     modSlots A [M] = [] :=
   rfl
 
 variable {A} in
 /-- Extension by a factor preserves membership in the slot list. -/
-lemma ModSlot.consSlot_mem (P : Mod D A) :
+lemma ModSlot.consSlot_mem
+    [Category.{v} D] [MonoidalCategory D] {A : D} [MonObj A]
+    (P : Mod D A) :
     ∀ {Ys : List (Mod D A)} (s : ModSlot Ys),
       s ∈ modSlots A Ys → s.consSlot P ∈ modSlots A (P :: Ys)
   | [], s, _ => absurd s.eq (by simp)
@@ -231,7 +257,8 @@ lemma ModSlot.consSlot_mem (P : Mod D A) :
 variable {A} in
 /-- **The slot enumeration is complete**: every decomposition of the
 list occurs among its slots. -/
-lemma mem_modSlots {Xs : List (Mod D A)} (s : ModSlot Xs) :
+lemma mem_modSlots [Category.{v} D] [MonoidalCategory D] {A : D} [MonObj A]
+    {Xs : List (Mod D A)} (s : ModSlot Xs) :
     s ∈ modSlots A Xs := by
   obtain ⟨pre, M, N, post, rfl⟩ := s
   induction pre with
@@ -244,42 +271,51 @@ end SlotList
 
 section ModMultiDefs
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-
 variable {A} in
 /-- The relation object of a slot, in slot form. -/
-abbrev ModSlot.mid {Xs : List (Mod D A)} (s : ModSlot Xs) : D :=
+abbrev ModSlot.mid [Category.{v} D] [MonoidalCategory D] {A : D} [MonObj A]
+    {Xs : List (Mod D A)} (s : ModSlot Xs) : D :=
   modMultiMid A s.pre s.fst s.snd s.post
 
 variable {A} in
 /-- The first relation leg of a slot, transported to the ambient
 list. -/
-def ModSlot.legM {Xs : List (Mod D A)} (s : ModSlot Xs) :
+def ModSlot.legM [Category.{v} D] [MonoidalCategory D] {A : D} [MonObj A]
+    [BraidedCategory D]
+    {Xs : List (Mod D A)} (s : ModSlot Xs) :
     s.mid ⟶ modList A Xs :=
   modMultiLegM A s.pre s.fst s.snd s.post ≫ modListCast A s.eq.symm
 
 variable {A} in
 /-- The second relation leg of a slot, transported to the ambient
 list. -/
-def ModSlot.legN {Xs : List (Mod D A)} (s : ModSlot Xs) :
+def ModSlot.legN [Category.{v} D] [MonoidalCategory D] {A : D} [MonObj A]
+    {Xs : List (Mod D A)} (s : ModSlot Xs) :
     s.mid ⟶ modList A Xs :=
   modMultiLegN A s.pre s.fst s.snd s.post ≫ modListCast A s.eq.symm
-
-variable [Preadditive D] [HasFiniteBiproducts D]
 
 /-- The source of the relation pair: the biproduct of the relation
 objects over all adjacent slots.  An abbreviation, so that the
 biproduct API applies to the legs without unfolding. -/
-noncomputable abbrev modMultiSrc (Xs : List (Mod D A)) : D :=
+noncomputable abbrev modMultiSrc
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] [Preadditive D]
+    [HasFiniteBiproducts D]
+    (Xs : List (Mod D A)) : D :=
   ⨁ fun i : Fin (modSlots A Xs).length => (modSlots A Xs)[i.1].mid
 
 /-- The first leg of the relation pair, assembled over all slots. -/
-noncomputable def modMultiLegFst (Xs : List (Mod D A)) :
+noncomputable def modMultiLegFst
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    (Xs : List (Mod D A)) :
     modMultiSrc A Xs ⟶ modList A Xs :=
   biproduct.desc fun i => (modSlots A Xs)[i.1].legM
 
 /-- The second leg of the relation pair, assembled over all slots. -/
-noncomputable def modMultiLegSnd (Xs : List (Mod D A)) :
+noncomputable def modMultiLegSnd
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] [Preadditive D]
+    [HasFiniteBiproducts D]
+    (Xs : List (Mod D A)) :
     modMultiSrc A Xs ⟶ modList A Xs :=
   biproduct.desc fun i => (modSlots A Xs)[i.1].legN
 
@@ -289,27 +325,39 @@ end ModMultiDefs
 
 section ModMulti
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
 /-- **The multi-tensor of a list of modules** over `A`: the
 coequalizer of the wide relation pair, identifying
 `(x·c) ⊗ y ~ x ⊗ (c·y)` in every adjacent slot simultaneously.  No
 binary module tensor product and no associativity enter. -/
-noncomputable def modMulti (Xs : List (Mod D A)) : D :=
+noncomputable def modMulti
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (Xs : List (Mod D A)) : D :=
   coequalizer (modMultiLegFst A Xs) (modMultiLegSnd A Xs)
 
 /-- The projection of the ambient fold onto the multi-tensor. -/
-noncomputable def modMultiπ (Xs : List (Mod D A)) :
+noncomputable def modMultiπ
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (Xs : List (Mod D A)) :
     modList A Xs ⟶ modMulti A Xs :=
   coequalizer.π _ _
 
-instance (Xs : List (Mod D A)) : Epi (modMultiπ A Xs) :=
+instance [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (Xs : List (Mod D A)) : Epi (modMultiπ A Xs) :=
   inferInstanceAs (Epi (coequalizer.π _ _))
 
 /-- The two assembled legs agree after the projection. -/
 @[reassoc]
-lemma modMulti_condition (Xs : List (Mod D A)) :
+lemma modMulti_condition
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (Xs : List (Mod D A)) :
     modMultiLegFst A Xs ≫ modMultiπ A Xs =
       modMultiLegSnd A Xs ≫ modMultiπ A Xs :=
   coequalizer.condition _ _
@@ -318,7 +366,10 @@ lemma modMulti_condition (Xs : List (Mod D A)) :
 decomposition `Xs = pre ++ M :: N :: post` the two slot legs agree
 after the projection. -/
 @[reassoc]
-lemma modMulti_rel {Xs : List (Mod D A)} (pre : List (Mod D A))
+lemma modMulti_rel [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {Xs : List (Mod D A)} (pre : List (Mod D A))
     (M N : Mod D A) (post : List (Mod D A))
     (h : Xs = pre ++ M :: N :: post) :
     modMultiLegM A pre M N post ≫ modListCast A h.symm ≫
@@ -342,14 +393,21 @@ lemma modMulti_rel {Xs : List (Mod D A)} (pre : List (Mod D A))
 
 /-- Morphisms out of the multi-tensor are determined by their
 composite with the projection. -/
-lemma modMulti_hom_ext {Xs : List (Mod D A)} {W : D}
+lemma modMulti_hom_ext [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {Xs : List (Mod D A)} {W : D}
     {k l : modMulti A Xs ⟶ W}
     (h : modMultiπ A Xs ≫ k = modMultiπ A Xs ≫ l) : k = l :=
   coequalizer.hom_ext h
 
 /-- Descend a morphism that coequalizes every slot relation to the
 multi-tensor. -/
-noncomputable def modMultiDesc {Xs : List (Mod D A)} {W : D}
+noncomputable def modMultiDesc
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {Xs : List (Mod D A)} {W : D}
     (k : modList A Xs ⟶ W)
     (h : ∀ (pre : List (Mod D A)) (M N : Mod D A)
       (post : List (Mod D A)) (hd : Xs = pre ++ M :: N :: post),
@@ -368,7 +426,10 @@ noncomputable def modMultiDesc {Xs : List (Mod D A)} {W : D}
 /-- The descent factors the given morphism through the
 projection. -/
 @[reassoc (attr := simp)]
-lemma modMultiπ_desc {Xs : List (Mod D A)} {W : D}
+lemma modMultiπ_desc [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {Xs : List (Mod D A)} {W : D}
     (k : modList A Xs ⟶ W)
     (h : ∀ (pre : List (Mod D A)) (M N : Mod D A)
       (post : List (Mod D A)) (hd : Xs = pre ++ M :: N :: post),
@@ -384,7 +445,11 @@ is the empty biproduct, the legs agree, and the projection is an
 isomorphism. -/
 
 /-- On a slot-free list the projection is an isomorphism. -/
-noncomputable def modMultiTriv {Xs : List (Mod D A)}
+noncomputable def modMultiTriv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {Xs : List (Mod D A)}
     (h : modSlots A Xs = []) : modMulti A Xs ≅ modList A Xs where
   hom := modMultiDesc A (𝟙 _) (fun pre M N post hd =>
     absurd (mem_modSlots ⟨pre, M, N, post, hd⟩) (by simp [h]))
@@ -398,11 +463,18 @@ category.  With this presentation the empty fold is `𝟙_ D`, not the
 regular module: consumers wanting `A` as the empty product — the
 unit of the module category — should treat the empty list as a
 separate case. -/
-noncomputable def modMultiNil : modMulti A ([] : List (Mod D A)) ≅ 𝟙_ D :=
+noncomputable def modMultiNil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] : modMulti A ([] : List (Mod D A)) ≅ 𝟙_ D :=
   modMultiTriv A (modSlots_nil A)
 
 /-- **The singleton multi-tensor is the module.** -/
-noncomputable def modMultiSingle (X : Mod D A) :
+noncomputable def modMultiSingle
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (X : Mod D A) :
     modMulti A [X] ≅ X.X :=
   modMultiTriv A (modSlots_singleton A X) ≪≫ ρ_ X.X
 
@@ -417,13 +489,9 @@ absorbing the unit seed of the fold. -/
 
 section Pair
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
-omit [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- The only slot of a two-element list is the full decomposition. -/
-lemma pair_decomp {X Y M N : Mod D A} {pre post : List (Mod D A)}
+lemma pair_decomp [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {X Y M N : Mod D A} {pre post : List (Mod D A)}
     (h : [X, Y] = pre ++ M :: N :: post) :
     pre = [] ∧ X = M ∧ Y = N ∧ post = [] := by
   rcases pre with _ | ⟨P, pre⟩
@@ -432,24 +500,25 @@ lemma pair_decomp {X Y M N : Mod D A} {pre post : List (Mod D A)}
     exact ⟨rfl, h1, h2, h3.symm⟩
   · rcases pre with _ | ⟨Q, pre⟩ <;> simp at h
 
-variable (X Y : Mod D A)
-
-omit [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D]
-
 /-- The resolution of the two-element fold onto the plain tensor
 product: absorb the unit seed.  A bridge morphism with a
 `modList`-typed source, so that statements through it stay
 type-correct at low transparency. -/
-def pairResolve : modList A [X, Y] ⟶ X.X ⊗ Y.X :=
+def pairResolve
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A) : modList A [X, Y] ⟶ X.X ⊗ Y.X :=
   X.X ◁ (ρ_ Y.X).hom
 
 /-- The inverse resolution: reinstate the unit seed. -/
-def pairResolveInv : X.X ⊗ Y.X ⟶ modList A [X, Y] :=
+def pairResolveInv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A) : X.X ⊗ Y.X ⟶ modList A [X, Y] :=
   X.X ◁ (ρ_ Y.X).inv
 
 @[reassoc (attr := simp)]
-lemma pairResolve_inv :
+lemma pairResolve_inv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A) :
     pairResolve A X Y ≫ pairResolveInv A X Y = 𝟙 _ := by
   show (X.X ◁ (ρ_ Y.X).hom) ≫ (X.X ◁ (ρ_ Y.X).inv) =
     𝟙 (X.X ⊗ (Y.X ⊗ 𝟙_ D))
@@ -457,7 +526,9 @@ lemma pairResolve_inv :
     MonoidalCategory.whiskerLeft_id]
 
 @[reassoc (attr := simp)]
-lemma pairResolveInv_resolve :
+lemma pairResolveInv_resolve
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A) :
     pairResolveInv A X Y ≫ pairResolve A X Y = 𝟙 _ := by
   show (X.X ◁ (ρ_ Y.X).inv) ≫ (X.X ◁ (ρ_ Y.X).hom) =
     𝟙 (X.X ⊗ Y.X)
@@ -466,17 +537,24 @@ lemma pairResolveInv_resolve :
 
 /-- The window seed of the pair: the right unitor of the single
 relation object, retyped at `modMultiMid`. -/
-def pairSeed : modMultiMid A [] X Y [] ⟶ (X.X ⊗ A) ⊗ Y.X :=
+def pairSeed
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A) : modMultiMid A [] X Y [] ⟶ (X.X ⊗ A) ⊗ Y.X :=
   (ρ_ ((X.X ⊗ A) ⊗ Y.X)).hom
 
 /-- The inverse window seed of the pair. -/
-def pairSeedInv : (X.X ⊗ A) ⊗ Y.X ⟶ modMultiMid A [] X Y [] :=
+def pairSeedInv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A) : (X.X ⊗ A) ⊗ Y.X ⟶ modMultiMid A [] X Y [] :=
   (ρ_ ((X.X ⊗ A) ⊗ Y.X)).inv
 
 /-- The single relation leg of the pair against the resolution: the
 unit seed is absorbed and the window morphism remains. -/
 @[reassoc]
-lemma modMultiLeg_pair_resolve (w : (X.X ⊗ A) ⊗ Y.X ⟶ X.X ⊗ Y.X)
+lemma modMultiLeg_pair_resolve
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A)
+    (w : (X.X ⊗ A) ⊗ Y.X ⟶ X.X ⊗ Y.X)
     (h : ([] ++ X :: Y :: [] : List (Mod D A)) = [X, Y]) :
     modMultiLegOf A X Y [] w [] ≫ modListCast A h ≫
         pairResolve A X Y =
@@ -491,7 +569,10 @@ lemma modMultiLeg_pair_resolve (w : (X.X ⊗ A) ⊗ Y.X ⟶ X.X ⊗ Y.X)
 /-- A window morphism against the inverse resolution, in leg
 form. -/
 @[reassoc]
-lemma modMultiLeg_pair_resolveInv (w : (X.X ⊗ A) ⊗ Y.X ⟶ X.X ⊗ Y.X)
+lemma modMultiLeg_pair_resolveInv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : Mod D A)
+    (Y : Mod D A)
+    (w : (X.X ⊗ A) ⊗ Y.X ⟶ X.X ⊗ Y.X)
     (h : ([] ++ X :: Y :: [] : List (Mod D A)) = [X, Y]) :
     w ≫ pairResolveInv A X Y =
       pairSeedInv A X Y ≫ modMultiLegOf A X Y [] w [] ≫
@@ -508,13 +589,12 @@ end Pair
 
 section PairIso
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable (X Y : Mod D A)
-
 /-- Comparison with the binary tensor product: the forward
 direction, descending the binary projection. -/
-noncomputable def modMultiPairHom :
+noncomputable def modMultiPairHom
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (X : Mod D A) (Y : Mod D A) :
     modMulti A [X, Y] ⟶ modTensor A X Y :=
   modMultiDesc A (pairResolve A X Y ≫ modTensorπ A X Y)
     (by
@@ -529,14 +609,19 @@ noncomputable def modMultiPairHom :
 
 /-- Defining equation of the forward comparison. -/
 @[reassoc (attr := simp)]
-lemma modMultiπ_pairMod :
+lemma modMultiπ_pairMod [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (X : Mod D A) (Y : Mod D A) :
     modMultiπ A [X, Y] ≫ modMultiPairHom A X Y =
       pairResolve A X Y ≫ modTensorπ A X Y :=
   modMultiπ_desc A _ _
 
 /-- Comparison with the binary tensor product: the backward
 direction, descending the wide projection. -/
-noncomputable def modMultiPairInv :
+noncomputable def modMultiPairInv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (X : Mod D A) (Y : Mod D A) :
     modTensor A X Y ⟶ modMulti A [X, Y] :=
   modTensorDesc A X Y (pairResolveInv A X Y ≫ modMultiπ A [X, Y])
     (by
@@ -551,7 +636,10 @@ noncomputable def modMultiPairInv :
 
 /-- Defining equation of the backward comparison. -/
 @[reassoc (attr := simp)]
-lemma modTensorπ_pairInv :
+lemma modTensorπ_pairInv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (X : Mod D A) (Y : Mod D A) :
     modTensorπ A X Y ≫ modMultiPairInv A X Y =
       pairResolveInv A X Y ≫ modMultiπ A [X, Y] :=
   modTensorπ_desc A X Y _ _
@@ -559,7 +647,10 @@ lemma modTensorπ_pairInv :
 /-- **The two-element multi-tensor is the binary module tensor
 product**: the one-slot wide presentation and the parallel-pair
 presentation coequalize the same relations. -/
-noncomputable def modMultiPair :
+noncomputable def modMultiPair
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (X : Mod D A) (Y : Mod D A) :
     modMulti A [X, Y] ≅ modTensor A X Y where
   hom := modMultiPairHom A X Y
   inv := modMultiPairInv A X Y
@@ -584,20 +675,21 @@ name. -/
 
 section Concat
 
-variable (A : D) [MonObj A]
-
 /-- Concatenation of tensor folds: the two-block fold reassociates
 onto the fold of the concatenated list. -/
-def modListConcat : (Xs Ys : List (Mod D A)) →
+def modListConcat [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
+    (Xs Ys : List (Mod D A)) →
     (modList A Xs ⊗ modList A Ys ≅ modList A (Xs ++ Ys))
   | [], Ys => λ_ (modList A Ys)
   | P :: Xs, Ys =>
     α_ P.X (modList A Xs) (modList A Ys) ≪≫
-      whiskerLeftIso P.X (modListConcat Xs Ys)
+      whiskerLeftIso P.X (modListConcat A Xs Ys)
 
 /-- A morphism whiskered under a cons prefix passes the
 concatenation: the step case of every prefix induction below. -/
-lemma modListConcat_cons_whisker (P : Mod D A) {S : D}
+lemma modListConcat_cons_whisker
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (P : Mod D A) {S : D}
     {T Ys : List (Mod D A)} (u : S ⟶ modList A T) :
     ((P.X ◁ u) ▷ modList A Ys) ≫ (modListConcat A (P :: T) Ys).hom =
       (α_ P.X S (modList A Ys)).hom ≫
@@ -612,7 +704,9 @@ lemma modListConcat_cons_whisker (P : Mod D A) {S : D}
 
 /-- A morphism whiskered on the right of a cons prefix passes the
 concatenation. -/
-lemma modListConcat_whiskerLeft_cons (P : Mod D A)
+lemma modListConcat_whiskerLeft_cons
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (P : Mod D A)
     (Xs : List (Mod D A)) {S : D} {T : List (Mod D A)}
     (u : S ⟶ modList A T) :
     (modList A (P :: Xs) ◁ u) ≫ (modListConcat A (P :: Xs) T).hom =
@@ -629,7 +723,9 @@ lemma modListConcat_whiskerLeft_cons (P : Mod D A)
 
 /-- A transport in the second block passes the concatenation. -/
 @[reassoc]
-lemma modListConcat_cast_right (Xs : List (Mod D A))
+lemma modListConcat_cast_right
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs : List (Mod D A))
     {l₁ l₂ : List (Mod D A)} (h : l₁ = l₂) :
     (modList A Xs ◁ modListCast A h) ≫
         (modListConcat A Xs l₂).hom =
@@ -640,7 +736,8 @@ lemma modListConcat_cast_right (Xs : List (Mod D A))
 
 /-- The relation object of a slot, concatenated on the right: the
 suffix grows by the second block. -/
-def modMultiMidConcat (M N : Mod D A) (post Ys : List (Mod D A)) :
+def modMultiMidConcat [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post Ys : List (Mod D A)) :
     (pre : List (Mod D A)) →
       (modMultiMid A pre M N post ⊗ modList A Ys ⟶
         modMultiMid A pre M N (post ++ Ys))
@@ -649,11 +746,13 @@ def modMultiMidConcat (M N : Mod D A) (post Ys : List (Mod D A)) :
       (((M.X ⊗ A) ⊗ N.X) ◁ (modListConcat A post Ys).hom)
   | P :: rest =>
     (α_ P.X (modMultiMid A rest M N post) (modList A Ys)).hom ≫
-      (P.X ◁ modMultiMidConcat M N post Ys rest)
+      (P.X ◁ modMultiMidConcat A M N post Ys rest)
 
 /-- The base of the right leg-concatenation: the window against the
 concatenation, by the pentagon. -/
-lemma modMultiLegOf_concat_nil (M N : Mod D A)
+lemma modMultiLegOf_concat_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A)
     (post Ys : List (Mod D A))
     (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X) :
     (modMultiLegOf A M N post w [] ▷ modList A Ys) ≫
@@ -679,7 +778,9 @@ lemma modMultiLegOf_concat_nil (M N : Mod D A)
 whiskered by the second block, is the slot leg of the concatenated
 list at the widened suffix. -/
 @[reassoc]
-lemma modMultiLegOf_concat (M N : Mod D A) (post Ys : List (Mod D A))
+lemma modMultiLegOf_concat
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post Ys : List (Mod D A))
     (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X) :
     ∀ (pre : List (Mod D A))
       (h : pre ++ M :: N :: (post ++ Ys) =
@@ -700,14 +801,15 @@ lemma modMultiLegOf_concat (M N : Mod D A) (post Ys : List (Mod D A))
         (P.X ◁ modMultiLegOf A M N (post ++ Ys) w rest) ≫
           modListCast A h
     rw [modListConcat_cons_whisker A P,
-      modMultiLegOf_concat M N post Ys w rest (by simp)]
+      modMultiLegOf_concat A M N post Ys w rest (by simp)]
     simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc]
     rw [modListCast_whiskerLeft]
     rfl
 
 /-- The relation object of a slot, concatenated on the left: the
 prefix grows by the first block. -/
-def modMultiMidConcatL (pre : List (Mod D A)) (M N : Mod D A)
+def modMultiMidConcatL [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (pre : List (Mod D A)) (M N : Mod D A)
     (post : List (Mod D A)) :
     (Xs : List (Mod D A)) →
       (modList A Xs ⊗ modMultiMid A pre M N post ⟶
@@ -715,13 +817,15 @@ def modMultiMidConcatL (pre : List (Mod D A)) (M N : Mod D A)
   | [] => (λ_ (modMultiMid A pre M N post)).hom
   | P :: rest =>
     (α_ P.X (modList A rest) (modMultiMid A pre M N post)).hom ≫
-      (P.X ◁ modMultiMidConcatL pre M N post rest)
+      (P.X ◁ modMultiMidConcatL A pre M N post rest)
 
 /-- **The left leg-concatenation**: a slot leg of the second block,
 whiskered by the first block, is the slot leg of the concatenated
 list at the widened prefix. -/
 @[reassoc]
-lemma modMultiLegOf_concatL (pre : List (Mod D A)) (M N : Mod D A)
+lemma modMultiLegOf_concatL
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (pre : List (Mod D A)) (M N : Mod D A)
     (post : List (Mod D A)) (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X) :
     ∀ (Xs : List (Mod D A))
       (h : (Xs ++ pre) ++ M :: N :: post =
@@ -739,7 +843,7 @@ lemma modMultiLegOf_concatL (pre : List (Mod D A)) (M N : Mod D A)
     rw [Category.comp_id, leftUnitor_naturality]
   | P :: rest, h => by
     rw [modListConcat_whiskerLeft_cons A P rest,
-      modMultiLegOf_concatL pre M N post w rest (by simp)]
+      modMultiLegOf_concatL A pre M N post w rest (by simp)]
     show (α_ P.X (modList A rest) (modMultiMid A pre M N post)).hom ≫
         (P.X ◁ (modMultiMidConcatL A pre M N post rest ≫
           modMultiLegOf A M N post w (rest ++ pre) ≫
@@ -764,14 +868,12 @@ distributors of the monoidal preadditive structure. -/
 
 section Whisker
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable [HasFiniteBiproducts D] [HasCoequalizers D]
-
-omit [MonObj A] [BraidedCategory D] [HasCoequalizers D] in
 /-- Maps out of a right-whiskered biproduct are determined by the
 whiskered injections. -/
-lemma biproduct_whiskerRight_hom_ext {J : Type} [Fintype J]
+lemma biproduct_whiskerRight_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    {J : Type} [Fintype J]
     (f : J → D) (P : D) {W : D} {u v : (⨁ f) ⊗ P ⟶ W}
     (h : ∀ j, (biproduct.ι f j ▷ P) ≫ u =
       (biproduct.ι f j ▷ P) ≫ v) :
@@ -783,10 +885,12 @@ lemma biproduct_whiskerRight_hom_ext {J : Type} [Fintype J]
     biproduct_ι_comp_rightDistributor_inv]
   exact h j
 
-omit [MonObj A] [BraidedCategory D] [HasCoequalizers D] in
 /-- Maps out of a left-whiskered biproduct are determined by the
 whiskered injections. -/
-lemma biproduct_whiskerLeft_hom_ext {J : Type} [Fintype J]
+lemma biproduct_whiskerLeft_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    {J : Type} [Fintype J]
     (f : J → D) (P : D) {W : D} {u v : P ⊗ (⨁ f) ⟶ W}
     (h : ∀ j, (P ◁ biproduct.ι f j) ≫ u =
       (P ◁ biproduct.ι f j) ≫ v) :
@@ -800,12 +904,15 @@ lemma biproduct_whiskerLeft_hom_ext {J : Type} [Fintype J]
 
 section WhiskerRight
 
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorRight Y)]
-
 /-- Whiskering the multi-tensor coequalizer by `tensorRight P`
 yields a colimit cofork. -/
-noncomputable def modMultiWhiskerRIsColimit (Xs : List (Mod D A))
+noncomputable def modMultiWhiskerRIsColimit
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    (Xs : List (Mod D A))
     (P : D) :
     IsColimit (Cofork.ofπ (modMultiπ A Xs ▷ P)
       (by rw [← MonoidalCategory.comp_whiskerRight,
@@ -814,10 +921,15 @@ noncomputable def modMultiWhiskerRIsColimit (Xs : List (Mod D A))
   isColimitOfHasCoequalizerOfPreservesColimit
     (MonoidalCategory.tensorRight P) _ _
 
-omit [MonoidalPreadditive D] in
 /-- Morphisms out of a right-whiskered multi-tensor are determined
 by their composite with the whiskered projection. -/
-lemma modMulti_whiskerR_hom_ext (Xs : List (Mod D A)) (P : D)
+lemma modMulti_whiskerR_hom_ext
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    (Xs : List (Mod D A)) (P : D)
     {W : D} {k l : modMulti A Xs ⊗ P ⟶ W}
     (h : (modMultiπ A Xs ▷ P) ≫ k = (modMultiπ A Xs ▷ P) ≫ l) :
     k = l :=
@@ -825,7 +937,13 @@ lemma modMulti_whiskerR_hom_ext (Xs : List (Mod D A)) (P : D)
 
 /-- Descend a morphism coequalizing every right-whiskered slot
 relation along the right-whiskered projection. -/
-noncomputable def modMultiWhiskerRDesc (Xs : List (Mod D A)) (P : D)
+noncomputable def modMultiWhiskerRDesc
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    (Xs : List (Mod D A)) (P : D)
     {W : D} (k : modList A Xs ⊗ P ⟶ W)
     (h : ∀ (pre : List (Mod D A)) (M N : Mod D A)
       (post : List (Mod D A)) (hd : Xs = pre ++ M :: N :: post),
@@ -849,7 +967,13 @@ noncomputable def modMultiWhiskerRDesc (Xs : List (Mod D A)) (P : D)
 /-- The right-whiskered descent factors the given morphism through
 the whiskered projection. -/
 @[reassoc (attr := simp)]
-lemma whiskerRight_modMultiπ_whiskerRDesc (Xs : List (Mod D A))
+lemma whiskerRight_modMultiπ_whiskerRDesc
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    (Xs : List (Mod D A))
     (P : D) {W : D} (k : modList A Xs ⊗ P ⟶ W)
     (h : ∀ (pre : List (Mod D A)) (M N : Mod D A)
       (post : List (Mod D A)) (hd : Xs = pre ++ M :: N :: post),
@@ -864,12 +988,15 @@ end WhiskerRight
 
 section WhiskerLeft
 
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorLeft Y)]
-
 /-- Whiskering the multi-tensor coequalizer by `tensorLeft P`
 yields a colimit cofork. -/
-noncomputable def modMultiWhiskerLIsColimit (Xs : List (Mod D A))
+noncomputable def modMultiWhiskerLIsColimit
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs : List (Mod D A))
     (P : D) :
     IsColimit (Cofork.ofπ (P ◁ modMultiπ A Xs)
       (by rw [← MonoidalCategory.whiskerLeft_comp,
@@ -878,10 +1005,15 @@ noncomputable def modMultiWhiskerLIsColimit (Xs : List (Mod D A))
   isColimitOfHasCoequalizerOfPreservesColimit
     (MonoidalCategory.tensorLeft P) _ _
 
-omit [MonoidalPreadditive D] in
 /-- Morphisms out of a left-whiskered multi-tensor are determined
 by their composite with the whiskered projection. -/
-lemma modMulti_whiskerL_hom_ext (Xs : List (Mod D A)) (P : D)
+lemma modMulti_whiskerL_hom_ext
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs : List (Mod D A)) (P : D)
     {W : D} {k l : P ⊗ modMulti A Xs ⟶ W}
     (h : (P ◁ modMultiπ A Xs) ≫ k = (P ◁ modMultiπ A Xs) ≫ l) :
     k = l :=
@@ -889,7 +1021,13 @@ lemma modMulti_whiskerL_hom_ext (Xs : List (Mod D A)) (P : D)
 
 /-- Descend a morphism coequalizing every left-whiskered slot
 relation along the left-whiskered projection. -/
-noncomputable def modMultiWhiskerLDesc (Xs : List (Mod D A)) (P : D)
+noncomputable def modMultiWhiskerLDesc
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs : List (Mod D A)) (P : D)
     {W : D} (k : P ⊗ modList A Xs ⟶ W)
     (h : ∀ (pre : List (Mod D A)) (M N : Mod D A)
       (post : List (Mod D A)) (hd : Xs = pre ++ M :: N :: post),
@@ -913,7 +1051,13 @@ noncomputable def modMultiWhiskerLDesc (Xs : List (Mod D A)) (P : D)
 /-- The left-whiskered descent factors the given morphism through
 the whiskered projection. -/
 @[reassoc (attr := simp)]
-lemma whiskerLeft_modMultiπ_whiskerLDesc (Xs : List (Mod D A))
+lemma whiskerLeft_modMultiπ_whiskerLDesc
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs : List (Mod D A))
     (P : D) {W : D} (k : P ⊗ modList A Xs ⟶ W)
     (h : ∀ (pre : List (Mod D A)) (M N : Mod D A)
       (post : List (Mod D A)) (hd : Xs = pre ++ M :: N :: post),
@@ -938,15 +1082,15 @@ left-whiskered coequalizer. -/
 
 section ConcatMap
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorRight Y)]
-
 /-- First stage of the concatenation: the relations of the first
 block descend, the second block still at the fold. -/
-noncomputable def modMultiConcatFst (Xs Ys : List (Mod D A)) :
+noncomputable def modMultiConcatFst
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    (Xs Ys : List (Mod D A)) :
     modMulti A Xs ⊗ modList A Ys ⟶ modMulti A (Xs ++ Ys) :=
   modMultiWhiskerRDesc A Xs (modList A Ys)
     ((modListConcat A Xs Ys).hom ≫ modMultiπ A (Xs ++ Ys))
@@ -965,17 +1109,28 @@ noncomputable def modMultiConcatFst (Xs Ys : List (Mod D A)) :
 
 /-- Defining equation of the first stage. -/
 @[reassoc (attr := simp)]
-lemma whiskerRight_modMultiπ_concatFst (Xs Ys : List (Mod D A)) :
+lemma whiskerRight_modMultiπ_concatFst
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    (Xs Ys : List (Mod D A)) :
     (modMultiπ A Xs ▷ modList A Ys) ≫ modMultiConcatFst A Xs Ys =
       (modListConcat A Xs Ys).hom ≫ modMultiπ A (Xs ++ Ys) :=
   whiskerRight_modMultiπ_whiskerRDesc A Xs _ _ _
 
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorLeft Y)]
-
 /-- **The concatenation map**: the multi-tensor of a concatenated
 list receives the tensor product of the two multi-tensors. -/
-noncomputable def modMultiConcat (Xs Ys : List (Mod D A)) :
+noncomputable def modMultiConcat
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs Ys : List (Mod D A)) :
     modMulti A Xs ⊗ modMulti A Ys ⟶ modMulti A (Xs ++ Ys) :=
   modMultiWhiskerLDesc A Ys (modMulti A Xs)
     (modMultiConcatFst A Xs Ys)
@@ -999,7 +1154,15 @@ noncomputable def modMultiConcat (Xs Ys : List (Mod D A)) :
 /-- Defining equation of the concatenation against the projection
 of the second block. -/
 @[reassoc (attr := simp)]
-lemma whiskerLeft_modMultiπ_concat (Xs Ys : List (Mod D A)) :
+lemma whiskerLeft_modMultiπ_concat
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs Ys : List (Mod D A)) :
     (modMulti A Xs ◁ modMultiπ A Ys) ≫ modMultiConcat A Xs Ys =
       modMultiConcatFst A Xs Ys :=
   whiskerLeft_modMultiπ_whiskerLDesc A Ys _ _ _
@@ -1008,7 +1171,15 @@ lemma whiskerLeft_modMultiπ_concat (Xs Ys : List (Mod D A)) :
 projections it is the fold concatenation followed by the projection
 of the concatenated list. -/
 @[reassoc]
-lemma tensorHom_modMultiπ_concat (Xs Ys : List (Mod D A)) :
+lemma tensorHom_modMultiπ_concat
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (Xs Ys : List (Mod D A)) :
     (modMultiπ A Xs ⊗ₘ modMultiπ A Ys) ≫ modMultiConcat A Xs Ys =
       (modListConcat A Xs Ys).hom ≫ modMultiπ A (Xs ++ Ys) := by
   rw [tensorHom_def, Category.assoc, whiskerLeft_modMultiπ_concat,
@@ -1026,23 +1197,26 @@ in the tail, disjoint from the action. -/
 
 section HeadAction
 
-variable (A : D) [MonObj A]
-
 /-- The head action on the fold of a non-empty list: act on the
 head factor. -/
-def modListHeadAct (X : Mod D A) (l : List (Mod D A)) :
+def modListHeadAct [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : Mod D A) (l : List (Mod D A)) :
     A ⊗ modList A (X :: l) ⟶ modList A (X :: l) :=
   (α_ A X.X (modList A l)).inv ≫ (actLeft A X.X ▷ modList A l)
 
 /-- Unitality of the head action. -/
-lemma modListHeadAct_one (X : Mod D A) (l : List (Mod D A)) :
+lemma modListHeadAct_one
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : Mod D A) (l : List (Mod D A)) :
     η[A] ▷ modList A (X :: l) ≫ modListHeadAct A X l =
       (λ_ (modList A (X :: l))).hom :=
   one_act_tensorRight A X.X (actLeft A X.X) (one_actLeft A X.X)
     (modList A l)
 
 /-- Associativity of the head action. -/
-lemma modListHeadAct_mul (X : Mod D A) (l : List (Mod D A)) :
+lemma modListHeadAct_mul
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : Mod D A) (l : List (Mod D A)) :
     μ[A] ▷ modList A (X :: l) ≫ modListHeadAct A X l =
       (α_ A A (modList A (X :: l))).hom ≫
         (A ◁ modListHeadAct A X l) ≫ modListHeadAct A X l :=
@@ -1051,7 +1225,8 @@ lemma modListHeadAct_mul (X : Mod D A) (l : List (Mod D A)) :
 
 /-- The shuffle of the head slot: the monoid moves inside the
 window and acts on the left module factor there. -/
-def modMultiHeadShuffle (M N : Mod D A) (post : List (Mod D A)) :
+def modMultiHeadShuffle [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post : List (Mod D A)) :
     A ⊗ modMultiMid A [] M N post ⟶ modMultiMid A [] M N post :=
   (α_ A ((M.X ⊗ A) ⊗ N.X) (modList A post)).inv ≫
     (((α_ A (M.X ⊗ A) N.X).inv ≫
@@ -1062,7 +1237,9 @@ def modMultiHeadShuffle (M N : Mod D A) (post : List (Mod D A)) :
 with the binary action commutes the head action past the head
 slot's leg. -/
 @[reassoc]
-lemma modListHeadAct_window (M N : Mod D A) (post : List (Mod D A))
+lemma modListHeadAct_window
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (M N : Mod D A) (post : List (Mod D A))
     (w : (M.X ⊗ A) ⊗ N.X ⟶ M.X ⊗ N.X)
     (hw : A ◁ w ≫ ((α_ A M.X N.X).inv ≫ actLeft A M.X ▷ N.X) =
       ((α_ A (M.X ⊗ A) N.X).inv ≫
@@ -1095,7 +1272,9 @@ lemma modListHeadAct_window (M N : Mod D A) (post : List (Mod D A))
 /-- **The tail-slot compatibility**: the head action is disjoint
 from any morphism whiskered under the head factor. -/
 @[reassoc]
-lemma modListHeadAct_tail (X : Mod D A) {S : D}
+lemma modListHeadAct_tail
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : Mod D A) {S : D}
     {T : List (Mod D A)} (u : S ⟶ modList A T) :
     (A ◁ (X.X ◁ u)) ≫ modListHeadAct A X T =
       ((α_ A X.X S).inv ≫ (actLeft A X.X ▷ S)) ≫ (X.X ◁ u) := by
@@ -1112,18 +1291,13 @@ end HeadAction
 
 section HeadDescent
 
-variable (A : D) [MonObj A] [BraidedCategory D] [IsCommMonObj A]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorLeft Y)]
-
-omit [MonoidalPreadditive D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (MonoidalCategory.tensorLeft Y)] in
 /-- The head action carries every slot relation into the kernel of
 the projection. -/
-lemma modListHeadAct_slotwise (X : Mod D A) (l : List (Mod D A))
+lemma modListHeadAct_slotwise
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    (X : Mod D A) (l : List (Mod D A))
     (pre : List (Mod D A)) (M N : Mod D A) (post : List (Mod D A))
     (hd : X :: l = pre ++ M :: N :: post) :
     (A ◁ (modMultiLegM A pre M N post ≫ modListCast A hd.symm)) ≫
@@ -1198,7 +1372,13 @@ lemma modListHeadAct_slotwise (X : Mod D A) (l : List (Mod D A))
         h4).trans (Category.assoc _ _ _).symm)
 
 /-- **The head action on the multi-tensor**, by descent. -/
-noncomputable def modMultiHeadAct (X : Mod D A) (l : List (Mod D A)) :
+noncomputable def modMultiHeadAct
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A) (l : List (Mod D A)) :
     A ⊗ modMulti A (X :: l) ⟶ modMulti A (X :: l) :=
   modMultiWhiskerLDesc A (X :: l) A
     (modListHeadAct A X l ≫ modMultiπ A (X :: l))
@@ -1207,14 +1387,26 @@ noncomputable def modMultiHeadAct (X : Mod D A) (l : List (Mod D A)) :
 
 /-- Defining equation of the descended head action. -/
 @[reassoc (attr := simp)]
-lemma whiskerLeft_modMultiπ_headAct (X : Mod D A)
+lemma whiskerLeft_modMultiπ_headAct
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A)
     (l : List (Mod D A)) :
     (A ◁ modMultiπ A (X :: l)) ≫ modMultiHeadAct A X l =
       modListHeadAct A X l ≫ modMultiπ A (X :: l) :=
   whiskerLeft_modMultiπ_whiskerLDesc A (X :: l) A _ _
 
 /-- Unitality of the descended head action. -/
-lemma modMultiHeadAct_one (X : Mod D A) (l : List (Mod D A)) :
+lemma modMultiHeadAct_one
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A) (l : List (Mod D A)) :
     η[A] ▷ modMulti A (X :: l) ≫ modMultiHeadAct A X l =
       (λ_ (modMulti A (X :: l))).hom := by
   apply modMulti_whiskerL_hom_ext A (X :: l) (𝟙_ D)
@@ -1223,7 +1415,13 @@ lemma modMultiHeadAct_one (X : Mod D A) (l : List (Mod D A)) :
   conv_rhs => rw [leftUnitor_naturality]
 
 /-- Associativity of the descended head action. -/
-lemma modMultiHeadAct_mul (X : Mod D A) (l : List (Mod D A)) :
+lemma modMultiHeadAct_mul
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A) (l : List (Mod D A)) :
     μ[A] ▷ modMulti A (X :: l) ≫ modMultiHeadAct A X l =
       (α_ A A (modMulti A (X :: l))).hom ≫
         (A ◁ modMultiHeadAct A X l) ≫ modMultiHeadAct A X l := by
@@ -1239,19 +1437,37 @@ lemma modMultiHeadAct_mul (X : Mod D A) (l : List (Mod D A)) :
 
 /-- The multi-tensor of a non-empty list is a module over `A`. -/
 @[implicit_reducible]
-noncomputable def modMultiModObj (X : Mod D A) (l : List (Mod D A)) :
+noncomputable def modMultiModObj
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A) (l : List (Mod D A)) :
     ModObj A (modMulti A (X :: l)) where
   smul := modMultiHeadAct A X l
   one_smul := modMultiHeadAct_one A X l
   mul_smul := modMultiHeadAct_mul A X l
 
 /-- The multi-tensor of a non-empty list, bundled as a module. -/
-noncomputable def modMultiMod (X : Mod D A) (l : List (Mod D A)) :
+noncomputable def modMultiMod
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A) (l : List (Mod D A)) :
     Mod D A :=
   letI := modMultiModObj A X l
   ⟨modMulti A (X :: l)⟩
 
-@[simp] lemma modMultiMod_X (X : Mod D A) (l : List (Mod D A)) :
+@[simp] lemma modMultiMod_X
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X : Mod D A) (l : List (Mod D A)) :
     (modMultiMod A X l).X = modMulti A (X :: l) :=
   rfl
 

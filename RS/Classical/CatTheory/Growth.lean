@@ -22,11 +22,12 @@ open CategoryTheory CategoryTheory.Limits MonoidalCategory
 
 universe v u
 
-variable (A : Type u) [Category.{v} A] [MonoidalCategory A]
+variable (A : Type u)
 
 /-- Every object has moderate tensor-power growth, measured by
 endomorphism dimensions. -/
-def ModerateEndGrowth [Preadditive A] [Linear ℂ A] : Prop :=
+def ModerateEndGrowth [Category.{v} A] [MonoidalCategory A]
+    [Preadditive A] [Linear ℂ A] : Prop :=
   ∀ Y : A, ∃ C c : ℕ, ∀ N : ℕ,
     Module.finrank ℂ (tensorPow A Y N ⟶ tensorPow A Y N) ≤
       C * c ^ N
@@ -39,7 +40,8 @@ set_option linter.overlappingInstances false in
 category with finite-dimensional Hom-spaces: the length of an object
 is at most the dimension of its endomorphism algebra, so an
 exponential bound on the latter is one on the former. -/
-theorem moderateLengthGrowth_of_endGrowth [Preadditive A]
+theorem moderateLengthGrowth_of_endGrowth [Category.{v} A] [MonoidalCategory A]
+    [Preadditive A]
     [Linear ℂ A] [Abelian A] [HasFiniteBiproducts A]
     (hss : IsSemisimple A)
     (hfd : HasFinDimHom A) (hgrow : ModerateEndGrowth A) :

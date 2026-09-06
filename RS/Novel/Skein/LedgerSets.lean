@@ -165,14 +165,14 @@ end PairSets
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 /-! ## Anti-canonical chain pairs -/
 
 /-- A chord pair whose low end is anti-canonical for `o`: the label
 pair of a chain flipped by the recanonicalization of `o`. -/
-def AntiLowPair {κ : F.RelTransitionSystem} (o : κ.Orientation)
+def AntiLowPair [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} (o : κ.Orientation)
     (p : α × α) : Prop :=
   ∃ (β : W.Flag) (hβ : β ∈ F.boundaryFlags),
     β ∈ antiLowSet o ∧
@@ -180,7 +180,8 @@ def AntiLowPair {κ : F.RelTransitionSystem} (o : κ.Orientation)
     p.2 = F.boundaryLabel (κ.pathMatch_mem hβ)
 
 /-- An anti-low pair is ordered: low label first. -/
-theorem AntiLowPair.lt {κ : F.RelTransitionSystem}
+theorem AntiLowPair.lt [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {p : α × α} (h : AntiLowPair o p) :
     p.1 < p.2 := by
   obtain ⟨β, hβ, hm, h1, h2⟩ := h
@@ -190,7 +191,8 @@ theorem AntiLowPair.lt {κ : F.RelTransitionSystem}
 
 /-- Anti-canonical pairs survive enlarging the anti-canonical
 set. -/
-theorem AntiLowPair.mono {κ : F.RelTransitionSystem}
+theorem AntiLowPair.mono [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o o' : κ.Orientation}
     (hsub : antiLowSet o' ⊆ antiLowSet o) {p : α × α}
     (h : AntiLowPair o' p) : AntiLowPair o p := by
@@ -200,7 +202,8 @@ theorem AntiLowPair.mono {κ : F.RelTransitionSystem}
 /-- **Distinct anti-canonical chains have disjoint label pairs**:
 the low ends are distinct low ends, so no end of one chord can be
 an end of the other. -/
-theorem antiLowPair_disjoint {κ : F.RelTransitionSystem}
+theorem antiLowPair_disjoint [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {β γ : W.Flag}
     (hβ : β ∈ F.boundaryFlags) (hγ : γ ∈ F.boundaryFlags)
     (hβm : β ∈ antiLowSet o) (hγm : γ ∈ antiLowSet o)

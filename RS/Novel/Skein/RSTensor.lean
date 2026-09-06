@@ -32,10 +32,11 @@ namespace EdgeSubset
 
 open Classical
 
-variable {α : Type} [LinearOrder α] [Fintype α] {W : Fragment α}
+variable {α : Type}
 
 /-- **RS21's tensor `t′_h`, in coordinates.** -/
-noncomputable def tPrime (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def tPrime [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α) : ℂ :=
   if hbnd : genBoundarySubsetMatches W F.flags (untwist F κ o x) then
@@ -55,7 +56,8 @@ noncomputable def tPrime (F : EdgeSubset W) {k ℓ : ℕ}
 /-- **RS21's tensor at given arc directions.**  The chain
 orientation fixes the vertex signs; the arc directions fix which
 legs carry `f` and which carry `g`. -/
-noncomputable def tPrimeD (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def tPrimeD [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (tl : UsedLab F → Bool)
     (x : GenBoundaryState k ℓ α) : ℂ :=
@@ -83,14 +85,15 @@ subset does not use, the colour is even and the factor is one.
 
 /-- The arc direction as a function of the label, with the unused
 labels reading `false`. -/
-noncomputable def legDir (F : EdgeSubset W) (tl : UsedLab F → Bool)
+noncomputable def legDir {W : Fragment α}
+    (F : EdgeSubset W) (tl : UsedLab F → Bool)
     (i : α) : Bool :=
   if h : W.boundaryFlag i ∈ F.boundaryFlags then tl ⟨i, h⟩ else false
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The dual weight is the product of the legs' weights.** -/
-theorem dualWeightD_eq_prod_legWeight (F : EdgeSubset W) {k ℓ : ℕ}
+theorem dualWeightD_eq_prod_legWeight [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (tl : UsedLab F → Bool) (x : GenBoundaryState k ℓ α)
     (hx : genBoundarySubsetMatches W F.flags x) :
     dualWeightD F tl x
@@ -133,11 +136,13 @@ The sign is taken against the reference matching with arcs
 -/
 
 /-- The labels the subset uses — RS21's `S(H)`. -/
-abbrev UsedLabel (F : EdgeSubset W) : Type :=
+abbrev UsedLabel {W : Fragment α}
+    (F : EdgeSubset W) : Type :=
   {i : α // W.boundaryFlag i ∈ F.boundaryFlags}
 
 /-- The used labels are even in number: they are matched in pairs. -/
-theorem card_usedLabel_eq (F : EdgeSubset W)
+theorem card_usedLabel_eq [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation) :
     Fintype.card (UsedLabel F)
       = 2 * (Fintype.card (UsedLabel F) / 2) := by
@@ -150,7 +155,8 @@ theorem card_usedLabel_eq (F : EdgeSubset W)
   omega
 
 /-- **RS21's normalised tensor `t_h`, in coordinates.** -/
-noncomputable def tFull (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def tFull [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α) : ℂ :=
   Complex.I ^ (Fintype.card (UsedLabel F) / 2) *
@@ -161,7 +167,8 @@ noncomputable def tFull (F : EdgeSubset W) {k ℓ : ℕ}
 
 /-- The used labels are even in number, for any directed matching on
 them. -/
-theorem card_usedLab_eq (F : EdgeSubset W)
+theorem card_usedLab_eq [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     (M : DirMatching (UsedLab F)) :
     Fintype.card (UsedLab F)
       = 2 * (Fintype.card (UsedLab F) / 2) := by
@@ -171,7 +178,8 @@ theorem card_usedLab_eq (F : EdgeSubset W)
 /-- **RS21's normalised tensor at given arc directions.**  The
 directions enter twice: through the matching's sign and through the
 dual basis. -/
-noncomputable def tFullD (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def tFullD [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (M : DirMatching (UsedLab F))
     (x : GenBoundaryState k ℓ α) : ℂ :=
@@ -182,17 +190,18 @@ noncomputable def tFullD (F : EdgeSubset W) {k ℓ : ℕ}
 
 /-- **The normalised tensor is the directed one at the chain
 orientation's own directions.** -/
-theorem tFull_eq_tFullD (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFull_eq_tFullD [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α) :
     F.tFull h κ o x = F.tFullD h κ o (cutMatching F κ o) x := rfl
 
-omit [LinearOrder α] in
 open Classical in
 /-- **A disagreeing state carries no colouring.**  RS21 colours a
 through-edge once, so a state whose two legs there disagree admits
 no `φ ∼ χ₁`, and the tensor vanishes at it. -/
-theorem tPrimeD_eq_zero_of_not_throughAgree (F : EdgeSubset W)
+theorem tPrimeD_eq_zero_of_not_throughAgree [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (tl : UsedLab F → Bool) (x : GenBoundaryState k ℓ α)
@@ -211,7 +220,9 @@ theorem tPrimeD_eq_zero_of_not_throughAgree (F : EdgeSubset W)
 open Classical in
 /-- **A disagreeing state carries no colouring**, at the chain
 orientation's own directions. -/
-theorem tPrime_eq_zero_of_not_throughAgree (F : EdgeSubset W)
+theorem tPrime_eq_zero_of_not_throughAgree
+    [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (x : GenBoundaryState k ℓ α)
@@ -229,7 +240,9 @@ theorem tPrime_eq_zero_of_not_throughAgree (F : EdgeSubset W)
 
 open Classical in
 /-- **RS21's `t_h` vanishes at a disagreeing state.** -/
-theorem tFull_eq_zero_of_not_throughAgree (F : EdgeSubset W)
+theorem tFull_eq_zero_of_not_throughAgree
+    [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (x : GenBoundaryState k ℓ α)
@@ -241,7 +254,9 @@ theorem tFull_eq_zero_of_not_throughAgree (F : EdgeSubset W)
 
 open Classical in
 /-- **The normalised tensor vanishes at a disagreeing state.** -/
-theorem tFullD_eq_zero_of_not_throughAgree (F : EdgeSubset W)
+theorem tFullD_eq_zero_of_not_throughAgree
+    [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (M : DirMatching (UsedLab F)) (x : GenBoundaryState k ℓ α)
@@ -260,10 +275,10 @@ the number of used labels, and the legs whose arc leaves are half of
 them.  These are the hypotheses RS21's leg count needs.
 -/
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The tensor vanishes off its support.** -/
-theorem genBoundarySubsetMatches_of_tPrimeD_ne_zero (F : EdgeSubset W)
+theorem genBoundarySubsetMatches_of_tPrimeD_ne_zero [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (tl : UsedLab F → Bool)
     (x : GenBoundaryState k ℓ α) (hne : F.tPrimeD h κ o tl x ≠ 0) :
@@ -276,7 +291,9 @@ theorem genBoundarySubsetMatches_of_tPrimeD_ne_zero (F : EdgeSubset W)
 
 open Classical in
 /-- The same, for the normalised tensor. -/
-theorem genBoundarySubsetMatches_of_tFullD_ne_zero (F : EdgeSubset W)
+theorem genBoundarySubsetMatches_of_tFullD_ne_zero
+    [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (M : DirMatching (UsedLab F))
     (x : GenBoundaryState k ℓ α) (hne : F.tFullD h κ o M x ≠ 0) :
@@ -304,14 +321,13 @@ theorem oddCount_eq_card_usedLab {t : ℕ} {W : Fragment (Fin t)}
   exact congrArg Finset.card
     (Finset.filter_congr (fun i _ => hiff i))
 
-omit [LinearOrder α] [Fintype α] in
 /-- The leg direction agrees with the matching's on the used
 labels. -/
-theorem legDir_eq (F : EdgeSubset W) (tl : UsedLab F → Bool)
+theorem legDir_eq {W : Fragment α}
+    (F : EdgeSubset W) (tl : UsedLab F → Bool)
     (i : α) (h : W.boundaryFlag i ∈ F.boundaryFlags) :
     legDir F tl i = tl ⟨i, h⟩ := dif_pos h
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The fragment's change of basis is the abstract one** at its
 own leg directions. -/
@@ -372,7 +388,9 @@ theorem oddCount_eq_two_mul_legDir {t : ℕ} {W : Fragment (Fin t)}
 
 /-- **The tensor vanishes off its support**, read on the state
 itself rather than on its untwist. -/
-theorem tFullD_eq_zero_of_not_matches (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFullD_eq_zero_of_not_matches
+    [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (M : DirMatching (UsedLab F))
     (x : GenBoundaryState k ℓ α)
@@ -382,7 +400,9 @@ theorem tFullD_eq_zero_of_not_matches (F : EdgeSubset W) {k ℓ : ℕ}
   exact hx (genBoundarySubsetMatches_of_tFullD_ne_zero F h κ o M x hne)
 
 /-- **The normalised tensor vanishes off its support.** -/
-theorem tFull_eq_zero_of_not_matches (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFull_eq_zero_of_not_matches
+    [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α)
     (hx : ¬ genBoundarySubsetMatches W F.flags x) :
@@ -400,7 +420,8 @@ the vertex sum, weighted by the circuit sign and the dual basis.
 
 open Classical in
 /-- **The tensor is the vertex sum, weighted.** -/
-theorem tPrime_eq_vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tPrime_eq_vertexSum [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags (untwist F κ o x))
@@ -423,11 +444,11 @@ theorem tPrime_eq_vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
             (F.coreOddListAt o φ' v)))
   · rw [if_neg hψ, if_neg hψ]
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The tensor at given arc directions is the vertex sum,
 weighted.** -/
-theorem tPrimeD_eq_vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tPrimeD_eq_vertexSum [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (tl : UsedLab F → Bool)
     (x : GenBoundaryState k ℓ α)
@@ -836,10 +857,10 @@ theorem sum_sum_superForm_tFullD {t : ℕ} {W₁ W₂ : Fragment (Fin t)}
 The colouring sum's own chain-flip ledger, read on the vertex sum.
 -/
 
-omit [LinearOrder α] [Fintype α] in
 open Classical in
 /-- **The vertex sum under a chain flip.** -/
-theorem vertexSum_portFlip {F : EdgeSubset W}
+theorem vertexSum_portFlip {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (hp : PortedFlipSet κ S p₁ p₂ i₁ i₂) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
@@ -861,11 +882,11 @@ sum alone: the even constraint does not see an odd leg at all, and
 the odd constraint does not see a through one.
 -/
 
-omit [LinearOrder α] [Fintype α] in
 open Classical in
 /-- **Flipping the state at two through legs leaves the vertex sum
 unchanged.** -/
-theorem vertexSum_stateOddFlip_through {F : EdgeSubset W} {k ℓ : ℕ}
+theorem vertexSum_stateOddFlip_through {W : Fragment α}
+    {F : EdgeSubset W} {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation) (i₁ i₂ : α)
@@ -938,7 +959,8 @@ theorem dualSign_mul_partner {ℓ : ℕ} (c : Fin (2 * ℓ)) :
 chain ends' own signs and the colouring sum contributes the flipped
 state's; each pair is `1` at the end the trail leaves and `-1` at the
 end it enters, and a trail leaves exactly one of its two ends. -/
-theorem tPrime_portFlip (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tPrime_portFlip [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) {κ : F.RelTransitionSystem}
     (o : κ.Orientation) {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (hp : PortedFlipSet κ S p₁ p₂ i₁ i₂)
@@ -1056,7 +1078,8 @@ RS21's count of one arc and no pairings.
 open Classical in
 /-- **Inverting an edge joining two labelled ends negates the
 tensor.** -/
-theorem tPrimeD_reverseArc (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tPrimeD_reverseArc [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (M : DirMatching (UsedLab F))
     (a : UsedLab F) (x : GenBoundaryState k ℓ α)
@@ -1104,7 +1127,8 @@ open Classical in
 /-- **RS21's (12) at the normalised tensor**: inverting an edge
 joining two labelled ends leaves `t_h` alone, because the matching's
 sign and the tensor both change sign. -/
-theorem tFullD_reverseArc (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFullD_reverseArc [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (M : DirMatching (UsedLab F))
     (a : UsedLab F) (x : GenBoundaryState k ℓ α)
@@ -1135,7 +1159,8 @@ inverting a directed trail through the interior leaves `t_h` alone,
 because the matching's sign and the tensor both change sign.  The
 orientation moves with the trail, which is what distinguishes this
 from the case of an edge joining two labelled ends. -/
-theorem tFull_portFlip (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFull_portFlip [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) {κ : F.RelTransitionSystem}
     (o : κ.Orientation) {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (hp : PortedFlipSet κ S p₁ p₂ i₁ i₂)
@@ -1170,7 +1195,8 @@ open Classical in
 /-- **RS21's (12) for a chain, at every state.**  Off the tensor's
 support both sides vanish, so the invariance needs no hypothesis on
 the state. -/
-theorem tFull_portFlip_all (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFull_portFlip_all [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) {κ : F.RelTransitionSystem}
     (o : κ.Orientation) {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (hp : PortedFlipSet κ S p₁ p₂ i₁ i₂)
@@ -1233,7 +1259,8 @@ already provide.
 open Classical in
 /-- **The normalised tensor is independent of the directions given
 to the edges joining two labelled ends.** -/
-theorem tFullD_congr_through (F : EdgeSubset W) {k ℓ : ℕ}
+theorem tFullD_congr_through [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α)
     (hx : genBoundarySubsetMatches W F.flags x) :
@@ -1328,10 +1355,10 @@ is what RS21's (12) reads at such an edge.  It is not an extra
 hypothesis: it follows from the agreement the colouring forces.
 -/
 
-omit [Fintype α] in
 open Classical in
 /-- **At a through label the chord is the edge's other end.** -/
-theorem boundaryFlag_chordInv_through (F : EdgeSubset W)
+theorem boundaryFlag_chordInv_through [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (hthr : IsThroughLabel F i) :
@@ -1341,10 +1368,10 @@ theorem boundaryFlag_chordInv_through (F : EdgeSubset W)
   exact pathMatch_exit_unique κ hb 0
     (fun t ht => absurd ht (by omega)) hthr
 
-omit [Fintype α] in
 open Classical in
 /-- **A through edge's two labels carry partner colours.** -/
-theorem partner_of_throughAgree (F : EdgeSubset W) {k ℓ : ℕ}
+theorem partner_of_throughAgree [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (κ : F.RelTransitionSystem) (M : DirMatching (UsedLab F))
     (hM : ∀ a : UsedLab F, (M.edge a).val = chordInv F κ a.val)
     (x : GenBoundaryState k ℓ α)
@@ -1401,13 +1428,13 @@ theorem partner_of_throughAgree (F : EdgeSubset W) {k ℓ : ℕ}
     rw [hs', ← hs]
     rfl
 
-omit [Fintype α] in
 open Classical in
 /-- **Agreement is a condition on the state alone.**  At a through
 edge it says the two labels' colours are partners, and reading that
 does not need the arc directions: reversing the edge replaces both
 ends' colours by their partners at once. -/
-theorem throughAgree_of_partner (F : EdgeSubset W) {k ℓ : ℕ}
+theorem throughAgree_of_partner [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (κ : F.RelTransitionSystem) (M : DirMatching (UsedLab F))
     (hM : ∀ a : UsedLab F, (M.edge a).val = chordInv F κ a.val)
     (x : GenBoundaryState k ℓ α)
@@ -1462,10 +1489,10 @@ theorem throughAgree_of_partner (F : EdgeSubset W) {k ℓ : ℕ}
       if_false, Sum.map_inr] at hs hs'
     exact (Sum.inr.inj hs').symm.trans (Sum.inr.inj hs)
 
-omit [Fintype α] in
 open Classical in
 /-- **The agreement does not read the arc directions.** -/
-theorem throughAgree_congr_matching (F : EdgeSubset W) {k ℓ : ℕ}
+theorem throughAgree_congr_matching [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (κ : F.RelTransitionSystem) (M M' : DirMatching (UsedLab F))
     (hM : ∀ a : UsedLab F, (M.edge a).val = chordInv F κ a.val)
     (hM' : ∀ a : UsedLab F, (M'.edge a).val = chordInv F κ a.val)
@@ -1494,7 +1521,8 @@ directions the pairing allows — which is half of "we may assume that
 
 open Classical in
 /-- **The chain labels' directions can be chosen freely.** -/
-theorem exists_orient_chainAgree (F : EdgeSubset W) {k ℓ : ℕ}
+theorem exists_orient_chainAgree [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem) :
     ∀ (n : ℕ) (o : κ.Orientation) (P : DirMatching (UsedLab F)),
       P.edge = (cutMatching F κ o).edge →
@@ -1581,7 +1609,8 @@ open Classical in
 /-- **RS21's step 1.**  The arc directions can be given any values
 the pairing allows, at no cost to the tensor: the chain labels' by
 choosing the orientation, the through labels' outright. -/
-theorem exists_orient_tFullD (F : EdgeSubset W) {k ℓ : ℕ}
+theorem exists_orient_tFullD [LinearOrder α] [Fintype α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (P : DirMatching (UsedLab F))
     (hP : ∀ a : UsedLab F, (P.edge a).val = chordInv F κ a.val) :
@@ -1786,7 +1815,8 @@ invariance under reversing a trail.
 
 open Classical in
 /-- **The fragment's tensor**: `Σ_H t_h(F,H,ω_H,κ_H)`. -/
-noncomputable def _root_.RS.tensorSum (V : Fragment α) {k ℓ : ℕ}
+noncomputable def _root_.RS.tensorSum [LinearOrder α] [Fintype α]
+    (V : Fragment α) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (x : GenBoundaryState k ℓ α) : ℂ :=
   ∑ s : Finset V.Flag,
     if hc : ∀ f ∈ s, V.pairing f ∈ s then

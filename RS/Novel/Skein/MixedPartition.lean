@@ -130,6 +130,20 @@ theorem oddPartner_invol (ℓ : ℕ) (c : Fin (2 * ℓ)) :
     rw [dif_neg h, dif_pos (show c.val - ℓ < ℓ by omega)]
     exact Fin.ext (by show c.val - ℓ + ℓ = c.val; omega)
 
+/-- Flags attached at the vertex and incoming are in the incoming
+list. -/
+theorem mem_inFlagsAt_of {α : Type} {W : Fragment α}
+    {F : EdgeSubset W} {κ : F.TransitionSystem} {o : κ.Orientation}
+    {v : W.Vertex}
+    {f : W.Flag} (hmem : f ∈ F.flags)
+    (hatt : W.attach f = Sum.inl v)
+    (hin : o.isOut f = false) : f ∈ F.inFlagsAt o v := by
+  letI := W.flagOrder
+  letI := Classical.dec
+  unfold EdgeSubset.inFlagsAt
+  rw [Finset.mem_sort, Finset.mem_filter]
+  exact ⟨hmem, hatt, hin⟩
+
 section Transport
 
 variable {α : Type} {W : Fragment α}

@@ -35,8 +35,8 @@ module structures:
   consumes it, so that the hypothesis is discharged for the scalar-unit
   structures.
 
-The additive half is already available as `RS.indOf_additive`, so only
-the scalar half is new here.  Note that no compatibility between `ψ`
+The additive law is `RS.indOf_additive`; this module proves scalar
+compatibility. No compatibility between `ψ`
 and an ambient linear structure is asked, and no braiding is needed:
 both actions are defined from the same `ψ`, and the proof uses only
 the unitality of the strong monoidal structure of the embedding.
@@ -54,14 +54,15 @@ noncomputable section
 
 section Installed
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Preadditive C] [HasFiniteColimits C] [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **The embedding `C ⥤ Ind C` is ℂ-linear** for the two ℂ-linear
 structures induced by a single scalar unit `ψ`: `RS.scalarSmul` is
 what `•` means on both sides, and `RS.indOf_map_scalarSmul` transports
 the one to the other. -/
-theorem indOf_linear (ψ : ℂ ≃+* End (𝟙_ C)) :
+theorem indOf_linear [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) :
     letI := linearOfScalarUnit ψ
     letI := linearOfScalarUnit (indScalarUnit ψ)
     ∀ {X Y : C} (c : ℂ) (f : X ⟶ Y),
@@ -74,7 +75,10 @@ theorem indOf_linear (ψ : ℂ ≃+* End (𝟙_ C)) :
 
 /-- `RS.indOf_linear`, packaged as Mathlib's linearity class for a
 functor. -/
-theorem indOfFunctorLinear (ψ : ℂ ≃+* End (𝟙_ C)) :
+theorem indOfFunctorLinear
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) :
     letI := linearOfScalarUnit ψ
     letI := linearOfScalarUnit (indScalarUnit ψ)
     Functor.Linear ℂ (indOf : C ⥤ Ind C) := by
@@ -88,14 +92,16 @@ end Installed
 
 section Hypothesis
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **The ℂ-linearity hypothesis of
 `RS.Classical.Deligne.GammaCountable` holds for the scalar-unit
 structures**: `RS.IndOfLinear C` is exactly `RS.indOf_linear`, read at
 the two structures induced by `ψ`. -/
-theorem indOfLinear_of_scalarUnit (ψ : ℂ ≃+* End (𝟙_ C)) :
+theorem indOfLinear_of_scalarUnit
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) :
     letI := linearOfScalarUnit ψ
     letI := linearOfScalarUnit (indScalarUnit ψ)
     IndOfLinear C := by
@@ -109,13 +115,15 @@ end Hypothesis
 
 section Acceptance
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [MonoidalPreadditive C]
+variable {C : Type v}
 
 /- The ℂ-linear full faithfulness of the embedding, which
 `RS.Classical.Deligne.GammaCountable` builds from the hypothesis, is
 therefore available outright for the scalar-unit structures. -/
-example (ψ : ℂ ≃+* End (𝟙_ C)) (X Y : C) :
+example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (X Y : C) :
     letI := linearOfScalarUnit ψ
     letI := linearOfScalarUnit (indScalarUnit ψ)
     (X ⟶ Y) ≃ₗ[ℂ] ((indOf : C ⥤ Ind C).obj X ⟶ indOf.obj Y) :=

@@ -16,21 +16,20 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-- **Power vanishing descends to the module** (Deligne 2.9,
 case (c), object half): over a duality datum with the zigzag
 laws, a module whose `(k + 2)`-nd relative power vanishes is
 zero. -/
-theorem isZero_of_isZero_modPow {M M' : Mod D A}
+theorem isZero_of_isZero_modPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    {M M' : Mod D A}
     (d : ModDualityDatum A M M') (hz : ModZigzagDatum A d)
     (k : ℕ) (h : IsZero (modPow A M.X (k + 2))) :
     IsZero M.X :=
@@ -40,13 +39,18 @@ theorem isZero_of_isZero_modPow {M M' : Mod D A}
 
 section Trichotomy
 
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- **The dévissage trichotomy** (Deligne 2.9, the case
 analysis): over any state, either every symmetric power of the
 remainder survives, or every alternating power survives, or the
 remainder is zero. -/
-theorem devissageTrichotomy (P : SchurPackage.{v})
+theorem devissageTrichotomy
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    (P : SchurPackage.{v})
     (L : OddLine D) (X : D) :
     DevissageTrichotomy D L X :=
   devissageTrichotomy_of_descent P L X

@@ -5,10 +5,12 @@ import RS.Classical.Super.ColourFormMatch
 # The Regts–Sevenster functional
 
 The coordinates of the star vectors in the colouring model, and
-the normalised mixed functional `h^RS` of the Main Theorem: the
-`J`-twisted star coordinate at the canonical colouring of the
-multiset data, `J` being the accompanying paper's parity-transfer
-involution (§5.4).
+the mixed functional at the canonical colouring. The accompanying
+paper calls this witness `h^ξ` (§5.4). Its mate-based functional
+satisfies `h^RS = h^ξ ∘ Sym_s(Ψ)`, where `Ψ` fixes the even basis
+and sends `ξ_i` to `η_i`. Lemma 5.6 gives the coordinate dictionary;
+Lemma 5.7 proves the change of basis and the invariance of the
+partition function under the isometry `Ψ`.
 -/
 
 namespace RS
@@ -35,15 +37,12 @@ theorem starCoord_odd (d : ℕ) (c : MixedColouring k ℓ d)
   dif_neg hc
 
 /-- **The Regts–Sevenster functional**: the star coordinate at
-the canonical colouring.  (The formal conventions absorb the
-paper's parity-transfer involution `J`: the canonical ordering
-already carries it.) -/
+the canonical colouring, the paper's witness `h^ξ` (§5.4). -/
 noncomputable def hRS : MixedFunctional k ℓ := fun μm F =>
   starCoord f P e' (μm.card + F.card) (canonColouring μm F)
 
-/-- The alternating evaluation of the functional on a
-duplicate-free list: sorting sign, normalisation sign, star
-coordinate at the canonical colouring. -/
+/-- The alternating evaluation on a duplicate-free list is the
+sorting sign times the star coordinate at the canonical colouring. -/
 theorem evalOdd_hRS_nodup (μm : Multiset (Fin k))
     (w : List (Fin (2 * ℓ))) (hw : w.Nodup) :
     (hRS f P e').evalOdd μm w =

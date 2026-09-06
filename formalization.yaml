@@ -5,33 +5,27 @@ version: "v0.4"
 project:
   name: "A proof of the Regts–Sevenster conjecture, formalized"
   description: >-
-    A Lean 4 formalization of the Regts–Sevenster conjecture, proved in
-    both directions and resting on no assumption. A complex-valued graph
-    parameter that is normalized at the empty graph and invariant under
-    isomorphism has exponentially bounded edge-connection rank if and
-    only if it is the partition function of a mixed edge-colouring
-    model; and when the rank base is R the model may be taken with k
-    even and ℓ odd colours satisfying k, 2ℓ ≤ ⌊2eR⌋. Nothing is assumed.
-    Deligne's theorem on tensor categories, on which the forward
-    direction rests, is itself proved in the development — in the
-    fibre-functor form that is the substance of Deligne's own proof, and
-    by a route through simple algebras in the ind-completion rather than
-    his descent argument — and each of its hypotheses is discharged for
-    a concretely constructed rigid symmetric monoidal envelope of the
-    parameter's skein category. The symmetric-group character theory the
-    argument needs is proved from Mathlib's linear algebra rather than
-    cited, and the converse direction reproves Regts and Sevenster's own
-    theorem. Every theorem of record depends only on propext,
-    Classical.choice and Quot.sound, pinned in-tree so that a change to
-    the axiom set is a build failure rather than a review task.
+    A Lean 4 proof of the Regts–Sevenster conjecture. A complex-valued
+    graph parameter, normalized at the empty graph and invariant under
+    isomorphism, has exponentially bounded edge-connection rank if and
+    only if it is a mixed partition function. For a natural rank base R,
+    a representing model can be chosen with k even and 2ℓ odd colours
+    satisfying k + 2ℓ ≤ R. The development also proves the even connection-rank
+    growth limit, minimum total colour dimension, minimal parity
+    formulas and prescribed-dimension criterion.
+    Schrijver's factorial argument supplies nilpotent-trace vanishing;
+    semisimplicity and Deligne's fibre-functor theorem give the model;
+    a polynomial commutant estimate gives the sharp colour budget.
+    Deligne's theorem and the required symmetric-group character
+    theory are proved within the development. The appendix's trace-zeta
+    results give rationality and degree bounds, with an independent
+    proof of nilpotent-trace vanishing. The theorems of record use only
+    propext, Classical.choice and Quot.sound, checked by pinned audits.
   authors: ["William Whistler"]
   license: "Apache-2.0"
   responsible_maintainers: ["William Whistler"]
 
 classification:
-  # The mathematics rather than the source document: graph parameters
-  # and connection matrices, settled through symmetric tensor
-  # categories over ℂ.
   arxiv: ["math.CO", "math.CT"]
   msc2020: ["05C31", "05C50", "18M05", "18M25", "20C30", "68V20"]
 
@@ -41,13 +35,13 @@ sources:
     authors: ["William Whistler"]
     id: "arXiv:2607.27198"
     type: "preprint"
-    location: "Theorem 1.1; Corollary 4.10; Appendix A"
+    location: "Theorem 1.1; Definition 2.1; Theorems 4.3 and 4.7;
+      Lemma 4.9; Corollary 4.10;
+      Lemmas 7.1–7.2; Theorems 7.3 and 7.5; Corollary A.2; Lemma A.9"
     relationship: "formalizes"
     license: "CC-BY-4.0"
     author_endorsement: "n/a"
-    note: "The paper this development formalizes. Its author is this
-      project's author, so there was no separate source author to
-      contact."
+    note: "The accompanying paper, by the formalization's author."
   - title: "Mixed partition functions and exponentially bounded
       edge-connection rank"
     authors: ["Guus Regts", "Bart Sevenster"]
@@ -57,10 +51,11 @@ sources:
     location: "the conjecture; Definition 5; Proposition 3; Theorem 6"
     relationship: "independently-proves"
     author_endorsement: ""
-    note: "The origin of the conjecture and of Definition 5. The
-      development does not cite their Theorem 6 or their Proposition 3
-      but proves both, the latter in a corrected form. Regts
-      contacted."
+    note: "Introduces the conjecture and mixed partition functions.
+      The development proves the converse rank theorem and the
+      Eulerian-subset independence used in Definition 5, and extends
+      independence to open fragments with fixed boundary pairing.
+      Regts contacted."
   - title: "Catégories tensorielles"
     authors: ["Pierre Deligne"]
     id: "Mosc. Math. J. 2 (2002), 227-248"
@@ -68,9 +63,8 @@ sources:
     location: "Théorème 0.6, with §0.1 for the definitions"
     relationship: "independently-proves"
     author_endorsement: "not-contacted"
-    note: "Proved in the development rather than assumed, in the
-      fibre-functor form that Deligne's own strategy establishes and by
-      a different route; see fidelity and alignment below."
+    note: "Proved in fibre-functor form through a simple splitting
+      algebra in the ind-completion, following Coulembier's pattern."
   - title: "Tannakian categories in positive characteristic"
     authors: ["Kevin Coulembier"]
     id: "arXiv:1812.02452 (Duke Math. J. 169 (2020), 3167-3219)"
@@ -78,8 +72,8 @@ sources:
     location: "Lemma 3.3.2(ii), with Lemmas 1.2.10 and 1.5.2"
     relationship: "adapts"
     author_endorsement: "not-contacted"
-    note: "The splitting-object pattern the development follows in place
-      of Deligne's section 4 descent."
+    note: "The proof pattern for splitting the tensor generator over
+      a simple algebra and extending the splitting to subquotients."
   - title: "Tensor categories (after P. Deligne)"
     authors: ["Victor Ostrik"]
     id: "arXiv:math/0401347"
@@ -87,26 +81,49 @@ sources:
     location: "Theorem 2.3; section 2.4"
     relationship: "background"
     author_endorsement: "not-contacted"
-    note: "Consulted as an exposition of Deligne's theorem and of the
-      strategy of its proof."
+    note: "An exposition of Deligne's theorem and proof strategy."
+  - title: "Characterizing partition functions of the edge-coloring
+      model by rank growth"
+    authors: ["Alexander Schrijver"]
+    id: "arXiv:1211.3561"
+    type: "preprint"
+    location: "Proposition 4"
+    relationship: "adapts"
+    author_endorsement: ""
+    note: "The factorial-rank proof of nilpotent-trace vanishing used
+      in the paper's Theorem 4.3 and the Lean summits."
+  - title: "Motivic zeta functions in additive monoidal categories"
+    authors: ["Kenichiro Kimura", "Shun-ichi Kimura", "Nobuyoshi Takahashi"]
+    id: "doi:10.1017/is011011006jkt174"
+    type: "journal article"
+    location: "Proposition 3.10"
+    relationship: "background"
+    author_endorsement: ""
+    note: "The determinantal rationality theorem compared with the
+      paper's scalar trace-zeta theorem in Appendix A.5."
+  - title: "Schur-finiteness in λ-rings"
+    authors: ["Carlo Mazza", "Charles Weibel"]
+    id: "arXiv:1011.1444 (J. Algebra 374 (2013), 66-78)"
+    type: "journal article"
+    location: "Proposition 4.14; Corollary 4.15"
+    relationship: "background"
+    author_endorsement: ""
+    note: "The virtual splitting principle and rationality argument
+      discussed in Appendix A.5. Lean follows the direct Jacobi–Trudi
+      recurrence proof of the accompanying paper's Lemma A.9."
 
 status:
   scope: >-
-    Both directions of the Main Theorem, over the flag (half-edge)
-    model of multigraph fragments: a graph parameter normalized at
-    the empty graph has exponentially bounded edge-connection rank
-    if and only if it is a mixed partition function, together with
-    the dimension bound k, 2ℓ ≤ ⌊2eR⌋ and the appendix's
-    quantitative trace-zeta theorem. Nothing is assumed: Deligne's
-    theorem on tensor categories, on which the forward direction
-    rests, is itself proved here as `RS.deligne_theorem`, in the
-    fibre-functor form that is the substance of his own proof, and every
-    hypothesis of it is discharged for the concretely constructed
-    envelope. The converse rests on nothing. The classical
-    symmetric-group input is a theorem of the development, not an
-    assumption. The conditional forms of the summit theorems are
-    retained alongside the unconditional ones, to exhibit the
-    dependency structure.
+    The Main Theorem and sharp colour budget (Theorem 1.1 and
+    Corollary 4.10), for natural rank bases including zero, over
+    the flag model of multigraph fragments. The Section 7 results
+    comprise even rank growth, minimum total dimension, minimal
+    parity formulas, padding and prescribed dimensions. The appendix
+    results comprise trace-zeta rationality under exponential growth
+    (Corollary A.2) and rationality for arbitrary hook-confined
+    sequences (Lemma A.9). The development also proves Deligne's
+    fibre-functor theorem, the symmetric-group character theory,
+    and the auxiliary separate colour bound k, 2ℓ ≤ ⌊2eR⌋.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -115,26 +132,42 @@ status:
       file: "RS/Summit.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator-config.json"
       literature_dependencies: []
-      # Deligne's theorem, in fibre-functor form, is
-      # `RS.deligne_theorem`, proved here.
     - declaration: "RS.regts_sevenster_characterisation"
       file: "RS/Summit.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator-config.json"
       literature_dependencies: []
     - declaration: "RS.deligne_theorem"
       file: "RS/Classical/Deligne/DeligneAssembly.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       literature_dependencies: []
-      # Deligne, Catégories tensorielles, Mosc. Math. J. 2 (2002),
-      # 227-248, Théorème 0.6, proved rather than cited. The route is
-      # not Deligne's own: his section 4 descent is replaced by
-      # splitting the tensor generator alone and passing to a simple
-      # quotient, after Coulembier, Tannakian categories in positive
-      # characteristic, Duke Math. J. 169 (2020), Lemma 3.3.2(ii).
     - declaration: "RS.regts_sevenster_quant"
+      file: "RS/Summit.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator-config.json"
+      literature_dependencies: []
+    - declaration: "RS.regts_sevenster_total"
+      file: "RS/Summit.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator-config.json"
+      literature_dependencies: []
+    - declaration: "RS.regts_sevenster_minimum"
+      file: "RS/Summit.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+    - declaration: "RS.regts_sevenster_rank_growth"
+      file: "RS/Summit.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+    - declaration: "RS.regts_sevenster_prescribed"
       file: "RS/Summit.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -143,226 +176,274 @@ status:
       file: "RS/TheoremConverse.lean"
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator-config.json"
       literature_dependencies: []
-      # No hypothesis of its own: Regts–Sevenster's Theorem 6 is
-      # reproved here rather than cited.
 
 automation:
   methods:
     - method: "agent"
       models: ["claude-fable-5", "claude-opus-5"]
       framework: "Claude Code"
-      tool_setup: "A single interactive main line driving fleets of
-        subagents. The main line kept the hard mathematics and the
-        statements; subagents were given narrowly scoped, individually
-        committable proof obligations against statements already fixed
-        upstream, with one owner per file and no git access.
-        Verification was the Lean kernel throughout: every change had to
-        leave `lake build` green with zero warnings, and
-        `#guard_msgs`-pinned `#print axioms`, `#check` and `#print`
-        audits are part of the default build target, so a change to the
-        axiom set, to the type of any definition a summit is phrased in
-        or of any theorem of record, or to the content of
-        `DeligneTheoremStatement` and of every predicate its hypothesis
-        list is phrased in, is a compile error rather than a review
-        task."
+      tool_setup: "An interactive lead agent assigned subagents
+        narrowly scoped Lean proof obligations against fixed
+        statements, with one owner per file and no subagent git access.
+        The lead agent handled the statements and proof assembly.
+        Verification used Lean builds with zero warnings and pinned
+        statement and axiom audits."
       cost:
         wall_time: "~15 days"
         spend_usd: "Max 20x subscriptions"
         hardware: "one workstation"
-      prompting_notes: "Subagent tasks were written as Lean statements
-        to be proved, not as prose goals, so that success was
-        machine-checkable. Tasks that resisted decomposition were pulled
-        back to the main line rather than retried. Search tools were
-        allowed to find certificates, but certificates were frozen as
-        data and re-proved in Lean; nothing found by search was
-        trusted."
+      prompting_notes: "Tasks specified Lean statements to prove.
+        The lead agent took over tasks that resisted decomposition.
+        Certificates found by search were stored as data and verified
+        in Lean."
+    - method: "agent"
+      models: ["gpt-6-astra"]
+      framework: "OpenAI Codex"
+      tool_setup: "An interactive agent formalized the total-dimension
+        bound through block faithfulness, a polynomial commutant
+        estimate and transport of the skein action; the rank-growth,
+        minimum-dimension and colour-padding results; and Schrijver's
+        factorial trace argument with categorical and strand instances
+        and semisimplicity corollaries. The hook rationality proof was
+        generalized to arbitrary rectangular dimensions. Verification
+        used Lean builds, environment linters, pinned audits and
+        comparator certification."
   spend_usd: "subscription-based usage; no metered API spend"
-  notes: "Beyond the in-tree audits, the theorems of record are
-    certified in CI with leanprover/comparator: Challenge.lean is
-    self-contained, importing Mathlib alone and carrying the statement
-    surface itself, and states them with sorry; Solution.lean proves
-    each by the theorem of record of the same name against the
-    identical definitions of RS/Definitions.lean, and comparator checks at the
-    kernel-export level that the statements and their definitions
-    agree, that the proofs use no axiom outside the whitelist, and
-    that the kernel replays them."
+  notes: "CI runs source style checks, the full Lean build, environment
+    linters and leanprover/comparator. The default build includes
+    pinned statement and axiom audits for the theorems of record,
+    including growth, minimality and padding. BlueprintFactorial
+    checks that the envelope's semisimplicity and abelianness are
+    independent of Schur theory, trace zeta and Deligne, and that the
+    forward summits use the factorial trace theorem.
+    Challenge.lean imports Mathlib alone, copies the certified
+    statement definitions and declares seven goals with sorry;
+    Solution.lean proves them from the theorems of record. Comparator
+    checks agreement of the statements and definitions, the axiom
+    whitelist and Lean kernel replay, using comparator-config.json."
 
 fidelity:
   divergences: >-
-    Seven deliberate divergences from the paper's presentation, each
-    recorded in the repository.
+    (1) Connection rank. Lean uses Module.rank of the connection
+    pairing's row span. RS.edgeRankBounded_iff_submatrixRank proves
+    equivalence with the paper's supremum of finite-submatrix ranks
+    (RS/Novel/Skein/ConnectionRank.lean).
 
-    (1) Connection rank. The paper defines the rank of the infinite
-    connection matrix as the supremum of the ranks of its finite
-    submatrices; the formalization bounds the dimension of the row
-    span instead, avoiding infinite-matrix rank. The two conditions
-    are proved equivalent (`RS.edgeRankBounded_iff_submatrixRank`,
-    RS/Novel/Skein/ConnectionRank.lean).
+    (2) Rank base. The paper allows real R ≥ 1; EdgeRankBounded and
+    RS.regts_sevenster_total use natural R, including zero.
+    Section 7.6 derives the sharp real budget from the formal
+    results: construct a model at B = ⌈R⌉, then identify its
+    dimension with its even rank-growth limit, bounded by R.
 
-    (2) The rank base. The paper's hypothesis (H2) requires an
-    integer R ≥ 1; `EdgeRankBounded` admits any natural number. The
-    bound is monotone in the base (`RS.EdgeRankBounded.mono`), so
-    nothing is gained or lost.
+    (3) Dimension estimate. For d = k + 2ℓ and d,n ≥ 1, Lemma 4.9
+    gives d^(2n) ≤ rk M_{f,2n} binom(n + d² − 1, d² − 1).
+    It uses the sum of surviving block dimensions (Lemma 4.8) and
+    Cauchy–Schwarz. Lean uses individual block faithfulness
+    (Lemma A.4) to prove d^(2n) ≤ rk M_{f,2n} (n + 1)^(2d²).
+    Both estimates count simultaneous word-pair orbits to bound the
+    commutant in the ordinary endomorphism algebra of the total
+    vector space, including parity-reversing maps. Both give d ≤ R
+    and the same rank-growth limit.
 
-    (3) The vertex functional. `MixedFunctional` assigns values to
-    multisets of even colours and sets of odd colours, with
-    antisymmetry supplied by a sorting-sign evaluator, rather than
-    to the paper's κ-paired wedge presentation. The dictionary
-    between the two, including the parity twist that must not be
-    carried across it, is the paper's §5.4.
+    (4) Intrinsic dimension. Lean defines minimumColourDimension as
+    the least total colour bound and proves that the even rank roots
+    tend to it. The paper defines the growth base as the supremum
+    of rank roots over all positive arities and identifies it with
+    the same minimum (Lemma 7.1 and Theorem 7.3).
 
-    (4) Composition is applicative. `Fragment.compose F G` glues the
-    last t labels of F to the first t of G; it is the paper's G ∘ F
-    and Mathlib's diagrammatic F ≫ G.
+    (5) Vertex functional. MixedFunctional assigns values to multisets
+    of even colours and sets of odd colours; evalOdd supplies the
+    sorting sign. Lean's hRS is the paper's h^ξ, the raw star
+    coefficient in the e_i, ξ_i basis. Lemmas 5.6 and 5.7 give
+    h^RS = h^ξ ∘ Sym_s(Ψ), where Ψ fixes the even basis and sends
+    ξ_i to η_i. This isometry preserves the twisted edge tensor and
+    the partition function. Lean proves the evaluation equality
+    directly from star coordinates, partner signs and sorting signs.
+    The descent to symmetric and exterior monomials is expressed by
+    RS.starCoord_perm, combining star invariance with the Koszul
+    action on coordinates (RS/Novel/Coordinates/StarPerm.lean).
 
-    (5) The appendix's growth constant. Appendix A fixes a real
-    A ≥ 1; `RS.objectFrobeniusTower` and
-    `RS.traceZeta_rational_of_object` take any real A with
-    dim End(Z^⊗n) ≤ A^n. Weakening a hypothesis strengthens the
-    statement, and the extra range is degenerate: below 1 the bound
-    forces End(Z^⊗n) = 0 for all large n.
+    (6) Composition. Fragment.compose F G glues F's last t labels to
+    G's first t labels: the paper's G ∘ F and Mathlib's F ≫ G.
 
-    (6) The envelope is completed in two stages. The paper's Cauchy
-    completion is 𝒟_f = Kar(Add(𝒞_f)) (§3.4); the tree builds
-    Env f = Karoubi (Mat_ (Karoubi (SkeinObj f))), which is
-    Kar(Add(Kar(𝒞_f))). The inner Karoubi is where the atoms live —
-    an atom is the image of an atomic idempotent of a skein
-    endomorphism algebra — and the nilpotent-trace argument for the
-    matrix envelope reads the atomic decomposition of each entry.
-    Both are Cauchy completions of 𝒞_f, hence equivalent; the
-    hypotheses are discharged for the one the tree builds.
+    (7) Envelope and fibre functor. Lean builds
+    Env f = Karoubi (Mat_ (Karoubi (SkeinObj f))), equivalent to the
+    paper's Cauchy completion 𝒟_f = Kar(Add(𝒞_f)) (§3.4).
+    DeligneFibreFunctor records exactness and faithfulness;
+    DeligneFibreFunctor.toPackage supplies the symmetric monoidal
+    ℂ-linear interface used in reconstruction and the colour bounds.
 
-    (7) The route to the super symmetric power. The paper factors the
-    functional β_d(T_d, −) through Sym_s^d V by combining the
-    S_d-invariance of the pairing (Lemma 5.1(b)) with the invariance
-    of the star tensor. The tree works on coordinates instead: the
-    star class absorbs any relabelling of its legs
-    (RS.vertexStarClass_perm, RS/Novel/Coordinates/StarSymm.lean),
-    the model permutation acts on coordinates by the odd-inversion
-    sign (RS.coordOf_modelPermMap',
-    RS/Novel/Coordinates/ModelPermCoord.lean), and the two combine
-    into the sign rule RS.starCoord_perm
-    (RS/Novel/Coordinates/StarPerm.lean), which over ℂ is already the
-    statement that the coordinate functional lives on Sym_s^d V.
-    Lemma 5.1(b) is proved (RS.betaColour_perm',
-    RS/Classical/Super/ColourPairingSymm.lean) but is not consumed.
-
-    Two machine-checked findings sharpened the paper rather than
-    diverging from it: the odd-sector parity of the square
-    specialization forces the supertrace argument to run at side
-    s + 1 for odd s (the displayed bound survives because 2ℓ is
-    even), and the degenerate side s = 0 at R = 0 needs an explicit
-    guard. Both are recorded in ClassicalOverview.md §4.
+    (8) Appendix growth constant. Corollary A.2 assumes A ≥ 1;
+    RS.objectFrobeniusTower and RS.traceZeta_rational_of_object
+    accept any real A satisfying dim End(Z^⊗n) ≤ A^n. The sequence
+    results for Lemma A.9 allow arbitrary natural a,b and retain
+    numerator degree at most b and denominator degree at most a.
 
 review:
   status: "self-assessed"
   reviewers: []
-  notes: ""
 
 alignment:
   namespace: "RS"
   statements:
-    - source: "Theorem 1.1 (Main Theorem), both directions"
+    - source: "Theorem 1.1, the existential characterization"
       lean: "RS.regts_sevenster_characterisation"
       module: "RS/Summit.lean"
       status: "proved"
-      note: "No hypothesis. The form taking RS.DeligneTheoremStatement
-        as an argument, RS.regts_sevenster_iff
-        (RS/TheoremConverse.lean), is retained to exhibit the
-        dependency structure."
-    - source: "Theorem 1.1, forward direction"
+      note: "For normalized isomorphism-invariant parameters, existence
+        of a natural rank base is equivalent to existence of a mixed
+        model."
+    - source: "Theorem 1.1, existence from bounded connection rank"
       lean: "RS.regts_sevenster"
       module: "RS/Summit.lean"
       status: "proved"
-      note: "No hypothesis; likewise RS.regts_sevenster_deligne_only
-        (RS/TheoremForward.lean) for the dependency structure."
-    - source: "Corollary 4.10 (the dimension bound k, 2ℓ ≤ ⌊2eR⌋)"
+      note: "For every R : ℕ and f : EdgeRankParameter R, supplies a
+        mixed model representing f."
+    - source: "Theorem 1.1 and Corollary 4.10, k + 2ℓ ≤ R"
+      lean: "RS.regts_sevenster_total"
+      module: "RS/Summit.lean"
+      status: "proved"
+      note: "A representing model with k + 2ℓ ≤ R, for natural R
+        including zero."
+    - source: "Polynomial consequence of Lemma 4.9"
+      lean: "RS.stdModel_pow_le_connectionRank"
+      module: "RS/Classical/Interfaces/TotalDimension.lean"
+      status: "proved"
+      note: "d^(2n) ≤ rk M_{f,2n} (n + 1)^(2d²), with the
+        polynomial factor sufficient for the sharp colour budget
+        and even rank-growth limit."
+    - source: "Auxiliary separate-sector colour bound"
       lean: "RS.regts_sevenster_quant"
       module: "RS/Summit.lean"
       status: "proved"
+      note: "k, 2ℓ ≤ ⌊2eR⌋, obtained from square principal
+        specializations."
+    - source: "Lemma 7.1 and Theorem 7.3(a), even rank-growth limit"
+      lean: "RS.regts_sevenster_rank_growth"
+      module: "RS/Summit.lean"
+      status: "proved"
+      note: "The even connection-rank roots converge to
+        minimumColourDimension, including zero."
+    - source: "Theorem 7.3(c), minimum total model dimension"
+      lean: "RS.regts_sevenster_minimum"
+      module: "RS/Summit.lean"
+      status: "proved"
+      note: "Supplies a model attaining the least total colour bound."
+    - source: "Theorem 7.3(b), minimal parity formulas"
+      lean: "RS.TotalBoundedMixedModel.even_dimension_eq,
+        RS.TotalBoundedMixedModel.half_odd_dimension_eq"
+      module: "RS/TheoremPadding.lean"
+      status: "proved"
+      note: "k = (d + f(○))/2 and ℓ = (d − f(○))/4 for a
+        model attaining minimum total dimension d."
+    - source: "Lemma 7.2, padding"
+      lean: "RS.MixedFunctional.padColours_represents"
+      module: "RS/Novel/Skein/ColourPadding.lean"
+      status: "proved"
+      note: "For k₂ ≥ k₁ and ℓ₂ ≥ ℓ₁ with k₂ − 2ℓ₂ = k₁ − 2ℓ₁,
+        extension by zero along partner-preserving colour embeddings
+        preserves the partition function."
+    - source: "Theorem 7.5, prescribed dimensions"
+      lean: "RS.regts_sevenster_prescribed"
+      module: "RS/Summit.lean"
+      status: "proved"
+      note: "Exact dimensions k,2ℓ are characterized by rank base
+        k + 2ℓ and free-circle value k − 2ℓ, including k = ℓ = 0,
+        for normalized isomorphism-invariant parameters."
     - source: "Regts–Sevenster Theorem 6 (the converse)"
       lean: "RS.regts_sevenster_converse"
       module: "RS/TheoremConverse.lean"
       status: "proved"
-      note: "The paper cites this direction; the development proves it,
-        with base max 1 (k + 2ℓ) and no hypothesis."
-    - source: "Theorem A.1 (rational trace zeta functions)"
+      note: "The exact rank bound with base k + 2ℓ is
+        RS.mixedPartition_edgeRankBounded in the same module.
+        The existential statement chooses max 1 (k + 2ℓ)."
+    - source: "Corollary A.2, trace zeta under exponential growth"
       lean: "RS.traceZeta_rational_of_object,
         RS.traceZeta_superSpectrum_of_object"
       module: "RS/Novel/Envelope/ObjectTower.lean"
       status: "proved"
-      note: "In the appendix's own generality and with its own
-        hypothesis and threshold: for an object X of a rigid symmetric
-        C-linear category with End 1 = C whose tensor powers have
-        finite-dimensional endomorphism algebras of dimension at most
-        A^n, and every integer side s > 2e√A, degrees at most s − 1. The
-        appendix derives the symmetric-group action, the propagation of
-        vanishing, the traces and the Frobenius identity from the
-        category and the object; that derivation is
-        RS.objectFrobeniusTower. The same conclusions over the derived
-        interface alone are RS.FrobeniusTower.traceZeta_rational_sharp
-        and RS.FrobeniusTower.traceZeta_superSpectrum_sharp
-        (RS/Novel/Envelope/TraceZetaSharp.lean), which the skein
-        endomorphism algebras instantiate directly. The forward proof
-        itself consumes only the existentially-quantified side
-        (RS.FrobeniusTower.traceZeta_rational,
-        RS/Novel/Envelope/TraceZeta.lean), which holds over an arbitrary
-        Schur package."
-    - source: "Theorem 4.8 (Deligne's theorem), hypotheses for the envelope"
+      note: "For an object X of a rigid symmetric ℂ-linear monoidal
+        category with End 𝟙 = ℂ and finite-dimensional End(X^⊗n)
+        of dimension at most A^n, every natural side s > 2e√A gives
+        coprime numerator and denominator of constant term 1 and
+        degrees at most s − 1, and reduced super-spectrum multisets
+        of sizes at most s − 1. RS.objectFrobeniusTower derives the
+        required action and trace identities from the category and
+        object."
+    - source: "Lemma A.9, hook-confined sequences"
+      lean: "RS.newtonH_series_rational_of_hook_vanishing,
+        RS.superPowerSums_of_hook_vanishing"
+      module: "RS/Classical/SymFun/ZetaRational.lean,
+        RS/Classical/SymFun/HookVanishing.lean"
+      status: "proved"
+      note: "Coprime rational form and reduced super-spectrum
+        with numerator degree at most b and denominator degree
+        at most a, for arbitrary natural a,b. The positive and
+        negative power-sum multisets have sizes at most a and b."
+    - source: "Theorem 4.3, nilpotent traces by the factorial argument"
+      lean: "RS.scalarTrace_eq_zero_of_isNilpotent_factorial"
+      module: "RS/Novel/Envelope/FactorialTrace.lean"
+      status: "proved"
+      note: "The cycle-trace formula makes a nonzero nilpotent trace
+        force factorial endomorphism growth. The strand instance
+        supplies the summits' semisimplicity proof."
+    - source: "Theorem 4.7, application to the envelope"
       lean: "RS.env_delignePackage, RS.skein_delignePackage"
       module: "RS/Novel/Envelope/EnvDelignePackage.lean"
       status: "proved"
-      note: "Deligne's hypotheses discharged for Env f = Karoubi (Mat_
-        (Karoubi (SkeinObj f))); the fibre functor is then restricted
-        back to the skein category."
-    - source: "Theorem 4.8 (Deligne's theorem) itself"
+      note: "Verifies Deligne's hypotheses for Env f and restricts
+        the resulting symmetric monoidal ℂ-linear functor to the
+        skein category. The hD argument is supplied by
+        RS.deligne_theorem."
+    - source: "Deligne Théorème 0.6, fibre-functor form used in
+        Theorem 4.7"
       lean: "RS.deligne_theorem"
       module: "RS/Classical/Deligne/DeligneAssembly.lean"
       status: "proved"
-      note: "RS.DeligneTheoremStatement (RS/Definitions.lean) carries
-        Deligne's own hypotheses; it is weaker than what Deligne proves
-        in two ways, being one direction of his equivalence and taking
-        the conclusion in fibre-functor form (RS.DeligneFibreFunctor).
-        The route is not Deligne's: his section 4 descent along a
-        faithfully flat Isom-tensor torsor is replaced by splitting the
-        tensor generator alone and passing to a quotient by a maximal
-        ideal, after Coulembier. See ClassicalOverview.md section 6."
-    - source: "Regts–Sevenster Proposition 3, closed sector"
+      note: "An essentially small abelian rigid symmetric ℂ-linear
+        monoidal category with scalar unit endomorphisms, a finite
+        tensor generator and moderate length growth admits an exact
+        faithful ℂ-linear symmetric monoidal functor to finite-dimensional
+        super vector spaces. The proof splits the generator over a simple
+        algebra in the ind-completion, following Coulembier's pattern."
+    - source: "Regts–Sevenster Proposition 3, mixed Eulerian-subset form"
       lean: "RS.eulerianIndependence"
       module: "RS/Novel/Skein/AllInternalAgreement.lean"
       status: "proved"
-      note: "Cited in the literature; proved here, in full interface
-        strength over arbitrary ambient fragments."
-    - source: "Regts–Sevenster Proposition 3, open sector"
-      lean: "RS.pairedLedger"
-      module: "RS/Novel/Skein/PairedAssembly.lean"
+      note: "For a fixed mixed functional, the contribution of an
+        Eulerian edge subset is independent of its transition system
+        and compatible orientation."
+    - source: "Open-fragment extension of Regts–Sevenster Proposition 3"
+      lean: "RS.EdgeSubset.signedValueAt_of_labelChords_eq_pairing"
+      module: "RS/Novel/Skein/PropThreeOpen.lean"
       status: "proved"
-      note: "In its corrected form: the chord-signed canonical value is
-        a function of the boundary pairing alone. Independence across
-        pairings is false, and the refutation
-        (RS.not_throughIndependenceC) is itself a theorem of the tree."
+      note: "For a fixed compatible boundary state, transition systems
+        with the same boundary pairing have the same chord-signed canonical
+        value. RS.pairedLedger supplies invariance under paired moves."
     - source: "The classical symmetric-group character theory"
       lean: "RS.schurPackage"
       module: "RS/Classical/SchurTheory/Package.lean"
       status: "proved"
       note: "Frobenius formula, orthonormality, irreducible realization
         with sign, block theory, branching and square-dimension growth,
-        built from Mathlib's linear algebra with no combinatorial
-        citations. See ClassicalOverview.md §2."
-    - source: "Definition 5 of Regts–Sevenster"
+        constructed from Jacobi–Trudi characters and Mathlib's linear
+        algebra."
+    - source: "Definition 2.1 (Regts–Sevenster's Definition 5)"
       lean: "RS.mixedPartition, RS.IsMixedPartitionFunction"
       module: "RS/Definitions.lean"
-      status: "proved"
-      note: "A definition, on the flag model; see fidelity above."
+      status: "defined"
+      note: "The sum over Eulerian edge subsets and colourings, with
+        circuit signs and the free-circle factor (k − 2ℓ)^circles."
     - source: "Lemma 5.1, the Koszul sign of a rearrangement"
       lean: "RS.betaDiag_eq_betaColour, RS.betaColour_perm'"
       module: "RS/Novel/Coordinates/BetaDiagForm.lean,
         RS/Classical/Super/ColourPairingSymm.lean"
       status: "proved"
-      note: "Part (a), the interleaved evaluation, is what the tree
-        consumes. Part (b), the S_d-invariance of the pairing, is
-        proved but unused; see divergence (7) above."
+      note: "Part (a) identifies the interleaved evaluation with the
+        colour pairing; part (b) proves its invariance under simultaneous
+        super permutations."
     - source: "§2.3, the edge-connection rank hypothesis (H2)"
       lean: "RS.EdgeRankBounded, RS.edgeRankBounded_iff_submatrixRank"
       module: "RS/Novel/Skein/ConnectionRank.lean"
@@ -377,5 +458,6 @@ acknowledgements: >-
   on tensor categories and Ostrik's exposition of it, on Coulembier's
   route to it through simple algebras in the ind-completion (Tannakian
   categories in positive characteristic, Duke Math. J. 169 (2020)),
-  and on the connection-matrix framework of Freedman, Lovász and
-  Schrijver.
+  on Schrijver's factorial-rank proof of nilpotent-trace vanishing
+  (2015, Proposition 4), and on the connection-matrix framework of
+  Freedman, Lovász and Schrijver.

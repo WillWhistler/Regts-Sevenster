@@ -38,18 +38,16 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 namespace EdgeSubset
 
-variable {F : EdgeSubset W}
-
 /-! ### 1. Exit uniqueness and chain membership -/
 
-omit [LinearOrder α] in
 /-- **Exit uniqueness**: two boundary-exit data for the forward walk
 of one flag agree on the exit step. -/
-theorem exit_step_unique (κ : F.RelTransitionSystem) {f : W.Flag}
+theorem exit_step_unique {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) {f : W.Flag}
     {k₁ k₂ : ℕ}
     (hc₁ : ∀ t, t < k₁ →
       W.pairing (iterWalk κ f t) ∈ F.internalFlags)
@@ -65,11 +63,11 @@ theorem exit_step_unique (κ : F.RelTransitionSystem) {f : W.Flag}
   · exact Finset.disjoint_left.mp
       F.internalFlags_disjoint_boundaryFlags (hc₁ k₂ h) ht₂
 
-omit [LinearOrder α] in
 /-- **Chain-flag exit data**: the forward walk of the pairing-side
 flag at step `m` of a chain from `b` has internal pairings before
 step `m` and exits at `b` at step `m`. -/
-theorem chain_flag_exit (κ : F.RelTransitionSystem) {b : W.Flag}
+theorem chain_flag_exit {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) {b : W.Flag}
     {k m : ℕ}
     (hcont : ∀ t, t < k →
       W.pairing (iterWalk κ b t) ∈ F.internalFlags)
@@ -88,11 +86,11 @@ theorem chain_flag_exit (κ : F.RelTransitionSystem) {b : W.Flag}
   · rw [iterWalk_reverse κ hcont' m le_rfl, Nat.sub_self,
       iterWalk_zero, W.pairing_invol]
 
-omit [LinearOrder α] in
 /-- The path match of a boundary end equals the terminal pairing of
 any boundary-terminated chain data from it (via exit uniqueness — no
 fuel bound required on the given data). -/
-theorem pathMatch_eq_of_chain (κ : F.RelTransitionSystem)
+theorem pathMatch_eq_of_chain {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {b : W.Flag} (hb : b ∈ F.boundaryFlags) {k : ℕ}
     (hcont : ∀ t, t < k →
       W.pairing (iterWalk κ b t) ∈ F.internalFlags)
@@ -122,7 +120,8 @@ theorem pathMatch_eq_pairing_of_boundary {α : Type} [LinearOrder α]
 /-- The chain from boundary end `b` is **non-canonically oriented**:
 its lower-labelled end — whichever of `b` and its path match that is —
 has an outgoing entry edge. -/
-def ChainNonCanon (κ : F.RelTransitionSystem) (o : κ.Orientation)
+def ChainNonCanon [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (b : W.Flag) : Prop :=
   ∃ (hb : b ∈ F.boundaryFlags) (i j : α),
     W.attach b = Sum.inr i ∧
@@ -131,7 +130,9 @@ def ChainNonCanon (κ : F.RelTransitionSystem) (o : κ.Orientation)
       (j < i ∧ o.isOut (W.pairing (κ.pathMatch b hb)) = true))
 
 /-- Non-canonicality passes to the opposite chain end. -/
-theorem chainNonCanon_pathMatch {κ : F.RelTransitionSystem}
+theorem chainNonCanon_pathMatch
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {b : W.Flag} (h : ChainNonCanon κ o b)
     (hb : b ∈ F.boundaryFlags) :
     ChainNonCanon κ o (κ.pathMatch b hb) := by
@@ -148,7 +149,8 @@ theorem chainNonCanon_pathMatch {κ : F.RelTransitionSystem}
 
 /-- **The flip set**: `f` is a pairing-side flag of a
 non-canonically oriented boundary-to-boundary chain. -/
-def BadFlag (κ : F.RelTransitionSystem) (o : κ.Orientation)
+def BadFlag [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (f : W.Flag) : Prop :=
   ∃ (b : W.Flag) (k m : ℕ),
     (∀ t, t < k →
@@ -160,7 +162,8 @@ def BadFlag (κ : F.RelTransitionSystem) (o : κ.Orientation)
 /-- **Match closure**: the flip set is closed under the matching —
 the match of a pairing-side flag is a pairing-side flag of the
 reverse chain, whose base end is the path match of the original. -/
-theorem badFlag_match {κ : F.RelTransitionSystem}
+theorem badFlag_match [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {f : W.Flag} (h : BadFlag κ o f) :
     BadFlag κ o (κ.match_ f) := by
   obtain ⟨b, k, m, hcont, hterm, hmk, hfe, hnc⟩ := h
@@ -183,7 +186,8 @@ theorem badFlag_match {κ : F.RelTransitionSystem}
 /-- **Pairing closure**: the flip set is closed under the edge
 pairing whenever the partner is internal — the partner is a
 match-side flag, i.e. a pairing-side flag of the reverse chain. -/
-theorem badFlag_pairing {κ : F.RelTransitionSystem}
+theorem badFlag_pairing [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {f : W.Flag} (h : BadFlag κ o f)
     (hp : W.pairing f ∈ F.internalFlags) :
     BadFlag κ o (W.pairing f) := by
@@ -213,19 +217,23 @@ theorem badFlag_pairing {κ : F.RelTransitionSystem}
 
 /-- The candidate canonical orientation as a raw flag function:
 negate on the flip set. -/
-noncomputable def canonIsOut (κ : F.RelTransitionSystem)
+noncomputable def canonIsOut [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (f : W.Flag) : Bool :=
   if BadFlag κ o f then !o.isOut f else o.isOut f
 
 /-- On a flag of a badly oriented chain the repair reverses. -/
-theorem canonIsOut_of_bad {κ : F.RelTransitionSystem}
+theorem canonIsOut_of_bad [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {f : W.Flag} (h : BadFlag κ o f) :
     canonIsOut κ o f = !o.isOut f := by
   unfold canonIsOut
   rw [if_pos h]
 
 /-- Elsewhere it leaves the orientation alone. -/
-theorem canonIsOut_of_not_bad {κ : F.RelTransitionSystem}
+theorem canonIsOut_of_not_bad
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     {o : κ.Orientation} {f : W.Flag} (h : ¬ BadFlag κ o f) :
     canonIsOut κ o f = o.isOut f := by
   unfold canonIsOut
@@ -234,7 +242,9 @@ theorem canonIsOut_of_not_bad {κ : F.RelTransitionSystem}
 /-- **The flipped orientation**: negate the given orientation on the
 flip set.  The closure lemmas make the flip commute with both
 orientation axioms. -/
-noncomputable def canonOrientation (κ : F.RelTransitionSystem)
+noncomputable def canonOrientation
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     (o : κ.Orientation) : κ.Orientation where
   isOut := canonIsOut κ o
   match_flip := fun f hf => by
@@ -259,7 +269,9 @@ noncomputable def canonOrientation (κ : F.RelTransitionSystem)
         o.pairing_flip f hf hp]
 
 /-- The repaired orientation's table is that repair. -/
-theorem canonOrientation_isOut (κ : F.RelTransitionSystem)
+theorem canonOrientation_isOut
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (f : W.Flag) :
     (canonOrientation κ o).isOut f = canonIsOut κ o f := rfl
 
@@ -268,7 +280,9 @@ theorem canonOrientation_isOut (κ : F.RelTransitionSystem)
 /-- **The flipped orientation is path-canonical**: at each low-end
 entry flag, exit uniqueness pins any badness witness to the entry's
 own chain, so the flip decision matches the chain's prior status. -/
-theorem pathCanonical_canonOrientation (κ : F.RelTransitionSystem)
+theorem pathCanonical_canonOrientation
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     (o : κ.Orientation) : PathCanonical (canonOrientation κ o) := by
   intro i j hb hint hpm hij
   rw [canonOrientation_isOut]
@@ -326,7 +340,8 @@ theorem pathCanonical_canonOrientation (κ : F.RelTransitionSystem)
 /-- **Existence of path-canonical orientations**: any orientation of
 a boundary-relative transition system can be repaired into a
 path-canonical orientation of the same system. -/
-theorem exists_pathCanonical (κ : F.RelTransitionSystem)
+theorem exists_pathCanonical [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     (o : κ.Orientation) : ∃ o' : κ.Orientation, PathCanonical o' :=
   ⟨canonOrientation κ o, pathCanonical_canonOrientation κ o⟩
 

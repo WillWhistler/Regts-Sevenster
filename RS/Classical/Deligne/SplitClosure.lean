@@ -32,13 +32,14 @@ universe v₂ u₂ v u
 
 section FinBiproduct
 
-variable {D : Type u} [Category.{v} D] [Preadditive D]
-variable [HasFiniteBiproducts D]
+variable {D : Type u}
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 /-- The empty biproduct vanishes. -/
-theorem isZero_biproductFinZero (g : Fin 0 → D) : IsZero (⨁ g) := by
+theorem isZero_biproductFinZero
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    (g : Fin 0 → D) : IsZero (⨁ g) := by
   rw [IsZero.iff_id_eq_zero]
   apply biproduct.hom_ext
   rintro ⟨_, hj⟩
@@ -46,7 +47,9 @@ theorem isZero_biproductFinZero (g : Fin 0 → D) : IsZero (⨁ g) := by
 
 /-- The first inclusion misses the shifted projections. -/
 @[reassoc]
-theorem biproductFin_ι_zero_lift {k : ℕ} (g : Fin (k + 1) → D) :
+theorem biproductFin_ι_zero_lift
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {k : ℕ} (g : Fin (k + 1) → D) :
     biproduct.ι g 0 ≫
         (biproduct.lift fun i : Fin k => biproduct.π g i.succ) = 0 := by
   apply biproduct.hom_ext
@@ -56,7 +59,9 @@ theorem biproductFin_ι_zero_lift {k : ℕ} (g : Fin (k + 1) → D) :
 
 /-- A shifted inclusion meets the shifted projections diagonally. -/
 @[reassoc]
-theorem biproductFin_ι_succ_lift {k : ℕ} (g : Fin (k + 1) → D)
+theorem biproductFin_ι_succ_lift
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {k : ℕ} (g : Fin (k + 1) → D)
     (i : Fin k) :
     biproduct.ι g i.succ ≫
         (biproduct.lift fun i' : Fin k => biproduct.π g i'.succ) =
@@ -72,7 +77,9 @@ theorem biproductFin_ι_succ_lift {k : ℕ} (g : Fin (k + 1) → D)
 
 /-- Peeling the first summand off a biproduct indexed by
 `Fin (k + 1)`. -/
-noncomputable def biprodPeelFinIso {k : ℕ} (g : Fin (k + 1) → D) :
+noncomputable def biprodPeelFinIso
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    {k : ℕ} (g : Fin (k + 1) → D) :
     (⨁ g) ≅ g 0 ⊞ (⨁ fun i : Fin k => g i.succ) where
   hom := biprod.lift (biproduct.π g 0)
     (biproduct.lift fun i : Fin k => biproduct.π g i.succ)
@@ -101,25 +108,31 @@ end FinBiproduct
 
 section Mix
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D]
-variable [MonoidalPreadditive D] [HasFiniteBiproducts D]
+variable {D : Type u}
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 /-- The mixed sum of one unit and no line is the unit. -/
-noncomputable def OddLine.mixOneZeroIso (L : OddLine D) :
+noncomputable def OddLine.mixOneZeroIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) :
     L.mix 1 0 ≅ 𝟙_ D :=
   L.mixSuccIso 0 0 ≪≫ (isoBiprodZero L.isZero_mix_zero).symm
 
 /-- The mixed sum of no unit and one line is the line. -/
-noncomputable def OddLine.mixZeroOneIso (L : OddLine D) :
+noncomputable def OddLine.mixZeroOneIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) :
     L.mix 0 1 ≅ L.obj :=
   L.mixLineSuccIso 0 0 ≪≫ (isoBiprodZero L.isZero_mix_zero).symm
 
-omit [MonoidalPreadditive D] in
 /-- **A biproduct of mixed sums is a mixed sum.** -/
-theorem OddLine.exists_mix_biprod (L : OddLine D) :
+theorem OddLine.exists_mix_biprod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) :
     ∀ p q p' q' : ℕ, ∃ a b : ℕ,
       Nonempty (L.mix p q ⊞ L.mix p' q' ≅ L.mix a b) := by
   intro p
@@ -150,7 +163,10 @@ theorem OddLine.exists_mix_biprod (L : OddLine D) :
 
 /-- **The line times a mixed sum is a mixed sum**: the line
 exchanges the unit summands with the line summands. -/
-theorem OddLine.exists_mix_line_tensor (L : OddLine D) :
+theorem OddLine.exists_mix_line_tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) :
     ∀ p q : ℕ, ∃ a b : ℕ,
       Nonempty (L.obj ⊗ L.mix p q ≅ L.mix a b) := by
   intro p
@@ -178,7 +194,10 @@ theorem OddLine.exists_mix_line_tensor (L : OddLine D) :
         (L.mixLineSuccIso a b).symm⟩⟩
 
 /-- **A tensor product of mixed sums is a mixed sum.** -/
-theorem OddLine.exists_mix_tensor (L : OddLine D) :
+theorem OddLine.exists_mix_tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) :
     ∀ p q p' q' : ℕ, ∃ a b : ℕ,
       Nonempty (L.mix p q ⊗ L.mix p' q' ≅ L.mix a b) := by
   intro p
@@ -215,38 +234,47 @@ end Mix
 
 section Split
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D]
-variable [HasFiniteBiproducts D]
+variable {D : Type u}
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 /-- An object is *split* by `R` when its free module is a mixed
 sum: a sum of copies of the unit and of the odd line. -/
-def IsSplit (L : OddLine D) (R : D) [MonObj R] (Y : D) : Prop :=
+def IsSplit [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (R : D) [MonObj R] (Y : D) : Prop :=
   ∃ p q : ℕ, Nonempty (freeMod R Y ≅ freeMod R (L.mix p q))
 
-variable (L : OddLine D) (R : D) [MonObj R]
-
 /-- Splitness transports along an isomorphism. -/
-theorem IsSplit.of_iso {Y Z : D} (e : Y ≅ Z) (h : IsSplit L R Y) :
+theorem IsSplit.of_iso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
+    {Y Z : D} (e : Y ≅ Z) (h : IsSplit L R Y) :
     IsSplit L R Z := by
   obtain ⟨p, q, ⟨f⟩⟩ := h
   exact ⟨p, q, ⟨(freeModMapIso R e).symm ≪≫ f⟩⟩
 
 /-- **The unit is split**: it is the mixed sum of a single unit. -/
-theorem isSplit_unit : IsSplit L R (𝟙_ D) :=
+theorem isSplit_unit [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] : IsSplit L R (𝟙_ D) :=
   ⟨1, 0, ⟨freeModMapIso R L.mixOneZeroIso.symm⟩⟩
 
 /-- **A zero object is split**: it is the empty mixed sum. -/
-theorem isSplit_zero {Y : D} (h : IsZero Y) : IsSplit L R Y :=
+theorem isSplit_zero [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
+    {Y : D} (h : IsZero Y) : IsSplit L R Y :=
   ⟨0, 0, ⟨freeModMapIso R (h.iso L.isZero_mix_zero)⟩⟩
-
-variable [MonoidalPreadditive D]
 
 /-- **Split objects are closed under binary biproducts**, the
 ranks adding. -/
-theorem IsSplit.biprod {Y Z : D} (hY : IsSplit L R Y)
+theorem IsSplit.biprod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [MonoidalPreadditive D]
+    {Y Z : D} (hY : IsSplit L R Y)
     (hZ : IsSplit L R Z) : IsSplit L R (Y ⊞ Z) := by
   obtain ⟨p, q, ⟨eY⟩⟩ := hY
   obtain ⟨p', q', ⟨eZ⟩⟩ := hZ
@@ -257,7 +285,10 @@ theorem IsSplit.biprod {Y Z : D} (hY : IsSplit L R Y)
     freeModMapIso R g⟩⟩
 
 /-- **Split objects are closed under finite biproducts.** -/
-theorem IsSplit.biproduct : ∀ (k : ℕ) (g : Fin k → D),
+theorem IsSplit.biproduct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [MonoidalPreadditive D] : ∀ (k : ℕ) (g : Fin k → D),
     (∀ t, IsSplit L R (g t)) → IsSplit L R (⨁ g) := by
   intro k
   induction k with
@@ -268,14 +299,15 @@ theorem IsSplit.biproduct : ∀ (k : ℕ) (g : Fin k → D),
     exact IsSplit.of_iso L R (biprodPeelFinIso g).symm
       (IsSplit.biprod L R (hg 0) (ih _ fun i => hg i.succ))
 
-variable [HasCoequalizers D] [IsCommMonObj R]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-
 /-- **Split objects are closed under tensor products**: the free
 module functor carries the tensor product to the relative tensor
 product, and a tensor product of mixed sums is a mixed sum. -/
-theorem IsSplit.tensor {Y Z : D} (hY : IsSplit L R Y)
+theorem IsSplit.tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj R]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    {Y Z : D} (hY : IsSplit L R Y)
     (hZ : IsSplit L R Z) : IsSplit L R (Y ⊗ Z) := by
   obtain ⟨p, q, ⟨eY⟩⟩ := hY
   obtain ⟨p', q', ⟨eZ⟩⟩ := hZ
@@ -286,7 +318,12 @@ theorem IsSplit.tensor {Y Z : D} (hY : IsSplit L R Y)
     freeModMapIso R g⟩⟩
 
 /-- **Split objects are closed under tensor powers.** -/
-theorem IsSplit.tensorPow {Y : D} (h : IsSplit L R Y) (n : ℕ) :
+theorem IsSplit.tensorPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [MonoidalPreadditive D] [HasCoequalizers D] [IsCommMonObj R]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    {Y : D} (h : IsSplit L R Y) (n : ℕ) :
     IsSplit L R (tensorPow D Y n) := by
   induction n with
   | zero => exact isSplit_unit L R
@@ -298,21 +335,19 @@ end Split
 
 section IndGenerator
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [HasFiniteBiproducts C] [RigidCategory C]
-variable [MonoidalPreadditive (Ind C)] [SymmetricCategory (Ind C)]
-variable [HasCoequalizers (Ind C)]
-variable [∀ Z : Ind C,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-variable [HasFiniteBiproducts (Ind C)]
-variable (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
-  [IsCommMonObj 𝔸]
+variable {C : Type v}
 
-omit [HasFiniteBiproducts C] [RigidCategory C] in
 /-- **The embedded tensor powers of a split object are split**:
 the embedding is strong monoidal, so it carries the tensor power
 downstairs to the tensor power upstairs. -/
-theorem isSplit_indOf_tensorPow (X : C)
+theorem isSplit_indOf_tensorPow
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [MonoidalPreadditive (Ind C)] [SymmetricCategory (Ind C)]
+    [HasCoequalizers (Ind C)]
+    [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair (tensorLeft
+      Z)] [HasFiniteBiproducts (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C)
+    [MonObj 𝔸] [IsCommMonObj 𝔸]
+    (X : C)
     (hX : IsSplit L 𝔸 ((indOf : C ⥤ Ind C).obj X)) (n : ℕ) :
     IsSplit L 𝔸 ((indOf : C ⥤ Ind C).obj (tensorPow C X n)) := by
   induction n with
@@ -323,10 +358,16 @@ theorem isSplit_indOf_tensorPow (X : C)
     exact IsSplit.of_iso L 𝔸 (indOfTensorIso (tensorPow C X n) X)
       (IsSplit.tensor L 𝔸 ih hX)
 
-omit [HasFiniteBiproducts C] in
 /-- **The embedded mixed tensor powers of a generator are split**,
 given that the generator and its dual are. -/
-theorem isSplit_indOf_mixedPow (X : C)
+theorem isSplit_indOf_mixedPow
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive (Ind C)] [SymmetricCategory (Ind C)]
+    [HasCoequalizers (Ind C)]
+    [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair (tensorLeft
+      Z)] [HasFiniteBiproducts (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C)
+    [MonObj 𝔸] [IsCommMonObj 𝔸]
+    (X : C)
     (hX : IsSplit L 𝔸 ((indOf : C ⥤ Ind C).obj X))
     (hXd : IsSplit L 𝔸 ((indOf : C ⥤ Ind C).obj (Xᘁ)))
     (a b : ℕ) :
@@ -350,7 +391,13 @@ finishes.
 The subquotient hypothesis is phrased downstairs: for objects `Y`
 and `Z` of `C` with `Y` a subquotient of `Z`, splitness of the
 embedded `Z` implies splitness of the embedded `Y`. -/
-theorem splitsOn_of_generator (X : C)
+theorem splitsOn_of_generator [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [HasFiniteBiproducts C] [RigidCategory C] [MonoidalPreadditive (Ind C)]
+    [SymmetricCategory (Ind C)] [HasCoequalizers (Ind C)]
+    [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair (tensorLeft
+      Z)] [HasFiniteBiproducts (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C)
+    [MonObj 𝔸] [IsCommMonObj 𝔸]
+    (X : C)
     (hX : IsSplit L 𝔸 ((indOf : C ⥤ Ind C).obj X))
     (hXd : IsSplit L 𝔸 ((indOf : C ⥤ Ind C).obj (Xᘁ)))
     (hsub : ∀ Y Z : C, IsSubquotientOf Y Z →

@@ -19,12 +19,12 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- The top transposition on a power of the unit is the
 identity. -/
-theorem swapTop_unit (n : ℕ) :
+theorem swapTop_unit [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (n : ℕ) :
     swapTop (𝟙_ D) n = 𝟙 (tensorPow D (𝟙_ D) (n + 2)) := by
   unfold swapTop
   rw [braiding_unit_self, MonoidalCategory.whiskerLeft_id,
@@ -32,7 +32,8 @@ theorem swapTop_unit (n : ℕ) :
 
 /-- Every adjacent transposition acts trivially on a power of the
 unit. -/
-theorem permMor_unit_adjSwap :
+theorem permMor_unit_adjSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] :
     ∀ (n : ℕ) (i : Fin (n + 1)),
       permMor (𝟙_ D) (n + 2) (Equiv.swap i.castSucc i.succ) =
         𝟙 (tensorPow D (𝟙_ D) (n + 2)) := by
@@ -62,7 +63,8 @@ theorem permMor_unit_adjSwap :
 /-- **Permutations act trivially on powers of the unit**: every
 adjacent transposition does, and the action and the trivial
 character are both multiplicative. -/
-theorem permMor_unit (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+theorem permMor_unit [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     permMor (𝟙_ D) n σ = 𝟙 (tensorPow D (𝟙_ D) n) := by
   match n, σ with
   | 0, σ =>
@@ -89,10 +91,8 @@ theorem permMor_unit (n : ℕ) (σ : Equiv.Perm (Fin n)) :
 
 section Point
 
-variable (Y : D) (pt : 𝟙_ D ⟶ Y)
-
 /-- The powers of the unit collapse onto the unit. -/
-noncomputable def unitPow : (n : ℕ) →
+noncomputable def unitPow [Category.{v} D] [MonoidalCategory D] : (n : ℕ) →
     (tensorPow D (𝟙_ D) n ≅ 𝟙_ D)
   | 0 => Iso.refl _
   | (n + 1) => (ρ_ (tensorPow D (𝟙_ D) n)) ≪≫ unitPow n
@@ -100,23 +100,26 @@ noncomputable def unitPow : (n : ℕ) →
 variable {Y} in
 /-- **The power of a point**: the collapsed unit power carried
 into the power of the target. -/
-noncomputable def tensorPowPoint (n : ℕ) :
+noncomputable def tensorPowPoint
+    [Category.{v} D] [MonoidalCategory D] {Y : D} (pt : 𝟙_ D ⟶ Y)
+    (n : ℕ) :
     𝟙_ D ⟶ tensorPow D Y n :=
   (unitPow n).inv ≫ tensorPowMap pt n
 
 variable {Y} in
-omit [SymmetricCategory D] in
 /-- In a rigid category the power of a monic point is monic. -/
-theorem tensorPowPoint_mono [RigidCategory D] [Mono pt] (n : ℕ) :
+theorem tensorPowPoint_mono
+    [Category.{v} D] [MonoidalCategory D] {Y : D} (pt : 𝟙_ D ⟶ Y)
+    [RigidCategory D] [Mono pt] (n : ℕ) :
     Mono (tensorPowPoint pt n) := by
   haveI := tensorPowMap_mono pt n
   exact mono_comp _ _
 
 variable {Y} in
-omit [SymmetricCategory D] in
 /-- The power of a monic point is monic, from mono preservation
 of the tensor factors alone. -/
 theorem tensorPowPoint_mono'
+    [Category.{v} D] [MonoidalCategory D] {Y : D} (pt : 𝟙_ D ⟶ Y)
     [∀ Z : D, (tensorLeft Z).PreservesMonomorphisms]
     [∀ Z : D, (tensorRight Z).PreservesMonomorphisms]
     [Mono pt] (n : ℕ) :
@@ -125,18 +128,19 @@ theorem tensorPowPoint_mono'
   exact mono_comp _ _
 
 variable {Y} in
-omit [SymmetricCategory D] in
 /-- The empty point power is the identity. -/
-theorem tensorPowPoint_zero :
+theorem tensorPowPoint_zero
+    [Category.{v} D] [MonoidalCategory D] {Y : D} (pt : 𝟙_ D ⟶ Y) :
     tensorPowPoint pt 0 = 𝟙 (𝟙_ D) := by
   rw [tensorPowPoint, tensorPowMap_zero]
   exact Category.comp_id _
 
 variable {Y} in
-omit [SymmetricCategory D] in
 /-- The recursion of the point powers: one more letter joins on
 the right. -/
-theorem tensorPowPoint_succ (n : ℕ) :
+theorem tensorPowPoint_succ
+    [Category.{v} D] [MonoidalCategory D] {Y : D} (pt : 𝟙_ D ⟶ Y)
+    (n : ℕ) :
     tensorPowPoint pt (n + 1) =
       (ρ_ (𝟙_ D)).inv ≫ (tensorPowPoint pt n ⊗ₘ pt) := by
   rw [tensorPowPoint, tensorPowPoint, tensorPowMap_succ]
@@ -151,10 +155,11 @@ theorem tensorPowPoint_succ (n : ℕ) :
     ((unitPow n).inv)) _).trans (Category.assoc _ _ _)
 
 variable {Y} in
-omit [SymmetricCategory D] in
 /-- **Point powers concatenate**: the tensor of two point powers
 meets the concatenation as the joint point power. -/
-theorem tensorPowPoint_concat (m : ℕ) :
+theorem tensorPowPoint_concat
+    [Category.{v} D] [MonoidalCategory D] {Y : D} (pt : 𝟙_ D ⟶ Y)
+    (m : ℕ) :
     ∀ n : ℕ,
     (tensorPowPoint pt m ⊗ₘ tensorPowPoint pt n) ≫
         (tensorPowConcat Y m n).hom =
@@ -200,7 +205,7 @@ theorem tensorPowPoint_concat (m : ℕ) :
         pt) := by
       rw [← MonoidalCategory.tensorHom_id,
         MonoidalCategory.tensorHom_comp_tensorHom,
-        Category.comp_id, tensorPowPoint_concat m n]
+        Category.comp_id, tensorPowPoint_concat pt m n]
     have hcoh : ((𝟙 (𝟙_ D)) ⊗ₘ (ρ_ (𝟙_ D)).inv) ≫
         (α_ (𝟙_ D) (𝟙_ D) (𝟙_ D)).inv ≫
         ((λ_ (𝟙_ D)).hom ▷ (𝟙_ D)) =
@@ -251,7 +256,10 @@ theorem tensorPowPoint_concat (m : ℕ) :
 variable {Y} in
 /-- **The permutation action fixes point powers**: naturality
 carries the action onto the unit strands, where it is trivial. -/
-theorem tensorPowPoint_permMor (n : ℕ)
+theorem tensorPowPoint_permMor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {Y : D}
+    (pt : 𝟙_ D ⟶ Y)
+    (n : ℕ)
     (σ : Equiv.Perm (Fin n)) :
     tensorPowPoint pt n ≫ permMor Y n σ =
       tensorPowPoint pt n := by
@@ -262,14 +270,13 @@ end Point
 
 section Symmetrise
 
-variable [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D]
-variable (A : D) [MonObj A] (X : D) [ModObj A X]
-variable (pt : 𝟙_ D ⟶ X)
-
 /-- **The symmetriser fixes point powers** in the module power:
 every permutation fixes them, so their average does. -/
-theorem tensorPowPoint_symPowIdem (n : ℕ) :
+theorem tensorPowPoint_symPowIdem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X] (pt : 𝟙_ D ⟶ X)
+    (n : ℕ) :
     tensorPowPoint pt n ≫ modPowπ A X n ≫ symPowIdem A X n =
       tensorPowPoint pt n ≫ modPowπ A X n := by
   rw [symPowIdem, symmetriser, map_smul, map_sum]
@@ -306,13 +313,13 @@ end Symmetrise
 
 section Nonzero
 
-variable [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D]
-
 /-- **Nonvanishing of point powers in symmetric powers over the
 unit monoid**: for a monic point of an object in a rigid category
 with nonzero unit, no symmetrised point power vanishes. -/
-theorem point_symPow_ne_zero [RigidCategory D] (X : D)
+theorem point_symPow_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    [RigidCategory D] (X : D)
     (pt : 𝟙_ D ⟶ X) [Mono pt] (h1 : ¬ IsZero (𝟙_ D)) (n : ℕ) :
     tensorPowPoint pt n ≫ modPowπ (𝟙_ D) X n ≫
       symPowπ (𝟙_ D) X n ≠ 0 := by
@@ -334,7 +341,10 @@ theorem point_symPow_ne_zero [RigidCategory D] (X : D)
 
 /-- The nonvanishing of symmetrised point powers, from mono
 preservation of the tensor factors alone. -/
-theorem point_symPow_ne_zero' (X : D)
+theorem point_symPow_ne_zero'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (X : D)
     [∀ Z : D, (tensorLeft Z).PreservesMonomorphisms]
     [∀ Z : D, (tensorRight Z).PreservesMonomorphisms]
     (pt : 𝟙_ D ⟶ X) [Mono pt] (h1 : ¬ IsZero (𝟙_ D)) (n : ℕ) :

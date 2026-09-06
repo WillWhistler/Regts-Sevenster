@@ -40,14 +40,14 @@ universe v u
 
 section Assoc
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R]
+variable {D : Type u}
 
-omit [BraidedCategory D] in
 /-- Two multiplications, with a reassociation of the generators
 carried past them. -/
 @[reassoc]
-theorem mul_mul_whiskerRight {P Q : D} (g : P ⟶ Q) :
+theorem mul_mul_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {P Q : D} (g : P ⟶ Q) :
     (μ[R] ▷ R) ▷ P ≫ μ[R] ▷ P ≫ R ◁ g =
       ((α_ R R R).hom ⊗ₘ g) ≫ (R ◁ μ[R]) ▷ Q ≫ μ[R] ▷ Q := by
   rw [tensorHom_def]
@@ -62,7 +62,10 @@ theorem mul_mul_whiskerRight {P Q : D} (g : P ⟶ Q) :
 modules and then the third agrees, up to the reassociation of the
 generators, with shuffling the last two and then the first. -/
 @[reassoc]
-theorem freeModShuffle_assoc (V W Z : D) :
+theorem freeModShuffle_assoc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    (V W Z : D) :
     (freeModShuffle R V W ▷ (R ⊗ Z)) ≫ freeModShuffle R (V ⊗ W) Z
         ≫ (R ◁ (α_ V W Z).hom)
       = (α_ (R ⊗ V) (R ⊗ W) (R ⊗ Z)).hom ≫
@@ -81,13 +84,13 @@ end Assoc
 
 section Unit
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R]
+variable {D : Type u}
 
-omit [MonObj R] in
 /-- Interchanging against a leading unit is a reassociation. -/
 @[reassoc]
-theorem rightUnitor_inv_whiskerRight_tensorμ (W : D) :
+theorem rightUnitor_inv_whiskerRight_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (W : D) :
     (ρ_ R).inv ▷ (R ⊗ W) ≫ tensorμ R (𝟙_ D) R W =
       (α_ R R W).inv ≫ (R ⊗ R) ◁ (λ_ W).inv := by
   simp only [tensorμ, braiding_tensorUnit_left]
@@ -97,17 +100,21 @@ theorem rightUnitor_inv_whiskerRight_tensorμ (W : D) :
 slot with the unit turns the shuffle into the left action of the
 free module, written out. -/
 @[reassoc]
-theorem freeModShuffle_unit_left (W : D) :
+theorem freeModShuffle_unit_left
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    (W : D) :
     ((ρ_ R).inv ▷ (R ⊗ W)) ≫ freeModShuffle R (𝟙_ D) W
       = ((α_ R R W).inv ≫ μ[R] ▷ W) ≫ (R ◁ (λ_ W).inv) := by
   rw [freeModShuffle, ← Category.assoc,
     rightUnitor_inv_whiskerRight_tensorμ, Category.assoc,
     whisker_exchange μ[R] (λ_ W).inv, Category.assoc]
 
-omit [MonObj R] in
 /-- Interchanging against a trailing unit is the slide. -/
 @[reassoc]
-theorem whiskerLeft_rightUnitor_inv_tensorμ (V : D) :
+theorem whiskerLeft_rightUnitor_inv_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (V : D) :
     (R ⊗ V) ◁ (ρ_ R).inv ≫ tensorμ R V R (𝟙_ D) =
       freeModSlide R V ≫ (R ⊗ R) ◁ (ρ_ V).inv := by
   simp only [tensorμ, freeModSlide, Category.assoc]
@@ -117,14 +124,16 @@ end Unit
 
 section Comm
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **Right unitality of the shuffle**: filling the second
 generator slot with the unit turns the shuffle into the braided
 right action of the free module, written out. -/
 @[reassoc]
-theorem freeModShuffle_unit_right (V : D) :
+theorem freeModShuffle_unit_right
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (V : D) :
     ((R ⊗ V) ◁ (ρ_ R).inv) ≫ freeModShuffle R V (𝟙_ D)
       = ((β_ (R ⊗ V) R).hom ≫ (α_ R R V).inv ≫ μ[R] ▷ V) ≫
           (R ◁ (ρ_ V).inv) := by
@@ -138,22 +147,23 @@ end Comm
 
 section Symmetric
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D]
+variable {D : Type u}
 
 end Symmetric
 
 section Braiding
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The shuffle commutes with the braiding**: swapping the two
 free modules and shuffling agrees with shuffling and swapping the
 two generators.  Commutativity of `R` swaps the algebra factors;
 the symmetry of the ambient braiding untwists the generators. -/
 @[reassoc]
-theorem freeModShuffle_braiding (V W : D) :
+theorem freeModShuffle_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (V W : D) :
     (β_ (R ⊗ V) (R ⊗ W)).hom ≫ freeModShuffle R W V
       = freeModShuffle R V W ≫ (R ◁ (β_ V W).hom) := by
   simp only [freeModShuffle, Category.assoc]

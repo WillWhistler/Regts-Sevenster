@@ -14,12 +14,14 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [Preadditive D]
-  [HasFiniteBiproducts D] [CategoryTheory.Linear ℂ D]
+variable {D : Type u}
 
 /-- **Morphisms into a biproduct are families of morphisms**, as
 ℂ-modules. -/
-noncomputable def homBiproductEquiv {J : Type} [Finite J] (P : D)
+noncomputable def homBiproductEquiv
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    [CategoryTheory.Linear ℂ D]
+    {J : Type} [Finite J] (P : D)
     (f : J → D) : (P ⟶ ⨁ f) ≃ₗ[ℂ] ∀ j, (P ⟶ f j) where
   toFun g := fun j => g ≫ biproduct.π f j
   map_add' g h := by

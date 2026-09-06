@@ -35,14 +35,14 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section Bijection
 
-variable (A : D) [MonObj A]
-
 /-- The unit of the free module is cancelled by the free action. -/
-theorem freeMod_unit_mul (X : D) :
+theorem freeMod_unit_mul
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : D) :
     A ◁ (λ_ X).inv ≫ A ◁ (η[A] ▷ X) ≫
         (α_ A A X).inv ≫ μ[A] ▷ X = 𝟙 (A ⊗ X) := by
   have h₁ : A ◁ (η[A] ▷ X) ≫ (α_ A A X).inv =
@@ -56,7 +56,9 @@ theorem freeMod_unit_mul (X : D) :
     MonoidalCategory.id_whiskerRight]
 
 /-- Restricting an extended map along the unit recovers the map. -/
-theorem unit_whiskerLeft_act (X Y : D) (act : A ⊗ Y ⟶ Y)
+theorem unit_whiskerLeft_act
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X Y : D) (act : A ⊗ Y ⟶ Y)
     (hone : η[A] ▷ Y ≫ act = (λ_ Y).hom) (g : X ⟶ Y) :
     (λ_ X).inv ≫ (η[A] ▷ X) ≫ (A ◁ g ≫ act) = g := by
   rw [← whisker_exchange_assoc, hone]
@@ -64,7 +66,9 @@ theorem unit_whiskerLeft_act (X Y : D) (act : A ⊗ Y ⟶ Y)
 
 /-- Extending the restriction of a module map along the unit
 recovers the module map. -/
-theorem whiskerLeft_unit_cancel (X Y : D) (act : A ⊗ Y ⟶ Y)
+theorem whiskerLeft_unit_cancel
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X Y : D) (act : A ⊗ Y ⟶ Y)
     (h : A ⊗ X ⟶ Y)
     (hlin : ((α_ A A X).inv ≫ μ[A] ▷ X) ≫ h = A ◁ h ≫ act) :
     A ◁ ((λ_ X).inv ≫ (η[A] ▷ X) ≫ h) ≫ act = h := by
@@ -75,7 +79,9 @@ theorem whiskerLeft_unit_cancel (X Y : D) (act : A ⊗ Y ⟶ Y)
 
 /-- The extension of a map along the free module intertwines the
 free action with the given action. -/
-theorem whiskerLeft_act_lin (X Y : D) (act : A ⊗ Y ⟶ Y)
+theorem whiskerLeft_act_lin
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X Y : D) (act : A ⊗ Y ⟶ Y)
     (hassoc : A ◁ act ≫ act = (α_ A A Y).inv ≫ μ[A] ▷ Y ≫ act)
     (g : X ⟶ Y) :
     ((α_ A A X).inv ≫ μ[A] ▷ X) ≫ (A ◁ g ≫ act) =
@@ -86,7 +92,8 @@ theorem whiskerLeft_act_lin (X Y : D) (act : A ⊗ Y ⟶ Y)
 
 /-- The module law of a map out of a free module, in tensor
 form. -/
-theorem freeModHom_lin (X : D) (M : Mod D A)
+theorem freeModHom_lin [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : D) (M : Mod D A)
     (f : freeMod A X ⟶ M) :
     ((α_ A A X).inv ≫ μ[A] ▷ X) ≫ f.hom =
       A ◁ f.hom ≫ actLeft A M.X :=
@@ -95,7 +102,9 @@ theorem freeModHom_lin (X : D) (M : Mod D A)
 /-- **The free–forgetful adjunction bijection for module
 objects**: module maps out of the free module on `X` are maps out
 of `X`, by restriction along the unit. -/
-noncomputable def freeModHomEquiv (X : D) (M : Mod D A) :
+noncomputable def freeModHomEquiv
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : D) (M : Mod D A) :
     (freeMod A X ⟶ M) ≃ (X ⟶ M.X) where
   toFun f := (λ_ X).inv ≫ (η[A] ▷ X) ≫ f.hom
   invFun g := Mod.Hom.mk' (A ◁ g ≫ actLeft A M.X)
@@ -108,12 +117,16 @@ noncomputable def freeModHomEquiv (X : D) (M : Mod D A) :
     unit_whiskerLeft_act A X M.X (actLeft A M.X)
       (one_actLeft A M.X) g
 
-@[simp] theorem freeModHomEquiv_apply (X : D) (M : Mod D A)
+@[simp] theorem freeModHomEquiv_apply
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : D) (M : Mod D A)
     (f : freeMod A X ⟶ M) :
     freeModHomEquiv A X M f = (λ_ X).inv ≫ (η[A] ▷ X) ≫ f.hom :=
   rfl
 
-@[simp] theorem freeModHomEquiv_symm_apply_hom (X : D)
+@[simp] theorem freeModHomEquiv_symm_apply_hom
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : D)
     (M : Mod D A) (g : X ⟶ M.X) :
     ((freeModHomEquiv A X M).symm g).hom = A ◁ g ≫ actLeft A M.X :=
   rfl
@@ -122,12 +135,11 @@ end Bijection
 
 section Vanishing
 
-variable [Preadditive D] [MonoidalPreadditive D]
-variable (A : D) [MonObj A]
-
 /-- An equivariant map out of a free module vanishes exactly when
 its restriction along the unit does. -/
-theorem unit_eq_zero_iff (X Y : D) (act : A ⊗ Y ⟶ Y)
+theorem unit_eq_zero_iff [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (A : D) [MonObj A]
+    (X Y : D) (act : A ⊗ Y ⟶ Y)
     (h : A ⊗ X ⟶ Y)
     (hlin : ((α_ A A X).inv ≫ μ[A] ▷ X) ≫ h = A ◁ h ≫ act) :
     h = 0 ↔ (λ_ X).inv ≫ (η[A] ▷ X) ≫ h = 0 := by
@@ -143,7 +155,10 @@ theorem unit_eq_zero_iff (X Y : D) (act : A ⊗ Y ⟶ Y)
 restriction along the unit does.**  This replaces the linearity of
 the adjunction bijection, which is unavailable because the
 hom-sets of `Mod D A` carry no additive structure. -/
-theorem freeModHom_eq_zero_iff (X : D) (M : Mod D A)
+theorem freeModHom_eq_zero_iff
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (A : D) [MonObj A]
+    (X : D) (M : Mod D A)
     (f : freeMod A X ⟶ M) :
     f.hom = 0 ↔ (λ_ X).inv ≫ (η[A] ▷ X) ≫ f.hom = 0 :=
   unit_eq_zero_iff A X M.X (actLeft A M.X) f.hom
@@ -153,7 +168,10 @@ theorem freeModHom_eq_zero_iff (X : D) (M : Mod D A)
 out of `N` vanishes as soon as its restrictions along the units of
 a family of free modules whose retracts sum to the identity of `N`
 all vanish. -/
-theorem hom_eq_zero_of_generators {N M : Mod D A} {J : Type}
+theorem hom_eq_zero_of_generators
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (A : D) [MonObj A]
+    {N M : Mod D A} {J : Type}
     [Fintype J] {f : J → D} (s : ∀ i, freeMod A (f i) ⟶ N)
     (r : ∀ i, N ⟶ freeMod A (f i))
     (htot : ∑ i, (r i).hom ≫ (s i).hom = 𝟙 N.X) (g : N ⟶ M)
@@ -173,17 +191,17 @@ end Vanishing
 
 section Adjoint
 
-variable (A : D) [MonObj A]
-
 /-- Restriction along the unit is compatible with postcomposition
 in the target. -/
-theorem unit_comp_assoc (X Y Z : D) (h : A ⊗ X ⟶ Y) (k : Y ⟶ Z) :
+theorem unit_comp_assoc [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X Y Z : D) (h : A ⊗ X ⟶ Y) (k : Y ⟶ Z) :
     (λ_ X).inv ≫ (η[A] ▷ X) ≫ h ≫ k =
       ((λ_ X).inv ≫ (η[A] ▷ X) ≫ h) ≫ k := by
   simp only [Category.assoc]
 
 /-- **The free–forgetful adjunction for module objects.** -/
-noncomputable def freeModAdjunction :
+noncomputable def freeModAdjunction
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] :
     freeModFunctor A ⊣ Mod.forget A :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X M => freeModHomEquiv A X M

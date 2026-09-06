@@ -69,23 +69,23 @@ dimensions supplies through semisimplicity and finite-dimensional
 Hom-spaces — properties of the envelope, not hypotheses of the
 theorem; and its conclusion carries exactness and faithfulness,
 which the package drops. -/
-theorem env_delignePackage (P : SchurPackage.{1})
+theorem env_delignePackage
     (hD : DeligneTheoremStatement.{1, 1}) :
     Nonempty (DelignePackage (Env f)) := by
-  letI := envAbelian f P
+  letI := envAbelian f
   exact (hD (Env f) (env_endOne f)
     ⟨envStrand f 1, env_deligneGenerated f⟩
     (moderateLengthGrowth_of_endGrowth (Env f)
-      (env_deligneSemisimple f P) (env_finDimHom f)
+      (env_deligneSemisimple f) (env_finDimHom f)
       (env_deligneModerateGrowth f))).map
     DeligneFibreFunctor.toPackage
 
 /-- **The Deligne package for the skein category**: restrict
 the envelope's fibre functor along the embedding. -/
-theorem skein_delignePackage (P : SchurPackage.{1})
+theorem skein_delignePackage
     (hD : DeligneTheoremStatement.{1, 1}) :
     Nonempty (DelignePackage (SkeinObj f)) := by
-  obtain ⟨Q⟩ := env_delignePackage f P hD
+  obtain ⟨Q⟩ := env_delignePackage f hD
   exact ⟨Q.restrict (skeinToEnv f)⟩
 
 end RS

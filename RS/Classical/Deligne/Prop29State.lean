@@ -22,14 +22,7 @@ open scoped MonObj
 
 universe v u
 
-variable (D : Type u) [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
+variable (D : Type u)
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
@@ -38,7 +31,13 @@ attribute [local instance]
 counts of unit and line factors already split off, a dualizable
 remainder with its zigzag laws, and the decomposition of the base
 change of the object. -/
-structure DevissageState (L : OddLine D) (X : D) where
+structure DevissageState
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (L : OddLine D) (X : D) where
   /-- The current base algebra. -/
   base : D
   /-- Its monoid structure. -/
@@ -69,11 +68,15 @@ structure DevissageState (L : OddLine D) (X : D) where
 
 section Steps
 
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- **Case (a) of the dévissage**: when every symmetric power of
 the remainder survives, a further unit factor splits off. -/
-def DevissageStepA (L : OddLine D) (X : D) : Prop :=
+def DevissageStepA [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    [Linear ℂ D]
+    (L : OddLine D) (X : D) : Prop :=
   ∀ st : DevissageState D L X,
     (letI := st.monObj;
       ∀ n : ℕ, ¬ IsZero (symPow st.base st.rest.X n)) →
@@ -82,7 +85,13 @@ def DevissageStepA (L : OddLine D) (X : D) : Prop :=
 
 /-- **Case (b)**: when every alternating power of the remainder
 survives, a further line factor splits off. -/
-def DevissageStepB (L : OddLine D) (X : D) : Prop :=
+def DevissageStepB [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    [Linear ℂ D]
+    (L : OddLine D) (X : D) : Prop :=
   ∀ st : DevissageState D L X,
     (letI := st.monObj;
       ∀ n : ℕ, ¬ IsZero (altPow st.base st.rest.X n)) →
@@ -91,15 +100,25 @@ def DevissageStepB (L : OddLine D) (X : D) : Prop :=
 
 /-- **The exit**: a state whose remainder has died witnesses the
 local mixed decomposition. -/
-def DevissageExit (L : OddLine D) (X : D) : Prop :=
+def DevissageExit [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (L : OddLine D) (X : D) : Prop :=
   ∀ st : DevissageState D L X,
     (letI := st.monObj; IsZero st.rest.X) →
     L.LocallyMixed X
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- **The exit holds**: the decomposition collapses onto its
 mixed free part once the remainder dies. -/
-theorem devissageExit (L : OddLine D) (X : D) :
+theorem devissageExit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (L : OddLine D) (X : D) :
     DevissageExit D L X := by
   intro st hz
   letI := st.monObj
@@ -125,7 +144,14 @@ theorem devissageExit (L : OddLine D) (X : D) :
 /-- **The trichotomy**: over any state, either every symmetric
 power of the remainder survives, or every alternating power
 survives, or the remainder has died. -/
-def DevissageTrichotomy (L : OddLine D) (X : D) : Prop :=
+def DevissageTrichotomy
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    [Linear ℂ D]
+    (L : OddLine D) (X : D) : Prop :=
   ∀ st : DevissageState D L X,
     (letI := st.monObj;
       ∀ n : ℕ, ¬ IsZero (symPow st.base st.rest.X n)) ∨
@@ -133,12 +159,18 @@ def DevissageTrichotomy (L : OddLine D) (X : D) : Prop :=
       ∀ n : ℕ, ¬ IsZero (altPow st.base st.rest.X n)) ∨
     (letI := st.monObj; IsZero st.rest.X)
 
-omit [MonoidalLinear ℂ D] in
 /-- **The dévissage runs to completion**: given the two step
 constructions, the trichotomy, the exit, and a uniform bound on
 the number of split-off factors, every state leads to the local
 mixed decomposition. -/
-theorem devissage_run (L : OddLine D) (X : D)
+theorem devissage_run
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    [Linear ℂ D]
+    (L : OddLine D) (X : D)
     (hA : DevissageStepA D L X) (hB : DevissageStepB D L X)
     (hT : DevissageTrichotomy D L X)
     (hE : DevissageExit D L X) (bound : ℕ)

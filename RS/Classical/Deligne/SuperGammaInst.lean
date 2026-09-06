@@ -62,14 +62,14 @@ unitality through the braiding, so it is not a field. -/
 
 section Comparison
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
-  [BraidedCategory C]
-variable {D : Type u'} [Category.{v'} D] [MonoidalCategory D]
-  [BraidedCategory D]
+variable {C : Type u}
 
 /-- Monoidal-functor data up to isomorphism on `F`, with the
 braiding axiom: the odd-line transport interface. -/
-structure BraidedComparison (F : C ⥤ D) where
+structure BraidedComparison
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D]
+    (F : C ⥤ D) where
   /-- The unit comparison. -/
   unitIso : 𝟙_ D ≅ F.obj (𝟙_ C)
   /-- The tensor comparison. -/
@@ -97,12 +97,13 @@ structure BraidedComparison (F : C ⥤ D) where
     (β_ (F.obj x) (F.obj y)).hom ≫ (tensorIso y x).hom =
       (tensorIso x y).hom ≫ F.map (β_ x y).hom
 
-variable {F : C ⥤ D}
-
 namespace BraidedComparison
 
 /-- A braided functor carries the canonical braided comparison. -/
-def ofBraidedFunctor (F : C ⥤ D) [F.Braided] :
+def ofBraidedFunctor
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D]
+    (F : C ⥤ D) [F.Braided] :
     BraidedComparison F where
   unitIso := Functor.Monoidal.εIso F
   tensorIso x y := Functor.Monoidal.μIso F x y
@@ -117,7 +118,10 @@ def ofBraidedFunctor (F : C ⥤ D) [F.Braided] :
 unitor of `F.obj x` into its left unitor, the braiding axiom
 carries the braiding downstairs, and the braiding identity of the
 base returns the right unitor. -/
-theorem right_unitality (P : BraidedComparison F) (x : C) :
+theorem right_unitality
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (x : C) :
     (ρ_ (F.obj x)).hom = (F.obj x ◁ P.unitIso.hom) ≫
       (P.tensorIso x (𝟙_ C)).hom ≫ F.map (ρ_ x).hom := by
   rw [← braiding_leftUnitor (F.obj x), P.left_unitality x,
@@ -127,19 +131,28 @@ theorem right_unitality (P : BraidedComparison F) (x : C) :
 
 /-- The transported odd-square trivialization: conjugate `ho` by
 the tensor and unit comparisons. -/
-def square (P : BraidedComparison F) (o : C)
+def square
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (o : C)
     (ho : o ⊗ o ≅ 𝟙_ C) : F.obj o ⊗ F.obj o ≅ 𝟙_ D :=
   P.tensorIso o o ≪≫ F.mapIso ho ≪≫ P.unitIso.symm
 
 /-- The inverse of the transported odd square, in components. -/
-theorem square_inv (P : BraidedComparison F) (o : C)
+theorem square_inv
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (o : C)
     (ho : o ⊗ o ≅ 𝟙_ C) :
     (P.square o ho).inv =
       P.unitIso.hom ≫ F.map ho.inv ≫ (P.tensorIso o o).inv := by
   simp [square]
 
 /-- Inverse form of left unitality. -/
-theorem leftUnitor_inv (P : BraidedComparison F) (x : C) :
+theorem leftUnitor_inv
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (x : C) :
     (λ_ (F.obj x)).inv = F.map (λ_ x).inv ≫
       (P.tensorIso (𝟙_ C) x).inv ≫ (P.unitIso.inv ▷ F.obj x) := by
   have h : λ_ (F.obj x) =
@@ -150,7 +163,10 @@ theorem leftUnitor_inv (P : BraidedComparison F) (x : C) :
   simp
 
 /-- Inverse form of right unitality. -/
-theorem rightUnitor_inv (P : BraidedComparison F) (x : C) :
+theorem rightUnitor_inv
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (x : C) :
     (ρ_ (F.obj x)).inv = F.map (ρ_ x).inv ≫
       (P.tensorIso x (𝟙_ C)).inv ≫ (F.obj x ◁ P.unitIso.inv) := by
   have h : ρ_ (F.obj x) =
@@ -161,7 +177,10 @@ theorem rightUnitor_inv (P : BraidedComparison F) (x : C) :
   simp
 
 /-- Inverse form of naturality in the left factor. -/
-theorem natural_left_inv (P : BraidedComparison F)
+theorem natural_left_inv
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F)
     {x x' : C} (f : x ⟶ x') (y : C) :
     (P.tensorIso x y).inv ≫ (F.map f ▷ F.obj y) =
       F.map (f ▷ y) ≫ (P.tensorIso x' y).inv := by
@@ -171,7 +190,10 @@ theorem natural_left_inv (P : BraidedComparison F)
     Iso.inv_hom_id_assoc]
 
 /-- Inverse form of naturality in the right factor. -/
-theorem natural_right_inv (P : BraidedComparison F)
+theorem natural_right_inv
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F)
     (x : C) {y y' : C} (g : y ⟶ y') :
     (P.tensorIso x y).inv ≫ (F.obj x ◁ F.map g) =
       F.map (x ◁ g) ≫ (P.tensorIso x y').inv := by
@@ -181,7 +203,10 @@ theorem natural_right_inv (P : BraidedComparison F)
     Iso.inv_hom_id_assoc]
 
 /-- Inverse form of associativity. -/
-theorem associativity_inv (P : BraidedComparison F) (x y z : C) :
+theorem associativity_inv
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (x y z : C) :
     (P.tensorIso (x ⊗ y) z).inv ≫
         ((P.tensorIso x y).inv ▷ F.obj z) ≫
         (α_ (F.obj x) (F.obj y) (F.obj z)).hom =
@@ -200,7 +225,10 @@ theorem associativity_inv (P : BraidedComparison F) (x y z : C) :
 form of `(λ_ o).inv ≫ ho.inv ▷ o ≫ (α_ o o o).hom` is the image of
 the pattern downstairs, followed by the inverse triple-tensor
 comparison. -/
-theorem conv_left (P : BraidedComparison F) (o : C)
+theorem conv_left
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (o : C)
     (ho : o ⊗ o ≅ 𝟙_ C) :
     (λ_ (F.obj o)).inv ≫ ((P.square o ho).inv ▷ F.obj o) ≫
         (α_ (F.obj o) (F.obj o) (F.obj o)).hom =
@@ -217,7 +245,10 @@ theorem conv_left (P : BraidedComparison F) (o : C)
 /-- **The right odd-line pattern in components**: the transported
 form of `(ρ_ o).inv ≫ o ◁ ho.inv` is the image of the pattern
 downstairs, followed by the same inverse comparison. -/
-theorem conv_right (P : BraidedComparison F) (o : C)
+theorem conv_right
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (o : C)
     (ho : o ⊗ o ≅ 𝟙_ C) :
     (ρ_ (F.obj o)).inv ≫ (F.obj o ◁ (P.square o ho).inv) =
       F.map ((ρ_ o).inv ≫ (o ◁ ho.inv)) ≫
@@ -232,7 +263,10 @@ theorem conv_right (P : BraidedComparison F) (o : C)
 /-- **Forward transport of the odd-cubed coherence**: the
 hypothesis `hα` of `RS.superGammaAlgebra` moves along any braided
 comparison. -/
-theorem coherence_map (P : BraidedComparison F) (o : C)
+theorem coherence_map
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) (o : C)
     (ho : o ⊗ o ≅ 𝟙_ C)
     (hα : (λ_ o).inv ≫ (ho.inv ▷ o) ≫ (α_ o o o).hom =
       (ρ_ o).inv ≫ (o ◁ ho.inv)) :
@@ -244,7 +278,10 @@ theorem coherence_map (P : BraidedComparison F) (o : C)
 /-- **Reflection of the odd-cubed coherence**: along a faithful
 braided comparison, `hα` downstairs at the transported square
 forces `hα` upstairs. -/
-theorem coherence_reflect (P : BraidedComparison F) [F.Faithful]
+theorem coherence_reflect
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    (P : BraidedComparison F) [F.Faithful]
     (o : C) (ho : o ⊗ o ≅ 𝟙_ C)
     (hα : (λ_ (F.obj o)).inv ≫
         ((P.square o ho).inv ▷ F.obj o) ≫
@@ -264,7 +301,10 @@ theorem coherence_reflect (P : BraidedComparison F) [F.Faithful]
 
 /-- **Forward transport of the odd braiding sign** along an
 additive braided comparison. -/
-theorem braiding_neg_map [Preadditive C] [Preadditive D]
+theorem braiding_neg_map
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    [Preadditive C] [Preadditive D]
     [F.Additive] (P : BraidedComparison F) {o : C}
     (hβ : (β_ o o).hom = -𝟙 (o ⊗ o)) :
     (β_ (F.obj o) (F.obj o)).hom =
@@ -281,7 +321,10 @@ theorem braiding_neg_map [Preadditive C] [Preadditive D]
 
 /-- **Reflection of the odd braiding sign** along a faithful
 additive braided comparison. -/
-theorem braiding_neg_reflect [Preadditive C] [Preadditive D]
+theorem braiding_neg_reflect
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] {D : Type u'}
+    [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D] {F : C ⥤ D}
+    [Preadditive C] [Preadditive D]
     [F.Additive] [F.Faithful] (P : BraidedComparison F) {o : C}
     (hβ : (β_ (F.obj o) (F.obj o)).hom =
       -𝟙 (F.obj o ⊗ F.obj o)) :
@@ -438,8 +481,7 @@ private theorem line_pair_swap (x : Fin 1 → ℂ) :
 two composites agree on every argument, for any inverse components
 `E`, `O` of a trivialization whose even part pairs the odd
 generators. -/
-private theorem raw_coherence
-    (E : ℂ →ₗ[ℂ] ((Fin 0 → ℂ) ⊗[ℂ] (Fin 0 → ℂ)) ×
+private theorem raw_coherence (E : ℂ →ₗ[ℂ] ((Fin 0 → ℂ) ⊗[ℂ] (Fin 0 → ℂ)) ×
         ((Fin 1 → ℂ) ⊗[ℂ] (Fin 1 → ℂ)))
     (O : PUnit →ₗ[ℂ] ((Fin 0 → ℂ) ⊗[ℂ] (Fin 1 → ℂ)) ×
         ((Fin 1 → ℂ) ⊗[ℂ] (Fin 0 → ℂ)))
@@ -634,14 +676,14 @@ end SmallModel
 
 section IndComparison
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [BraidedCategory C]
+variable {C : Type v}
 
 /-- **The braided comparison of the ind-embedding**: the unit and
 tensor comparisons of `RS.IndSchur` and `RS.SchurTransport`
 assemble into a braided comparison on `indOf`, over any braided
 small base. -/
-def indOfComparison : BraidedComparison (indOf (C := C)) where
+def indOfComparison [SmallCategory C] [MonoidalCategory C] [BraidedCategory C] :
+    BraidedComparison (indOf (C := C)) where
   unitIso := indOfUnitIso
   tensorIso x y := indOfTensorIso x y
   natural_left f y := indOfTensorIso_hom_natural_left f y

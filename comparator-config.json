@@ -4,6 +4,7 @@
     "theorem_names": [
         "Certified.regts_sevenster",
         "Certified.regts_sevenster_quant",
+        "Certified.regts_sevenster_total",
         "Certified.regts_sevenster_converse",
         "Certified.edgeRankBounded_of_mixedBounded",
         "Certified.regts_sevenster_characterisation",

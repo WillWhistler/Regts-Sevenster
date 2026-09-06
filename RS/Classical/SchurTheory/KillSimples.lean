@@ -14,12 +14,12 @@ namespace RS
 
 open Finset
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
+variable {G : Type*}
 
-omit [DecidableEq G] in
 /-- **The faithfulness trick**: killing every simple submodule of
 the regular module forces vanishing. -/
-theorem eq_zero_of_kills_simples (x : MonoidAlgebra ℂ G)
+theorem eq_zero_of_kills_simples [Group G] [Fintype G]
+    (x : MonoidAlgebra ℂ G)
     (hx : ∀ S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G),
       IsSimpleModule (MonoidAlgebra ℂ G) S →
       ∀ s ∈ S, x * s = 0) :

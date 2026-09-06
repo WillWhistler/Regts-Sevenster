@@ -12,13 +12,13 @@ namespace RS
 
 open Finset LinearMap
 
-variable {G V : Type*} [Group G] [Fintype G] [DecidableEq G]
-  [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
+variable {G V : Type*}
 
-omit [DecidableEq G] [FiniteDimensional ℂ V] in
 /-- The trace of the action of a class element is the character
 pairing. -/
-theorem trace_asAlgebraHom_classElem (ρ : Representation ℂ G V)
+theorem trace_asAlgebraHom_classElem
+    [Group G] [Fintype G] [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V)
     (c : G → ℂ) :
     LinearMap.trace ℂ V (ρ.asAlgebraHom (classElem c)) =
       ∑ g : G, c g * ρ.character g := by
@@ -39,7 +39,10 @@ theorem trace_asAlgebraHom_classElem (ρ : Representation ℂ G V)
 /-- **The identified scalar action**: a class-function element
 acts on an irreducible representation as the character-pairing
 scalar divided by the dimension. -/
-theorem classElem_scalar_eq {ρ : Representation ℂ G V}
+theorem classElem_scalar_eq
+    [Group G] [Fintype G] [DecidableEq G] [AddCommGroup V] [Module ℂ V]
+    [FiniteDimensional ℂ V]
+    {ρ : Representation ℂ G V}
     (hirr : IsIrredRep ρ) (c : G → ℂ)
     (hc : ∀ g h : G, c (h * g * h⁻¹) = c g) :
     ρ.asAlgebraHom (classElem c) =

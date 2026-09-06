@@ -15,12 +15,12 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable (A : D) [MonObj A] (V : D)
+variable {D : Type u}
 
 /-- **The one-letter normalisation is trivial.** -/
-theorem freeCollapse_freeInsert_one :
+theorem freeCollapse_freeInsert_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) :
     freeCollapse A V 1 ≫ freeInsert A V 0 =
       𝟙 (tensorPow D (A ⊗ V) 1) := by
   have key : ((((λ_ (𝟙_ D)).inv ≫ (η[A] ▷ 𝟙_ D)) ▷ (A ⊗ V)) ≫

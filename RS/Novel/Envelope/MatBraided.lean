@@ -19,31 +19,34 @@ open CategoryTheory.Limits CategoryTheory.MonoidalPreadditive
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] [MonoidalCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type u}
 
 /-! ### Componentwise access to the `Mat_ C` monoidal structure -/
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem mat_whiskerLeft_apply (X : Mat_ C) {Y Z : Mat_ C} (f : Y
+@[simp] private theorem mat_whiskerLeft_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X : Mat_ C) {Y Z : Mat_ C} (f : Y
   ⟶ Z)
     (ix : X.ι) (iy : Y.ι) (jx : X.ι) (jz : Z.ι) :
     (X ◁ f) (ix, iy) (jx, jz) = (𝟙 (X : Mat_ C)) ix jx ⊗ₘ f iy jz := rfl
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem mat_whiskerRight_apply {X Y : Mat_ C} (f : X ⟶ Y) (Z :
+@[simp] private theorem mat_whiskerRight_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {X Y : Mat_ C} (f : X ⟶ Y) (Z :
   Mat_ C)
     (ix : X.ι) (iz : Z.ι) (jy : Y.ι) (jz : Z.ι) :
     (f ▷ Z) (ix, iz) (jy, jz) = f ix jy ⊗ₘ (𝟙 (Z : Mat_ C)) iz jz := rfl
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem mat_tensorHom_apply {M₁ N₁ M₂ N₂ : Mat_ C}
+@[simp] private theorem mat_tensorHom_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {M₁ N₁ M₂ N₂ : Mat_ C}
     (f : M₁ ⟶ N₁) (g : M₂ ⟶ N₂) (i₁ : M₁.ι) (i₂ : M₂.ι) (j₁ : N₁.ι) (j₂ : N₂.ι)
       :
     (f ⊗ₘ g : M₁ ⊗ M₂ ⟶ N₁ ⊗ N₂) (i₁, i₂) (j₁, j₂) = f i₁ j₁ ⊗ₘ g i₂ j₂ := rfl
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem mat_assocHom_apply (M N K : Mat_ C)
+@[simp] private theorem mat_assocHom_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C)
     (i : M.ι) (j : N.ι) (k : K.ι) (i' : M.ι) (j' : N.ι) (k' : K.ι) :
     (α_ M N K).hom ((i, j), k) (i', (j', k')) =
       if hi : i = i' then if hj : j = j' then if hk : k = k' then
@@ -51,8 +54,9 @@ omit [MonoidalPreadditive C] in
           (K.X k')).hom
       else 0 else 0 else 0 := rfl
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem mat_assocInv_apply (M N K : Mat_ C)
+@[simp] private theorem mat_assocInv_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C)
     (i : M.ι) (j : N.ι) (k : K.ι) (i' : M.ι) (j' : N.ι) (k' : K.ι) :
     (α_ M N K).inv (i, (j, k)) ((i', j'), k') =
       if hi : i = i' then if hj : j = j' then if hk : k = k' then
@@ -64,9 +68,9 @@ omit [MonoidalPreadditive C] in
 
 section Braided
 
-variable [BraidedCategory C]
-
-private def matBraidHom (M N : Mat_ C) : (M ⊗ N : Mat_ C) ⟶ (N ⊗ M : Mat_ C) :=
+private def matBraidHom [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C) : (M ⊗ N : Mat_ C) ⟶ (N ⊗ M : Mat_ C) :=
   fun (i₁, i₂) (j₁, j₂) =>
     if hi : i₂ = j₁ then
       if hj : i₁ = j₂ then
@@ -74,7 +78,9 @@ private def matBraidHom (M N : Mat_ C) : (M ⊗ N : Mat_ C) ⟶ (N ⊗ M : Mat_ 
       else 0
     else 0
 
-private def matBraidInv (M N : Mat_ C) : (N ⊗ M : Mat_ C) ⟶ (M ⊗ N : Mat_ C) :=
+private def matBraidInv [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C) : (N ⊗ M : Mat_ C) ⟶ (M ⊗ N : Mat_ C) :=
   fun (j₁, j₂) (i₁, i₂) =>
     if hj₁ : j₁ = i₂ then
       if hj₂ : j₂ = i₁ then
@@ -82,16 +88,20 @@ private def matBraidInv (M N : Mat_ C) : (N ⊗ M : Mat_ C) ⟶ (M ⊗ N : Mat_ 
       else 0
     else 0
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem matBraidHom_apply (M N : Mat_ C)
+@[simp] private theorem matBraidHom_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C)
     (i₁ : M.ι) (i₂ : N.ι) (j₁ : N.ι) (j₂ : M.ι) :
     matBraidHom M N (i₁, i₂) (j₁, j₂) =
       if hi : i₂ = j₁ then if hj : i₁ = j₂ then
         eqToHom (by subst hi; subst hj; rfl) ≫ (β_ (M.X j₂) (N.X j₁)).hom
       else 0 else 0 := rfl
 
-omit [MonoidalPreadditive C] in
-@[simp] private theorem matBraidInv_apply (M N : Mat_ C)
+@[simp] private theorem matBraidInv_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C)
     (j₁ : N.ι) (j₂ : M.ι) (i₁ : M.ι) (i₂ : N.ι) :
     matBraidInv M N (j₁, j₂) (i₁, i₂) =
       if hj₁ : j₁ = i₂ then if hj₂ : j₂ = i₁ then
@@ -100,11 +110,13 @@ omit [MonoidalPreadditive C] in
 
 /-! ### Braiding iso -/
 
-omit [MonoidalPreadditive C] in
 -- Raised budget: the matrix identity is checked entrywise, and
 -- each entry is a sum over the intermediate index.
 set_option maxHeartbeats 800000 in
-private theorem matBraid_hom_inv (M N : Mat_ C) :
+private theorem matBraid_hom_inv
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C) :
     matBraidHom M N ≫ matBraidInv M N = 𝟙 _ := by
   apply Mat_.hom_ext; intro ⟨i₁, i₂⟩ ⟨i₁', i₂'⟩
   rw [mat_comp_tensor_apply, Mat_.id_apply]
@@ -123,10 +135,12 @@ private theorem matBraid_hom_inv (M N : Mat_ C) :
     · intro b _ hb; simp [show ¬(i₁ = b) from Ne.symm hb]
   · intro b _ hb; simp [show ¬(i₂ = b) from Ne.symm hb]
 
-omit [MonoidalPreadditive C] in
 -- As for the other composite.
 set_option maxHeartbeats 800000 in
-private theorem matBraid_inv_hom (M N : Mat_ C) :
+private theorem matBraid_inv_hom
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C) :
     matBraidInv M N ≫ matBraidHom M N = 𝟙 _ := by
   apply Mat_.hom_ext; intro ⟨j₁, j₂⟩ ⟨j₁', j₂'⟩
   rw [mat_comp_tensor_apply, Mat_.id_apply]
@@ -145,7 +159,9 @@ private theorem matBraid_inv_hom (M N : Mat_ C) :
     · intro b _ hb; simp [show ¬(j₁ = b) from Ne.symm hb]
   · intro b _ hb; simp [show ¬(j₂ = b) from Ne.symm hb]
 
-private def matBraidIso (M N : Mat_ C) : (M ⊗ N : Mat_ C) ≅ (N ⊗ M : Mat_ C)
+private def matBraidIso [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [BraidedCategory C]
+    (M N : Mat_ C) : (M ⊗ N : Mat_ C) ≅ (N ⊗ M : Mat_ C)
   where
   hom := matBraidHom M N
   inv := matBraidInv M N
@@ -157,7 +173,10 @@ private def matBraidIso (M N : Mat_ C) : (M ⊗ N : Mat_ C) ≅ (N ⊗ M : Mat_ 
 -- Raised budget: naturality is checked entrywise, each entry a sum
 -- over the intermediate index.
 set_option maxHeartbeats 1600000 in
-private theorem mat_braiding_naturality_right (X : Mat_ C) {Y Z : Mat_ C}
+private theorem mat_braiding_naturality_right
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C]
+    (X : Mat_ C) {Y Z : Mat_ C}
     (f : Y ⟶ Z) :
     X ◁ f ≫ (matBraidIso X Z).hom = (matBraidIso X Y).hom ≫ f ▷ X := by
   apply Mat_.hom_ext; intro ⟨ix, iy⟩ ⟨jz, jx⟩
@@ -181,7 +200,10 @@ private theorem mat_braiding_naturality_right (X : Mat_ C) {Y Z : Mat_ C}
 
 -- As for the right-hand naturality.
 set_option maxHeartbeats 1600000 in
-private theorem mat_braiding_naturality_left {X Y : Mat_ C} (f : X ⟶ Y)
+private theorem mat_braiding_naturality_left
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C]
+    {X Y : Mat_ C} (f : X ⟶ Y)
     (Z : Mat_ C) :
     f ▷ Z ≫ (matBraidIso Y Z).hom = (matBraidIso X Z).hom ≫ Z ◁ f := by
   apply Mat_.hom_ext; intro ⟨ix, iz⟩ ⟨jz, jy⟩
@@ -205,8 +227,9 @@ private theorem mat_braiding_naturality_left {X Y : Mat_ C} (f : X ⟶ Y)
 
 /-! ### Hexagon identities -/
 
-omit [MonoidalPreadditive C] [BraidedCategory C] in
-private theorem mat_comp3_fwd_lhs (X Y Z : Mat_ C)
+private theorem mat_comp3_fwd_lhs
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X Y Z : Mat_ C)
     {A E : Mat_ C}
     (f : A ⟶ X ⊗ (Y ⊗ Z)) (g : X ⊗ (Y ⊗ Z) ⟶ (Y ⊗ Z) ⊗ X) (h : (Y ⊗ Z) ⊗ X ⟶ E)
     (i : A.ι) (e : E.ι) :
@@ -221,8 +244,9 @@ private theorem mat_comp3_fwd_lhs (X Y Z : Mat_ C)
   congr 1; ext by_; rw [Preadditive.comp_sum]
   congr 1; ext bz; rw [Preadditive.comp_sum]
 
-omit [MonoidalPreadditive C] [BraidedCategory C] in
-private theorem mat_comp3_fwd_rhs (X Y Z : Mat_ C)
+private theorem mat_comp3_fwd_rhs
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X Y Z : Mat_ C)
     {A E : Mat_ C}
     (f : A ⟶ (Y ⊗ X) ⊗ Z) (g : (Y ⊗ X) ⊗ Z ⟶ Y ⊗ (X ⊗ Z)) (h : Y ⊗ (X ⊗ Z) ⟶ E)
     (i : A.ι) (e : E.ι) :
@@ -237,8 +261,9 @@ private theorem mat_comp3_fwd_rhs (X Y Z : Mat_ C)
   congr 1; ext dy; rw [Preadditive.comp_sum]
   congr 1; ext dx; rw [Preadditive.comp_sum]
 
-omit [MonoidalPreadditive C] [BraidedCategory C] in
-private theorem mat_comp3_rev_lhs (X Y Z : Mat_ C)
+private theorem mat_comp3_rev_lhs
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X Y Z : Mat_ C)
     {A E : Mat_ C}
     (f : A ⟶ (X ⊗ Y) ⊗ Z) (g : (X ⊗ Y) ⊗ Z ⟶ Z ⊗ (X ⊗ Y)) (h : Z ⊗ (X ⊗ Y) ⟶ E)
     (i : A.ι) (e : E.ι) :
@@ -253,8 +278,9 @@ private theorem mat_comp3_rev_lhs (X Y Z : Mat_ C)
   congr 1; ext bz; rw [Preadditive.comp_sum]
   congr 1; ext bx; rw [Preadditive.comp_sum]
 
-omit [MonoidalPreadditive C] [BraidedCategory C] in
-private theorem mat_comp3_rev_rhs (X Y Z : Mat_ C)
+private theorem mat_comp3_rev_rhs
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X Y Z : Mat_ C)
     {A E : Mat_ C}
     (f : A ⟶ X ⊗ (Z ⊗ Y)) (g : X ⊗ (Z ⊗ Y) ⟶ (X ⊗ Z) ⊗ Y) (h : (X ⊗ Z) ⊗ Y ⟶ E)
     (i : A.ι) (e : E.ι) :
@@ -272,7 +298,10 @@ private theorem mat_comp3_rev_rhs (X Y Z : Mat_ C)
 -- Raised budget: the hexagon is checked entrywise on a triple
 -- index, so three matrix compositions expand.
 set_option maxHeartbeats 12800000 in
-private theorem mat_hexagon_forward (X Y Z : Mat_ C) :
+private theorem mat_hexagon_forward
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C]
+    (X Y Z : Mat_ C) :
     (α_ X Y Z).hom ≫ (matBraidIso X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
     (matBraidIso X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫ Y ◁ (matBraidIso X Z).hom := by
   apply Mat_.hom_ext; intro ⟨⟨ix, iy⟩, iz⟩ ⟨jy, ⟨jz, jx⟩⟩
@@ -330,7 +359,10 @@ private theorem mat_hexagon_forward (X Y Z : Mat_ C) :
 
 -- As for the forward hexagon.
 set_option maxHeartbeats 12800000 in
-private theorem mat_hexagon_reverse (X Y Z : Mat_ C) :
+private theorem mat_hexagon_reverse
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C]
+    (X Y Z : Mat_ C) :
     (α_ X Y Z).inv ≫ (matBraidIso (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
     X ◁ (matBraidIso Y Z).hom ≫ (α_ X Z Y).inv ≫ (matBraidIso X Z).hom ▷ Y := by
   apply Mat_.hom_ext; intro ⟨ix, ⟨iy, iz⟩⟩ ⟨⟨jz, jx⟩, jy⟩
@@ -389,7 +421,8 @@ private theorem mat_hexagon_reverse (X Y Z : Mat_ C) :
 
 /-- The matrix category inherits a braiding: the componentwise
 braidings, reindexed by the swap of index products. -/
-instance matBraided : BraidedCategory (Mat_ C) where
+instance matBraided [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C] : BraidedCategory (Mat_ C) where
   braiding := matBraidIso
   braiding_naturality_right := mat_braiding_naturality_right
   braiding_naturality_left := mat_braiding_naturality_left
@@ -402,12 +435,12 @@ end Braided
 
 section Symmetric
 
-variable [SymmetricCategory C]
-
 -- Raised budget: symmetry is checked entrywise.
 set_option maxHeartbeats 800000 in
 /-- And a symmetric one stays symmetric. -/
-instance matSymmetric : SymmetricCategory (Mat_ C) where
+instance matSymmetric [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [SymmetricCategory C] :
+    SymmetricCategory (Mat_ C) where
   symmetry X Y := by
     show matBraidHom X Y ≫ matBraidHom Y X = 𝟙 _
     apply Mat_.hom_ext; intro ⟨ix, iy⟩ ⟨jx, jy⟩

@@ -18,13 +18,14 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The fibre functor is complex-linear.** -/
-instance fibreFun_linear : (fibreFun L R).Linear ℂ where
+instance fibreFun_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
+    (fibreFun L R).Linear ℂ where
   map_smul {V W} f c := by
     rw [fibreFun_map, fibreFun_map]
     refine SuperCommAlgebra.Mod.Hom.ext ?_ ?_ <;>

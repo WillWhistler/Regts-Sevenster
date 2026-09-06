@@ -24,19 +24,20 @@ open CategoryTheory MonoidalCategory Limits Finset
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+variable {A : Type u}
 
-omit [MonoidalCategory A] [SymmetricCategory A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
-private theorem conj_smul_id {W V : A} (e : W ≅ V) (c : ℂ) :
+private theorem conj_smul_id [Category.{v} A] [Preadditive A] [Linear ℂ A]
+    {W V : A} (e : W ≅ V) (c : ℂ) :
     e.hom ≫ (c • 𝟙 V) ≫ e.inv = c • 𝟙 W := by
   simp
 
 /-- A scalar self-braiding makes the top swap act by the
 scalar. -/
-theorem swapTop_of_scalar {X : A} {c : ℂ}
+theorem swapTop_of_scalar
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    {X : A} {c : ℂ}
     (hβ : (β_ X X).hom = c • 𝟙 (X ⊗ X)) (n : ℕ) :
     swapTop X n = c • 𝟙 (tensorPow A X (n + 2)) := by
   rw [swapTop, hβ, MonoidalLinear.whiskerLeft_smul,
@@ -45,7 +46,11 @@ theorem swapTop_of_scalar {X : A} {c : ℂ}
 
 /-- Every transposition acts by the scalar: the top swap does, and
 transpositions are conjugate with central scalar values. -/
-theorem permMor_swap_of_scalar {X : A} {c : ℂ}
+theorem permMor_swap_of_scalar
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    {X : A} {c : ℂ}
     (hβ : (β_ X X).hom = c • 𝟙 (X ⊗ X)) :
     ∀ {n : ℕ} (x y : Fin n), x ≠ y →
       permMor X n (Equiv.swap x y) =
@@ -75,7 +80,11 @@ theorem permMor_swap_of_scalar {X : A} {c : ℂ}
 /-- **Scalar self-braiding acts by the sign character**: with a
 scalar square root of unity as self-braiding, every permutation
 acts by the scalar raised to its sign. -/
-theorem permMor_of_scalar {X : A} {c : ℂ}
+theorem permMor_of_scalar
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    {X : A} {c : ℂ}
     (hβ : (β_ X X).hom = c • 𝟙 (X ⊗ X)) (hc2 : c * c = 1)
     {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     permMor X n σ =
@@ -98,7 +107,11 @@ theorem permMor_of_scalar {X : A} {c : ℂ}
 
 /-- The group-algebra action under a scalar self-braiding is
 multiplication by the twisted coefficient sum. -/
-theorem permAlg_of_scalar {X : A} {c : ℂ}
+theorem permAlg_of_scalar
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    {X : A} {c : ℂ}
     (hβ : (β_ X X).hom = c • 𝟙 (X ⊗ X)) (hc2 : c * c = 1)
     {n : ℕ} (x : SymGroupAlgebra n) :
     permAlg X n x =
@@ -221,7 +234,11 @@ theorem sum_e_coeff_sign (P : SchurPackage.{v})
 /-- **Trivial self-braiding kills every non-row Schur functor**:
 the central idempotent acts by the plain character sum, the Schur
 specialisation at one even variable. -/
-theorem schurKilled_of_braiding_id (P : SchurPackage.{v}) {X : A}
+theorem schurKilled_of_braiding_id
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) {X : A}
     (hβ : (β_ X X).hom = 𝟙 (X ⊗ X)) {lam : YoungDiagram}
     (hlam : 1 < lam.colLen 0) : SchurKilled P X lam := by
   classical
@@ -240,7 +257,11 @@ theorem schurKilled_of_braiding_id (P : SchurPackage.{v}) {X : A}
 /-- **Self-braiding `−1` kills every non-column Schur functor**:
 the central idempotent acts by the signed character sum, the Schur
 specialisation at one odd variable. -/
-theorem schurKilled_of_braiding_neg (P : SchurPackage.{v}) {X : A}
+theorem schurKilled_of_braiding_neg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) {X : A}
     (hβ : (β_ X X).hom = -(𝟙 (X ⊗ X))) {lam : YoungDiagram}
     (hlam : 1 < lam.rowLen 0) : SchurKilled P X lam := by
   classical
@@ -264,7 +285,11 @@ theorem schurKilled_of_braiding_neg (P : SchurPackage.{v}) {X : A}
   rfl
 
 /-- The unit is killed at the two-cell column. -/
-theorem schurKilled_unit_col (P : SchurPackage.{v}) :
+theorem schurKilled_unit_col
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) :
     SchurKilled P (𝟙_ A) (colShape 2).val := by
   refine schurKilled_of_braiding_id P braiding_unit_self ?_
   have hmem : ((1, 0) : ℕ × ℕ) ∈ (colShape 2).val := by
@@ -274,7 +299,11 @@ theorem schurKilled_unit_col (P : SchurPackage.{v}) :
   exact YoungDiagram.mem_iff_lt_colLen.mp hmem
 
 /-- An odd line is killed at the two-cell row. -/
-theorem schurKilled_odd_row (P : SchurPackage.{v}) {U : A}
+theorem schurKilled_odd_row
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) {U : A}
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) :
     SchurKilled P U (rowShape 2).val := by
   refine schurKilled_of_braiding_neg P hβ ?_
@@ -283,10 +312,10 @@ theorem schurKilled_odd_row (P : SchurPackage.{v}) {U : A}
 
 section Sums
 
-variable [HasBinaryBiproducts A]
-
 /-- `p + 1` biproduct copies of an object. -/
-noncomputable def sumPow (X : A) : ℕ → A
+noncomputable def sumPow
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) : ℕ → A
   | 0 => X
   | k + 1 => sumPow X k ⊞ X
 
@@ -301,7 +330,11 @@ theorem colShape_colLen_le (m : ℕ) :
   omega
 
 /-- Iterated unit sums are killed at the corresponding column. -/
-theorem schurKilled_sumPow_unit (P : SchurPackage.{v}) (p : ℕ) :
+theorem schurKilled_sumPow_unit
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v}) (p : ℕ) :
     SchurKilled P (sumPow (𝟙_ A) p) (colShape (p + 2)).val := by
   induction p with
   | zero => exact schurKilled_unit_col P
@@ -322,7 +355,11 @@ theorem rowShape_colLen_le (m : ℕ) :
   rowShape_colLen m
 
 /-- Iterated odd sums are killed at the corresponding row. -/
-theorem schurKilled_sumPow_odd (P : SchurPackage.{v}) {U : A}
+theorem schurKilled_sumPow_odd
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v}) {U : A}
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) (q : ℕ) :
     SchurKilled P (sumPow U q) (rowShape (q + 2)).val := by
   induction q with
@@ -340,7 +377,11 @@ theorem schurKilled_sumPow_odd (P : SchurPackage.{v}) {U : A}
 /-- **The vanishing half of Deligne 1.9, internally**: a direct
 sum of `p + 1` unit copies and `q + 1` odd-line copies is killed
 at every diagram containing the cell `(p + 1, q + 1)`. -/
-theorem schurKilled_unit_odd (P : SchurPackage.{v}) {U : A}
+theorem schurKilled_unit_odd
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v}) {U : A}
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) (p q : ℕ)
     {lam : YoungDiagram} (hcell : (p + 1, q + 1) ∈ lam) :
     SchurKilled P (sumPow (𝟙_ A) p ⊞ sumPow U q) lam := by

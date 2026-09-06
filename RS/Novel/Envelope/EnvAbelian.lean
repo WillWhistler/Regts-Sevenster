@@ -64,46 +64,6 @@ the additive envelope of an idempotent-complete category need not
 be idempotent-complete. -/
 @[reducible] def Env := Karoubi (Mat_ (Karoubi (SkeinObj f)))
 
-/-! ### Linear structure (general Karoubi over a linear base) -/
-
-section GeneralKaroubiLinear
-
-variable (C : Type*) [Category C] [Preadditive C]
-  [CategoryTheory.Linear ℂ C]
-
-/-- Scaling a Karoubi morphism through its underlying morphism. -/
-noncomputable instance karoubiHomSMul' (P Q : Karoubi C) :
-    SMul ℂ (P ⟶ Q) where
-  smul c g := ⟨c • g.f, by
-    rw [CategoryTheory.Linear.smul_comp,
-      CategoryTheory.Linear.comp_smul, g.comm]⟩
-
-private def karoubiHomAddHom' (P Q : Karoubi C) :
-    (P ⟶ Q) →+ (P.X ⟶ Q.X) where
-  toFun g := g.f
-  map_zero' := rfl
-  map_add' _ _ := rfl
-
-/-- Karoubi hom-sets are ℂ-modules. -/
-noncomputable instance karoubiHomModule' (P Q : Karoubi C) :
-    Module ℂ (P ⟶ Q) :=
-  Function.Injective.module ℂ (karoubiHomAddHom' C P Q)
-    (fun _ _ h => Karoubi.Hom.ext h) (fun _ _ => rfl)
-
-/-- Hence the Karoubi completion is ℂ-linear. -/
-noncomputable instance karoubiLinear' :
-    CategoryTheory.Linear ℂ (Karoubi C) where
-  smul_comp P Q R' c g h := by
-    apply Karoubi.hom_ext
-    show (c • g.f) ≫ h.f = c • (g.f ≫ h.f)
-    rw [CategoryTheory.Linear.smul_comp]
-  comp_smul P Q R' g c h := by
-    apply Karoubi.hom_ext
-    show g.f ≫ (c • h.f) = c • (g.f ≫ h.f)
-    rw [CategoryTheory.Linear.comp_smul]
-
-end GeneralKaroubiLinear
-
 /-! ### Semisimplicity of envelope endomorphism algebras -/
 
 variable (E : Env f)
@@ -120,99 +80,22 @@ noncomputable def envTrace : End E →ₗ[ℂ] ℂ where
     rw [show (c • x).f = c • x.f from rfl, RingHom.id_apply]
     exact (matTrace f E.X).map_smul _ _
 
-/-- Corner-nilpotents are ambient-nilpotents (envelope
-version). -/
-private theorem envF_isNilpotent {x : End E}
-    (hx : IsNilpotent x) :
-    IsNilpotent (show End E.X from x.f) := by
-  obtain ⟨k, hk⟩ := hx
-  cases k with
-  | zero =>
-      refine ⟨1, ?_⟩
-      have h10 : (1 : End E) = 0 := by
-        rw [← pow_zero x, hk]
-      have hx0 : x = 0 := by
-        calc x = x * 1 := (mul_one x).symm
-          _ = x * 0 := by rw [h10]
-          _ = 0 := mul_zero x
-      rw [hx0]
-      rw [pow_one]
-      rfl
-  | succ k =>
-      refine ⟨k + 1, ?_⟩
-      have hmul : ∀ y z : End E,
-          (show End E.X from (y * z).f) =
-            (show End E.X from y.f) *
-              (show End E.X from z.f) :=
-        fun _ _ => rfl
-      have hpow : (show End E.X from (x ^ (k + 1)).f) =
-          (show End E.X from x.f) ^ (k + 1) := by
-        clear hk
-        induction k with
-        | zero =>
-            rw [pow_one, pow_one]
-        | succ j ih =>
-            rw [pow_succ, hmul, ih, ← pow_succ]
-      rw [← hpow, hk]
-      rfl
-
 /-- **Semisimplicity of envelope endomorphism algebras.** -/
-theorem envEnd_isSemisimpleRing (P : SchurPackage.{1}) :
-    IsSemisimpleRing (End E) := by
-  haveI : FiniteDimensional ℂ (End E) :=
-    FiniteDimensional.of_injective
-      (⟨⟨fun (x : End E) => x.f, fun _ _ => rfl⟩,
-        fun _ _ => rfl⟩ :
-        End E →ₗ[ℂ] (E.X ⟶ E.X))
-      (fun _ _ h => Karoubi.Hom.ext h)
-  refine isSemisimpleRing_of_trace (envTrace f E)
-    (fun x hx =>
-      matTrace_eq_zero_of_isNilpotent' P
-        (envF_isNilpotent f E hx))
-    (fun a ha => ?_)
-  -- Nondegeneracy: sandwich ambient tests into the corner.
-  apply Karoubi.hom_ext
-  show a.f = 0
-  apply matEnd_eq_zero_of_traces_vanish f
-    (show End E.X from a.f)
-  intro b
-  have hb : E.p ≫ (E.p ≫ b ≫ E.p) ≫ E.p =
-      E.p ≫ b ≫ E.p := by
-    rw [show E.p ≫ (E.p ≫ b ≫ E.p) ≫ E.p =
-      (E.p ≫ E.p) ≫ b ≫ (E.p ≫ E.p) from by
-        simp only [Category.assoc]]
-    rw [E.idem]
-  have key := ha (⟨E.p ≫ b ≫ E.p, hb⟩ : End E)
-  have hred : a.f ≫ (E.p ≫ b ≫ E.p) =
-      (a.f ≫ b) ≫ E.p := by
-    rw [show a.f ≫ (E.p ≫ b ≫ E.p) =
-      (a.f ≫ E.p) ≫ b ≫ E.p from by
-        simp only [Category.assoc]]
-    rw [Karoubi.comp_p]
-    simp only [Category.assoc]
-  calc matTrace f E.X (b * (show End E.X from a.f))
-      = matTrace f E.X (a.f ≫ b) := rfl
-    _ = matTrace f E.X (E.p ≫ (a.f ≫ b)) := by
-        rw [show E.p ≫ (a.f ≫ b) =
-          (E.p ≫ a.f) ≫ b from by
-            simp only [Category.assoc]]
-        rw [Karoubi.p_comp]
-    _ = matTrace f E.X ((a.f ≫ b) ≫ E.p) := by
-        rw [matTrace_comp_comm f (E.p) (a.f ≫ b)]
-    _ = matTrace f E.X (a.f ≫ (E.p ≫ b ≫ E.p)) := by
-        rw [hred]
-    _ = 0 := key
+theorem envEnd_isSemisimpleRing : IsSemisimpleRing (End E) :=
+  karoubiEnd_isSemisimpleRing_of_trace E (matTrace f E.X)
+    (fun _ hx => matTrace_eq_zero_of_isNilpotent' hx)
+    (matTrace_comp_comm f)
+    (matEnd_eq_zero_of_traces_vanish f)
 
 /-! ### Regularity of envelope morphisms -/
 
 /-- Every envelope morphism is von Neumann regular. -/
-theorem env_hom_regular (P : SchurPackage.{1})
-    {M N : Env f} (u : M ⟶ N) :
+theorem env_hom_regular {M N : Env f} (u : M ⟶ N) :
     ∃ g : N ⟶ M, u ≫ g ≫ u = u := by
   haveI : HasFiniteBiproducts (Env f) := inferInstance
   haveI : HasBinaryBiproducts (Env f) :=
     hasBinaryBiproducts_of_finite_biproducts _
-  haveI := envEnd_isSemisimpleRing f (M ⊞ N) P
+  haveI := envEnd_isSemisimpleRing f (M ⊞ N)
   obtain ⟨G, hG⟩ := exists_mul_mul_self
     (A := End (M ⊞ N))
     ((biprod.fst ≫ u ≫ biprod.inr : End (M ⊞ N)))
@@ -240,11 +123,11 @@ private theorem env_ker_idem {M N : Env f} (u : M ⟶ N)
   abel
 
 /-- Kernels exist in the envelope. -/
-theorem env_hasKernels (P : SchurPackage.{1}) :
+theorem env_hasKernels :
     HasKernels (Env f) := by
   constructor
   intro M N u
-  obtain ⟨g, hg⟩ := env_hom_regular f P u
+  obtain ⟨g, hg⟩ := env_hom_regular f u
   obtain ⟨K, i, e, hie, hei⟩ :=
     IsIdempotentComplete.idempotents_split M (𝟙 M - u ≫ g)
       (env_ker_idem f u g hg)
@@ -275,11 +158,11 @@ theorem env_hasKernels (P : SchurPackage.{1}) :
 /-! ### Cokernels -/
 
 /-- Cokernels exist in the envelope. -/
-theorem env_hasCokernels (P : SchurPackage.{1}) :
+theorem env_hasCokernels :
     HasCokernels (Env f) := by
   constructor
   intro M N u
-  obtain ⟨g, hg⟩ := env_hom_regular f P u
+  obtain ⟨g, hg⟩ := env_hom_regular f u
   have hidem : (𝟙 N - g ≫ u) ≫ (𝟙 N - g ≫ u) =
       𝟙 N - g ≫ u := by
     have h2 : (g ≫ u) ≫ g ≫ u = g ≫ u := by
@@ -322,20 +205,18 @@ theorem env_hasCokernels (P : SchurPackage.{1}) :
 /-! ### Monomorphisms and epimorphisms split -/
 
 /-- Monomorphisms split. -/
-theorem env_mono_split (P : SchurPackage.{1})
-    {M N : Env f} (m : M ⟶ N) [Mono m] :
+theorem env_mono_split {M N : Env f} (m : M ⟶ N) [Mono m] :
     ∃ r : N ⟶ M, m ≫ r = 𝟙 M := by
-  obtain ⟨g, hg⟩ := env_hom_regular f P m
+  obtain ⟨g, hg⟩ := env_hom_regular f m
   refine ⟨g, ?_⟩
   have h : (m ≫ g) ≫ m = 𝟙 M ≫ m := by
     rw [Category.id_comp, Category.assoc, hg]
   exact (cancel_mono m).mp h
 
 /-- Epimorphisms split. -/
-theorem env_epi_split (P : SchurPackage.{1})
-    {M N : Env f} (e : M ⟶ N) [Epi e] :
+theorem env_epi_split {M N : Env f} (e : M ⟶ N) [Epi e] :
     ∃ s : N ⟶ M, s ≫ e = 𝟙 N := by
-  obtain ⟨g, hg⟩ := env_hom_regular f P e
+  obtain ⟨g, hg⟩ := env_hom_regular f e
   refine ⟨g, ?_⟩
   have h : e ≫ (g ≫ e) = e ≫ 𝟙 N := by
     rw [Category.comp_id, hg]
@@ -345,10 +226,9 @@ theorem env_epi_split (P : SchurPackage.{1})
 
 set_option warn.classDefReducibility false in
 /-- Every mono is a kernel. -/
-noncomputable def envNormalMono (P : SchurPackage.{1})
-    {M N : Env f} (m : M ⟶ N) [Mono m] :
+noncomputable def envNormalMono {M N : Env f} (m : M ⟶ N) [Mono m] :
     NormalMono m := by
-  have hex := env_mono_split f P m
+  have hex := env_mono_split f m
   refine
     { Z := N
       g := 𝟙 N - hex.choose ≫ m
@@ -380,10 +260,9 @@ noncomputable def envNormalMono (P : SchurPackage.{1})
 
 set_option warn.classDefReducibility false in
 /-- Every epi is a cokernel. -/
-noncomputable def envNormalEpi (P : SchurPackage.{1})
-    {M N : Env f} (e : M ⟶ N) [Epi e] :
+noncomputable def envNormalEpi {M N : Env f} (e : M ⟶ N) [Epi e] :
     NormalEpi e := by
-  have hex := env_epi_split f P e
+  have hex := env_epi_split f e
   refine
     { W := M
       g := 𝟙 M - e ≫ hex.choose
@@ -414,16 +293,16 @@ noncomputable def envNormalEpi (P : SchurPackage.{1})
       hex.choose_spec, Category.id_comp]
 
 set_option warn.classDefReducibility false in
-/-- **The envelope is abelian** (conditional on the Schur
-package). -/
+/-- **The envelope is abelian**, from the factorial trace
+obstruction and the connection pairing. -/
 @[reducible]
-noncomputable def envAbelian (P : SchurPackage.{1}) :
+noncomputable def envAbelian :
     Abelian (Env f) := by
   haveI : HasFiniteBiproducts (Env f) := inferInstance
-  haveI := env_hasKernels f P
-  haveI := env_hasCokernels f P
+  haveI := env_hasKernels f
+  haveI := env_hasCokernels f
   exact
-    { normalMonoOfMono := fun m => ⟨envNormalMono f P m⟩
-      normalEpiOfEpi := fun e => ⟨envNormalEpi f P e⟩ }
+    { normalMonoOfMono := fun m => ⟨envNormalMono f m⟩
+      normalEpiOfEpi := fun e => ⟨envNormalEpi f e⟩ }
 
 end RS

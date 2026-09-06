@@ -54,25 +54,29 @@ universe v u
 
 section Split
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-- A composite in the first factor, split off on the left. -/
-theorem tensorHom_comp_fst {A B C X Y : D} (f : A ⟶ B) (g : B ⟶ X)
+theorem tensorHom_comp_fst [Category.{v} D] [MonoidalCategory D]
+    {A B C X Y : D} (f : A ⟶ B) (g : B ⟶ X)
     (p : C ⟶ Y) : (f ≫ g) ⊗ₘ p = f ▷ C ≫ (g ⊗ₘ p) := by
   rw [← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp]
 
 /-- A composite in the second factor, split off on the left. -/
-theorem tensorHom_comp_snd {A B C X Y : D} (m : A ⟶ X) (f : B ⟶ C)
+theorem tensorHom_comp_snd [Category.{v} D] [MonoidalCategory D]
+    {A B C X Y : D} (m : A ⟶ X) (f : B ⟶ C)
     (g : C ⟶ Y) : m ⊗ₘ (f ≫ g) = A ◁ f ≫ (m ⊗ₘ g) := by
   rw [← id_tensorHom, tensorHom_comp_tensorHom, Category.id_comp]
 
 /-- A composite in the first factor, split off on the right. -/
-theorem tensorHom_comp_fst' {A B C X Y : D} (f : A ⟶ B)
+theorem tensorHom_comp_fst' [Category.{v} D] [MonoidalCategory D]
+    {A B C X Y : D} (f : A ⟶ B)
     (g : B ⟶ X) (p : C ⟶ Y) : (f ≫ g) ⊗ₘ p = (f ⊗ₘ p) ≫ g ▷ Y := by
   rw [← tensorHom_id, tensorHom_comp_tensorHom, Category.comp_id]
 
 /-- A composite in the second factor, split off on the right. -/
-theorem tensorHom_comp_snd' {A B C X Y : D} (m : A ⟶ X)
+theorem tensorHom_comp_snd' [Category.{v} D] [MonoidalCategory D]
+    {A B C X Y : D} (m : A ⟶ X)
     (f : B ⟶ C) (g : C ⟶ Y) : m ⊗ₘ (f ≫ g) = (m ⊗ₘ f) ≫ X ◁ g := by
   rw [← id_tensorHom, tensorHom_comp_tensorHom, Category.comp_id]
 
@@ -82,13 +86,15 @@ end Split
 
 section AtSources
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- **Associativity of the shuffle at arbitrary sources.**  Given
 a coherence identity between the two ways of reassociating the
 chosen sources, the two ways of shuffling three morphisms agree. -/
-theorem freeModShuffle_assoc_at {A B C T T' T'' : D}
+theorem freeModShuffle_assoc_at
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    {A B C T T' T'' : D}
     (s₁ : T ⟶ T' ⊗ C) (s₂ : T' ⟶ A ⊗ B) (s₃ : T ⟶ A ⊗ T'')
     (s₄ : T'' ⟶ B ⊗ C)
     (h : s₁ ≫ s₂ ▷ C ≫ (α_ A B C).hom = s₃ ≫ A ◁ s₄)
@@ -106,7 +112,10 @@ theorem freeModShuffle_assoc_at {A B C T T' T'' : D}
 
 /-- `RS.freeModShuffle_assoc_at`, bracketed as realization of the
 reassociation of the generators produces it. -/
-theorem freeModShuffle_assoc_at' {A B C T T' T'' : D}
+theorem freeModShuffle_assoc_at'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    {A B C T T' T'' : D}
     (s₁ : T ⟶ T' ⊗ C) (s₂ : T' ⟶ A ⊗ B) (s₃ : T ⟶ A ⊗ T'')
     (s₄ : T'' ⟶ B ⊗ C)
     (h : s₁ ≫ s₂ ▷ C ≫ (α_ A B C).hom = s₃ ≫ A ◁ s₄)
@@ -122,7 +131,10 @@ theorem freeModShuffle_assoc_at' {A B C T T' T'' : D}
 
 /-- **Left unitality of the shuffle**, with the trailing
 reassociation of the generators cancelled. -/
-theorem freeModShuffle_unit_left' (V : D) :
+theorem freeModShuffle_unit_left'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    (V : D) :
     ((ρ_ R).inv ▷ (R ⊗ V)) ≫ freeModShuffle R (𝟙_ D) V ≫
         R ◁ (λ_ V).hom = (α_ R R V).inv ≫ μ[R] ▷ V := by
   rw [← Category.assoc, freeModShuffle_unit_left, Category.assoc,
@@ -132,7 +144,10 @@ theorem freeModShuffle_unit_left' (V : D) :
 /-- **Left unitality of the shuffle at arbitrary sources**:
 filling the first slot with the unit comparison leaves the action
 of the free module. -/
-theorem freeModShuffle_unit_left_at {X Y T : D} (s : T ⟶ X ⊗ Y)
+theorem freeModShuffle_unit_left_at
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    {X Y T : D} (s : T ⟶ X ⊗ Y)
     {V : D} (x : X ⟶ R) (m : Y ⟶ R ⊗ V) :
     s ≫ ((x ≫ (ρ_ R).inv) ⊗ₘ m) ≫ freeModShuffle R (𝟙_ D) V ≫
         R ◁ (λ_ V).hom
@@ -143,7 +158,10 @@ theorem freeModShuffle_unit_left_at {X Y T : D} (s : T ⟶ X ⊗ Y)
 
 /-- `RS.freeModShuffle_unit_left_at`, bracketed as realization of
 the left unitor of the generators produces it. -/
-theorem freeModShuffle_unit_left_at' {X Y T : D} (s : T ⟶ X ⊗ Y)
+theorem freeModShuffle_unit_left_at'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    {X Y T : D} (s : T ⟶ X ⊗ Y)
     {V : D} (x : X ⟶ R) (m : Y ⟶ R ⊗ V) :
     (s ≫ ((x ≫ (ρ_ R).inv) ⊗ₘ m) ≫
         freeModShuffle R (𝟙_ D) V) ≫ R ◁ (λ_ V).hom
@@ -156,12 +174,14 @@ end AtSources
 
 section AtSourcesComm
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **Right unitality of the shuffle**, with the trailing
 reassociation of the generators cancelled. -/
-theorem freeModShuffle_unit_right' (V : D) :
+theorem freeModShuffle_unit_right'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (V : D) :
     ((R ⊗ V) ◁ (ρ_ R).inv) ≫ freeModShuffle R V (𝟙_ D) ≫
         R ◁ (ρ_ V).hom
       = (β_ (R ⊗ V) R).hom ≫ (α_ R R V).inv ≫ μ[R] ▷ V := by
@@ -172,7 +192,10 @@ theorem freeModShuffle_unit_right' (V : D) :
 /-- **Right unitality of the shuffle at arbitrary sources**:
 filling the second slot with the unit comparison leaves the action
 of the free module, the two sources having been exchanged. -/
-theorem freeModShuffle_unit_right_at {X Y T : D} (s : T ⟶ X ⊗ Y)
+theorem freeModShuffle_unit_right_at
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {X Y T : D} (s : T ⟶ X ⊗ Y)
     {V : D} (m : X ⟶ R ⊗ V) (x : Y ⟶ R) :
     s ≫ (m ⊗ₘ (x ≫ (ρ_ R).inv)) ≫ freeModShuffle R V (𝟙_ D) ≫
         R ◁ (ρ_ V).hom
@@ -185,7 +208,10 @@ theorem freeModShuffle_unit_right_at {X Y T : D} (s : T ⟶ X ⊗ Y)
 
 /-- `RS.freeModShuffle_unit_right_at`, bracketed as realization of
 the right unitor of the generators produces it. -/
-theorem freeModShuffle_unit_right_at' {X Y T : D} (s : T ⟶ X ⊗ Y)
+theorem freeModShuffle_unit_right_at'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {X Y T : D} (s : T ⟶ X ⊗ Y)
     {V : D} (m : X ⟶ R ⊗ V) (x : Y ⟶ R) :
     (s ≫ (m ⊗ₘ (x ≫ (ρ_ R).inv)) ≫
         freeModShuffle R V (𝟙_ D)) ≫ R ◁ (ρ_ V).hom
@@ -199,12 +225,14 @@ end AtSourcesComm
 
 section AtSourcesSym
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The shuffle commutes with the braiding, at arbitrary
 sources.** -/
-theorem freeModShuffle_braiding_at {X Y T : D} (s : T ⟶ X ⊗ Y)
+theorem freeModShuffle_braiding_at
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {X Y T : D} (s : T ⟶ X ⊗ Y)
     {V W : D} (m : X ⟶ R ⊗ V) (n : Y ⟶ R ⊗ W) :
     s ≫ (m ⊗ₘ n) ≫ freeModShuffle R V W ≫ R ◁ (β_ V W).hom
       = s ≫ (β_ X Y).hom ≫ (n ⊗ₘ m) ≫ freeModShuffle R W V := by
@@ -213,7 +241,10 @@ theorem freeModShuffle_braiding_at {X Y T : D} (s : T ⟶ X ⊗ Y)
 
 /-- `RS.freeModShuffle_braiding_at`, bracketed as realization of
 the braiding of the generators produces it. -/
-theorem freeModShuffle_braiding_at' {X Y T : D} (s : T ⟶ X ⊗ Y)
+theorem freeModShuffle_braiding_at'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {X Y T : D} (s : T ⟶ X ⊗ Y)
     {V W : D} (m : X ⟶ R ⊗ V) (n : Y ⟶ R ⊗ W) :
     (s ≫ (m ⊗ₘ n) ≫ freeModShuffle R V W) ≫ R ◁ (β_ V W).hom
       = s ≫ (β_ X Y).hom ≫ (n ⊗ₘ m) ≫ freeModShuffle R W V :=
@@ -227,25 +258,28 @@ end AtSourcesSym
 
 section OddSources
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] (L : OddLine D)
+variable {D : Type u}
 
-omit [Preadditive D] in
 /-- The even-even source is fixed by the braiding. -/
-theorem leftUnitorInv_braiding_ee :
+theorem leftUnitorInv_braiding_ee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] :
     (λ_ (𝟙_ D)).inv ≫ (β_ (𝟙_ D) (𝟙_ D)).hom
       = (λ_ (𝟙_ D)).inv := by
   rw [← cancel_mono (ρ_ (𝟙_ D)).hom, Category.assoc,
     braiding_rightUnitor, ← unitors_equal]
 
 /-- The braiding exchanges the even-odd and odd-even sources. -/
-theorem leftUnitorInv_braiding_eo :
+theorem leftUnitorInv_braiding_eo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) :
     (λ_ L.obj).inv ≫ (β_ (𝟙_ D) L.obj).hom = (ρ_ L.obj).inv := by
   rw [← cancel_mono (ρ_ L.obj).hom, Category.assoc,
     braiding_rightUnitor, Iso.inv_hom_id, Iso.inv_hom_id]
 
 /-- The braiding exchanges the odd-even and even-odd sources. -/
-theorem rightUnitorInv_braiding_oe :
+theorem rightUnitorInv_braiding_oe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) :
     (ρ_ L.obj).inv ≫ (β_ L.obj (𝟙_ D)).hom = (λ_ L.obj).inv := by
   rw [braiding_tensorUnit_right, Iso.inv_hom_id_assoc]
 
@@ -255,13 +289,13 @@ end OddSources
 
 section Families
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] (L : OddLine D)
-variable (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
-omit [Preadditive D] in
 /-- Right unitality at the even-even family. -/
-theorem freeModShuffle_unit_right_ee (V : D) (m : 𝟙_ D ⟶ R ⊗ V)
+theorem freeModShuffle_unit_right_ee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (V : D) (m : 𝟙_ D ⟶ R ⊗ V)
     (x : 𝟙_ D ⟶ R) :
     ((λ_ (𝟙_ D)).inv ≫ (m ⊗ₘ (x ≫ (ρ_ R).inv)) ≫
         freeModShuffle R V (𝟙_ D)) ≫ R ◁ (ρ_ V).hom
@@ -272,7 +306,10 @@ theorem freeModShuffle_unit_right_ee (V : D) (m : 𝟙_ D ⟶ R ⊗ V)
 
 /-- Right unitality at the odd-odd family; the Koszul sign of the
 right unitor appears here, and nowhere else. -/
-theorem freeModShuffle_unit_right_oo (V : D) (m : L.obj ⟶ R ⊗ V)
+theorem freeModShuffle_unit_right_oo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V : D) (m : L.obj ⟶ R ⊗ V)
     (u : L.obj ⟶ R) :
     (L.sq.inv ≫ (m ⊗ₘ (u ≫ (ρ_ R).inv)) ≫
         freeModShuffle R V (𝟙_ D)) ≫ R ◁ (ρ_ V).hom
@@ -282,7 +319,10 @@ theorem freeModShuffle_unit_right_oo (V : D) (m : L.obj ⟶ R ⊗ V)
     reassoc_of% (oddLine_sq_inv_braiding L), Preadditive.neg_comp]
 
 /-- Right unitality at the even-odd family. -/
-theorem freeModShuffle_unit_right_eo (V : D) (m : 𝟙_ D ⟶ R ⊗ V)
+theorem freeModShuffle_unit_right_eo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V : D) (m : 𝟙_ D ⟶ R ⊗ V)
     (u : L.obj ⟶ R) :
     ((λ_ L.obj).inv ≫ (m ⊗ₘ (u ≫ (ρ_ R).inv)) ≫
         freeModShuffle R V (𝟙_ D)) ≫ R ◁ (ρ_ V).hom
@@ -292,7 +332,10 @@ theorem freeModShuffle_unit_right_eo (V : D) (m : 𝟙_ D ⟶ R ⊗ V)
     reassoc_of% (leftUnitorInv_braiding_eo L)]
 
 /-- Right unitality at the odd-even family. -/
-theorem freeModShuffle_unit_right_oe (V : D) (m : L.obj ⟶ R ⊗ V)
+theorem freeModShuffle_unit_right_oe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V : D) (m : L.obj ⟶ R ⊗ V)
     (x : 𝟙_ D ⟶ R) :
     ((ρ_ L.obj).inv ≫ (m ⊗ₘ (x ≫ (ρ_ R).inv)) ≫
         freeModShuffle R V (𝟙_ D)) ≫ R ◁ (ρ_ V).hom
@@ -301,9 +344,11 @@ theorem freeModShuffle_unit_right_oe (V : D) (m : L.obj ⟶ R ⊗ V)
   rw [freeModShuffle_unit_right_at',
     reassoc_of% (rightUnitorInv_braiding_oe L)]
 
-omit [Preadditive D] in
 /-- The braiding at the even-even family. -/
-theorem freeModShuffle_braiding_ee (V W : D) (m : 𝟙_ D ⟶ R ⊗ V)
+theorem freeModShuffle_braiding_ee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (V W : D) (m : 𝟙_ D ⟶ R ⊗ V)
     (n : 𝟙_ D ⟶ R ⊗ W) :
     ((λ_ (𝟙_ D)).inv ≫ (m ⊗ₘ n) ≫ freeModShuffle R V W) ≫
         R ◁ (β_ V W).hom
@@ -313,7 +358,10 @@ theorem freeModShuffle_braiding_ee (V W : D) (m : 𝟙_ D ⟶ R ⊗ V)
 
 /-- The braiding at the odd-odd family; the Koszul sign of the
 Koszul swap appears here, and nowhere else. -/
-theorem freeModShuffle_braiding_oo (V W : D) (m : L.obj ⟶ R ⊗ V)
+theorem freeModShuffle_braiding_oo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V W : D) (m : L.obj ⟶ R ⊗ V)
     (n : L.obj ⟶ R ⊗ W) :
     (L.sq.inv ≫ (m ⊗ₘ n) ≫ freeModShuffle R V W) ≫
         R ◁ (β_ V W).hom
@@ -322,7 +370,10 @@ theorem freeModShuffle_braiding_oo (V W : D) (m : L.obj ⟶ R ⊗ V)
     reassoc_of% (oddLine_sq_inv_braiding L), Preadditive.neg_comp]
 
 /-- The braiding at the even-odd family. -/
-theorem freeModShuffle_braiding_eo (V W : D) (m : 𝟙_ D ⟶ R ⊗ V)
+theorem freeModShuffle_braiding_eo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V W : D) (m : 𝟙_ D ⟶ R ⊗ V)
     (n : L.obj ⟶ R ⊗ W) :
     ((λ_ L.obj).inv ≫ (m ⊗ₘ n) ≫ freeModShuffle R V W) ≫
         R ◁ (β_ V W).hom
@@ -331,7 +382,10 @@ theorem freeModShuffle_braiding_eo (V W : D) (m : 𝟙_ D ⟶ R ⊗ V)
     reassoc_of% (leftUnitorInv_braiding_eo L)]
 
 /-- The braiding at the odd-even family. -/
-theorem freeModShuffle_braiding_oe (V W : D) (m : L.obj ⟶ R ⊗ V)
+theorem freeModShuffle_braiding_oe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V W : D) (m : L.obj ⟶ R ⊗ V)
     (n : 𝟙_ D ⟶ R ⊗ W) :
     ((ρ_ L.obj).inv ≫ (m ⊗ₘ n) ≫ freeModShuffle R V W) ≫
         R ◁ (β_ V W).hom
@@ -345,32 +399,35 @@ end Families
 
 section Fibre
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
 /-- **The fibre functor over an algebra**: base change to the
 algebra followed by realization. -/
-noncomputable def fibreOver : D ⥤ (gammaAlgebra D L R).Mod :=
+noncomputable def fibreOver
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
+    D ⥤ (gammaAlgebra D L R).Mod :=
   freeModFunctor R ⋙ gammaModuleFunctor L R
 
-omit [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Realization of a base-changed morphism, in even degree. -/
-theorem gammaFunMap_freeModMap_evenMap {V W : D} (f : V ⟶ W)
+theorem gammaFunMap_freeModMap_evenMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {V W : D} (f : V ⟶ W)
     (m : 𝟙_ D ⟶ (freeMod R V).X) :
     (gammaFunMap L R (freeModMap R f)).evenMap m = m ≫ R ◁ f :=
   rfl
 
-omit [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Realization of a base-changed morphism, in odd degree. -/
-theorem gammaFunMap_freeModMap_oddMap {V W : D} (f : V ⟶ W)
+theorem gammaFunMap_freeModMap_oddMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {V W : D} (f : V ⟶ W)
     (m : L.obj ⟶ (freeMod R V).X) :
     (gammaFunMap L R (freeModMap R f)).oddMap m = m ≫ R ◁ f :=
   rfl
@@ -381,7 +438,13 @@ theorem gammaFunMap_freeModMap_oddMap {V W : D} (f : V ⟶ W)
 functor**: the two ways of comparing a threefold tensor product
 agree, up to the associator of the super modules and the
 reassociation of the three objects. -/
-theorem fibreMu_associativity (V W Z : D) :
+theorem fibreMu_associativity
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V W Z : D) :
     SuperCommAlgebra.Mod.tensorHom (fibreMu L R V W)
           (𝟙 (gammaModule D L R (freeMod R Z).X)) ≫
         fibreMu L R (V ⊗ W) Z ≫
@@ -447,7 +510,13 @@ theorem fibreMu_associativity (V W Z : D) :
 /-- **Left unitality of the monoidal comparison of the fibre
 functor**: the unit comparison in the first slot is the left
 unitor of the super modules.  No sign appears. -/
-theorem fibreMu_left_unitality (V : D) :
+theorem fibreMu_left_unitality
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V : D) :
     leftUnitorHom (gammaModule D L R (freeMod R V).X)
       = SuperCommAlgebra.Mod.tensorHom (fibreEps L R)
             (𝟙 (gammaModule D L R (freeMod R V).X)) ≫
@@ -477,7 +546,13 @@ functor**: the unit comparison in the second slot is the right
 unitor of the super modules.  The Koszul sign of the odd-odd block
 of the right unitor is `RS.freeModShuffle_unit_right_oo`, and it is
 supplied by `RS.oddLine_sq_inv_braiding`. -/
-theorem fibreMu_right_unitality (V : D) :
+theorem fibreMu_right_unitality
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V : D) :
     rightUnitorHom (gammaModule D L R (freeMod R V).X)
       = SuperCommAlgebra.Mod.tensorHom
             (𝟙 (gammaModule D L R (freeMod R V).X))
@@ -511,7 +586,13 @@ tensor product and comparing agrees with comparing and swapping
 the two objects.  The Koszul sign of the odd-odd block of the
 Koszul swap is `RS.freeModShuffle_braiding_oo`, and it is again
 supplied by `RS.oddLine_sq_inv_braiding`. -/
-theorem fibreMu_braided (V W : D) :
+theorem fibreMu_braided
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V W : D) :
     braidingHom (gammaModule D L R (freeMod R V).X)
           (gammaModule D L R (freeMod R W).X) ≫ fibreMu L R W V
       = fibreMu L R V W ≫
@@ -539,7 +620,12 @@ theorem fibreMu_braided (V W : D) :
 
 /-- **The fibre functor is lax monoidal**, with unit `RS.fibreEps`
 and tensorator `RS.fibreMu`. -/
-noncomputable instance fibreOverLaxMonoidal :
+noncomputable instance fibreOverLaxMonoidal
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
     (fibreOver L R).LaxMonoidal :=
   CategoryTheory.Functor.LaxMonoidal.ofTensorHom
     (F := fibreOver L R) (fibreEps L R) (fibreMu L R)
@@ -549,20 +635,34 @@ noncomputable instance fibreOverLaxMonoidal :
     (fun V => fibreMu_right_unitality L R V)
 
 /-- The unit of the lax monoidal structure. -/
-theorem fibreOver_ε :
+theorem fibreOver_ε [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
     CategoryTheory.Functor.LaxMonoidal.ε (fibreOver L R)
       = fibreEps L R :=
   rfl
 
 /-- The tensorator of the lax monoidal structure. -/
-theorem fibreOver_μ (V W : D) :
+theorem fibreOver_μ [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (V W : D) :
     CategoryTheory.Functor.LaxMonoidal.μ (fibreOver L R) V W
       = fibreMu L R V W :=
   rfl
 
 /-- **The fibre functor is lax braided**: its tensorator commutes
 with the two symmetries. -/
-noncomputable instance fibreOverLaxBraided :
+noncomputable instance fibreOverLaxBraided
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
     (fibreOver L R).LaxBraided where
   toLaxMonoidal := fibreOverLaxMonoidal L R
   braided V W := (fibreMu_braided L R V W).symm

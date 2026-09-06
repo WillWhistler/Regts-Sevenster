@@ -52,12 +52,12 @@ section AbstractCancel
 
 open Equiv Equiv.Perm
 
-variable {Y : Type} [Fintype Y] [DecidableEq Y]
+variable {Y : Type}
 
-omit [Fintype Y] in
 /-- Along the swap-multiplied permutation, every point of a
 `g`-trajectory of `x` is in the orbit of `x` or of `y`. -/
-private theorem sameCycle_swap_mul_pow_left (g : Perm Y) (x y : Y) :
+private theorem sameCycle_swap_mul_pow_left [DecidableEq Y]
+    (g : Perm Y) (x y : Y) :
     ∀ k : ℕ, (Equiv.swap x y * g).SameCycle x ((g ^ k) x) ∨
       (Equiv.swap x y * g).SameCycle y ((g ^ k) x) := by
   intro k
@@ -87,7 +87,8 @@ private theorem sameCycle_swap_mul_pow_left (g : Perm Y) (x y : Y) :
 
 /-- `SameCycle` out of a swapped point transfers to the
 swap-multiplied permutation, up to landing in either swap orbit. -/
-private theorem sameCycle_swap_mul_of_left {g : Perm Y} {x y u : Y}
+private theorem sameCycle_swap_mul_of_left [Fintype Y] [DecidableEq Y]
+    {g : Perm Y} {x y u : Y}
     (h : g.SameCycle x u) :
     (Equiv.swap x y * g).SameCycle x u ∨
       (Equiv.swap x y * g).SameCycle y u := by
@@ -99,7 +100,8 @@ private theorem sameCycle_swap_mul_of_left {g : Perm Y} {x y u : Y}
 merges two distinct orbits (`c ∼ a`, `b ∼ d`, `b ≁ c`) then the
 second transposition splits the merged cycle again (`a ∼ d` holds
 after the merge), and the total orbit count is unchanged. -/
-private theorem permOrbitCount_swap_swap_mul_cancel {g : Perm Y}
+private theorem permOrbitCount_swap_swap_mul_cancel [Fintype Y] [DecidableEq Y]
+    {g : Perm Y}
     {a b c d : Y} (hbc : b ≠ c) (had : a ≠ d)
     (hca : g.SameCycle c a) (hbd : g.SameCycle b d)
     (hnbc : ¬ g.SameCycle b c) :

@@ -13,11 +13,12 @@ namespace RS
 
 open Finset LinearMap Module
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
+variable {G : Type*}
 
 /-- **The regular trace**: left multiplication by `y` has trace
 `|G| · y 1`. -/
-theorem trace_mulLeft (y : MonoidAlgebra ℂ G) :
+theorem trace_mulLeft [Group G] [Fintype G] [DecidableEq G]
+    (y : MonoidAlgebra ℂ G) :
     LinearMap.trace ℂ (MonoidAlgebra ℂ G) (mulLeft ℂ y) =
       (Fintype.card G : ℂ) * y.coeff 1 := by
   classical
@@ -39,7 +40,8 @@ theorem trace_mulLeft (y : MonoidAlgebra ℂ G) :
 
 /-- Rank of an idempotent multiplication equals the regular
 trace: the block dimension formula. -/
-theorem finrank_range_mulLeft (y : MonoidAlgebra ℂ G)
+theorem finrank_range_mulLeft [Group G] [Fintype G] [DecidableEq G]
+    (y : MonoidAlgebra ℂ G)
     (hy : y * y = y) :
     (Module.finrank ℂ (LinearMap.range (mulLeft ℂ y)) : ℂ) =
       (Fintype.card G : ℂ) * y.coeff 1 := by

@@ -24,16 +24,16 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-! ## The two parity swaps, inverted -/
 
-omit [IsCommMonObj R] in
 /-- The odd parity swap, unfolded. -/
-theorem rhoOddOdd_apply (M : D) (g : L.obj ⟶ M ⊗ L.obj) :
+theorem rhoOddOdd_apply
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D)
+    (M : D) (g : L.obj ⟶ M ⊗ L.obj) :
     rhoOddOdd L M g = (L.sq.inv ≫ (g ▷ L.obj)) ≫
       ((α_ M L.obj L.obj).hom ≫ (M ◁ L.sq.hom) ≫
         (ρ_ M).hom) := by
@@ -41,9 +41,12 @@ theorem rhoOddOdd_apply (M : D) (g : L.obj ⟶ M ⊗ L.obj) :
     Iso.refl_inv, Category.id_comp]
   rfl
 
-omit [MonObj R] [IsCommMonObj R] in
 /-- The odd parity swap, inverted. -/
-theorem rhoOddOdd_symm_apply (y : 𝟙_ D ⟶ R) :
+theorem rhoOddOdd_symm_apply
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D)
+    (y : 𝟙_ D ⟶ R) :
     (rhoOddOdd L R).symm y = (λ_ L.obj).inv ≫ (y ▷ L.obj) := by
   refine (LinearEquiv.symm_apply_eq _).mpr ?_
   have hc : ((λ_ L.obj).inv ▷ L.obj) ≫
@@ -71,13 +74,14 @@ attribute [local instance] CategoryTheory.ModObj.regular
 
 open SuperCommAlgebra.Mod
 
-variable [HasCoequalizers D]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-
 /-- The comparison map at the odd line against itself, followed by
 the two identifications of the target with the algebra. -/
-noncomputable abbrev oddSqMap :
+noncomputable abbrev oddSqMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] :
     (gammaModule D L R (freeMod R L.obj).X).tensor
         (gammaModule D L R (freeMod R L.obj).X) ⟶
       (gammaAlgebra D L R).unitMod :=
@@ -87,7 +91,10 @@ noncomputable abbrev oddSqMap :
 
 /-- The identification of the source with the parity shift of the
 algebra, on both factors. -/
-noncomputable abbrev oddSqShift :
+noncomputable abbrev oddSqShift
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
     (gammaModule D L R (freeMod R L.obj).X).tensor
         (gammaModule D L R (freeMod R L.obj).X) ⟶
       (gammaAlgebra D L R).unitMod :=
@@ -97,7 +104,13 @@ noncomputable abbrev oddSqShift :
 
 /-! ### Evaluation on the four generator families -/
 
-private theorem oddSqMap_ee (u v : 𝟙_ D ⟶ R ⊗ L.obj) :
+private theorem oddSqMap_ee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (u v : 𝟙_ D ⟶ R ⊗ L.obj) :
     (oddSqMap L R).evenMap (tmulEE _ _ u v) =
       (λ_ (𝟙_ D)).inv ≫ (u ⊗ₘ v) ≫
         freeModShuffle R L.obj L.obj ≫ (R ◁ L.sq.hom) ≫
@@ -109,7 +122,13 @@ private theorem oddSqMap_ee (u v : 𝟙_ D ⟶ R ⊗ L.obj) :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (Category.assoc _ _ _)
 
-private theorem oddSqMap_oo (u v : L.obj ⟶ R ⊗ L.obj) :
+private theorem oddSqMap_oo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (u v : L.obj ⟶ R ⊗ L.obj) :
     (oddSqMap L R).evenMap (tmulOO _ _ u v) =
       L.sq.inv ≫ (u ⊗ₘ v) ≫
         freeModShuffle R L.obj L.obj ≫ (R ◁ L.sq.hom) ≫
@@ -121,7 +140,13 @@ private theorem oddSqMap_oo (u v : L.obj ⟶ R ⊗ L.obj) :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (Category.assoc _ _ _)
 
-private theorem oddSqMap_eo (u : 𝟙_ D ⟶ R ⊗ L.obj)
+private theorem oddSqMap_eo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (u : 𝟙_ D ⟶ R ⊗ L.obj)
     (v : L.obj ⟶ R ⊗ L.obj) :
     (oddSqMap L R).oddMap (tmulEO _ _ u v) =
       (λ_ L.obj).inv ≫ (u ⊗ₘ v) ≫
@@ -134,7 +159,13 @@ private theorem oddSqMap_eo (u : 𝟙_ D ⟶ R ⊗ L.obj)
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (Category.assoc _ _ _)
 
-private theorem oddSqMap_oe (u : L.obj ⟶ R ⊗ L.obj)
+private theorem oddSqMap_oe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (u : L.obj ⟶ R ⊗ L.obj)
     (v : 𝟙_ D ⟶ R ⊗ L.obj) :
     (oddSqMap L R).oddMap (tmulOE _ _ u v) =
       (ρ_ L.obj).inv ≫ (u ⊗ₘ v) ≫
@@ -147,22 +178,28 @@ private theorem oddSqMap_oe (u : L.obj ⟶ R ⊗ L.obj)
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (Category.assoc _ _ _)
 
-omit [MonObj R] [IsCommMonObj R] [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem rhoEvenOdd_expand (a : L.obj ⟶ R) :
+private theorem rhoEvenOdd_expand
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D)
+    (a : L.obj ⟶ R) :
     rhoEvenOdd L R (L.sq.inv ≫ (a ▷ L.obj)) = a :=
   (rhoEvenOdd L R).apply_symm_apply a
 
-omit [MonObj R] [IsCommMonObj R] [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem rhoOddOdd_expand (x : 𝟙_ D ⟶ R) :
+private theorem rhoOddOdd_expand
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D)
+    (x : 𝟙_ D ⟶ R) :
     rhoOddOdd L R ((λ_ L.obj).inv ≫ (x ▷ L.obj)) = x := by
   rw [← rhoOddOdd_symm_apply]
   exact (rhoOddOdd L R).apply_symm_apply x
 
-omit [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem oddSqShift_ee (a b : L.obj ⟶ R) :
+private theorem oddSqShift_ee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (a b : L.obj ⟶ R) :
     (oddSqShift L R).evenMap (tmulEE _ _
         (L.sq.inv ≫ (a ▷ L.obj)) (L.sq.inv ≫ (b ▷ L.obj))) =
       L.sq.inv ≫ (a ⊗ₘ b) ≫ μ[R] := by
@@ -175,9 +212,11 @@ private theorem oddSqShift_ee (a b : L.obj ⟶ R) :
     shiftUnitHom_evenMap_tmulEE]
   rfl
 
-omit [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem oddSqShift_oo (x y : 𝟙_ D ⟶ R) :
+private theorem oddSqShift_oo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (x y : 𝟙_ D ⟶ R) :
     (oddSqShift L R).evenMap (tmulOO _ _
         ((λ_ L.obj).inv ≫ (x ▷ L.obj))
         ((λ_ L.obj).inv ≫ (y ▷ L.obj))) =
@@ -191,9 +230,11 @@ private theorem oddSqShift_oo (x y : 𝟙_ D ⟶ R) :
     shiftUnitHom_evenMap_tmulOO]
   rfl
 
-omit [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem oddSqShift_eo (a : L.obj ⟶ R) (x : 𝟙_ D ⟶ R) :
+private theorem oddSqShift_eo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (a : L.obj ⟶ R) (x : 𝟙_ D ⟶ R) :
     (oddSqShift L R).oddMap (tmulEO _ _
         (L.sq.inv ≫ (a ▷ L.obj))
         ((λ_ L.obj).inv ≫ (x ▷ L.obj))) =
@@ -207,9 +248,11 @@ private theorem oddSqShift_eo (a : L.obj ⟶ R) (x : 𝟙_ D ⟶ R) :
     shiftUnitHom_oddMap_tmulEO]
   rfl
 
-omit [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem oddSqShift_oe (x : 𝟙_ D ⟶ R) (a : L.obj ⟶ R) :
+private theorem oddSqShift_oe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (x : 𝟙_ D ⟶ R) (a : L.obj ⟶ R) :
     (oddSqShift L R).oddMap (tmulOE _ _
         ((λ_ L.obj).inv ≫ (x ▷ L.obj))
         (L.sq.inv ≫ (a ▷ L.obj))) =
@@ -225,15 +268,19 @@ private theorem oddSqShift_oe (x : 𝟙_ D ⟶ R) (a : L.obj ⟶ R) :
 
 /-! ### The identification -/
 
-omit [MonObj R] [IsCommMonObj R] [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem exists_even (u : 𝟙_ D ⟶ R ⊗ L.obj) :
+private theorem exists_even
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D)
+    (u : 𝟙_ D ⟶ R ⊗ L.obj) :
     ∃ a : L.obj ⟶ R, L.sq.inv ≫ (a ▷ L.obj) = u :=
   ⟨rhoEvenOdd L R u, (rhoEvenOdd L R).symm_apply_apply u⟩
 
-omit [MonObj R] [IsCommMonObj R] [HasCoequalizers D] [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
-private theorem exists_odd (u : L.obj ⟶ R ⊗ L.obj) :
+private theorem exists_odd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D)
+    (u : L.obj ⟶ R ⊗ L.obj) :
     ∃ x : 𝟙_ D ⟶ R, (λ_ L.obj).inv ≫ (x ▷ L.obj) = u := by
   refine ⟨rhoOddOdd L R u, ?_⟩
   rw [← rhoOddOdd_symm_apply]
@@ -242,7 +289,12 @@ private theorem exists_odd (u : L.obj ⟶ R ⊗ L.obj) :
 /-- **The comparison map at the odd line against itself is minus
 the canonical isomorphism.**  The sign is the self-braiding of the
 line, and it is the same on all four blocks. -/
-theorem oddSqMap_eq : oddSqMap L R = -oddSqShift L R := by
+theorem oddSqMap_eq [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] :
+    oddSqMap L R = -oddSqShift L R := by
   refine hom_ext (fun u v => ?_) (fun u v => ?_) (fun u v => ?_)
     (fun u v => ?_)
   · obtain ⟨a, rfl⟩ := exists_even L R u
@@ -274,7 +326,12 @@ theorem oddSqMap_eq : oddSqMap L R = -oddSqShift L R := by
 
 /-- **The comparison map of (2.11.1) at the odd line against
 itself is an isomorphism.** -/
-theorem isIso_gammaPairComparison_oddSquare :
+theorem isIso_gammaPairComparison_oddSquare
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] :
     IsIso (gammaPairComparison L R (freeMod R L.obj)
       (freeMod R L.obj)) := by
   haveI hsh : IsIso (oddSqShift L R) := by

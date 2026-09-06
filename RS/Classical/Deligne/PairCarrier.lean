@@ -17,24 +17,20 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [HasColimitsOfShape (Discrete ℤ) D]
+variable {D : Type u}
 
 /-- **The pair product on the carrier**: the descended pair
 product of the entries, entering the degree-zero component two
 stages up. -/
-noncomputable def splitPairMul (d : ModDualityDatum A M M') :
+noncomputable def splitPairMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     modTensor A M M' ⟶ chainBGr A M M' d :=
   chainPairMul A M M' d ≫
     chainStage2Cast A M M'
@@ -45,7 +41,15 @@ noncomputable def splitPairMul (d : ModDualityDatum A M M') :
 
 /-- **The copair element multiplies to the unit on the carrier**:
 the section identity of the splitting data. -/
-theorem copairUnit_splitPairMul (d : ModDualityDatum A M M') :
+theorem copairUnit_splitPairMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     copairUnit A M M' d ≫ splitPairMul A M M' d =
       chainBGrUnit A M M' d := by
   have hA : chainStage2Cast A M M'

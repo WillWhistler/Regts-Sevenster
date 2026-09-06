@@ -396,8 +396,7 @@ theorem mem_flipCore_int (_ : PortedFlipSet κ S p₁ p₂ i₁ i₂)
 
 /-- On boundary flags the colour-flip core is the two end
 labels. -/
-theorem mem_flipCore_boundaryFlag
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) (i : α) :
+theorem mem_flipCore_boundaryFlag (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) (i : α) :
     W.boundaryFlag i ∈ portFlipCore S i₁ i₂ ↔ i = i₁ ∨ i = i₂ := by
   rw [mem_portFlipCore]
   constructor
@@ -430,8 +429,7 @@ theorem portColourFlip_val (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
   segFlipColouring_val h.flipCore_pairing φ g
 
 /-- On the flip set the colour is `∂`-flipped. -/
-theorem portColourFlip_val_of_mem
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+theorem portColourFlip_val_of_mem (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     (φ : F.CoreOddColouring ℓ)
     (g : {g : W.Flag // g ∈ F.coreFlags}) (hg : g.val ∈ S) :
     (portColourFlip h φ).val g = oddPartner ℓ (φ.val g) := by
@@ -439,8 +437,7 @@ theorem portColourFlip_val_of_mem
 
 /-- On an internal flag off the flip set the colour is
 unchanged. -/
-theorem portColourFlip_val_int_of_notMem
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+theorem portColourFlip_val_int_of_notMem (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     (φ : F.CoreOddColouring ℓ)
     (g : {g : W.Flag // g ∈ F.coreFlags})
     (hgint : g.val ∈ F.internalFlags) (hg : g.val ∉ S) :
@@ -451,8 +448,7 @@ theorem portColourFlip_val_int_of_notMem
 /-- At the first chain end the colour is `∂`-flipped: this is where
 the reindexing meets the boundary, and why the transform relabels
 the state. -/
-theorem portColourFlip_val_bF₁
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+theorem portColourFlip_val_bF₁ (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     (φ : F.CoreOddColouring ℓ)
     (hcore : W.boundaryFlag i₁ ∈ F.coreFlags) :
     (portColourFlip h φ).val ⟨W.boundaryFlag i₁, hcore⟩ =
@@ -461,8 +457,7 @@ theorem portColourFlip_val_bF₁
     if_pos ((h.mem_flipCore_boundaryFlag i₁).mpr (Or.inl rfl))]
 
 /-- At the second chain end likewise. -/
-theorem portColourFlip_val_bF₂
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+theorem portColourFlip_val_bF₂ (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     (φ : F.CoreOddColouring ℓ)
     (hcore : W.boundaryFlag i₂ ∈ F.coreFlags) :
     (portColourFlip h φ).val ⟨W.boundaryFlag i₂, hcore⟩ =
@@ -472,8 +467,7 @@ theorem portColourFlip_val_bF₂
 
 /-- At every other boundary flag the colour is unchanged: only the
 two chain-end labels move. -/
-theorem portColourFlip_val_bF_of_ne
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+theorem portColourFlip_val_bF_of_ne (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     (φ : F.CoreOddColouring ℓ) {i : α} (hi₁ : i ≠ i₁)
     (hi₂ : i ≠ i₂) (hcore : W.boundaryFlag i ∈ F.coreFlags) :
     (portColourFlip h φ).val ⟨W.boundaryFlag i, hcore⟩ =
@@ -485,16 +479,14 @@ theorem portColourFlip_val_bF_of_ne
 
 /-- The colour reindexing is an involution, so it is a bijection of
 the colouring sum. -/
-theorem portColourFlip_involutive
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
+theorem portColourFlip_involutive (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
     Function.Involutive (portColourFlip (ℓ := ℓ) h) :=
   fun φ => segFlipColouring_involutive h.flipCore_pairing φ
 
 /-- **The boundary-constraint exchange**: the flipped colouring
 matches the original state exactly when the original colouring
 matches the `∂`-relabelled state. -/
-theorem coreOddBoundaryMatch_portColourFlip
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+theorem coreOddBoundaryMatch_portColourFlip (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
     (st : GenBoundaryState k ℓ α) (φ : F.CoreOddColouring ℓ) :
     F.coreOddBoundaryMatch st (portColourFlip h φ) ↔
       F.coreOddBoundaryMatch (stateOddFlip st i₁ i₂) φ := by
@@ -746,8 +738,7 @@ private theorem diffAtP_eq (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
         κ.match_vertex f hfint vv
           (mem_relInSetAt.mp (mem_flipP.mp hf).1).2.1⟩
 
-private theorem S_eq_biUnion_diffAtP
-    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
+private theorem S_eq_biUnion_diffAtP (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
     S = Finset.univ.biUnion (fun vv => diffAtP S vv) := by
   apply Finset.ext
   intro g
@@ -1176,8 +1167,7 @@ private theorem phiSum_portFlip (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
         hO ((coreOddBoundaryMatch_portColourFlip h st φ).mp hc)),
       if_neg hO, mul_zero]
 
-private theorem evenMatch_stateOddFlip
-    {st : GenBoundaryState k ℓ α}
+private theorem evenMatch_stateOddFlip {st : GenBoundaryState k ℓ α}
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (ψ : F.EvenColouring k) :
     genEvenBoundaryMatch F (stateOddFlip st i₁ i₂)
@@ -1352,15 +1342,14 @@ end PortFlipLedger
 
 section ChainConstruction
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+variable {α : Type}
 
-omit [LinearOrder α] in
 /-- **The chain flip set**: the internal flags of a full
 boundary-terminated chain form a ported flip set whose ports are
 the two chain-end entry flags and whose labels are the chain's two
 boundary labels. -/
-theorem exists_chainPortedFlipSet (κ : F.RelTransitionSystem)
+theorem exists_chainPortedFlipSet {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {β : W.Flag} (hβ : β ∈ F.boundaryFlags) {kc : ℕ}
     (hcont : ∀ j, j < kc →
       W.pairing (iterWalk κ β j) ∈ F.internalFlags)
@@ -1529,13 +1518,12 @@ theorem portFlip_separated (o : κ.Orientation)
   rw [portFlip_isOut_of_mem o h hcS,
     portFlip_isOut_of_notMem o h haS, hsame]
 
-variable [LinearOrder α]
-
 /-- **The two-path non-separated transform, fixed exponent**: with
 the transported chain-flip orientation, the repaired summand at any
 circuit exponent is `twoPathNonSepFactor` times the original
 summand at the `∂`-relabelled state. -/
-theorem twoPathNonSep_transform_exp (hM : MixedFunctional k ℓ)
+theorem twoPathNonSep_transform_exp [LinearOrder α]
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {a b c d : W.Flag} {v : W.Vertex}
@@ -1569,7 +1557,8 @@ sign c₂)` — **evaluated at the `∂`-relabelled state**.  The state
 relabel is intrinsic: the chain flip meets the boundary at the
 chain's two end labels, so no state-preserving scalar form of the
 move exists. -/
-theorem twoPathNonSep_transform (hM : MixedFunctional k ℓ)
+theorem twoPathNonSep_transform [LinearOrder α]
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {a b c d : W.Flag} {v : W.Vertex}

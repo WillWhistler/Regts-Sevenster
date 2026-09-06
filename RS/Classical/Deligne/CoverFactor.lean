@@ -18,25 +18,14 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The arity-one projection is the unitor through the singleton
 identification. -/
-theorem modPowπ_one (X : D) [ModObj A X] :
+theorem modPowπ_one [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A]
+    (X : D) [ModObj A X] :
     modPowπ A X 1 ≫ (modPowOne A X).hom = (λ_ X).hom := by
   rw [modPowOne, Iso.trans_hom, ← Category.assoc,
     show modPowπ A X 1 ≫ (modPowTriv A X (by omega)).hom =
@@ -44,14 +33,12 @@ theorem modPowπ_one (X : D) [ModObj A X] :
         (modPowTriv A X (by omega)).inv_hom_id,
     Category.id_comp]
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The singleton inverse is the unitor into the projection. -/
-theorem modPowOne_inv (X : D) [ModObj A X] :
+theorem modPowOne_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A]
+    (X : D) [ModObj A X] :
     (modPowOne A X).inv = (λ_ X).inv ≫ modPowπ A X 1 := by
   have h : ((λ_ X).inv ≫ modPowπ A X 1) ≫
       (modPowOne A X).hom = 𝟙 X :=
@@ -61,18 +48,14 @@ theorem modPowOne_inv (X : D) [ModObj A X] :
         (Iso.inv_hom_id (λ_ X)))
   exact ((Iso.comp_hom_eq_id (modPowOne A X)).mp h).symm
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The generic core of the shuffle–concatenation step: against a
 map into a tensor pair, the unit shuffle and the two unit
 concatenation words dissolve into the source concatenation word.
 Every concatenation word at block size one is a unitor windup, so
 no braiding beyond the interchange blocks enters. -/
-private theorem shuffle_concat_core {P B₁ B₂ : D} (C₁ C₂ : D)
+private theorem shuffle_concat_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {P B₁ B₂ : D} (C₁ C₂ : D)
     (f : P ⟶ B₁ ⊗ B₂) :
     (f ⊗ₘ (((λ_ (𝟙_ D)).inv ▷ (C₁ ⊗ C₂)) ≫
         tensorμ (𝟙_ D) (𝟙_ D) C₁ C₂)) ≫
@@ -100,18 +83,14 @@ private theorem shuffle_concat_core {P B₁ B₂ : D} (C₁ C₂ : D)
     MonoidalCategory.tensorHom_def' f (λ_ (C₁ ⊗ C₂)).hom,
     Category.assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The shuffle absorbs one concatenated block**: shuffling the
 two halves and concatenating both target powers is concatenating
 the source power and shuffling.  At block size one every
 concatenation word is definitionally a unitor windup, so this is
 the generic core, read through the recursions. -/
-private theorem shuffle_concat_step (V X : D) (k : ℕ) :
+private theorem shuffle_concat_step
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (V X : D) (k : ℕ) :
     (tensorPowConcat (V ⊗ X) (k + 1) (0 + 1)).inv ≫
         ((plainShuffle V X (k + 1)).hom ⊗ₘ
           (plainShuffle V X (0 + 1)).hom) ≫
@@ -125,12 +104,16 @@ private theorem shuffle_concat_step (V X : D) (k : ℕ) :
   rw [Iso.inv_comp_eq]
   exact shuffle_concat_core V X (plainShuffle V X (k + 1)).hom
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The base of the cover factorisation: at arity one the twisted
 identification over the plain covers is the unit shuffle over the
 module projection. -/
-private theorem twistPow_cover_factor_zero (V : D) (R : Mod D A) :
+private theorem twistPow_cover_factor_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (V : D) (R : Mod D A) :
     modPowπ A ((tensorLeftMod A V R).X) (0 + 1) ≫
         ((twistPowModIso A V R 0).hom).hom =
       (plainShuffle V R.X (0 + 1)).hom ≫
@@ -157,12 +140,16 @@ private theorem twistPow_cover_factor_zero (V : D) (R : Mod D A) :
       MonoidalCategory.id_tensorHom_id, Category.comp_id]
   exact (reassoc_of% hL) ((𝟙_ D ⊗ V) ◁ modPowπ A R.X 1)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The cover factorisation**: over the plain covers, the
 twisted power identification is the diagonal shuffle followed by
 the projection of the module factor. -/
-theorem twistPow_cover_factor (V : D) (R : Mod D A) :
+theorem twistPow_cover_factor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (V : D) (R : Mod D A) :
     ∀ k : ℕ,
     modPowπ A ((tensorLeftMod A V R).X) (k + 1) ≫
         ((twistPowModIso A V R k).hom).hom =
@@ -194,7 +181,7 @@ theorem twistPow_cover_factor (V : D) (R : Mod D A) :
         ((tensorPow D V (k + 1) ◁ modPowπ A R.X (k + 1)) ⊗ₘ
           (tensorPow D V (0 + 1) ◁ modPowπ A R.X (0 + 1))) :=
       (MonoidalCategory.tensorHom_comp_tensorHom _ _ _ _).trans
-        ((congrArg₂ (· ⊗ₘ ·) (twistPow_cover_factor V R k)
+        ((congrArg₂ (· ⊗ₘ ·) (twistPow_cover_factor A V R k)
             (twistPow_cover_factor_zero A V R)).trans
           (MonoidalCategory.tensorHom_comp_tensorHom
             _ _ _ _).symm)

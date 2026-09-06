@@ -15,22 +15,25 @@ namespace RS
 
 open Finset LinearMap
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
-
-variable (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+variable {G : Type*}
 
 /-- The canonically-instanced carrier. -/
-abbrev subCarrier : Type _ :=
+abbrev subCarrier
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
+    Type _ :=
   ↥(S.restrictScalars ℂ)
 
 /-- The submodule carries the group-algebra action, definitionally
 by scalar multiplication. -/
-noncomputable instance : Module (MonoidAlgebra ℂ G)
+noncomputable instance
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
+    Module (MonoidAlgebra ℂ G)
     (subCarrier S) :=
   inferInstanceAs (Module (MonoidAlgebra ℂ G) ↥S)
 
 /-- The complex and group-algebra actions agree on scalars. -/
-instance : IsScalarTower ℂ (MonoidAlgebra ℂ G) (subCarrier S) where
+instance [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
+    IsScalarTower ℂ (MonoidAlgebra ℂ G) (subCarrier S) where
   smul_assoc z y m := by
     apply Subtype.ext
     show ((z • y) • (m : MonoidAlgebra ℂ G)) =
@@ -39,13 +42,16 @@ instance : IsScalarTower ℂ (MonoidAlgebra ℂ G) (subCarrier S) where
 
 /-- The native representation of a submodule of the regular
 module. -/
-noncomputable def rhoS : Representation ℂ G (subCarrier S) :=
+noncomputable def rhoS
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
+    Representation ℂ G (subCarrier S) :=
   Representation.ofModule' (k := ℂ) (G := G) (subCarrier S)
 
-omit [Fintype G] [DecidableEq G] in
 /-- The algebra action of the native representation is scalar
 multiplication. -/
-theorem rhoS_asAlgebraHom_apply (y : MonoidAlgebra ℂ G)
+theorem rhoS_asAlgebraHom_apply
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y : MonoidAlgebra ℂ G)
     (m : subCarrier S) :
     (rhoS S).asAlgebraHom y m = y • m := by
   rw [rhoS, Representation.asAlgebraHom_def,
@@ -53,10 +59,11 @@ theorem rhoS_asAlgebraHom_apply (y : MonoidAlgebra ℂ G)
   rw [Equiv.apply_symm_apply]
   rfl
 
-omit [Fintype G] [DecidableEq G] in
 /-- Its group action is scalar multiplication by the group
 element. -/
-theorem rhoS_apply (g : G) (m : subCarrier S) :
+theorem rhoS_apply
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (g : G) (m : subCarrier S) :
     rhoS S g m = (MonoidAlgebra.single g (1 : ℂ)) • m := by
   have h := rhoS_asAlgebraHom_apply S
     (MonoidAlgebra.single g 1) m
@@ -65,10 +72,10 @@ theorem rhoS_apply (g : G) (m : subCarrier S) :
     rw [Representation.asAlgebraHom_single, one_smul]] at h
   exact h
 
-omit [Fintype G] [DecidableEq G] in
 /-- The native representation of a simple submodule satisfies the
 invariant-submodule irreducibility. -/
 theorem isIrredRep_rhoS
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     IsIrredRep (rhoS S) := by
   constructor

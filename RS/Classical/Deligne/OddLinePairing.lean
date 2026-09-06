@@ -17,35 +17,35 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
+variable {D : Type u}
 
-variable (L : OddLine D)
-
-omit [SymmetricCategory D] [HasFiniteBiproducts D] in
 /-- Whiskering a negated identity on the right negates it. -/
-theorem neg_id_whiskerRight (X Y : D) :
+theorem neg_id_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D]
+    (X Y : D) :
     (-𝟙 X) ▷ Y = -𝟙 (X ⊗ Y) := by
   show (tensorRight Y).map (-𝟙 X) = _
   rw [Functor.map_neg]
   simp
   rfl
 
-omit [SymmetricCategory D] [HasFiniteBiproducts D] in
 /-- Whiskering a negated identity on the left negates it. -/
-theorem whiskerLeft_neg_id (X Y : D) :
+theorem whiskerLeft_neg_id [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D]
+    (X Y : D) :
     X ◁ (-𝟙 Y) = -𝟙 (X ⊗ Y) := by
   show (tensorLeft X).map (-𝟙 Y) = _
   rw [Functor.map_neg]
   simp
   rfl
 
-omit [HasFiniteBiproducts D] in
 /-- **Cyclic rearrangement of a triple of lines is free**: the
 two transpositions each contribute a sign, and the signs
 cancel. -/
-theorem OddLine.cycle_triple :
+theorem OddLine.cycle_triple
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     ((β_ L.obj L.obj).hom ▷ L.obj) ≫
         (α_ L.obj L.obj L.obj).hom ≫
         (L.obj ◁ (β_ L.obj L.obj).hom) =
@@ -53,10 +53,11 @@ theorem OddLine.cycle_triple :
   rw [L.braid_neg, neg_id_whiskerRight, whiskerLeft_neg_id]
   simp
 
-omit [HasFiniteBiproducts D] in
 /-- **Cyclic rearrangement of a triple of lines is free**, in the
 mirror grouping. -/
-theorem OddLine.cycle_triple' :
+theorem OddLine.cycle_triple'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     (L.obj ◁ (β_ L.obj L.obj).hom) ≫
         (α_ L.obj L.obj L.obj).inv ≫
         ((β_ L.obj L.obj).hom ▷ L.obj) =
@@ -64,9 +65,10 @@ theorem OddLine.cycle_triple' :
   rw [L.braid_neg, neg_id_whiskerRight, whiskerLeft_neg_id]
   simp
 
-omit [HasFiniteBiproducts D] in
 /-- **The first triangle identity of the odd line.** -/
-theorem OddLine.evaluation_coevaluation :
+theorem OddLine.evaluation_coevaluation
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     (L.sq.inv ▷ L.obj) ≫ (α_ L.obj L.obj L.obj).hom ≫
         (L.obj ◁ L.sq.hom) =
       (λ_ L.obj).hom ≫ (ρ_ L.obj).inv := by
@@ -100,9 +102,10 @@ theorem OddLine.evaluation_coevaluation :
   refine Eq.trans ?_ (Category.comp_id _)
   exact (Iso.eq_inv_comp _).mpr hkey
 
-omit [HasFiniteBiproducts D] in
 /-- **The second triangle identity of the odd line.** -/
-theorem OddLine.coevaluation_evaluation :
+theorem OddLine.coevaluation_evaluation
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     (L.obj ◁ L.sq.inv) ≫ (α_ L.obj L.obj L.obj).inv ≫
         (L.sq.hom ▷ L.obj) =
       (ρ_ L.obj).hom ≫ (λ_ L.obj).inv := by
@@ -139,7 +142,9 @@ theorem OddLine.coevaluation_evaluation :
 /-- **The odd line is self-dual**: the square trivialisation is
 an exact pairing of the line with itself. -/
 @[implicit_reducible]
-noncomputable def OddLine.exactPairing :
+noncomputable def OddLine.exactPairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     ExactPairing L.obj L.obj where
   coevaluation' := L.sq.inv
   evaluation' := L.sq.hom

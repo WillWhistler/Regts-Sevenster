@@ -32,66 +32,83 @@ and multiplication are therefore spelt with explicit projections. -/
 
 universe v u
 
-variable {E : Type u} [Category.{v} E]
-variable (B : ℕ → E)
+variable {E : Type u}
 
 /-- Transport of a chain object along an equality of indices. -/
-def chainCast {a b : ℕ} (h : a = b) : B a ⟶ B b :=
+def chainCast [Category.{v} E] (B : ℕ → E)
+    {a b : ℕ} (h : a = b) : B a ⟶ B b :=
   eqToHom (congrArg B h)
 
 /-- The trivial index transport is the identity. -/
 @[simp]
-theorem chainCast_rfl (a : ℕ) :
+theorem chainCast_rfl [Category.{v} E] (B : ℕ → E)
+    (a : ℕ) :
     chainCast B (rfl : a = a) = 𝟙 (B a) := rfl
 
 /-- Index transports compose. -/
 @[reassoc (attr := simp)]
-theorem chainCast_trans {a b c : ℕ} (h : a = b) (h' : b = c) :
+theorem chainCast_trans [Category.{v} E] (B : ℕ → E)
+    {a b c : ℕ} (h : a = b) (h' : b = c) :
     chainCast B h ≫ chainCast B h' = chainCast B (h.trans h') := by
   subst h h'
   simp
 
-variable (δ : ∀ n, B n ⟶ B (n + 1))
-
 /-- The chain diagram over the `v`-small copy of `ℕ`, the shape at
 which the receiving category is assumed to have colimits. -/
-noncomputable def chainDiagram : SmallNat.{v} ⥤ E :=
+noncomputable def chainDiagram
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1)) :
+    SmallNat.{v} ⥤ E :=
   smallNatEquiv.inverse ⋙ chainFunctor B δ
 
-variable [HasColimitsOfShape SmallNat.{v} E]
-
 /-- The colimit object of the chain. -/
-noncomputable def chainColimit : E :=
+noncomputable def chainColimit
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] : E :=
   colimit (chainDiagram B δ)
 
 /-- The stage inclusion into the chain colimit. -/
-noncomputable def chainColimitι (n : ℕ) : B n ⟶ chainColimit B δ :=
+noncomputable def chainColimitι
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    (n : ℕ) : B n ⟶ chainColimit B δ :=
   colimit.ι (chainDiagram B δ) (smallNatEquiv.functor.obj n)
 
 /-- The chain morphisms are absorbed by the stage inclusions. -/
 @[reassoc (attr := simp)]
-theorem chainMap_chainColimitι {a b : ℕ} (h : a ≤ b) :
+theorem chainMap_chainColimitι
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    {a b : ℕ} (h : a ≤ b) :
     chainMap B δ h ≫ chainColimitι B δ b = chainColimitι B δ a := by
   exact colimit.w (chainDiagram B δ)
     (smallNatEquiv.functor.map (homOfLE h))
 
 /-- The transitions are absorbed by the stage inclusions. -/
 @[reassoc (attr := simp)]
-theorem delta_chainColimitι (n : ℕ) :
+theorem delta_chainColimitι
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    (n : ℕ) :
     δ n ≫ chainColimitι B δ (n + 1) = chainColimitι B δ n := by
   have h := chainMap_chainColimitι B δ (Nat.le_succ n)
   rwa [chainMap_le_succ] at h
 
 /-- The index transports are absorbed by the stage inclusions. -/
 @[reassoc (attr := simp)]
-theorem chainCast_chainColimitι {a b : ℕ} (h : a = b) :
+theorem chainCast_chainColimitι
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    {a b : ℕ} (h : a = b) :
     chainCast B h ≫ chainColimitι B δ b = chainColimitι B δ a := by
   subst h
   rw [chainCast_rfl, Category.id_comp]
 
 /-- Maps out of the chain colimit agree once they agree on all
 stages. -/
-theorem chainColimit_hom_ext {Z : E} {f g : chainColimit B δ ⟶ Z}
+theorem chainColimit_hom_ext
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    {Z : E} {f g : chainColimit B δ ⟶ Z}
     (w : ∀ n : ℕ, chainColimitι B δ n ≫ f =
       chainColimitι B δ n ≫ g) : f = g := by
   apply colimit.hom_ext
@@ -106,18 +123,15 @@ squares are taken as hypotheses; only the left one needs an index
 transport, since `(i + 1) + 1 + j` is not definitionally
 `(i + 1 + j) + 1`. -/
 
-variable [MonoidalCategory E]
-variable (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
-variable (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j =
-  mu i j ≫ δ (i + 1 + j) ≫
-    chainCast B (Nat.add_right_comm (i + 1) j 1))
-variable (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) =
-  mu i j ≫ δ (i + 1 + j))
-
-include hδl in
 /-- Multiplying after a chain morphism in the first slot agrees with
 multiplying first, once both land in the colimit. -/
-theorem mul_chainMap_ι_left {i i' : ℕ} (h : i ≤ i') (j : ℕ) :
+theorem mul_chainMap_ι_left
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    {i i' : ℕ} (h : i ≤ i') (j : ℕ) :
     (chainMap B δ h ▷ B j) ≫ mu i' j ≫
         chainColimitι B δ (i' + 1 + j) =
       mu i j ≫ chainColimitι B δ (i + 1 + j) := by
@@ -131,10 +145,14 @@ theorem mul_chainMap_ι_left {i i' : ℕ} (h : i ≤ i') (j : ℕ) :
       chainCast_chainColimitι, delta_chainColimitι]
     exact ih
 
-include hδr in
 /-- Multiplying after a chain morphism in the second slot agrees with
 multiplying first, once both land in the colimit. -/
-theorem mul_chainMap_ι_right (i : ℕ) {j j' : ℕ} (h : j ≤ j') :
+theorem mul_chainMap_ι_right
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    (i : ℕ) {j j' : ℕ} (h : j ≤ j') :
     (B i ◁ chainMap B δ h) ≫ mu i j' ≫
         chainColimitι B δ (i + 1 + j') =
       mu i j ≫ chainColimitι B δ (i + 1 + j) := by
@@ -156,7 +174,13 @@ theorem mul_chainMap_ι_right (i : ℕ) {j j' : ℕ} (h : j ≤ j') :
 /-- The multiply-then-include maps against a fixed stage in the
 second slot form a cocone on the chain diagram tensored on the right
 with that stage. -/
-noncomputable def chainMulCocone (j : ℕ) :
+noncomputable def chainMulCocone
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (j : ℕ) :
     Cocone (chainDiagram B δ ⋙ tensorRight (B j)) where
   pt := chainColimit B δ
   ι :=
@@ -177,12 +201,16 @@ noncomputable def chainMulCocone (j : ℕ) :
         exact mul_chainMap_ι_left B δ mu hδl
           (leOfHom (smallNatEquiv.inverse.map f)) j }
 
-variable
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-
 /-- Partial multiplication of the chain colimit against a fixed stage
 in the second slot. -/
-noncomputable def chainMulStage (j : ℕ) :
+noncomputable def chainMulStage
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    (j : ℕ) :
     chainColimit B δ ⊗ B j ⟶ chainColimit B δ :=
   ((preservesColimitIso (tensorRight (B j))
       (chainDiagram B δ)).hom ≫
@@ -192,7 +220,13 @@ noncomputable def chainMulStage (j : ℕ) :
 
 /-- On a stage, the partial multiplication is multiply-then-include. -/
 @[reassoc]
-theorem ι_chainMulStage (i j : ℕ) :
+theorem ι_chainMulStage [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    (i j : ℕ) :
     (chainColimitι B δ i ▷ B j) ≫ chainMulStage B δ mu hδl j =
       mu i j ≫ chainColimitι B δ (i + 1 + j) := by
   show (tensorRight (B j)).map (colimit.ι (chainDiagram B δ)
@@ -205,7 +239,11 @@ theorem ι_chainMulStage (i j : ℕ) :
 
 /-- Maps out of the chain colimit tensored on the right are
 determined by their restrictions to the stages. -/
-theorem chainColimit_tensorRight_hom_ext {X Z : E}
+theorem chainColimit_tensorRight_hom_ext
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    {X Z : E}
     {f g : chainColimit B δ ⊗ X ⟶ Z}
     (w : ∀ i : ℕ, (chainColimitι B δ i ▷ X) ≫ f =
       (chainColimitι B δ i ▷ X) ≫ g) : f = g := by
@@ -217,10 +255,17 @@ theorem chainColimit_tensorRight_hom_ext {X Z : E}
     ι_preservesColimitIso_inv_assoc]
   exact w (smallNatEquiv.inverse.obj k)
 
-include hδr in
 /-- The partial multiplications are natural in the stage. -/
 @[reassoc]
-theorem chainMulStage_natural {j j' : ℕ} (h : j ≤ j') :
+theorem chainMulStage_natural
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    {j j' : ℕ} (h : j ≤ j') :
     (chainColimit B δ ◁ chainMap B δ h) ≫
         chainMulStage B δ mu hδl j' =
       chainMulStage B δ mu hδl j := by
@@ -230,13 +275,13 @@ theorem chainMulStage_natural {j j' : ℕ} (h : j ≤ j') :
     ι_chainMulStage, ι_chainMulStage]
   exact mul_chainMap_ι_right B δ mu hδr i h
 
-variable
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-
-omit [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)] in
 /-- Maps out of the chain colimit tensored on the left are
 determined by their restrictions to the stages. -/
-theorem tensorLeft_chainColimit_hom_ext {X Z : E}
+theorem tensorLeft_chainColimit_hom_ext
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    {X Z : E}
     {f g : X ⊗ chainColimit B δ ⟶ Z}
     (w : ∀ j : ℕ, (X ◁ chainColimitι B δ j) ≫ f =
       (X ◁ chainColimitι B δ j) ≫ g) : f = g := by
@@ -250,7 +295,14 @@ theorem tensorLeft_chainColimit_hom_ext {X Z : E}
 
 /-- The partial multiplications form a cocone on the chain diagram
 tensored on the left with the chain colimit. -/
-noncomputable def chainMulTotalCocone :
+noncomputable def chainMulTotalCocone
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)] :
     Cocone (chainDiagram B δ ⋙ tensorLeft (chainColimit B δ)) where
   pt := chainColimit B δ
   ι :=
@@ -270,7 +322,15 @@ noncomputable def chainMulTotalCocone :
 
 /-- **The colimit multiplication**: the partial multiplications
 assembled over the second slot. -/
-noncomputable def chainColimitMul :
+noncomputable def chainColimitMul
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)] :
     chainColimit B δ ⊗ chainColimit B δ ⟶ chainColimit B δ :=
   ((preservesColimitIso (tensorLeft (chainColimit B δ))
       (chainDiagram B δ)).hom ≫
@@ -282,7 +342,16 @@ noncomputable def chainColimitMul :
 /-- On a stage in the second slot, the colimit multiplication is the
 partial multiplication. -/
 @[reassoc]
-theorem whiskerLeft_ι_chainColimitMul (j : ℕ) :
+theorem whiskerLeft_ι_chainColimitMul
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (j : ℕ) :
     (chainColimit B δ ◁ chainColimitι B δ j) ≫
         chainColimitMul B δ mu hδl hδr =
       chainMulStage B δ mu hδl j := by
@@ -298,7 +367,16 @@ theorem whiskerLeft_ι_chainColimitMul (j : ℕ) :
 /-- **Defining equation of the colimit multiplication**: on a pair of
 stages it is multiply-then-include. -/
 @[reassoc]
-theorem ι_tensorHom_chainColimitMul (i j : ℕ) :
+theorem ι_tensorHom_chainColimitMul
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (i j : ℕ) :
     (chainColimitι B δ i ⊗ₘ chainColimitι B δ j) ≫
         chainColimitMul B δ mu hδl hδr =
       mu i j ≫ chainColimitι B δ (i + 1 + j) := by
@@ -308,7 +386,12 @@ theorem ι_tensorHom_chainColimitMul (i j : ℕ) :
 /-- The multiply-then-include maps against a fixed stage in the
 first slot form a cocone on the chain diagram tensored on the left
 with that stage. -/
-noncomputable def chainMulLCocone (i : ℕ) :
+noncomputable def chainMulLCocone
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    (i : ℕ) :
     Cocone (chainDiagram B δ ⋙ tensorLeft (B i)) where
   pt := chainColimit B δ
   ι :=
@@ -331,7 +414,13 @@ noncomputable def chainMulLCocone (i : ℕ) :
 
 /-- Partial multiplication of a fixed stage in the first slot
 against the chain colimit. -/
-noncomputable def chainMulStageL (i : ℕ) :
+noncomputable def chainMulStageL
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (i : ℕ) :
     B i ⊗ chainColimit B δ ⟶ chainColimit B δ :=
   ((preservesColimitIso (tensorLeft (B i))
       (chainDiagram B δ)).hom ≫
@@ -339,12 +428,15 @@ noncomputable def chainMulStageL (i : ℕ) :
     (tensorLeft (B i)).obj (colimit (chainDiagram B δ)) ⟶
       chainColimit B δ)
 
-omit
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)] in
 /-- On a stage, the left partial multiplication is
 multiply-then-include. -/
 @[reassoc]
-theorem ι_chainMulStageL (i j : ℕ) :
+theorem ι_chainMulStageL [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (i j : ℕ) :
     (B i ◁ chainColimitι B δ j) ≫ chainMulStageL B δ mu hδr i =
       mu i j ≫ chainColimitι B δ (i + 1 + j) := by
   show (tensorLeft (B i)).map (colimit.ι (chainDiagram B δ)
@@ -358,7 +450,16 @@ theorem ι_chainMulStageL (i j : ℕ) :
 /-- On a stage in the first slot, the colimit multiplication is the
 left partial multiplication. -/
 @[reassoc]
-theorem ι_whiskerRight_chainColimitMul (i : ℕ) :
+theorem ι_whiskerRight_chainColimitMul
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (i : ℕ) :
     (chainColimitι B δ i ▷ chainColimit B δ) ≫
         chainColimitMul B δ mu hδl hδr =
       chainMulStageL B δ mu hδr i := by
@@ -370,7 +471,12 @@ theorem ι_whiskerRight_chainColimitMul (i : ℕ) :
 
 /-- Maps out of the tensor square of the chain colimit are
 determined by pairs of stages. -/
-theorem chainColimit_pair_hom_ext {Z : E}
+theorem chainColimit_pair_hom_ext
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    {Z : E}
     {f g : chainColimit B δ ⊗ chainColimit B δ ⟶ Z}
     (w : ∀ i j : ℕ,
       (chainColimitι B δ i ⊗ₘ chainColimitι B δ j) ≫ f =
@@ -390,7 +496,12 @@ theorem chainColimit_pair_hom_ext {Z : E}
 /-- Sandwich extensionality: maps out of a tensor product with the
 chain colimit in the middle slot are determined by the stages
 there. -/
-theorem chainColimit_sandwich_hom_ext (X Y : E) {Z : E}
+theorem chainColimit_sandwich_hom_ext
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (X Y : E) {Z : E}
     {f g : X ⊗ (chainColimit B δ ⊗ Y) ⟶ Z}
     (w : ∀ j : ℕ, (X ◁ chainColimitι B δ j ▷ Y) ≫ f =
       (X ◁ chainColimitι B δ j ▷ Y) ≫ g) : f = g := by
@@ -409,16 +520,26 @@ inclusion.  The monoid laws hold on the colimit whenever their
 stagewise forms hold; the index transports disappear into the stage
 inclusions. -/
 
-variable (u : 𝟙_ E ⟶ B 0)
-
 /-- The colimit unit: the bottom-stage unit followed by the stage
 inclusion. -/
-noncomputable def chainColimitUnit : 𝟙_ E ⟶ chainColimit B δ :=
+noncomputable def chainColimitUnit
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (u : 𝟙_ E ⟶ B 0) : 𝟙_ E ⟶ chainColimit B δ :=
   u ≫ chainColimitι B δ 0
 
 /-- **Left unit law** of the colimit multiplication, from the
 stagewise left unit law. -/
 theorem chainColimit_one_mul
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (u : 𝟙_ E ⟶ B 0)
     (hul : ∀ j, (u ▷ B j) ≫ mu 0 j =
       (λ_ (B j)).hom ≫ chainMap B δ (Nat.le_add_left j (0 + 1))) :
     (chainColimitUnit B δ u ▷ chainColimit B δ) ≫
@@ -435,6 +556,15 @@ theorem chainColimit_one_mul
 /-- **Right unit law** of the colimit multiplication, from the
 stagewise right unit law. -/
 theorem chainColimit_mul_one
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (u : 𝟙_ E ⟶ B 0)
     (hur : ∀ i, (B i ◁ u) ≫ mu i 0 = (ρ_ (B i)).hom ≫ δ i) :
     (chainColimit B δ ◁ chainColimitUnit B δ u) ≫
         chainColimitMul B δ mu hδl hδr =
@@ -450,12 +580,11 @@ theorem chainColimit_mul_one
     delta_chainColimitι B δ i
   rw [hι, rightUnitor_naturality]
 
-omit
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)] in
 /-- Stagewise associativity, pushed into the colimit: the index
 transport is absorbed by the stage inclusion. -/
-theorem mul_assoc_ι
+theorem mul_assoc_ι [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
     (hassoc : ∀ i j k, (mu i j ▷ B k) ≫ mu (i + 1 + j) k =
       (α_ (B i) (B j) (B k)).hom ≫ (B i ◁ mu j k) ≫
         mu i (j + 1 + k) ≫ chainCast B
@@ -471,6 +600,14 @@ theorem mul_assoc_ι
 /-- **Associativity** of the colimit multiplication, from stagewise
 associativity. -/
 theorem chainColimit_mul_assoc
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
     (hassoc : ∀ i j k, (mu i j ▷ B k) ≫ mu (i + 1 + j) k =
       (α_ (B i) (B j) (B k)).hom ≫ (B i ◁ mu j k) ≫
         mu i (j + 1 + k) ≫ chainCast B
@@ -518,6 +655,15 @@ included bottom-stage unit and the multiplication is assembled from
 the stagewise multiplications. -/
 @[reducible]
 noncomputable def chainColimitMonObj
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (u : 𝟙_ E ⟶ B 0)
     (hul : ∀ j, (u ▷ B j) ≫ mu 0 j =
       (λ_ (B j)).hom ≫ chainMap B δ (Nat.le_add_left j (0 + 1)))
     (hur : ∀ i, (B i ◁ u) ≫ mu i 0 = (ρ_ (B i)).hom ≫ δ i)
@@ -536,14 +682,11 @@ noncomputable def chainColimitMonObj
 
 section Braided
 
-variable [BraidedCategory E]
-
-omit
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)] in
 /-- Stagewise commutativity, pushed into the colimit: the index
 transport is absorbed by the stage inclusion. -/
-theorem mul_comm_ι
+theorem mul_comm_ι [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j)) [BraidedCategory E]
     (hcomm : ∀ i j, (β_ (B i) (B j)).hom ≫ mu j i ≫
       chainCast B (by omega : j + 1 + i = i + 1 + j) = mu i j)
     (i j : ℕ) :
@@ -556,6 +699,15 @@ theorem mul_comm_ι
 /-- **Commutativity** of the colimit multiplication, from stagewise
 commutativity up to the index transport. -/
 theorem chainColimitMul_comm
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [BraidedCategory E]
     (hcomm : ∀ i j, (β_ (B i) (B j)).hom ≫ mu j i ≫
       chainCast B (by omega : j + 1 + i = i + 1 + j) = mu i j) :
     (β_ (chainColimit B δ) (chainColimit B δ)).hom ≫
@@ -570,6 +722,15 @@ theorem chainColimitMul_comm
 /-- **The chain colimit as a commutative monoid object**: stagewise
 commutativity makes the packaged monoid structure commutative. -/
 theorem chainColimit_isCommMonObj
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] [MonoidalCategory E]
+    (mu : ∀ i j : ℕ, B i ⊗ B j ⟶ B (i + 1 + j))
+    (hδl : ∀ i j, (δ i ▷ B j) ≫ mu (i + 1) j = mu i j ≫ δ (i + 1 + j) ≫
+      chainCast B (Nat.add_right_comm (i + 1) j 1))
+    (hδr : ∀ i j, (B i ◁ δ j) ≫ mu i (j + 1) = mu i j ≫ δ (i + 1 + j))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (u : 𝟙_ E ⟶ B 0) [BraidedCategory E]
     (hul : ∀ j, (u ▷ B j) ≫ mu 0 j =
       (λ_ (B j)).hom ≫ chainMap B δ (Nat.le_add_left j (0 + 1)))
     (hur : ∀ i, (B i ◁ u) ≫ mu i 0 = (ρ_ (B i)).hom ≫ δ i)
@@ -596,14 +757,13 @@ the colimit unit transfers to the packaged unit. -/
 
 section Ind
 
-variable {C : Type v} [SmallCategory C]
-
-variable [MonoidalCategory C] [Preadditive C] [HasFiniteColimits C]
-
 /-- **Nonvanishing of the colimit unit**: over the ind-category, the
 colimit unit built from a compatible family of stage units vanishes
 exactly when the family dies at a finite stage. -/
-theorem chainColimitUnit_eq_zero_iff (B : ℕ → Ind C)
+theorem chainColimitUnit_eq_zero_iff
+    {C : Type v} [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C]
+    (B : ℕ → Ind C)
     (δ : ∀ n, B n ⟶ B (n + 1)) (u : ∀ n, 𝟙_ (Ind C) ⟶ B n)
     (hu : ∀ n, u n ≫ δ n = u (n + 1)) :
     chainColimitUnit B δ (u 0) = 0 ↔ ∃ n, u n = 0 :=

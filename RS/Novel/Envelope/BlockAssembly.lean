@@ -8,8 +8,9 @@ The Frobenius character identity at every ambient arity: the
 trace of a Young idempotent (in the block representation of
 `S_k`) against the block-diagonal power is the dimension times
 the Schur specialization of the block power traces.  The
-resulting `FrobeniusTower` gives nilpotent-trace vanishing at
-every strand arity — the engine of semisimplicity everywhere.
+resulting `FrobeniusTower` gives the appendix's nilpotent-trace
+proof at every strand arity. The mainline semisimplicity proof
+uses the factorial argument in `BlockFactorialTrace`.
 -/
 
 namespace RS

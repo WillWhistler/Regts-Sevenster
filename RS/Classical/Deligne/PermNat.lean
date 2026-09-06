@@ -1,3 +1,4 @@
+import RS.Classical.CatTheory.Intertwine
 import RS.Classical.Deligne.SchurVanishing
 import RS.Classical.Deligne.TensorExact
 
@@ -26,29 +27,33 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-! ## Tensor powers of a morphism -/
 
 /-- **The tensor power of a morphism**: `f ^ ⊗ n` acts as `f` on
 every factor, by the same recursion that defines `tensorPow`. -/
-noncomputable def tensorPowMap {X Y : A} (f : X ⟶ Y) :
+noncomputable def tensorPowMap [Category.{v} A] [MonoidalCategory A]
+    {X Y : A} (f : X ⟶ Y) :
     (n : ℕ) → (tensorPow A X n ⟶ tensorPow A Y n)
   | 0 => 𝟙 (𝟙_ A)
   | n + 1 => tensorPowMap f n ⊗ₘ f
 
 /-- The empty power of a morphism is the identity of the unit. -/
 @[simp]
-theorem tensorPowMap_zero {X Y : A} (f : X ⟶ Y) :
+theorem tensorPowMap_zero [Category.{v} A] [MonoidalCategory A]
+    {X Y : A} (f : X ⟶ Y) :
     tensorPowMap f 0 = 𝟙 (𝟙_ A) := rfl
 
 /-- The defining recursion of `tensorPowMap`. -/
-theorem tensorPowMap_succ {X Y : A} (f : X ⟶ Y) (n : ℕ) :
+theorem tensorPowMap_succ [Category.{v} A] [MonoidalCategory A]
+    {X Y : A} (f : X ⟶ Y) (n : ℕ) :
     tensorPowMap f (n + 1) = tensorPowMap f n ⊗ₘ f := rfl
 
 /-- Tensor powers of the identity are the identity. -/
 @[simp]
-theorem tensorPowMap_id (X : A) (n : ℕ) :
+theorem tensorPowMap_id [Category.{v} A] [MonoidalCategory A]
+    (X : A) (n : ℕ) :
     tensorPowMap (𝟙 X) n = 𝟙 (tensorPow A X n) := by
   induction n with
   | zero => rfl
@@ -57,7 +62,8 @@ theorem tensorPowMap_id (X : A) (n : ℕ) :
     rfl
 
 /-- Tensor powers are functorial in the morphism. -/
-theorem tensorPowMap_comp {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z)
+theorem tensorPowMap_comp [Category.{v} A] [MonoidalCategory A]
+    {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z)
     (n : ℕ) :
     tensorPowMap (f ≫ g) n = tensorPowMap f n ≫ tensorPowMap g n := by
   induction n with
@@ -77,7 +83,8 @@ does the tensor power of a morphism.
 /-- **Tensor powers preserve monomorphisms** in a rigid category:
 each factor of `f ⊗ₘ f`'s whiskering factorisation preserves
 monomorphisms, because tensoring preserves limits. -/
-theorem tensorPowMap_mono [RigidCategory A] {X Y : A} (f : X ⟶ Y)
+theorem tensorPowMap_mono [Category.{v} A] [MonoidalCategory A]
+    [RigidCategory A] {X Y : A} (f : X ⟶ Y)
     [Mono f] (n : ℕ) : Mono (tensorPowMap f n) := by
   induction n with
   | zero =>
@@ -100,7 +107,7 @@ theorem tensorPowMap_mono [RigidCategory A] {X Y : A} (f : X ⟶ Y)
 /-- **Tensor powers preserve monomorphisms**, from mono
 preservation of the tensor factors alone — the form consumed over
 an ind-completion, where tensoring is exact without rigidity. -/
-theorem tensorPowMap_mono'
+theorem tensorPowMap_mono' [Category.{v} A] [MonoidalCategory A]
     [∀ Z : A, (tensorLeft Z).PreservesMonomorphisms]
     [∀ Z : A, (tensorRight Z).PreservesMonomorphisms]
     {X Y : A} (f : X ⟶ Y) [Mono f] (n : ℕ) :
@@ -122,7 +129,8 @@ theorem tensorPowMap_mono'
 /-- **Tensor powers preserve epimorphisms** in a rigid category:
 each factor of `f ⊗ₘ f`'s whiskering factorisation preserves
 epimorphisms, because tensoring preserves colimits. -/
-theorem tensorPowMap_epi [RigidCategory A] {X Y : A} (f : X ⟶ Y)
+theorem tensorPowMap_epi [Category.{v} A] [MonoidalCategory A]
+    [RigidCategory A] {X Y : A} (f : X ⟶ Y)
     [Epi f] (n : ℕ) : Epi (tensorPowMap f n) := by
   induction n with
   | zero =>
@@ -153,7 +161,8 @@ lemmas follow the definitions' recursions exactly.
 /-- A morphism intertwining `v` and `w` still intertwines after
 whiskering, against `v ⊗ₘ f`.  Stated at general objects, so that no
 tensor-power arity enters the rewriting. -/
-private theorem whisker_pass {P Q X Y : A} {u : P ⟶ P} {v : P ⟶ Q}
+private theorem whisker_pass [Category.{v} A] [MonoidalCategory A]
+    {P Q X Y : A} {u : P ⟶ P} {v : P ⟶ Q}
     {w : Q ⟶ Q} (f : X ⟶ Y) (h : u ≫ v = v ≫ w) :
     (u ▷ X) ≫ (v ⊗ₘ f) = (v ⊗ₘ f) ≫ (w ▷ Y) := by
   rw [← MonoidalCategory.tensorHom_id u X,
@@ -164,7 +173,8 @@ private theorem whisker_pass {P Q X Y : A} {u : P ⟶ P} {v : P ⟶ Q}
 
 /-- A commutation in the second tensorand passes a tensored morphism
 through a left whiskering.  Stated at general objects. -/
-private theorem tensor_middle {P Q S T U V : A} (g : P ⟶ Q)
+private theorem tensor_middle [Category.{v} A] [MonoidalCategory A]
+    {P Q S T U V : A} (g : P ⟶ Q)
     (h : S ⟶ T) (k : T ⟶ U) (h' : S ⟶ V) (k' : V ⟶ U)
     (w : h ≫ k = h' ≫ k') :
     (g ⊗ₘ h) ≫ (Q ◁ k) = (P ◁ h') ≫ (g ⊗ₘ k') := by
@@ -174,22 +184,22 @@ private theorem tensor_middle {P Q S T U V : A} (g : P ⟶ Q)
     MonoidalCategory.tensorHom_comp_tensorHom, w,
     Category.comp_id, Category.id_comp]
 
-omit [MonoidalCategory A] in
 /-- Two morphisms that each intertwine `T` compose to a morphism
 intertwining `T`.  Stated at general objects, so that no tensor-power
 arity enters the rewriting. -/
-private theorem step_shuffle {P Q : A} {s u : P ⟶ P} {T : P ⟶ Q}
+private theorem step_shuffle [Category.{v} A]
+    {P Q : A} {s u : P ⟶ P} {T : P ⟶ Q}
     {s' u' : Q ⟶ Q} (hs : s ≫ T = T ≫ s') (hu : u ≫ T = T ≫ u') :
     (s ≫ u) ≫ T = T ≫ (s' ≫ u') := by
   rw [Category.assoc, hu, ← Category.assoc, hs, Category.assoc]
 
 section Symmetric
 
-variable [SymmetricCategory A]
-
 /-- The braiding conjugate that defines `swapTop` is natural, at a
 general base object. -/
-private theorem swap_conj_natural {P Q X Y : A} (g : P ⟶ Q)
+private theorem swap_conj_natural
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {P Q X Y : A} (g : P ⟶ Q)
     (f : X ⟶ Y) :
     ((α_ P X X).hom ≫ (P ◁ (β_ X X).hom) ≫ (α_ P X X).inv) ≫
         ((g ⊗ₘ f) ⊗ₘ f) =
@@ -206,7 +216,9 @@ private theorem swap_conj_natural {P Q X Y : A} (g : P ⟶ Q)
 /-- **Naturality of the top braiding**: `swapTop` commutes with a
 tensor power of `f`, by naturality of the associator and of the
 braiding. -/
-theorem swapTop_natural {X Y : A} (f : X ⟶ Y) (n : ℕ) :
+theorem swapTop_natural
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {X Y : A} (f : X ⟶ Y) (n : ℕ) :
     swapTop X n ≫ tensorPowMap f (n + 2) =
       tensorPowMap f (n + 2) ≫ swapTop Y n :=
   swap_conj_natural (tensorPowMap f n) f
@@ -215,7 +227,9 @@ theorem swapTop_natural {X Y : A} (f : X ⟶ Y) (n : ℕ) :
 defines it: each bubbling step is a top braiding, natural by
 `swapTop_natural`, whiskered by factors `f` passes through by
 `whisker_pass`. -/
-theorem insertTop_natural {X Y : A} (f : X ⟶ Y) :
+theorem insertTop_natural
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {X Y : A} (f : X ⟶ Y) :
     ∀ n k : ℕ,
       insertTop X n k ≫ tensorPowMap f (n + 1) =
         tensorPowMap f (n + 1) ≫ insertTop Y n k := by
@@ -244,7 +258,9 @@ theorem insertTop_natural {X Y : A} (f : X ⟶ Y) :
 /-- **Naturality of the permutation action**: the action of any
 permutation commutes with a tensor power of `f`.  The proof is the
 recursion of `permMor` itself. -/
-theorem permMor_natural {X Y : A} (f : X ⟶ Y) :
+theorem permMor_natural
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {X Y : A} (f : X ⟶ Y) :
     ∀ (n : ℕ) (σ : Equiv.Perm (Fin n)),
       permMor X n σ ≫ tensorPowMap f n =
         tensorPowMap f n ≫ permMor Y n σ := by
@@ -266,30 +282,14 @@ end Symmetric
 
 section Linear
 
-variable [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-
-omit [MonoidalCategory A] [SymmetricCategory A] [Linear ℂ A] in
-/-- Intertwining `T` is closed under sums.  Stated at general
-objects and applied by `exact`, so the endomorphism-ring structure
-never enters the rewriting. -/
-private theorem add_pass {P Q : A} {a b : P ⟶ P} {a' b' : Q ⟶ Q}
-    {T : P ⟶ Q} (ha : a ≫ T = T ≫ a') (hb : b ≫ T = T ≫ b') :
-    (a + b) ≫ T = T ≫ (a' + b') := by
-  rw [Preadditive.add_comp, Preadditive.comp_add, ha, hb]
-
-omit [MonoidalCategory A] [SymmetricCategory A] in
-/-- Intertwining `T` is closed under scalars.  Stated at general
-objects and applied by `exact`. -/
-private theorem smul_pass {P Q : A} {a : P ⟶ P} {a' : Q ⟶ Q}
-    {T : P ⟶ Q} (r : ℂ) (h : a ≫ T = T ≫ a') :
-    (r • a) ≫ T = T ≫ (r • a') := by
-  rw [Linear.smul_comp, Linear.comp_smul, h]
-
 /-- **Naturality of the symmetric-group action**: the action of any
 group-algebra element commutes with a tensor power of `f`.  Both
 sides are `ℂ`-linear in the element, so the statement reduces to
 basis permutations, where it is `permMor_natural`. -/
-theorem permAlg_natural {X Y : A} (f : X ⟶ Y) (n : ℕ)
+theorem permAlg_natural
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    {X Y : A} (f : X ⟶ Y) (n : ℕ)
     (x : SymGroupAlgebra n) :
     permAlg X n x ≫ tensorPowMap f n =
       tensorPowMap f n ≫ permAlg Y n x := by
@@ -301,10 +301,10 @@ theorem permAlg_natural {X Y : A} (f : X ⟶ Y) (n : ℕ)
     exact permMor_natural f n σ
   | hadd x y hx hy =>
     rw [map_add, map_add]
-    exact add_pass hx hy
+    exact intertwine_add hx hy
   | hsmul r x hx =>
     rw [map_smul, map_smul]
-    exact smul_pass r hx
+    exact intertwine_smul r hx
 
 /-! ## Stability of Schur vanishing
 
@@ -314,26 +314,26 @@ epimorphisms and isomorphisms, by cancelling the tensor power of the
 morphism against the naturality square.
 -/
 
-omit [MonoidalCategory A] [SymmetricCategory A] [Linear ℂ A] in
 /-- A morphism intertwined with zero across a monomorphism is zero.
 Stated at general objects. -/
-private theorem zero_of_intertwine_mono {P Q : A} {a : P ⟶ P}
+private theorem zero_of_intertwine_mono [Category.{v} A] [Preadditive A]
+    {P Q : A} {a : P ⟶ P}
     {b : Q ⟶ Q} {T : P ⟶ Q} [Mono T] (hnat : a ≫ T = T ≫ b)
     (hb : b = 0) : a = 0 :=
   zero_of_comp_mono T (by rw [hnat, hb, comp_zero])
 
-omit [MonoidalCategory A] [SymmetricCategory A] [Linear ℂ A] in
 /-- A morphism intertwined with zero across an epimorphism is zero.
 Stated at general objects. -/
-private theorem zero_of_intertwine_epi {P Q : A} {a : P ⟶ P}
+private theorem zero_of_intertwine_epi [Category.{v} A] [Preadditive A]
+    {P Q : A} {a : P ⟶ P}
     {b : Q ⟶ Q} {T : P ⟶ Q} [Epi T] (hnat : a ≫ T = T ≫ b)
     (ha : a = 0) : b = 0 :=
   zero_of_epi_comp T (by rw [← hnat, ha, zero_comp])
 
-omit [MonoidalCategory A] [SymmetricCategory A] [Linear ℂ A] in
 /-- A morphism intertwined with zero across a split epimorphism is
 zero.  Stated at general objects. -/
-private theorem zero_of_intertwine_split {P Q : A} {a : P ⟶ P}
+private theorem zero_of_intertwine_split [Category.{v} A] [Preadditive A]
+    {P Q : A} {a : P ⟶ P}
     {b : Q ⟶ Q} {T : P ⟶ Q} {S : Q ⟶ P} (hST : S ≫ T = 𝟙 Q)
     (hnat : a ≫ T = T ≫ b) (ha : a = 0) : b = 0 := by
   calc b = (S ≫ T) ≫ b := by rw [hST, Category.id_comp]
@@ -344,7 +344,10 @@ private theorem zero_of_intertwine_split {P Q : A} {a : P ⟶ P}
 subobject half of Deligne's 1.19, at the idempotent level): if the
 block idempotent of `μ` kills `X ^ ⊗ μ.card` and `Y ⟶ X` is a
 monomorphism, it kills `Y ^ ⊗ μ.card` as well. -/
-theorem SchurKilled.of_mono [RigidCategory A] (P : SchurPackage.{v})
+theorem SchurKilled.of_mono
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    [RigidCategory A] (P : SchurPackage.{v})
     {X Y : A} (f : Y ⟶ X) [Mono f] {μ : YoungDiagram}
     (h : SchurKilled P X μ) : SchurKilled P Y μ := by
   haveI := tensorPowMap_mono f μ.card
@@ -352,7 +355,10 @@ theorem SchurKilled.of_mono [RigidCategory A] (P : SchurPackage.{v})
 
 /-- **Schur vanishing descends along epimorphisms** (the quotient
 half of Deligne's 1.19, at the idempotent level). -/
-theorem SchurKilled.of_epi [RigidCategory A] (P : SchurPackage.{v})
+theorem SchurKilled.of_epi
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    [RigidCategory A] (P : SchurPackage.{v})
     {X Y : A} (f : X ⟶ Y) [Epi f] {μ : YoungDiagram}
     (h : SchurKilled P X μ) : SchurKilled P Y μ := by
   haveI := tensorPowMap_epi f μ.card
@@ -361,7 +367,10 @@ theorem SchurKilled.of_epi [RigidCategory A] (P : SchurPackage.{v})
 /-- **Schur vanishing is invariant under isomorphism.**  No rigidity
 is needed: the tensor power of `e.inv` splits the tensor power of
 `e.hom`, and the naturality square does the rest. -/
-theorem SchurKilled.of_iso (P : SchurPackage.{v}) {X Y : A}
+theorem SchurKilled.of_iso
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (P : SchurPackage.{v}) {X Y : A}
     (e : X ≅ Y) {μ : YoungDiagram} (h : SchurKilled P X μ) :
     SchurKilled P Y μ := by
   have hST : tensorPowMap e.inv μ.card ≫ tensorPowMap e.hom μ.card =

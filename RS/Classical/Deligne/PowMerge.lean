@@ -34,14 +34,7 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (X : D) [ModObj A X]
+variable {D : Type u}
 
 /-! ## Structural shuffles of the boundary window
 
@@ -53,14 +46,10 @@ rewriting.
 
 section Shuffle
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-
 /-- The left-window shuffle: a window map acting on the first two
 window factors passes to the left half of the split. -/
-theorem split_shuffle_fst {P Q R S B : D} (u : Q ⟶ R) :
+theorem split_shuffle_fst [Category.{v} D] [MonoidalCategory D]
+    {P Q R S B : D} (u : Q ⟶ R) :
     ((P ◁ (u ▷ S)) ▷ B) ≫ ((α_ P R S).inv ▷ B) ≫
         (α_ (P ⊗ R) S B).hom =
       (α_ P (Q ⊗ S) B).hom ≫ (P ◁ (α_ Q S B).hom) ≫
@@ -76,7 +65,8 @@ theorem split_shuffle_fst {P Q R S B : D} (u : Q ⟶ R) :
 
 /-- A whisker absorbed into the left factor of a tensor of
 morphisms. -/
-theorem whiskerRight_tensorHom {P₁ P₂ Q₂ R S : D}
+theorem whiskerRight_tensorHom [Category.{v} D] [MonoidalCategory D]
+    {P₁ P₂ Q₂ R S : D}
     (f : P₁ ⟶ P₂) (g : P₂ ⟶ S) (h : R ⟶ Q₂) :
     (f ▷ R) ≫ (g ⊗ₘ h) = (f ≫ g) ⊗ₘ h := by
   rw [← tensorHom_id f R, MonoidalCategory.tensorHom_comp_tensorHom,
@@ -84,7 +74,9 @@ theorem whiskerRight_tensorHom {P₁ P₂ Q₂ R S : D}
 
 /-- Two whiskers absorbed into the left factor of a tensor of
 morphisms. -/
-theorem whiskerRight_tensorHom_whiskerRight {P₁ P₂ S T R Q₂ : D}
+theorem whiskerRight_tensorHom_whiskerRight
+    [Category.{v} D] [MonoidalCategory D]
+    {P₁ P₂ S T R Q₂ : D}
     (f : P₁ ⟶ P₂) (g : P₂ ⟶ S) (k : S ⟶ T) (h : R ⟶ Q₂) :
     (f ▷ R) ≫ (g ⊗ₘ h) ≫ (k ▷ Q₂) = (f ≫ g ≫ k) ⊗ₘ h := by
   rw [← tensorHom_id f R, ← tensorHom_id k Q₂,
@@ -94,7 +86,8 @@ theorem whiskerRight_tensorHom_whiskerRight {P₁ P₂ S T R Q₂ : D}
 
 /-- A left whisker absorbed into the right factor of a tensor of
 morphisms. -/
-theorem whiskerLeft_comp_tensorHom {P Q₁ R₁ R₂ S : D}
+theorem whiskerLeft_comp_tensorHom [Category.{v} D] [MonoidalCategory D]
+    {P Q₁ R₁ R₂ S : D}
     (f : R₁ ⟶ R₂) (g : P ⟶ Q₁) (h : R₂ ⟶ S) :
     (P ◁ f) ≫ (g ⊗ₘ h) = g ⊗ₘ (f ≫ h) := by
   rw [← id_tensorHom P f, MonoidalCategory.tensorHom_comp_tensorHom,
@@ -103,7 +96,8 @@ theorem whiskerLeft_comp_tensorHom {P Q₁ R₁ R₂ S : D}
 /-- The right-window shuffle: a window map acting on the last two
 window factors passes to the head of the right half of the
 split. -/
-theorem split_shuffle_snd {P Y G S B : D} (v : G ⊗ S ⟶ S) :
+theorem split_shuffle_snd [Category.{v} D] [MonoidalCategory D]
+    {P Y G S B : D} (v : G ⊗ S ⟶ S) :
     ((P ◁ ((α_ Y G S).hom ≫ (Y ◁ v))) ▷ B) ≫
         ((α_ P Y S).inv ▷ B) ≫ (α_ (P ⊗ Y) S B).hom =
       (α_ P ((Y ⊗ G) ⊗ S) B).hom ≫
@@ -147,24 +141,18 @@ from the head to the tail of a module power, obtained from
 
 section HeadJoin
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The left unitor inverse, retyped so that its target is stated
 through the singleton tensor power — this keeps every statement
 about it type-correct at low transparency. -/
-noncomputable def toPowOne : X ⟶ tensorPow D X 1 :=
+noncomputable def toPowOne
+    [Category.{v} D] [MonoidalCategory D] (X : D) : X ⟶ tensorPow D X 1 :=
   (λ_ X).inv
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The peeling inverse is the concatenation with a singleton
 block, up to the unitor and an arity transport. -/
 @[reassoc]
-theorem powPeel_inv_concat (b : ℕ) :
+theorem powPeel_inv_concat [Category.{v} D] [MonoidalCategory D] (X : D)
+    (b : ℕ) :
     (toPowOne X ▷ tensorPow D X b) ≫ (tensorPowConcat X 1 b).hom ≫
         powCast X (by omega : 1 + b = b + 1) =
       (powPeel X b).inv := by
@@ -203,19 +191,25 @@ theorem powPeel_inv_concat (b : ℕ) :
     rw [hid, Category.comp_id, Iso.inv_hom_id]
   exact hgoal
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The head insertion of a factor into a module power: peel the
 head off the target power and project. -/
-noncomputable def headMod (b : ℕ) :
+noncomputable def headMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (b : ℕ) :
     X ⊗ tensorPow D X b ⟶ modPow A X (b + 1) :=
   (powPeel X b).inv ≫ modPowπ A X (b + 1)
 
-omit [IsCommMonObj A] in
 /-- The head insertion is the multiplication with the singleton
 power, up to the singleton isomorphism and an arity transport. -/
-theorem headMod_eq_mul (b : ℕ) :
+theorem headMod_eq_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (b : ℕ) :
     headMod A X b =
       ((modPowOne A X).inv ⊗ₘ modPowπ A X b) ≫
         modPowMul A X 1 b ≫
@@ -239,7 +233,12 @@ the head factor descends to the module-power action.  At positive
 arity this is `modPowMul_actLeft` with a singleton left block — the
 slide of the monoid across the whole power, packaged through the
 multiplication. -/
-theorem headMod_act (b : ℕ) :
+theorem headMod_act [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (b : ℕ) :
     (A ◁ headMod A X b) ≫ modPowAct A X b =
       (α_ A X (tensorPow D X b)).inv ≫
         (actLeft A X ▷ tensorPow D X b) ≫ headMod A X b := by
@@ -311,13 +310,11 @@ the last factor of the left half.
 
 section TailJoin
 
-omit [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [MonObj A] [IsCommMonObj A] [ModObj A X]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- In a symmetric category, carrying past a context inverts to
 carrying back past it. -/
-theorem braidPast_hom_swap (U V T : D) :
+theorem braidPast_hom_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (U V T : D) :
     (braidPast U V T).hom ≫ (braidPast V U T).hom = 𝟙 _ := by
   simp only [braidPast_hom]
   rw [Category.assoc, Category.assoc, Iso.hom_inv_id_assoc,
@@ -325,15 +322,14 @@ theorem braidPast_hom_swap (U V T : D) :
     MonoidalCategory.id_whiskerRight, Category.id_comp,
     Iso.inv_hom_id]
 
-omit [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- **Braiding the monoid over a context pair**: the braided right
 action through the last factor of a pair is the braiding of the
 factor alone, then the action — the monoid never crosses the
 context. -/
-theorem braiding_actAcross (P : D) :
+theorem braiding_actAcross
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (P : D) :
     (β_ (P ⊗ X) A).hom ≫ actAcross A P X =
       (α_ P X A).hom ≫ (P ◁ actRight A X) := by
   have h2 : (braidPast P A X).inv = (braidPast A P X).hom := by
@@ -351,25 +347,34 @@ theorem braiding_actAcross (P : D) :
 /-- The braided right action of the module power, typed at the
 plain power — this keeps every statement about it type-correct at
 low transparency. -/
-noncomputable def powActRight (a : ℕ) :
+noncomputable def powActRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a : ℕ) :
     modPow A X (a + 1) ⊗ A ⟶ modPow A X (a + 1) :=
   actRight A (modPowMod A X a).X
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [MonObj A]
-  [IsCommMonObj A] [ModObj A X]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The boundary reassociation, retyped so that its target is
 stated through the grown tensor power. -/
-noncomputable def boundAssoc (a : ℕ) :
+noncomputable def boundAssoc
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (a : ℕ) :
     tensorPow D X a ⊗ (X ⊗ A) ⟶ tensorPow D X (a + 1) ⊗ A :=
   (α_ (tensorPow D X a) X A).inv
 
 /-- **The braided right action of the left half after the
 projection**: on the ambient power it is the boundary window's
 right action on the last factor. -/
-theorem modPowπ_actRight (a : ℕ) :
+theorem modPowπ_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a : ℕ) :
     (modPowπ A X (a + 1) ▷ A) ≫ powActRight A X a =
       (α_ (tensorPow D X a) X A).hom ≫
         (tensorPow D X a ◁ actRight A X) ≫ modPowπ A X (a + 1) := by
@@ -400,26 +405,20 @@ end TailJoin
 
 section ConcatBound
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Detach the top factor of the first block onto the second.  The
 associator, retyped so that its source is stated through the tensor
 power — the inverse bridge to `powAttach`. -/
-noncomputable def powDetach (p q : ℕ) :
+noncomputable def powDetach [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p q : ℕ) :
     tensorPow D X (p + 1) ⊗ tensorPow D X q ⟶
       tensorPow D X p ⊗ (X ⊗ tensorPow D X q) :=
   (α_ (tensorPow D X p) X (tensorPow D X q)).hom
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- **The boundary split of the concatenation**: undoing the split
 concatenation after the glued one detaches the exposed window
 factor onto the right half and peels it back in. -/
-theorem concat_split_bound (a b : ℕ) :
+theorem concat_split_bound [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a b : ℕ) :
     (tensorPowConcat X (a + 1 + 1) b).hom ≫
         powCast X (by omega : a + 1 + 1 + b = a + 1 + (b + 1)) ≫
         (tensorPowConcat X (a + 1) (b + 1)).inv =
@@ -451,7 +450,11 @@ section Boundary
 
 /-- The boundary bridge: reassociate the window across the split
 and project both halves, keeping the monoid between them. -/
-noncomputable def boundBridge (a b : ℕ) :
+noncomputable def boundBridge
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowMid A X a b ⟶
       (modPow A X (a + 1) ⊗ A) ⊗ modPow A X (b + 1) :=
   (α_ (tensorPow D X a) ((X ⊗ A) ⊗ X) (tensorPow D X b)).hom ≫
@@ -462,7 +465,13 @@ noncomputable def boundBridge (a b : ℕ) :
 
 /-- The `M`-leg of the boundary slot factors through the boundary
 bridge and the first module-tensor leg. -/
-theorem boundBridge_legM (a b : ℕ) :
+theorem boundBridge_legM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowLegM A X a b ≫
         powCast X (by omega : a + 2 + b = a + 1 + (b + 1)) ≫
         (tensorPowConcat X (a + 1) (b + 1)).inv ≫
@@ -610,7 +619,13 @@ theorem boundBridge_legM (a b : ℕ) :
 
 /-- The `N`-leg of the boundary slot factors through the boundary
 bridge and the second module-tensor leg. -/
-theorem boundBridge_legN (a b : ℕ) :
+theorem boundBridge_legN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowLegN A X a b ≫
         powCast X (by omega : a + 2 + b = a + 1 + (b + 1)) ≫
         (tensorPowConcat X (a + 1) (b + 1)).inv ≫
@@ -820,7 +835,13 @@ theorem boundBridge_legN (a b : ℕ) :
 /-- **The boundary slot condition**: the slot relation straddling
 the two halves is absorbed by the split, through the coequalizer
 relation of the module tensor product. -/
-theorem powSplit_cond_bound (a b : ℕ) :
+theorem powSplit_cond_bound
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowLegM A X a b ≫
         powCast X (by omega : a + 2 + b = a + 1 + (b + 1)) ≫
         (tensorPowConcat X (a + 1) (b + 1)).inv ≫
@@ -849,7 +870,9 @@ projection.
 section Interior
 
 /-- The bridge of `midConcatFst`, as an isomorphism. -/
-noncomputable def midConcatFstIso (s t n : ℕ) :
+noncomputable def midConcatFstIso
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (s t n : ℕ) :
     modPowMid A X s t ⊗ tensorPow D X n ≅
       modPowMid A X s (t + n) :=
   α_ (tensorPow D X s ⊗ ((X ⊗ A) ⊗ X)) (tensorPow D X t)
@@ -858,7 +881,9 @@ noncomputable def midConcatFstIso (s t n : ℕ) :
       (tensorPowConcat X t n)
 
 /-- The bridge of `midConcatSnd`, as an isomorphism. -/
-noncomputable def midConcatSndIso (m s t : ℕ) :
+noncomputable def midConcatSndIso
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (m s t : ℕ) :
     tensorPow D X m ⊗ modPowMid A X s t ≅
       modPowMid A X (m + s) t :=
   (α_ (tensorPow D X m)
@@ -871,7 +896,13 @@ noncomputable def midConcatSndIso (m s t : ℕ) :
 
 /-- **The in-left slot condition**: a slot relation of the left
 half is absorbed by the left projection. -/
-theorem powSplit_cond_left (a b s t' : ℕ) (hL : s + 2 + t' = a + 1) :
+theorem powSplit_cond_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b s t' : ℕ) (hL : s + 2 + t' = a + 1) :
     modPowLegM A X s (t' + (b + 1)) ≫
         powCast X
           (by omega : s + 2 + (t' + (b + 1)) = a + 1 + (b + 1)) ≫
@@ -986,7 +1017,13 @@ theorem powSplit_cond_left (a b s t' : ℕ) (hL : s + 2 + t' = a + 1) :
 
 /-- **The in-right slot condition**: a slot relation of the right
 half is absorbed by the right projection. -/
-theorem powSplit_cond_right (a b s' t : ℕ)
+theorem powSplit_cond_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b s' t : ℕ)
     (hR : s' + 2 + t = b + 1) :
     modPowLegM A X (a + 1 + s') t ≫
         powCast X
@@ -1115,7 +1152,13 @@ section Merge
 /-- **The wide-coequalizer condition of the split**: every slot
 relation of the big power is absorbed by the split — inside the
 left half, at the boundary, or inside the right half. -/
-theorem powSplit_cond (a b : ℕ) :
+theorem powSplit_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     ∀ s t (hst : s + 2 + t = a + 1 + b + 1),
       modPowLegM A X s t ≫ powCast X hst ≫
         ((tensorPowConcat X (a + 1) (b + 1)).inv ≫
@@ -1140,7 +1183,13 @@ theorem powSplit_cond (a b : ℕ) :
 /-- **The split of a module power**: the inverse of the
 concatenation descends through the wide coequalizer onto the
 module tensor product of the two halves. -/
-noncomputable def powSplit (a b : ℕ) :
+noncomputable def powSplit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPow A X (a + 1 + b + 1) ⟶
       modTensor A (modPowMod A X a) (modPowMod A X b) :=
   modPowDesc A X
@@ -1151,7 +1200,13 @@ noncomputable def powSplit (a b : ℕ) :
 
 /-- Defining equation of the split. -/
 @[reassoc (attr := simp)]
-theorem modPowπ_powSplit (a b : ℕ) :
+theorem modPowπ_powSplit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowπ A X (a + 1 + b + 1) ≫ powSplit A X a b =
       (tensorPowConcat X (a + 1) (b + 1)).inv ≫
         (modPowπ A X (a + 1) ⊗ₘ modPowπ A X (b + 1)) ≫
@@ -1161,7 +1216,13 @@ theorem modPowπ_powSplit (a b : ℕ) :
 /-- The split is a section of the descended power
 multiplication. -/
 @[reassoc (attr := simp)]
-theorem powSplit_powMulDesc (a b : ℕ) :
+theorem powSplit_powMulDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     powSplit A X a b ≫ powMulDesc A X a b =
       𝟙 (modPow A X (a + 1 + b + 1)) := by
   apply modPow_hom_ext A X
@@ -1208,7 +1269,13 @@ theorem powSplit_powMulDesc (a b : ℕ) :
 /-- The split is a retraction of the descended power
 multiplication. -/
 @[reassoc (attr := simp)]
-theorem powMulDesc_powSplit (a b : ℕ) :
+theorem powMulDesc_powSplit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     powMulDesc A X a b ≫ powSplit A X a b =
       𝟙 (modTensor A (modPowMod A X a) (modPowMod A X b)) := by
   apply modTensor_hom_ext A (modPowMod A X a) (modPowMod A X b)
@@ -1266,7 +1333,13 @@ theorem powMulDesc_powSplit (a b : ℕ) :
 module powers is the module power of the summed arity, with the
 descended power multiplication as the forward direction and the
 split as its inverse. -/
-noncomputable def powMergeIso (a b : ℕ) :
+noncomputable def powMergeIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modTensor A (modPowMod A X a) (modPowMod A X b) ≅
       modPow A X (a + 1 + b + 1) where
   hom := powMulDesc A X a b

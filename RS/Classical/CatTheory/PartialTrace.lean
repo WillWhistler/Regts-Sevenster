@@ -22,21 +22,23 @@ open CategoryTheory.BraidedCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
-  [SymmetricCategory C] [RigidCategory C]
+variable {C : Type u}
 
 /-- **The partial trace** of an endomorphism of `P ⊗ X` over its
 last factor: coevaluate an `X` strand beside `P`, let the
 endomorphism act, cross the strand over its dual and evaluate. -/
-def ptr {P X : C} (f : P ⊗ X ⟶ P ⊗ X) : P ⟶ P :=
+def ptr [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C} (f : P ⊗ X ⟶ P ⊗ X) : P ⟶ P :=
   (ρ_ P).inv ≫ (P ◁ η_ X Xᘁ) ≫ (α_ P X Xᘁ).inv ≫ (f ▷ Xᘁ) ≫
     (α_ P X Xᘁ).hom ≫ (P ◁ ((β_ X Xᘁ).hom ≫ ε_ X Xᘁ)) ≫ (ρ_ P).hom
 
-omit [SymmetricCategory C] in
 /-- Whiskering by `P` on the cup side is whiskering on the `P`
 strand. -/
 @[reassoc]
-private theorem coev_whiskerRight (P X : C) (a : P ⟶ P) :
+private theorem coev_whiskerRight
+    [Category.{v} C] [MonoidalCategory C] [RigidCategory C]
+    (P X : C) (a : P ⟶ P) :
     (P ◁ η_ X Xᘁ) ≫ (α_ P X Xᘁ).inv ≫ ((a ▷ X) ▷ Xᘁ) =
       (a ▷ 𝟙_ C) ≫ (P ◁ η_ X Xᘁ) ≫ (α_ P X Xᘁ).inv := by
   rw [← associator_inv_naturality_left, ← Category.assoc,
@@ -45,7 +47,10 @@ private theorem coev_whiskerRight (P X : C) (a : P ⟶ P) :
 /-- Whiskering by `P` on the cap side is whiskering on the `P`
 strand. -/
 @[reassoc]
-private theorem whiskerRight_ev (P X : C) (a : P ⟶ P) :
+private theorem whiskerRight_ev
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (P X : C) (a : P ⟶ P) :
     ((a ▷ X) ▷ Xᘁ) ≫ (α_ P X Xᘁ).hom ≫
         (P ◁ ((β_ X Xᘁ).hom ≫ ε_ X Xᘁ)) =
       ((α_ P X Xᘁ).hom ≫ (P ◁ ((β_ X Xᘁ).hom ≫ ε_ X Xᘁ))) ≫
@@ -55,7 +60,10 @@ private theorem whiskerRight_ev (P X : C) (a : P ⟶ P) :
 
 /-- The partial trace absorbs a factor acting on `P` alone from the
 left. -/
-theorem ptr_whiskerRight_comp {P X : C} (a : P ⟶ P)
+theorem ptr_whiskerRight_comp
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C} (a : P ⟶ P)
     (f : P ⊗ X ⟶ P ⊗ X) : ptr ((a ▷ X) ≫ f) = a ≫ ptr f := by
   show (ρ_ P).inv ≫ (P ◁ η_ X Xᘁ) ≫ (α_ P X Xᘁ).inv ≫
       (((a ▷ X) ≫ f) ▷ Xᘁ) ≫ (α_ P X Xᘁ).hom ≫
@@ -71,7 +79,10 @@ theorem ptr_whiskerRight_comp {P X : C} (a : P ⟶ P)
 
 /-- The partial trace absorbs a factor acting on `P` alone from the
 right. -/
-theorem ptr_comp_whiskerRight {P X : C} (a : P ⟶ P)
+theorem ptr_comp_whiskerRight
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C} (a : P ⟶ P)
     (f : P ⊗ X ⟶ P ⊗ X) : ptr (f ≫ (a ▷ X)) = ptr f ≫ a := by
   show (ρ_ P).inv ≫ (P ◁ η_ X Xᘁ) ≫ (α_ P X Xᘁ).inv ≫
       ((f ≫ (a ▷ X)) ▷ Xᘁ) ≫ (α_ P X Xᘁ).hom ≫
@@ -95,7 +106,10 @@ partial trace of the braiding of the last two factors.
 on `R ⊗ X` inside `Q ⊗ (R ⊗ X)` has partial trace `Q ◁ ptr u`.  Both
 sides carry the same coevaluation, morphism and evaluation in the
 same order, so only the bracketing differs. -/
-theorem ptr_whiskerLeft (Q : C) {R X : C} (u : R ⊗ X ⟶ R ⊗ X) :
+theorem ptr_whiskerLeft
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (Q : C) {R X : C} (u : R ⊗ X ⟶ R ⊗ X) :
     ptr ((α_ Q R X).hom ≫ (Q ◁ u) ≫ (α_ Q R X).inv) =
       Q ◁ ptr u := by
   show (ρ_ (Q ⊗ R)).inv ≫ ((Q ⊗ R) ◁ η_ X Xᘁ) ≫
@@ -113,7 +127,9 @@ theorem ptr_whiskerLeft (Q : C) {R X : C} (u : R ⊗ X ⟶ R ⊗ X) :
 strand created by the coevaluation crosses the open strand and is
 capped against it, and the resulting zig-zag is the snake identity
 of the pairing. -/
-theorem ptr_braiding (X : C) : ptr (β_ X X).hom = 𝟙 X := by
+theorem ptr_braiding [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (X : C) : ptr (β_ X X).hom = 𝟙 X := by
   show (ρ_ X).inv ≫ (X ◁ η_ X Xᘁ) ≫ (α_ X X Xᘁ).inv ≫
       ((β_ X X).hom ▷ Xᘁ) ≫ (α_ X X Xᘁ).hom ≫
       (X ◁ ((β_ X Xᘁ).hom ≫ ε_ X Xᘁ)) ≫ (ρ_ X).hom = 𝟙 X
@@ -136,7 +152,10 @@ theorem ptr_braiding (X : C) : ptr (β_ X X).hom = 𝟙 X := by
 /-- **The partial trace of a braided last factor**: braiding the
 last two factors and then acting by `g` on the last traces to `g`
 acting on the factor that remains. -/
-theorem ptr_braiding_whiskerLeft (Q X : C) (g : X ⟶ X) :
+theorem ptr_braiding_whiskerLeft
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    (Q X : C) (g : X ⟶ X) :
     ptr (((α_ Q X X).hom ≫ (Q ◁ (β_ X X).hom) ≫ (α_ Q X X).inv) ≫
       ((Q ⊗ X) ◁ g)) = Q ◁ g := by
   have hg : (Q ⊗ X) ◁ g =
@@ -166,7 +185,9 @@ exchange of disjoint cups and caps re-nests the loop closure of
 kinked across its dual on the left, let the endomorphism act, and
 evaluate.  This is the shape in which the tensor pairing presents
 the inner loop of the full trace on `P ⊗ X`. -/
-private def ptl {P X : C} (f : P ⊗ X ⟶ P ⊗ X) : X ⟶ X :=
+private def ptl [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C} (f : P ⊗ X ⟶ P ⊗ X) : X ⟶ X :=
   (λ_ X).inv ≫ ((η_ P Pᘁ ≫ (β_ P Pᘁ).hom) ▷ X) ≫ (α_ Pᘁ P X).hom ≫
     (Pᘁ ◁ f) ≫ (α_ Pᘁ P X).inv ≫ (ε_ P Pᘁ ▷ X) ≫ (λ_ X).hom
 
@@ -174,7 +195,10 @@ private def ptl {P X : C} (f : P ⊗ X ⟶ P ⊗ X) : X ⟶ X :=
 trace: computed against the tensor pairing, the two loops of the
 trace of `f` disentangle into an outer `X` loop around an inner `P`
 loop, and the inner loop closed around `f` is exactly `ptl f`. -/
-private theorem catTrace_eq_ptl_trace {P X : C}
+private theorem catTrace_eq_ptl_trace
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C}
     (f : P ⊗ X ⟶ P ⊗ X) : catTrace f = catTrace (ptl f) := by
   rw [catTrace_eq_pairTrace f,
     pairTrace_eq
@@ -217,7 +241,10 @@ private theorem catTrace_eq_ptl_trace {P X : C}
 trace of the first-factor partial trace: the two cups are disjoint,
 as are the two caps, so exchanging each pair re-nests the loop
 closure of `ptr f` as the outer `X` loop around the `P` loop. -/
-private theorem ptr_trace_eq_ptl_trace {P X : C}
+private theorem ptr_trace_eq_ptl_trace
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C}
     (f : P ⊗ X ⟶ P ⊗ X) :
     catTrace (ptr f) = catTrace (ptl f) := by
   rw [catTrace_eq_loop (ptr f)]
@@ -254,7 +281,9 @@ private theorem ptr_trace_eq_ptl_trace {P X : C}
 /-- **The full trace of a partial trace is the full trace**: closing
 the remaining strand of `ptr f` into a loop closes both strands of
 `f`. -/
-theorem catTrace_ptr {P X : C} (f : P ⊗ X ⟶ P ⊗ X) :
+theorem catTrace_ptr [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+    [RigidCategory C]
+    {P X : C} (f : P ⊗ X ⟶ P ⊗ X) :
     catTrace (ptr f) = catTrace f :=
   (ptr_trace_eq_ptl_trace f).trans (catTrace_eq_ptl_trace f).symm
 

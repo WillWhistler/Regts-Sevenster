@@ -15,14 +15,15 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v₁ u₁ v₂ u₂
 
-variable {A : Type u₁} [Category.{v₁} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A]
-variable {B : Type u₂} [Category.{v₂} B] [MonoidalCategory B]
-  [SymmetricCategory B] [Preadditive B]
+variable {A : Type u₁}
 
 /-- **The image of an odd line under a strong braided monoidal
 additive functor is an odd line.** -/
-noncomputable def OddLine.map (F : A ⥤ B) [F.Braided]
+noncomputable def OddLine.map
+    [Category.{v₁} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] {B : Type u₂} [Category.{v₂} B] [MonoidalCategory B]
+    [SymmetricCategory B] [Preadditive B]
+    (F : A ⥤ B) [F.Braided]
     [F.Additive] (L : OddLine A) : OddLine B where
   obj := F.obj L.obj
   sq := CategoryTheory.Functor.Monoidal.μIso F L.obj L.obj ≪≫

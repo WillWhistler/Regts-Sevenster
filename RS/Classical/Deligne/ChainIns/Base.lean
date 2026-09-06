@@ -33,35 +33,34 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-! ## Insertion into a symmetric power -/
 
 section SymIns
 
-variable (X : D) [ModObj A X]
-
 /-- **Left insertion into a symmetric power**: the module enters
 through the singleton power and multiplies. -/
-noncomputable def symInsL (n : ℕ) :
+noncomputable def symInsL
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (n : ℕ) :
     X ⊗ symPow A X (n + 1) ⟶ symPow A X (n + 2) :=
   ((symPowOne A X).inv ▷ symPow A X (n + 1)) ≫
     symMul A X 1 (n + 1) ≫
     symPowCast A X (by omega : 1 + (n + 1) = n + 2)
 
-omit [MonoidalLinear ℂ D] [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- The symmetric-power action passes an arity transport. -/
-theorem symPowAct_symPowCast {m n : ℕ} (h : m + 1 = n + 1) :
+theorem symPowAct_symPowCast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    {m n : ℕ} (h : m + 1 = n + 1) :
     symPowAct A X m ≫ symPowCast A X h =
       (A ◁ symPowCast A X h) ≫ symPowAct A X n := by
   obtain rfl : m = n := by omega
@@ -69,12 +68,16 @@ theorem symPowAct_symPowCast {m n : ℕ} (h : m + 1 = n + 1) :
   rw [hc, Category.comp_id, MonoidalCategory.whiskerLeft_id,
     Category.id_comp]
 
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- **The insertion is compatible with the action on the symmetric
 factor**, in carried-past form: the monoid crosses the inserted
 module and acts on the enlarged power. -/
-theorem symInsL_actAcross (n : ℕ) :
+theorem symInsL_actAcross
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (n : ℕ) :
     (braidPast A X (symPow A X (n + 1))).hom ≫
         (X ◁ symPowAct A X n) ≫ symInsL A X n =
       (A ◁ symInsL A X n) ≫ symPowAct A X (n + 1) := by
@@ -93,27 +96,25 @@ theorem symInsL_actAcross (n : ℕ) :
     reassoc_of% hmul, hcast]
   simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc]
 
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- The carried-past compatibility, solved for the action-first
 composite. -/
-theorem symInsL_symPowAct (n : ℕ) :
+theorem symInsL_symPowAct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (n : ℕ) :
     (X ◁ symPowAct A X n) ≫ symInsL A X n =
       (braidPast A X (symPow A X (n + 1))).inv ≫
         (A ◁ symInsL A X n) ≫ symPowAct A X (n + 1) := by
   rw [← symInsL_actAcross A X n, Iso.inv_hom_id_assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [MonObj A] [IsCommMonObj A] [ModObj A X] in
 /-- Braiding under a context gathers to the braiding of the tensor
 pair. -/
-private theorem whiskerLeft_braiding_braidPast_inv (P V B : D) :
+private theorem whiskerLeft_braiding_braidPast_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (P V B : D) :
     (P ◁ (β_ V B).hom) ≫ (braidPast B P V).inv =
       (α_ P V B).inv ≫ (β_ (P ⊗ V) B).hom := by
   rw [← cancel_mono (braidPast B P V).hom]
@@ -125,12 +126,16 @@ private theorem whiskerLeft_braiding_braidPast_inv (P V B : D) :
     MonoidalCategory.id_whiskerRight, Category.id_comp,
     Iso.inv_hom_id, Category.comp_id]
 
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- **The insertion is compatible with the braided right action on
 the symmetric factor**: the monoid leaves through the inserted
 module and acts on the right of the enlarged power. -/
-theorem symInsL_actRight (n : ℕ) :
+theorem symInsL_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (n : ℕ) :
     (X ◁ actRight A (symPowMod A X n).X) ≫ symInsL A X n =
       (α_ X (symPow A X (n + 1)) A).inv ≫
         (symInsL A X n ▷ A) ≫
@@ -156,16 +161,10 @@ end SymIns
 
 section Structural
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A middle action slides under an untouched context and past an
 insertion into the first factor. -/
-private theorem legN_cross_fst_aux {P S₁ S₂ B T : D}
+private theorem legN_cross_fst_aux [Category.{v} D] [MonoidalCategory D]
+    {P S₁ S₂ B T : D}
     (f : P ⊗ S₁ ⟶ S₂) (a : B ⊗ T ⟶ T) :
     P ◁ ((α_ S₁ B T).hom ≫ (S₁ ◁ a)) ≫
         ((α_ P S₁ T).inv ≫ (f ▷ T)) =
@@ -182,16 +181,11 @@ private theorem legN_cross_fst_aux {P S₁ S₂ B T : D}
     whisker_exchange, associator_naturality_left_assoc,
     reassoc_of% hcoh]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A right action on the braided-past factor slides under the
 carrying and past an insertion into the second factor. -/
-private theorem legM_cross_snd_aux {P Q B T T' : D}
+private theorem legM_cross_snd_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {P Q B T T' : D}
     (g : Q ⊗ B ⟶ Q) (f : P ⊗ T ⟶ T') :
     P ◁ (g ▷ T) ≫
         ((α_ P Q T).inv ≫ ((β_ P Q).hom ▷ T) ≫
@@ -205,16 +199,11 @@ private theorem legM_cross_snd_aux {P Q B T T' : D}
   simp only [MonoidalCategory.comp_whiskerRight, Category.assoc]
   rw [associator_naturality_left_assoc, ← whisker_exchange]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The carrying isomorphism, inverted and rewritten through the
 symmetry. -/
-private theorem braidPast_inv_symm (B P T : D) :
+private theorem braidPast_inv_symm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (B P T : D) :
     (braidPast B P T).inv =
       (α_ P B T).inv ≫ ((β_ P B).hom ▷ T) ≫ (α_ B P T).hom := by
   rw [← cancel_epi (braidPast B P T).hom, Iso.hom_inv_id,
@@ -224,16 +213,11 @@ private theorem braidPast_inv_symm (B P T : D) :
     MonoidalCategory.id_whiskerRight, Category.id_comp,
     Iso.inv_hom_id]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A middle action crosses an insertion into the second factor
 under the carrying of the inserted module. -/
-private theorem legN_cross_snd_aux {P Q B T T' : D}
+private theorem legN_cross_snd_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {P Q B T T' : D}
     (a : B ⊗ T ⟶ T) (a' : B ⊗ T' ⟶ T') (f : P ⊗ T ⟶ T')
     (hcross : (P ◁ a) ≫ f =
       (braidPast B P T).inv ≫ (B ◁ f) ≫ a') :
@@ -266,16 +250,18 @@ end Structural
 
 section InsP
 
-variable (M M' : Mod D A)
-
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- The two module-tensor legs agree after the insertion of the
 dual module into the first slot: the leg acting on the second
 factor slides under the insertion, the leg acting on the first
 factor crosses it, and the level-`(p + 1, q)` coequalizer absorbs
 both. -/
-theorem chainInsP_cond (p q : ℕ) :
+theorem chainInsP_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     M'.X ◁ modTensorLegM A (symPowMod A M'.X p)
         (symPowMod A M.X q) ≫
       ((α_ M'.X (symPow A M'.X (p + 1))
@@ -364,7 +350,13 @@ theorem chainInsP_cond (p q : ℕ) :
 /-- **Insertion into the first slot of a two-index stage**: the
 dual module enters the first symmetric power, descended through
 the module-tensor coequalizer. -/
-noncomputable def chainInsP (p q : ℕ) :
+noncomputable def chainInsP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     M'.X ⊗ chainStage2 A M M' p q ⟶
       chainStage2 A M M' (p + 1) q :=
   modTensorWhiskerDesc A (symPowMod A M'.X p) (symPowMod A M.X q)
@@ -376,11 +368,15 @@ noncomputable def chainInsP (p q : ℕ) :
         (symPowMod A M.X q))
     (chainInsP_cond A M M' p q)
 
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- Defining equation of the first-slot insertion. -/
 @[reassoc]
-theorem whiskerLeft_π_chainInsP (p q : ℕ) :
+theorem whiskerLeft_π_chainInsP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     M'.X ◁ modTensorπ A (symPowMod A M'.X p)
         (symPowMod A M.X q) ≫ chainInsP A M M' p q =
       (α_ M'.X (symPow A M'.X (p + 1))
@@ -396,16 +392,18 @@ end InsP
 
 section InsQ
 
-variable (M M' : Mod D A)
-
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- The two module-tensor legs agree after the insertion of the
 module into the second slot: the module is carried past the first
 symmetric power, the leg acting on the first factor slides under
 the carrying, the leg acting on the second factor crosses the
 insertion, and the level-`(p, q + 1)` coequalizer absorbs both. -/
-theorem chainInsQ_cond (p q : ℕ) :
+theorem chainInsQ_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     M.X ◁ modTensorLegM A (symPowMod A M'.X p)
         (symPowMod A M.X q) ≫
       ((α_ M.X (symPow A M'.X (p + 1))
@@ -518,7 +516,13 @@ theorem chainInsQ_cond (p q : ℕ) :
 /-- **Insertion into the second slot of a two-index stage**: the
 module is carried past the first symmetric power and enters the
 second, descended through the module-tensor coequalizer. -/
-noncomputable def chainInsQ (p q : ℕ) :
+noncomputable def chainInsQ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     M.X ⊗ chainStage2 A M M' p q ⟶
       chainStage2 A M M' p (q + 1) :=
   modTensorWhiskerDesc A (symPowMod A M'.X p) (symPowMod A M.X q)
@@ -534,11 +538,15 @@ noncomputable def chainInsQ (p q : ℕ) :
         (symPowMod A M.X (q + 1)))
     (chainInsQ_cond A M M' p q)
 
-omit [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- Defining equation of the second-slot insertion. -/
 @[reassoc]
-theorem whiskerLeft_π_chainInsQ (p q : ℕ) :
+theorem whiskerLeft_π_chainInsQ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     M.X ◁ modTensorπ A (symPowMod A M'.X p)
         (symPowMod A M.X q) ≫ chainInsQ A M M' p q =
       (α_ M.X (symPow A M'.X (p + 1))
@@ -558,16 +566,12 @@ end InsQ
 
 section InsMul
 
-variable (X : D) [ModObj A X]
-
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Arity transports compose. -/
-theorem symPowCast_symPowCast {a b c : ℕ} (h : a = b)
+theorem symPowCast_symPowCast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    {a b c : ℕ} (h : a = b)
     (h' : b = c) :
     symPowCast A X h ≫ symPowCast A X h' =
       symPowCast A X (h.trans h') := by
@@ -576,12 +580,15 @@ theorem symPowCast_symPowCast {a b c : ℕ} (h : a = b)
     rfl
   rw [h1, Category.id_comp]
 
-omit [MonoidalLinear ℂ D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- An arity transport of the first factor passes the symmetric
 multiplication. -/
-private theorem symMul_cast_left {a b : ℕ} (h : a = b) (r : ℕ) :
+private theorem symMul_cast_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    {a b : ℕ} (h : a = b) (r : ℕ) :
     (symPowCast A X h ▷ symPow A X r) ≫ symMul A X b r =
       symMul A X a r ≫
         symPowCast A X (by omega : a + r = b + r) := by
@@ -593,12 +600,16 @@ private theorem symMul_cast_left {a b : ℕ} (h : a = b) (r : ℕ) :
   rw [h1, h2, MonoidalCategory.id_whiskerRight,
     Category.id_comp, Category.comp_id]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- **The insertion is associative against the multiplication**:
 inserting and multiplying is multiplying and inserting into the
 product, up to the arity transport. -/
-theorem symInsL_symMul (m n : ℕ) :
+theorem symInsL_symMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     (symInsL A X m ▷ symPow A X (n + 1)) ≫
         symMul A X (m + 2) (n + 1) =
       (α_ X (symPow A X (m + 1)) (symPow A X (n + 1))).hom ≫

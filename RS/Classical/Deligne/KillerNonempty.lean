@@ -15,9 +15,7 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+variable {A : Type u}
 
 /-- A diagram with no cells is the empty diagram. -/
 theorem YoungDiagram.eq_bot_of_card_eq_zero {lam : YoungDiagram}
@@ -31,7 +29,11 @@ theorem YoungDiagram.eq_bot_of_card_eq_zero {lam : YoungDiagram}
     exact absurd hc (Finset.notMem_empty c)
 
 /-- **A killed object is killed at a nonempty diagram.** -/
-theorem exists_killer_card_ne_zero (P : SchurPackage.{v}) {X : A}
+theorem exists_killer_card_ne_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) {X : A}
     {lam : YoungDiagram} (h : SchurKilled P X lam) :
     ∃ mu : YoungDiagram, mu.card ≠ 0 ∧ SchurKilled P X mu := by
   by_cases hc : lam.card = 0

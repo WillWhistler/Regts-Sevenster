@@ -32,18 +32,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Structural helpers -/
 
 section Aux
 
-variable (X : D)
-
 /-- Collapse of the single-letter concatenation stage: the unitor
 triangle, in the shape produced by `tensorPowConcat` at one
 letter. -/
-private theorem attach_aux (P : D) :
+private theorem attach_aux [Category.{v} D] [MonoidalCategory D] (X : D)
+    (P : D) :
     (P ◁ (λ_ X).inv) ≫ (α_ P (𝟙_ D) X).inv ≫
       ((ρ_ P).hom ▷ X) = 𝟙 (P ⊗ X) := by
   monoidal
@@ -52,20 +51,16 @@ end Aux
 
 section Pass
 
-variable [Preadditive D]
-
-omit [MonoidalCategory D] in
 /-- Passing a sum across an intertwiner. -/
-private theorem add_pass {P Q : D} {T : P ⟶ Q} {u v : Q ⟶ Q}
+private theorem add_pass [Category.{v} D] [Preadditive D]
+    {P Q : D} {T : P ⟶ Q} {u v : Q ⟶ Q}
     {u' v' : P ⟶ P} (hu : T ≫ u = u' ≫ T) (hv : T ≫ v = v' ≫ T) :
     T ≫ (u + v) = (u' + v') ≫ T := by
   rw [Preadditive.comp_add, Preadditive.add_comp, hu, hv]
 
-variable [Linear ℂ D]
-
-omit [MonoidalCategory D] in
 /-- Passing a scalar multiple across an intertwiner. -/
-private theorem smul_pass {P Q : D} {T : P ⟶ Q} {u : Q ⟶ Q}
+private theorem smul_pass [Category.{v} D] [Preadditive D] [Linear ℂ D]
+    {P Q : D} {T : P ⟶ Q} {u : Q ⟶ Q}
     {u' : P ⟶ P} (r : ℂ) (h : T ≫ u = u' ≫ T) :
     T ≫ (r • u) = (r • u') ≫ T := by
   rw [Linear.comp_smul, Linear.smul_comp, h]
@@ -76,23 +71,27 @@ end Pass
 
 section Attach
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [MonoidalPreadditive D]
-variable [∀ Y : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
-
 /-- **Attach one ambient letter** on the right of a module power:
 the first concatenation stage of the multiplication of
 `SymMul.lean`, taken at a single letter. -/
-noncomputable def modPowAttach (p : ℕ) :
+noncomputable def modPowAttach
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (p : ℕ) :
     modPow A X p ⊗ X ⟶ modPow A X (p + 1) :=
   (modPow A X p ◁ (show X ⟶ tensorPow D X 1 from (λ_ X).inv)) ≫
     modPowMulStage A X p 1
 
 /-- **Defining square of the attachment**: the projection at `p + 1`
 factors through the right-whiskered projection at `p`. -/
-theorem modPowπ_attach (p : ℕ) :
+theorem modPowπ_attach
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (p : ℕ) :
     (modPowπ A X p ▷ X) ≫ modPowAttach A X p =
       modPowπ A X (p + 1) := by
   have h2 : (tensorPow D X p ◁
@@ -106,7 +105,12 @@ theorem modPowπ_attach (p : ℕ) :
 /-- **Whiskered vanishing**: a morphism of the ambient power that
 dies after the projection keeps dying, one letter later, after
 whiskering on the right. -/
-theorem whiskerRight_modPowπ_zero {p : ℕ}
+theorem whiskerRight_modPowπ_zero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [MonoidalPreadditive D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    {p : ℕ}
     {f : tensorPow D X p ⟶ tensorPow D X p}
     (hf : f ≫ modPowπ A X p = 0) :
     (f ▷ X) ≫ modPowπ A X (p + 1) = 0 := by
@@ -120,14 +124,14 @@ end Attach
 
 section Compat
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D]
-
 /-- **The projection intertwines the two algebra actions**: the
 `ℂ`-linear extension of the defining square of the descended
 permutation action. -/
-theorem modPowπ_permAlg (n : ℕ) (x : SymGroupAlgebra n) :
+theorem modPowπ_permAlg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) (x : SymGroupAlgebra n) :
     modPowπ A X n ≫ modPowAlg A X n x =
       permAlg X n x ≫ modPowπ A X n := by
   induction x using MonoidAlgebra.induction_on with
@@ -143,14 +147,16 @@ theorem modPowπ_permAlg (n : ℕ) (x : SymGroupAlgebra n) :
       rw [map_smul, map_smul]
       exact smul_pass r hy
 
-variable [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-variable [∀ Y : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
-
 /-- **Iterated whiskered vanishing**: an endomorphism of the ambient
 power that dies after the projection keeps dying after any number of
 letters is attached. -/
-theorem whiskerPowAlg_modPowπ_zero (m k : ℕ)
+theorem whiskerPowAlg_modPowπ_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalPreadditive D]
+    [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    (m k : ℕ)
     (f : tensorPow D X m ⟶ tensorPow D X m)
     (hf : f ≫ modPowπ A X m = 0) :
     whiskerPowAlg X m k f ≫ modPowπ A X (m + k) = 0 := by
@@ -163,7 +169,13 @@ module powers: an element of the group algebra killed by the
 descended action at arity `m` stays killed at every arity `n ≥ m`.
 This is the `compat` field of a tower, for the action on a module
 power. -/
-theorem modPowAlg_compat {m n : ℕ} (h : m ≤ n)
+theorem modPowAlg_compat
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalPreadditive D]
+    [MonoidalLinear ℂ D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Y)]
+    {m n : ℕ} (h : m ≤ n)
     (x : SymGroupAlgebra m) (hx : modPowAlg A X m x = 0) :
     modPowAlg A X n (symCast h x) = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h

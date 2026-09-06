@@ -19,15 +19,16 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 attribute [local instance] CategoryTheory.ModObj.regular
 
 /-- **The free super module of rank `(p | q)`.** -/
-noncomputable def superFree (p q : ℕ) : (gammaAlgebra D L R).Mod :=
+noncomputable def superFree
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (p q : ℕ) : (gammaAlgebra D L R).Mod :=
   ⨁ fun i : Fin p ⊕ Fin q =>
     Sum.elim (fun _ => (gammaAlgebra D L R).unitMod)
       (fun _ => SuperCommAlgebra.Mod.shift
@@ -35,7 +36,12 @@ noncomputable def superFree (p q : ℕ) : (gammaAlgebra D L R).Mod :=
 
 /-- **The fibre of a mixed sum is free of the corresponding
 rank.** -/
-noncomputable def fibreMixIso (p q : ℕ) :
+noncomputable def fibreMixIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [IsCommMonObj R]
+    (p q : ℕ) :
     (fibreFun L R).obj (L.mix p q) ≅ superFree L R p q :=
   fibreFunBiproduct L R
       (fun i : Fin p ⊕ Fin q =>

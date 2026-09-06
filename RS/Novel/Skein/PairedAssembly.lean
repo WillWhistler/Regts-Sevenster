@@ -244,11 +244,12 @@ end Indicators
 
 section OrderIndicators
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 /-- Two membership indicators of one new chord combine into the
 low-end indicator gated by the label comparison. -/
-private theorem two_indicator_if {x y : α} (hxy : x ≠ y)
+private theorem two_indicator_if [LinearOrder α]
+    {x y : α} (hxy : x ≠ y)
     (P Q : Prop) [Decidable P] [Decidable Q] :
     ((if x < y ∧ P then 1 else 0) +
         (if y < x ∧ Q then 1 else 0) : ℕ) =
@@ -269,7 +270,8 @@ private theorem two_indicator_if {x y : α} (hxy : x ≠ y)
 
 /-- Exactly one of the two strict comparisons of distinct elements
 holds. -/
-private theorem indicator_pair_one {x y : α} (hxy : x ≠ y) :
+private theorem indicator_pair_one [LinearOrder α]
+    {x y : α} (hxy : x ≠ y) :
     ((if x < y then 1 else 0) + (if y < x then 1 else 0) : ℕ) =
       1 := by
   rcases lt_or_gt_of_ne hxy with h | h
@@ -278,13 +280,15 @@ private theorem indicator_pair_one {x y : α} (hxy : x ≠ y) :
 
 /-- The symmetrized chord crossing is symmetric in its two
 arguments. -/
-private theorem chordPairCrossSym_comm (p q : α × α) :
+private theorem chordPairCrossSym_comm [LinearOrder α]
+    (p q : α × α) :
     chordPairCrossSym p q ↔ chordPairCrossSym q p :=
   Or.comm
 
 /-- The symmetrized chord crossing ignores the internal order of
 each recorded pair. -/
-private theorem chordPairCrossSym_swap_pair (a₁ a₂ b₁ b₂ : α) :
+private theorem chordPairCrossSym_swap_pair [LinearOrder α]
+    (a₁ a₂ b₁ b₂ : α) :
     chordPairCrossSym (a₂, a₁) (b₂, b₁) ↔
       chordPairCrossSym (a₁, a₂) (b₁, b₂) := by
   show (ChordPairCross (min a₂ a₁) (max a₂ a₁) (min b₂ b₁)
@@ -304,12 +308,10 @@ end OrderIndicators
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
-omit [LinearOrder α] in
 /-- A matching equality induces the same boundary pairing. -/
-private theorem samePairing_of_matchEq
+private theorem samePairing_of_matchEq {W : Fragment α} {F : EdgeSubset W}
     {κ₁ κ₂ : F.RelTransitionSystem} (heq : κ₁.MatchEq κ₂) :
     SamePairing κ₁ κ₂ :=
   fun _ hδ => (pathMatch_matchEq heq hδ).symm
@@ -318,7 +320,9 @@ private theorem samePairing_of_matchEq
 -- unfolded through the status sets on both sides.
 set_option maxHeartbeats 1600000 in
 /-- Membership in the status difference is the status change. -/
-private theorem mem_statusDiff {κ κ' : F.RelTransitionSystem}
+private theorem mem_statusDiff
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     {i : α} :
     i ∈ statusDiff κ κ' ↔
       ((i ∈ highSet κ') ≠ (i ∈ highSet κ)) := by
@@ -329,17 +333,18 @@ private theorem mem_statusDiff {κ κ' : F.RelTransitionSystem}
 /-- Status differences transport across matching equality on the
 right. -/
 private theorem statusDiff_matchEq_right
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     {κ₁ κ₂ κ₂' : F.RelTransitionSystem} (heq : κ₂.MatchEq κ₂') :
     statusDiff κ₁ κ₂ = statusDiff κ₁ κ₂' := by
   unfold statusDiff
   rw [highSet_of_samePairing (samePairing_of_matchEq heq)]
 
-omit [LinearOrder α] in
 /-- **A re-partnered end participates**: if the path match of a
 boundary flag differs between two systems, its entry edge is
 internal — a boundary-paired end has the same (pairing-determined)
 path match in every system. -/
-theorem repartner_internal {κ κ' : F.RelTransitionSystem}
+theorem repartner_internal {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     {ε : W.Flag} (hε : ε ∈ F.boundaryFlags)
     (hch : κ'.pathMatch ε hε ≠ κ.pathMatch ε hε) :
     W.pairing ε ∈ F.internalFlags := by
@@ -425,18 +430,18 @@ end StateColours
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 section RecanonSigned
-
-variable {κ : F.RelTransitionSystem} {k ℓ : ℕ}
 
 /-- **Sign-explicit full re-canonicalization**: as
 `exists_recanonicalize_sets`, but with the accumulated sign pinned
 as the flip-sign product `flipSignProd g L` of the flip list at
 any colour function `g` matching the state. -/
-theorem exists_recanonicalize_signed (hM : MixedFunctional k ℓ)
+theorem exists_recanonicalize_signed
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (o : κ.Orientation) (g : α → Fin (2 * ℓ))
@@ -604,14 +609,13 @@ end RecanonSigned
 
 section NonsepCount
 
-variable {κ : F.RelTransitionSystem} {a b c d : W.Flag}
-  {v : W.Vertex} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
-  {iβ iγ : α}
-
 /-- Membership of a re-paired end in the transported anti set, for
 an arbitrary source orientation: the low-in-new comparison and the
 source chain direction. -/
 private theorem mem_antiLowSet_transport_end
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) (o : κ.Orientation)
     (hflip : o.isOut c = !o.isOut a) {x y : W.Flag}
     (hx : x ∈ F.boundaryFlags) (hy : y ∈ F.boundaryFlags)
@@ -635,7 +639,11 @@ private theorem mem_antiLowSet_transport_end
 
 /-- The chain direction of the anchored flip at an untoggled end is
 the canonical high-status. -/
-private theorem dir_portFlip_untoggled_iff {o : κ.Orientation}
+private theorem dir_portFlip_untoggled_iff
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {iβ : α} {iγ : α}
+    {o : κ.Orientation}
     (hc : PathCanonical o) (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
     {x : W.Flag} (hx : x ∈ F.boundaryFlags)
     (hintx : W.pairing x ∈ F.internalFlags)
@@ -647,7 +655,11 @@ private theorem dir_portFlip_untoggled_iff {o : κ.Orientation}
 
 /-- The chain direction of the anchored flip at a toggled end is
 the negated canonical high-status. -/
-private theorem dir_portFlip_toggled_iff {o : κ.Orientation}
+private theorem dir_portFlip_toggled_iff
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {iβ : α} {iγ : α}
+    {o : κ.Orientation}
     (hc : PathCanonical o) (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
     {x : W.Flag} (hx : x ∈ F.boundaryFlags)
     (hintx : W.pairing x ∈ F.internalFlags)
@@ -667,7 +679,11 @@ private theorem dir_portFlip_toggled_iff {o : κ.Orientation}
 
 /-- The anchor-chain toggle is chord-wise: an end's entry edge is
 on the flipped chain iff its path match's entry edge is. -/
-private theorem toggle_partner (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
+private theorem toggle_partner
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {iβ : α} {iγ : α}
+    (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
     {β₂ : W.Flag} (hβ₂ : β₂ ∈ F.boundaryFlags)
     (hintβ : W.pairing β₂ ∈ F.internalFlags)
     (honS : ∀ f ∈ S, OnBoundaryChain κ β₂ f)
@@ -708,6 +724,10 @@ chord), the anti set of the anchored transported frame lies on the
 four re-paired ends and its cardinality is the toggled four-label
 indicator sum of `fourLabel_parity_nonsep`. -/
 private theorem nonsep_anti_card_mixed
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {iβ : α} {iγ : α}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hc : PathCanonical o)
     (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
@@ -931,6 +951,10 @@ contributes exactly its low end to the anti set of the anchored
 transported frame; the four re-paired ends contribute the plain
 separated indicators. -/
 private theorem nonsep_anti_card_untoggled
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {iβ : α} {iγ : α}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hc : PathCanonical o)
     (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
@@ -1208,6 +1232,10 @@ chords cannot lie on the anchor chord; a mixed configuration feeds
 anchor chord untouched, contributing the extra flip that feeds
 `fourLabel_parity_sep`. -/
 private theorem nonsep_count_parity
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {iβ : α} {iγ : α}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hc : PathCanonical o)
     (hpf : PortedFlipSet κ S p₁ p₂ iβ iγ)
@@ -1422,15 +1450,15 @@ end NonsepCount
 
 section StepLemma
 
-variable {k ℓ : ℕ}
-
 /-- **The per-step composed ledger**: across one repair step from a
 canonical frame, the state relabel is `stateOddFlipSet` at the fold
 of an explicit flip list `T` with `pairFold T = statusDiff κ₁ κ₂`,
 the sign is `(−1)^tp · flipSignProd g T` at any colour function `g`
 matching the state, and the flip count satisfies the crossing
 parity `tp + |T| ≡ cc κ₁ + cc κ₂ (mod 2)`. -/
-theorem stepStatusLedger (hM : MixedFunctional k ℓ)
+theorem stepStatusLedger
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ₁ κ₂ : F.RelTransitionSystem} (hstep : IsRepairStep κ₁ κ₂)
@@ -1859,7 +1887,9 @@ repair chain — the relabel set is the status difference of the
 endpoint stages, the sign is the explicit
 `(−1)^tp · flipSignProd g T`, and the flip count carries the
 crossing parity telescope. -/
-theorem chainStatusLedger (hM : MixedFunctional k ℓ)
+theorem chainStatusLedger
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st) {n : ℕ}
     (chain : Fin (n + 1) → F.RelTransitionSystem)

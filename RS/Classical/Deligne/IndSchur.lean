@@ -62,12 +62,13 @@ section DayCalculusMore
 
 attribute [local instance] dayConv
 
-variable {D : Type v} [SmallCategory D] [MonoidalCategory D]
+variable {D : Type v}
 
 /-- The Day-convolution structure of a plain presheaf pair, read
 through the synonym: makes the `DayConvolution` API available on
 underlying functors of the Day category. -/
-@[reducible] def dayConvPlain (F G : D ⥤ Type v) : DayConvolution F G :=
+@[reducible] def dayConvPlain [SmallCategory D] [MonoidalCategory D]
+    (F G : D ⥤ Type v) : DayConvolution F G :=
   dayConv (DayFunctor.mk F) (DayFunctor.mk G)
 
 attribute [local instance] dayConvPlain
@@ -75,7 +76,8 @@ attribute [local instance] dayConvPlain
 /-- The canonical element of the Day tensor of two
 corepresentables: the Kan-extension unit evaluated on the pair of
 identities. -/
-def dayCoyonedaUnitElt (a b : D) :
+def dayCoyonedaUnitElt [SmallCategory D] [MonoidalCategory D]
+    (a b : D) :
     ((DayFunctor.mk (coyoneda.obj (op a)) ⊗
       DayFunctor.mk (coyoneda.obj (op b)) : D ⊛⥤ Type v)).functor.obj
       (a ⊗ b) :=
@@ -85,7 +87,8 @@ def dayCoyonedaUnitElt (a b : D) :
 
 /-- The canonical element of a left-nested triple Day tensor of
 corepresentables. -/
-def dayCoyonedaUnitElt₂ (a b c : D) :
+def dayCoyonedaUnitElt₂ [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     (((DayFunctor.mk (coyoneda.obj (op a)) ⊗
         DayFunctor.mk (coyoneda.obj (op b))) ⊗
       DayFunctor.mk (coyoneda.obj (op c)) : D ⊛⥤ Type v)).functor.obj
@@ -97,7 +100,8 @@ def dayCoyonedaUnitElt₂ (a b c : D) :
 
 /-- The canonical element of a right-nested triple Day tensor of
 corepresentables. -/
-def dayCoyonedaUnitElt₂' (a b c : D) :
+def dayCoyonedaUnitElt₂' [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     ((DayFunctor.mk (coyoneda.obj (op a)) ⊗
       (DayFunctor.mk (coyoneda.obj (op b)) ⊗
         DayFunctor.mk (coyoneda.obj (op c))) : D ⊛⥤ Type v)).functor.obj
@@ -113,7 +117,8 @@ corepresents evaluation at `(a ⊗ b) ⊗ c`: iterate the Kan-extension
 universal property twice and read off the Yoneda lemma on the
 external product of three corepresentables, which is definitionally
 the corepresentable of the triple product category. -/
-def dayCoyonedaCorepresentableBy₂ (a b c : D) :
+def dayCoyonedaCorepresentableBy₂ [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     (dayEvaluation ((a ⊗ b) ⊗ c)).CorepresentableBy
       ((DayFunctor.mk (coyoneda.obj (op a)) ⊗
         DayFunctor.mk (coyoneda.obj (op b))) ⊗
@@ -149,13 +154,16 @@ def dayCoyonedaCorepresentableBy₂ (a b c : D) :
 
 /-- Evaluation of `RS.dayEvaluation` on a morphism of the Day
 category. -/
-lemma dayEvaluation_map_apply (d : D) {F K : D ⊛⥤ Type v} (g : F ⟶ K)
+lemma dayEvaluation_map_apply [SmallCategory D] [MonoidalCategory D]
+    (d : D) {F K : D ⊛⥤ Type v} (g : F ⟶ K)
     (x : (dayEvaluation d).obj F) :
     (dayEvaluation d).map g x = g.natTrans.app d x := rfl
 
 /-- The corepresentability of a Day tensor of two corepresentables
 classifies a morphism by its value on the canonical element. -/
-lemma dayCoyonedaCorepresentableBy_homEquiv_apply (a b : D)
+lemma dayCoyonedaCorepresentableBy_homEquiv_apply
+    [SmallCategory D] [MonoidalCategory D]
+    (a b : D)
     {K : D ⊛⥤ Type v}
     (f : DayFunctor.mk (coyoneda.obj (op a)) ⊗
       DayFunctor.mk (coyoneda.obj (op b)) ⟶ K) :
@@ -165,7 +173,9 @@ lemma dayCoyonedaCorepresentableBy_homEquiv_apply (a b : D)
 /-- The corepresentability of a left-nested triple Day tensor of
 corepresentables classifies a morphism by its value on the canonical
 element. -/
-lemma dayCoyonedaCorepresentableBy₂_homEquiv_apply (a b c : D)
+lemma dayCoyonedaCorepresentableBy₂_homEquiv_apply
+    [SmallCategory D] [MonoidalCategory D]
+    (a b c : D)
     {K : D ⊛⥤ Type v}
     (f : (DayFunctor.mk (coyoneda.obj (op a)) ⊗
       DayFunctor.mk (coyoneda.obj (op b))) ⊗
@@ -176,7 +186,9 @@ lemma dayCoyonedaCorepresentableBy₂_homEquiv_apply (a b c : D)
 /-- The classification of `RS.dayCoyonedaIso` under the
 corepresentability of the Day tensor of two corepresentables: its
 value is the identity of `p ⊗ q`. -/
-lemma dayCoyonedaCorepresentableBy_homEquiv_iso (p q : D) :
+lemma dayCoyonedaCorepresentableBy_homEquiv_iso
+    [SmallCategory D] [MonoidalCategory D]
+    (p q : D) :
     (dayCoyonedaCorepresentableBy p q).homEquiv
       (dayCoyonedaIso p q).hom = 𝟙 (p ⊗ q) := by
   have h := corepresentableBy_homEquiv_uniqueUpToIso_hom
@@ -192,7 +204,8 @@ lemma dayCoyonedaCorepresentableBy_homEquiv_iso (p q : D) :
 
 /-- `RS.dayCoyonedaIso` sends the canonical element to the
 identity. -/
-lemma dayCoyonedaIso_hom_app_unitElt (p q : D) :
+lemma dayCoyonedaIso_hom_app_unitElt [SmallCategory D] [MonoidalCategory D]
+    (p q : D) :
     (dayCoyonedaIso p q).hom.natTrans.app (p ⊗ q)
       (dayCoyonedaUnitElt p q) = 𝟙 (p ⊗ q) := by
   have h := dayCoyonedaCorepresentableBy_homEquiv_iso p q
@@ -200,7 +213,9 @@ lemma dayCoyonedaIso_hom_app_unitElt (p q : D) :
 
 /-- Right-whiskering `RS.dayCoyonedaIso` sends the left-nested
 canonical element to the canonical element at `(a ⊗ b, c)`. -/
-lemma whiskerRight_dayCoyonedaIso_app_unitElt (a b c : D) :
+lemma whiskerRight_dayCoyonedaIso_app_unitElt
+    [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     ((dayCoyonedaIso a b).hom ▷
         DayFunctor.mk (coyoneda.obj (op c))).natTrans.app ((a ⊗ b) ⊗ c)
       (dayCoyonedaUnitElt₂ a b c) = dayCoyonedaUnitElt (a ⊗ b) c := by
@@ -235,7 +250,9 @@ lemma whiskerRight_dayCoyonedaIso_app_unitElt (a b c : D) :
 
 /-- Left-whiskering `RS.dayCoyonedaIso` sends the right-nested
 canonical element to the canonical element at `(a, b ⊗ c)`. -/
-lemma whiskerLeft_dayCoyonedaIso_app_unitElt (a b c : D) :
+lemma whiskerLeft_dayCoyonedaIso_app_unitElt
+    [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     (DayFunctor.mk (coyoneda.obj (op a)) ◁
         (dayCoyonedaIso b c).hom).natTrans.app (a ⊗ (b ⊗ c))
       (dayCoyonedaUnitElt₂' a b c) = dayCoyonedaUnitElt a (b ⊗ c) := by
@@ -270,7 +287,8 @@ lemma whiskerLeft_dayCoyonedaIso_app_unitElt (a b c : D) :
 
 /-- The Day associator carries the left-nested canonical element to
 the image of the right-nested one under the base associator. -/
-lemma dayAssociator_hom_app_unitElt (a b c : D) :
+lemma dayAssociator_hom_app_unitElt [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     (α_ (DayFunctor.mk (coyoneda.obj (op a)))
         (DayFunctor.mk (coyoneda.obj (op b)))
         (DayFunctor.mk (coyoneda.obj (op c)))).hom.natTrans.app
@@ -294,7 +312,8 @@ lemma dayAssociator_hom_app_unitElt (a b c : D) :
 associator**: under the co-Yoneda identifications, the two
 reassociation routes of a triple Day tensor of corepresentables
 differ by precomposition with the associator of the base. -/
-lemma dayCoyonedaIso_hom_associator (a b c : D) :
+lemma dayCoyonedaIso_hom_associator [SmallCategory D] [MonoidalCategory D]
+    (a b c : D) :
     ((dayCoyonedaIso a b).hom ▷ DayFunctor.mk (coyoneda.obj (op c))) ≫
         (dayCoyonedaIso (a ⊗ b) c).hom ≫
         ⟨coyoneda.map ((α_ a b c).inv.op)⟩ =
@@ -352,13 +371,13 @@ lemma dayCoyonedaIso_hom_associator (a b c : D) :
 
 section Braided
 
-variable [BraidedCategory D]
-
 /-- **Day convolution of corepresentables intertwines the
 braiding**: under the co-Yoneda identifications, the braiding of the
 Day tensor of two corepresentables is precomposition with the
 braiding of the base. -/
-lemma dayCoyonedaIso_hom_braiding (a b : D) :
+lemma dayCoyonedaIso_hom_braiding
+    [SmallCategory D] [MonoidalCategory D] [BraidedCategory D]
+    (a b : D) :
     (β_ (DayFunctor.mk (coyoneda.obj (op a)))
         (DayFunctor.mk (coyoneda.obj (op b)))).hom ≫
       (dayCoyonedaIso b a).hom =
@@ -413,7 +432,8 @@ end Braided
 
 /-- The forward and reversed transports along `RS.dayMkIso`
 compose to the identity. -/
-lemma dayMkIso_hom_symm_hom {A B : Dᵒᵖ ⥤ Type v}
+lemma dayMkIso_hom_symm_hom [SmallCategory D] [MonoidalCategory D]
+    {A B : Dᵒᵖ ⥤ Type v}
     (e : A ≅ B) :
     (dayMkIso e).hom ≫ (dayMkIso e.symm).hom =
       𝟙 (DayFunctor.mk A : Dᵒᵖ ⊛⥤ Type v) :=
@@ -421,7 +441,8 @@ lemma dayMkIso_hom_symm_hom {A B : Dᵒᵖ ⥤ Type v}
 
 /-- Cancellation form of `RS.dayMkIso_hom_symm_hom`, stated against
 a leading morphism so that no identity is left behind. -/
-lemma comp_dayMkIso_hom_symm_hom {A B : Dᵒᵖ ⥤ Type v} (e : A ≅ B)
+lemma comp_dayMkIso_hom_symm_hom [SmallCategory D] [MonoidalCategory D]
+    {A B : Dᵒᵖ ⥤ Type v} (e : A ≅ B)
     {X : Dᵒᵖ ⊛⥤ Type v} (f : X ⟶ DayFunctor.mk A) :
     f ≫ (dayMkIso e).hom ≫ (dayMkIso e.symm).hom = f := by
   rw [dayMkIso_hom_symm_hom, Category.comp_id]
@@ -430,12 +451,12 @@ end DayCalculusMore
 
 section YonedaTransport
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
-omit [MonoidalCategory C] in
 /-- Naturality of `Coyoneda.objOpOp`, forward form, at a general
 double-opposite morphism. -/
-lemma coyoneda_map_op_op_comp_objOpOp_hom {z z' : C} (u : z ⟶ z') :
+lemma coyoneda_map_op_op_comp_objOpOp_hom [SmallCategory C]
+    {z z' : C} (u : z ⟶ z') :
     coyoneda.map (u.op.op) ≫ (Coyoneda.objOpOp z').hom =
       (Coyoneda.objOpOp z).hom ≫ yoneda.map u := by
   ext w t
@@ -443,7 +464,8 @@ lemma coyoneda_map_op_op_comp_objOpOp_hom {z z' : C} (u : z ⟶ z') :
 
 /-- **The Day tensor of representables intertwines the braiding**:
 the Yoneda form of `RS.dayCoyonedaIso_hom_braiding`. -/
-lemma dayYonedaIso_hom_braiding [BraidedCategory C] (x y : C) :
+lemma dayYonedaIso_hom_braiding [SmallCategory C] [MonoidalCategory C]
+    [BraidedCategory C] (x y : C) :
     (β_ (DayFunctor.mk (yoneda.obj x))
         (DayFunctor.mk (yoneda.obj y))).hom ≫ (dayYonedaIso y x).hom =
       (dayYonedaIso x y).hom ≫ ⟨yoneda.map (β_ x y).hom⟩ := by
@@ -472,7 +494,8 @@ lemma dayYonedaIso_hom_braiding [BraidedCategory C] (x y : C) :
 
 /-- **The Day tensor of representables intertwines the associator**:
 the Yoneda form of `RS.dayCoyonedaIso_hom_associator`. -/
-lemma dayYonedaIso_hom_associator (x y z : C) :
+lemma dayYonedaIso_hom_associator [SmallCategory C] [MonoidalCategory C]
+    (x y z : C) :
     ((dayYonedaIso x y).hom ▷ DayFunctor.mk (yoneda.obj z)) ≫
         (dayYonedaIso (x ⊗ y) z).hom ≫ ⟨yoneda.map (α_ x y z).hom⟩ =
       (α_ (DayFunctor.mk (yoneda.obj x)) (DayFunctor.mk (yoneda.obj y))
@@ -577,11 +600,12 @@ end YonedaTransport
 
 section IndTransport
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- The embedding into the Day presheaf category carries the
 embedding-tensor comparison to the Day-level comparison. -/
-lemma indToDay_map_indOfTensorIso_hom (x y : C) :
+lemma indToDay_map_indOfTensorIso_hom [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     (indToDay (C := C)).map (indOfTensorIso x y).hom =
       (indToDayTensorIso x y).hom := by
   rw [indOfTensorIso, Functor.FullyFaithful.preimageIso_hom,
@@ -589,24 +613,26 @@ lemma indToDay_map_indOfTensorIso_hom (x y : C) :
 
 section Braided
 
-variable [BraidedCategory C]
-
 /-- The indization equivalence's forward functor is braided: the
 braiding of `Ind C` is transported across it. -/
-instance : (indDayEquivalence C).functor.Braided :=
+instance [SmallCategory C] [MonoidalCategory C] [BraidedCategory C] :
+    (indDayEquivalence C).functor.Braided :=
   inferInstanceAs
     (Monoidal.equivalenceTransported
       ((indDayEquivalence C).symm)).inverse.Braided
 
 /-- The embedding into the Day presheaf category is braided. -/
-instance : (indToDay (C := C)).Braided :=
+instance [SmallCategory C] [MonoidalCategory C] [BraidedCategory C] :
+    (indToDay (C := C)).Braided :=
   inferInstanceAs
     ((indDayEquivalence C).functor ⋙ ObjectProperty.ι _).Braided
 
 /-- **The embedding-tensor comparison intertwines the braiding**:
 `indOf` with `indOfTensorIso` is a braided functor up to
 isomorphism. -/
-lemma indOfTensorIso_hom_braiding (x y : C) :
+lemma indOfTensorIso_hom_braiding
+    [SmallCategory C] [MonoidalCategory C] [BraidedCategory C]
+    (x y : C) :
     (β_ (indOf.obj x) (indOf.obj y)).hom ≫ (indOfTensorIso y x).hom =
       (indOfTensorIso x y).hom ≫ indOf.map (β_ x y).hom := by
   apply (indToDay (C := C)).map_injective
@@ -625,7 +651,8 @@ end Braided
 /-- **The embedding-tensor comparison intertwines the associator**:
 the associativity axiom of the monoidal-functor-up-to-isomorphism
 structure of `indOf`. -/
-lemma indOfTensorIso_hom_associator (x y z : C) :
+lemma indOfTensorIso_hom_associator [SmallCategory C] [MonoidalCategory C]
+    (x y z : C) :
     ((indOfTensorIso x y).hom ▷ indOf.obj z) ≫
         (indOfTensorIso (x ⊗ y) z).hom ≫ indOf.map (α_ x y z).hom =
       (α_ (indOf.obj x) (indOf.obj y) (indOf.obj z)).hom ≫
@@ -699,7 +726,8 @@ section Powers
 tensor powers**: `n = 0` is `RS.indOfUnitIso`, and each successor
 stage tensors the previous one with `indOf.obj X` and applies the
 embedding-tensor comparison. -/
-def indOfPowIso (X : C) : (n : ℕ) →
+def indOfPowIso [SmallCategory C] [MonoidalCategory C]
+    (X : C) : (n : ℕ) →
     (tensorPow (Ind C) (indOf.obj X) n ≅ indOf.obj (tensorPow C X n))
   | 0 => indOfUnitIso
   | n + 1 =>
@@ -708,11 +736,13 @@ def indOfPowIso (X : C) : (n : ℕ) →
 
 /-- The base case of the power comparison. -/
 @[simp]
-theorem indOfPowIso_zero (X : C) :
+theorem indOfPowIso_zero [SmallCategory C] [MonoidalCategory C]
+    (X : C) :
     indOfPowIso X 0 = indOfUnitIso := rfl
 
 /-- The defining recursion of the power comparison. -/
-theorem indOfPowIso_succ (X : C) (n : ℕ) :
+theorem indOfPowIso_succ [SmallCategory C] [MonoidalCategory C]
+    (X : C) (n : ℕ) :
     indOfPowIso X (n + 1) =
       whiskerRightIso (indOfPowIso X n) (indOf.obj X) ≪≫
         indOfTensorIso (tensorPow C X n) X := rfl
@@ -721,11 +751,11 @@ end Powers
 
 section Perm
 
-variable [SymmetricCategory C]
-
 /-- The braiding conjugate defining `swapTop` passes doubly
 whiskered morphisms, with an arbitrary tail. -/
-private lemma swap_conj_pass {P Q Z : Ind C} (g : P ⟶ Q) {R : Ind C}
+private lemma swap_conj_pass
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    {P Q Z : Ind C} (g : P ⟶ Q) {R : Ind C}
     (h : (Q ⊗ Z) ⊗ Z ⟶ R) :
     (α_ P Z Z).hom ≫ (P ◁ (β_ Z Z).hom) ≫ (α_ P Z Z).inv ≫
         ((g ▷ Z) ▷ Z) ≫ h =
@@ -737,7 +767,9 @@ private lemma swap_conj_pass {P Q Z : Ind C} (g : P ⟶ Q) {R : Ind C}
 
 /-- The embedding-tensor comparison conjugates the braiding block of
 `swapTop` to its embedded form. -/
-lemma indOfTensorIso_swap_conj (a z : C) :
+lemma indOfTensorIso_swap_conj
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    (a z : C) :
     (α_ (indOf.obj a) (indOf.obj z) (indOf.obj z)).hom ≫
         (indOf.obj a ◁ (β_ (indOf.obj z) (indOf.obj z)).hom) ≫
         (α_ (indOf.obj a) (indOf.obj z) (indOf.obj z)).inv ≫
@@ -764,7 +796,9 @@ lemma indOfTensorIso_swap_conj (a z : C) :
 
 /-- **Transport of the top braiding**: `swapTop` on the powers of an
 embedded object is conjugate to the embedded `swapTop`. -/
-lemma indOfPowIso_swapTop (X : C) (n : ℕ) :
+lemma indOfPowIso_swapTop
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    (X : C) (n : ℕ) :
     swapTop (indOf.obj X) n ≫ (indOfPowIso X (n + 2)).hom =
       (indOfPowIso X (n + 2)).hom ≫ indOf.map (swapTop X n) := by
   show ((α_ (tensorPow (Ind C) (indOf.obj X) n) (indOf.obj X)
@@ -785,10 +819,10 @@ lemma indOfPowIso_swapTop (X : C) (n : ℕ) :
   simp only [MonoidalCategory.comp_whiskerRight, Category.assoc]
   rw [swap_conj_pass (indOfPowIso X n).hom, indOfTensorIso_swap_conj]
 
-omit [SymmetricCategory C] in
 /-- Whiskering by one more embedded factor preserves the transport
 relation. -/
-lemma indOfPowIso_whiskerRight (X : C) {m : ℕ}
+lemma indOfPowIso_whiskerRight [SmallCategory C] [MonoidalCategory C]
+    (X : C) {m : ℕ}
     {f : tensorPow (Ind C) (indOf.obj X) m ⟶
       tensorPow (Ind C) (indOf.obj X) m}
     {u : tensorPow C X m ⟶ tensorPow C X m}
@@ -805,11 +839,11 @@ lemma indOfPowIso_whiskerRight (X : C) {m : ℕ}
     MonoidalCategory.comp_whiskerRight, Category.assoc,
     indOfTensorIso_hom_natural_left, ← Category.assoc]
 
-omit [MonoidalCategory C] in
 /-- Two morphisms transported across the power comparison compose to
 the transported composite.  Stated at general objects, so that no
 tensor-power arity enters the rewriting. -/
-private lemma step_pass_map {P : Ind C} {p : C} {s u : P ⟶ P}
+private lemma step_pass_map [SmallCategory C]
+    {P : Ind C} {p : C} {s u : P ⟶ P}
     {T : P ⟶ indOf.obj p} {s₀ u₀ : p ⟶ p}
     (hs : s ≫ T = T ≫ indOf.map s₀)
     (hu : u ≫ T = T ≫ indOf.map u₀) :
@@ -819,7 +853,9 @@ private lemma step_pass_map {P : Ind C} {p : C} {s u : P ⟶ P}
 
 /-- **Transport of the insertion cycle**: `insertTop` on the powers
 of an embedded object is conjugate to the embedded `insertTop`. -/
-lemma indOfPowIso_insertTop (X : C) : ∀ n k : ℕ,
+lemma indOfPowIso_insertTop
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    (X : C) : ∀ n k : ℕ,
     insertTop (indOf.obj X) n k ≫ (indOfPowIso X (n + 1)).hom =
       (indOfPowIso X (n + 1)).hom ≫ indOf.map (insertTop X n k) := by
   intro n
@@ -842,7 +878,9 @@ lemma indOfPowIso_insertTop (X : C) : ∀ n k : ℕ,
 `C ⥤ Ind C`: the action of a permutation on the tensor powers of an
 embedded object is conjugate, under `RS.indOfPowIso`, to the
 embedded action. -/
-theorem indOfPowIso_permMor (X : C) : ∀ (n : ℕ)
+theorem indOfPowIso_permMor
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    (X : C) : ∀ (n : ℕ)
     (σ : Equiv.Perm (Fin n)),
     permMor (indOf.obj X) n σ ≫ (indOfPowIso X n).hom =
       (indOfPowIso X n).hom ≫ indOf.map (permMor X n σ) := by
@@ -860,7 +898,9 @@ theorem indOfPowIso_permMor (X : C) : ∀ (n : ℕ)
       (indOfPowIso_insertTop X m (m - (topImage σ : ℕ)))
 
 /-- Conjugation form of `RS.indOfPowIso_permMor`. -/
-theorem permMor_indOf_conj (X : C) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+theorem permMor_indOf_conj
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    (X : C) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     permMor (indOf.obj X) n σ =
       (indOfPowIso X n).hom ≫ indOf.map (permMor X n σ) ≫
         (indOfPowIso X n).inv := by
@@ -871,12 +911,11 @@ end Perm
 
 section Schur
 
-variable [Preadditive C] [HasFiniteColimits C]
-
-omit [MonoidalCategory C] in
 /-- **The faithfulness bridge**: the embedding `C ⥤ Ind C` reflects
 and preserves vanishing of morphisms. -/
-lemma indOf_map_eq_zero_iff {P Q : C} (f : P ⟶ Q) :
+lemma indOf_map_eq_zero_iff
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    {P Q : C} (f : P ⟶ Q) :
     indOf.map f = 0 ↔ f = 0 := by
   haveI : HasFiniteBiproducts C :=
     HasFiniteBiproducts.of_hasFiniteCoproducts
@@ -890,11 +929,12 @@ lemma indOf_map_eq_zero_iff {P Q : C} (f : P ⟶ Q) :
   · intro h
     rw [h, Functor.map_zero]
 
-variable [SymmetricCategory C]
-
 /-- Vanishing of the permutation action on an embedded object is
 vanishing of the embedded action. -/
-theorem permMor_indOf_eq_zero_iff_map (X : C) (n : ℕ)
+theorem permMor_indOf_eq_zero_iff_map
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [SymmetricCategory C]
+    (X : C) (n : ℕ)
     (σ : Equiv.Perm (Fin n)) :
     permMor (indOf.obj X) n σ = 0 ↔
       indOf.map (permMor X n σ) = 0 := by
@@ -911,7 +951,10 @@ along the embedding `C ⥤ Ind C`.**  This is the `permMor`-level form
 of Schur-vanishing transport: the group-algebra form waits on a
 `Linear ℂ (Ind C)` instance, which the Mathlib pin does not
 provide. -/
-theorem permMor_indOf_eq_zero_iff (X : C) (n : ℕ)
+theorem permMor_indOf_eq_zero_iff
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [SymmetricCategory C]
+    (X : C) (n : ℕ)
     (σ : Equiv.Perm (Fin n)) :
     permMor (indOf.obj X) n σ = 0 ↔ permMor X n σ = 0 := by
   rw [permMor_indOf_eq_zero_iff_map, indOf_map_eq_zero_iff]
@@ -920,10 +963,6 @@ end Schur
 
 section SchurBridge
 
-variable [SymmetricCategory C] [Preadditive C] [Linear ℂ C]
-  [MonoidalPreadditive C] [MonoidalLinear ℂ C] [HasFiniteColimits C]
-
-omit [MonoidalPreadditive C] [MonoidalLinear ℂ C] in
 /-- **Schur vanishing, read through the embedding**: the shape `μ`
 kills `X` precisely when the embedded action of its block idempotent
 vanishes.  Together with `RS.permMor_indOf_eq_zero_iff` this is the
@@ -931,6 +970,8 @@ substrate for transporting `RS.SchurKilled` to `Ind C`; phrasing the
 `Ind C` side through `permAlg` needs `Linear ℂ (Ind C)`, which is a
 mainline decision. -/
 theorem schurKilled_iff_indOf_map_permAlg_eq_zero
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C]
+    [Preadditive C] [Linear ℂ C] [HasFiniteColimits C]
     (P : SchurPackage.{v}) (X : C) (μ : YoungDiagram) :
     SchurKilled P X μ ↔
       indOf.map (permAlg X μ.card (P.e μ)) = 0 :=

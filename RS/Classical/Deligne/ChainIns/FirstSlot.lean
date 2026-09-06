@@ -22,31 +22,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-! ## An insertion past the interchange -/
 
 section InsPastInterchange
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- An insertion into the first factor of the first pair passes
 the interchange. -/
-private theorem insL_past_tensorμ [BraidedCategory D]
+private theorem insL_past_tensorμ [Category.{v} D] [MonoidalCategory D]
+    [BraidedCategory D]
     {X P P₂ Q R S : D} (f : X ⊗ P ⟶ P₂) :
     (α_ X (P ⊗ Q) (R ⊗ S)).inv ≫
         (((α_ X P Q).inv ≫ (f ▷ Q)) ⊗ₘ 𝟙 (R ⊗ S)) ≫
@@ -74,15 +59,8 @@ end InsPastInterchange
 
 section InsSurgery
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Absorb a whiskered morphism into the first tensor factor. -/
-theorem tensorHom_whiskerRight_absorb
+theorem tensorHom_whiskerRight_absorb [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₁ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (f : Y₁ ⟶ Z₁) (h : Z₁ ⊗ Y₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (f ▷ Y₂) ≫ h = ((a ≫ f) ⊗ₘ b) ≫ h := by
@@ -94,12 +72,17 @@ end InsSurgery
 
 section Ins2Laws
 
-variable (M M' : Mod D A)
-
 /-- **The insertion passes the stage multiplication**: inserting
 a letter into the merged stage is inserting into the first factor
 and multiplying, up to the index transport. -/
-theorem chainInsP_mul (p q r s : ℕ) :
+theorem chainInsP_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q r s : ℕ) :
     (M'.X ◁ chainMul2 A M M' p q r s) ≫
         chainInsP A M M' (p + 1 + r) (q + 1 + s) =
       (α_ M'.X (chainStage2 A M M' p q)
@@ -704,7 +687,14 @@ theorem chainInsP_mul (p q r s : ℕ) :
 /-- **The transition square for the first-slot insertion**: the
 insertion passes the seed transition, raising the merged arities
 by one on each side. -/
-theorem chainInsP_delta2 (d : ModDualityDatum A M M') (p q : ℕ) :
+theorem chainInsP_delta2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (p q : ℕ) :
     (M'.X ◁ chainDelta2 A M M' d p q) ≫
         chainInsP A M M' (p + 1) (q + 1) =
       chainInsP A M M' p q ≫ chainDelta2 A M M' d (p + 1) q := by

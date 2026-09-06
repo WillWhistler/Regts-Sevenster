@@ -13,24 +13,24 @@ open CategoryTheory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A]
+variable {A : Type u}
 
 /-- The doubling, as the product category. -/
-def doubledProdFunctor : Doubled A ⥤ (A × A) where
+def doubledProdFunctor [Category.{v} A] : Doubled A ⥤ (A × A) where
   obj X := (X.even, X.odd)
   map f := (Doubled.evenHom f, Doubled.oddHom f)
   map_id _ := rfl
   map_comp _ _ := rfl
 
 /-- The product category, as the doubling. -/
-def prodDoubledFunctor : (A × A) ⥤ Doubled A where
+def prodDoubledFunctor [Category.{v} A] : (A × A) ⥤ Doubled A where
   obj X := ⟨X.1, X.2⟩
   map f := ⟨f.1, f.2⟩
   map_id _ := rfl
   map_comp _ _ := rfl
 
 /-- **The doubling is the square of the category.** -/
-def doubledProdEquiv : Doubled A ≌ (A × A) where
+def doubledProdEquiv [Category.{v} A] : Doubled A ≌ (A × A) where
   functor := doubledProdFunctor
   inverse := prodDoubledFunctor
   unitIso := Iso.refl _

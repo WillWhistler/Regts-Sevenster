@@ -75,19 +75,18 @@ end SuperCommAlgebra.Mod
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- The mirror of `RS.sum_modTensorMapMod`, in the second
 variable. -/
-theorem sum_modTensorMapMod_right {ι : Type*} (s : Finset ι)
+theorem sum_modTensorMapMod_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    {ι : Type*} (s : Finset ι)
     {M N : Mod D R} (g : ι → (N ⟶ N))
     (h : ∑ i ∈ s, (g i).hom = 𝟙 N.X) :
     ∑ i ∈ s, (modTensorMapMod R (𝟙 M) (g i)).hom =
@@ -111,7 +110,13 @@ theorem sum_modTensorMapMod_right {ι : Type*} (s : Finset ι)
 
 /-- **The comparison map on a family of retracts in the second
 variable.** -/
-theorem isIso_gammaPairComparison_of_retracts_right {ι : Type*}
+theorem isIso_gammaPairComparison_of_retracts_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {ι : Type*}
     [Fintype ι] (M : Mod D R) {N : Mod D R} {N' : ι → Mod D R}
     (s : ∀ i, N' i ⟶ N) (r : ∀ i, N ⟶ N' i)
     (htot : ∑ i : ι, (r i).hom ≫ (s i).hom = 𝟙 N.X)

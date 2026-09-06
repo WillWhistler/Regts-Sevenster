@@ -27,17 +27,17 @@ open scoped Classical
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 /-! ## The enumeration lemma -/
 
 section Enumeration
 
-variable {κ : F.RelTransitionSystem}
-
 /-- The anti-canonical set consists of boundary flags. -/
-theorem antiLowSet_subset_boundary (o : κ.Orientation) :
+theorem antiLowSet_subset_boundary
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) :
     antiLowSet o ⊆ F.boundaryFlags := by
   intro β h
   obtain ⟨hβ, -⟩ := mem_antiLowSet.mp h
@@ -50,7 +50,9 @@ label of some anti-canonical chain.  The completeness direction is
 a counting argument: the first components form a `Nodup` list of
 labels of anti flags, and label injectivity forces them to exhaust
 the anti set. -/
-theorem mem_pairFold_antiLow {o : κ.Orientation}
+theorem mem_pairFold_antiLow [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {o : κ.Orientation}
     {L : List (α × α)}
     (hall : ∀ p ∈ L, AntiLowPair o p)
     (hdisj : L.Pairwise PairDisjoint)
@@ -136,15 +138,15 @@ end Enumeration
 
 section StepStatus
 
-variable {κ : F.RelTransitionSystem} {a b c d : W.Flag}
-  {v : W.Vertex}
-
 /-- **An anti end and its new partner both change status**: from a
 canonical source, a flag `x` that is anti-canonical for the
 transported frame is high-in-old and low-in-new, while its new
 partner `y` is low-in-old (the re-paired ends carry opposite old
 directions) and high-in-new. -/
 private theorem status_flip_anti_end
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {x y : W.Flag} (hx : x ∈ F.boundaryFlags)
@@ -193,6 +195,9 @@ private theorem status_flip_anti_end
 /-- The forward case handler: any end label of an anti-canonical
 re-paired chord is a status-changed label. -/
 private theorem statusChange_end_fwd
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {x y : W.Flag} (hx : x ∈ F.boundaryFlags)
@@ -221,6 +226,9 @@ transported frame (it was high, now low) and the label is its own,
 or its new partner is (the end was low, now high) and the label is
 the partner's partner-label. -/
 private theorem statusChange_end_bwd
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {x y : W.Flag} (hx : x ∈ F.boundaryFlags)
@@ -290,6 +298,9 @@ its partner in the *repaired* system, the shape produced by
 labels whose high-status differs between the repaired and the
 source systems. -/
 theorem antiLow_labels_eq_statusChange
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)

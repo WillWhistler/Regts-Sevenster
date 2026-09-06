@@ -26,36 +26,37 @@ open CategoryTheory.MonoidalCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u}
 
 /-! ### Auxiliary lemmas for idempotent-conjugated morphisms -/
 
 /-- The tensor product of idempotents is idempotent. -/
-private theorem tensorHom_idem {A B : C} {p : A ⟶ A} {q : B ⟶ B}
+private theorem tensorHom_idem [Category.{v} C] [MonoidalCategory C]
+    {A B : C} {p : A ⟶ A} {q : B ⟶ B}
     (hp : p ≫ p = p) (hq : q ≫ q = q) :
     (p ⊗ₘ q) ≫ (p ⊗ₘ q) = p ⊗ₘ q := by
   rw [tensorHom_comp_tensorHom, hp, hq]
 
 /-- Comm condition for tensor product morphisms in the Karoubi envelope. -/
-private theorem karoubi_tensorHom_comm
+private theorem karoubi_tensorHom_comm [Category.{v} C] [MonoidalCategory C]
     {P₁ Q₁ P₂ Q₂ : Karoubi C} (f : P₁ ⟶ Q₁) (g : P₂ ⟶ Q₂) :
     (P₁.p ⊗ₘ P₂.p) ≫ (f.f ⊗ₘ g.f) ≫ (Q₁.p ⊗ₘ Q₂.p) = f.f ⊗ₘ g.f := by
   simp only [tensorHom_comp_tensorHom, Karoubi.p_comp, Karoubi.comp_p]
 
-omit [MonoidalCategory C] in
 /-- The Karoubi comm condition `p ≫ (p ≫ f) ≫ q = p ≫ f` holds whenever `p, q`
 are idempotent and `p ≫ f = f ≫ q` (naturality). -/
-private theorem conj_comm {A B : C} (p : A ⟶ A) (q : B ⟶ B)
+private theorem conj_comm [Category.{v} C]
+    {A B : C} (p : A ⟶ A) (q : B ⟶ B)
     (hp : p ≫ p = p) (hq : q ≫ q = q) (f : A ⟶ B)
     (hnat : p ≫ f = f ≫ q) :
     p ≫ (p ≫ f) ≫ q = p ≫ f := by
   simp only [← assoc, hp]
   rw [hnat, assoc, hq]
 
-omit [MonoidalCategory C] in
 /-- If `p ≫ φ.hom = φ.hom ≫ q` and `p` is idempotent, then
 `(p ≫ φ.hom) ≫ (q ≫ φ.inv) = p`. -/
-private theorem conj_iso_hom_inv {A B : C} (p : A ⟶ A) (q : B ⟶ B)
+private theorem conj_iso_hom_inv [Category.{v} C]
+    {A B : C} (p : A ⟶ A) (q : B ⟶ B)
     (hp : p ≫ p = p) (φ : A ≅ B) (hnat : p ≫ φ.hom = φ.hom ≫ q) :
     (p ≫ φ.hom) ≫ (q ≫ φ.inv) = p := by
   have hnat_assoc : ∀ {E : C} (h : B ⟶ E),
@@ -63,10 +64,10 @@ private theorem conj_iso_hom_inv {A B : C} (p : A ⟶ A) (q : B ⟶ B)
     intro E h; rw [← assoc, hnat, assoc]
   rw [assoc, ← hnat_assoc, Iso.hom_inv_id, comp_id, hp]
 
-omit [MonoidalCategory C] in
 /-- If `p ≫ φ.hom = φ.hom ≫ q` and `q` is idempotent, then
 `(q ≫ φ.inv) ≫ (p ≫ φ.hom) = q`. -/
-private theorem conj_iso_inv_hom {A B : C} (p : A ⟶ A) (q : B ⟶ B)
+private theorem conj_iso_inv_hom [Category.{v} C]
+    {A B : C} (p : A ⟶ A) (q : B ⟶ B)
     (hq : q ≫ q = q) (φ : A ≅ B) (hnat : p ≫ φ.hom = φ.hom ≫ q) :
     (q ≫ φ.inv) ≫ (p ≫ φ.hom) = q := by
   have inv_nat : q ≫ φ.inv = φ.inv ≫ p := by
@@ -86,7 +87,9 @@ due to dependent-type motive construction failures. -/
 
 /-- Decompose `(f ≫ g) ⊗ₘ q` into `(f ⊗ₘ q) ≫ (g ⊗ₘ q)` when `q` is
 idempotent. -/
-private theorem tensorHom_comp_left_idem_right {A B D : C}
+private theorem tensorHom_comp_left_idem_right
+    [Category.{v} C] [MonoidalCategory C]
+    {A B D : C}
     {p : A ⟶ A} (f : A ⟶ B) (q : D ⟶ D) (hq : q ≫ q = q) :
     (p ≫ f) ⊗ₘ q = (p ⊗ₘ q) ≫ (f ⊗ₘ q) := by
   have : (p ≫ f) ⊗ₘ q = (p ≫ f) ⊗ₘ (q ≫ q) := by congr 1; exact hq.symm
@@ -94,7 +97,9 @@ private theorem tensorHom_comp_left_idem_right {A B D : C}
 
 /-- Decompose `p ⊗ₘ (f ≫ g)` into `(p ⊗ₘ f) ≫ (p ⊗ₘ g)` when `p` is
 idempotent. -/
-private theorem tensorHom_idem_left_comp_right {A D E : C}
+private theorem tensorHom_idem_left_comp_right
+    [Category.{v} C] [MonoidalCategory C]
+    {A D E : C}
     (p : A ⟶ A) (hp : p ≫ p = p) {q : D ⟶ D} (g : D ⟶ E) :
     p ⊗ₘ (q ≫ g) = (p ⊗ₘ q) ≫ (p ⊗ₘ g) := by
   have : p ⊗ₘ (q ≫ g) = (p ≫ p) ⊗ₘ (q ≫ g) := by congr 1; exact hp.symm
@@ -108,30 +113,36 @@ Karoubi objects.  They are proved outside any Karoubi-struct context so
 that `rw` with `id_tensorHom`/`tensorHom_id` avoids dependent-type
 motive failures. -/
 
-private theorem assoc_nat (X Y Z : Karoubi C) :
+private theorem assoc_nat [Category.{v} C] [MonoidalCategory C]
+    (X Y Z : Karoubi C) :
     ((X.p ⊗ₘ Y.p) ⊗ₘ Z.p) ≫ (α_ X.X Y.X Z.X).hom =
     (α_ X.X Y.X Z.X).hom ≫ (X.p ⊗ₘ (Y.p ⊗ₘ Z.p)) :=
   associator_naturality X.p Y.p Z.p
 
-private theorem assoc_inv_nat (X Y Z : Karoubi C) :
+private theorem assoc_inv_nat [Category.{v} C] [MonoidalCategory C]
+    (X Y Z : Karoubi C) :
     (X.p ⊗ₘ (Y.p ⊗ₘ Z.p)) ≫ (α_ X.X Y.X Z.X).inv =
     (α_ X.X Y.X Z.X).inv ≫ ((X.p ⊗ₘ Y.p) ⊗ₘ Z.p) := by
   rw [← cancel_mono (α_ X.X Y.X Z.X).hom, assoc, Iso.inv_hom_id, comp_id,
       assoc, associator_naturality, ← assoc, Iso.inv_hom_id, id_comp]
 
-private theorem leftUnit_nat (X : Karoubi C) :
+private theorem leftUnit_nat [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     (𝟙 (𝟙_ C) ⊗ₘ X.p) ≫ (λ_ X.X).hom = (λ_ X.X).hom ≫ X.p := by
   rw [id_tensorHom]; exact leftUnitor_naturality X.p
 
-private theorem leftUnit_inv_nat (X : Karoubi C) :
+private theorem leftUnit_inv_nat [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     X.p ≫ (λ_ X.X).inv = (λ_ X.X).inv ≫ (𝟙 (𝟙_ C) ⊗ₘ X.p) := by
   rw [id_tensorHom]; exact leftUnitor_inv_naturality X.p
 
-private theorem rightUnit_nat (X : Karoubi C) :
+private theorem rightUnit_nat [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     (X.p ⊗ₘ 𝟙 (𝟙_ C)) ≫ (ρ_ X.X).hom = (ρ_ X.X).hom ≫ X.p := by
   rw [tensorHom_id]; exact rightUnitor_naturality X.p
 
-private theorem rightUnit_inv_nat (X : Karoubi C) :
+private theorem rightUnit_inv_nat [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     X.p ≫ (ρ_ X.X).inv = (ρ_ X.X).inv ≫ (X.p ⊗ₘ 𝟙 (𝟙_ C)) := by
   rw [tensorHom_id]; exact rightUnitor_inv_naturality X.p
 
@@ -142,7 +153,8 @@ private theorem rightUnit_inv_nat (X : Karoubi C) :
 set_option maxHeartbeats 400000 in
 /-- The monoidal data on the Karoubi envelope: tensor of
 idempotents, conjugated structural isomorphisms. -/
-instance karoubiMonoidalStruct : MonoidalCategoryStruct (Karoubi C) where
+instance karoubiMonoidalStruct [Category.{v} C] [MonoidalCategory C] :
+    MonoidalCategoryStruct (Karoubi C) where
   tensorObj X Y :=
     ⟨X.X ⊗ Y.X, X.p ⊗ₘ Y.p, tensorHom_idem X.idem Y.idem⟩
   whiskerLeft X _ _ f :=
@@ -210,48 +222,66 @@ instance karoubiMonoidalStruct : MonoidalCategoryStruct (Karoubi C) where
 These unfold the `.f` and `.p` projections of the Karoubi monoidal
 structure to morphisms in `C`.  They are all definitional equalities. -/
 
-@[simp] private theorem karoubiTensorHom_f
+@[simp] private theorem karoubiTensorHom_f [Category.{v} C] [MonoidalCategory C]
     {P₁ Q₁ P₂ Q₂ : Karoubi C} (f : P₁ ⟶ Q₁) (g : P₂ ⟶ Q₂) :
     (f ⊗ₘ g : _ ⟶ _).f = f.f ⊗ₘ g.f := rfl
 
-@[simp] private theorem karoubiTensorObj_p (X Y : Karoubi C) :
+@[simp] private theorem karoubiTensorObj_p [Category.{v} C] [MonoidalCategory C]
+    (X Y : Karoubi C) :
     (X ⊗ Y : Karoubi C).p = X.p ⊗ₘ Y.p := rfl
 
-@[simp] private theorem karoubiTensorObj_X (X Y : Karoubi C) :
+@[simp] private theorem karoubiTensorObj_X [Category.{v} C] [MonoidalCategory C]
+    (X Y : Karoubi C) :
     (X ⊗ Y : Karoubi C).X = X.X ⊗ Y.X := rfl
 
-@[simp] private theorem karoubiTensorUnit_p :
+@[simp] private theorem karoubiTensorUnit_p
+    [Category.{v} C] [MonoidalCategory C] :
     (𝟙_ (Karoubi C)).p = 𝟙 (𝟙_ C) := rfl
 
-@[simp] private theorem karoubiTensorUnit_X :
+@[simp] private theorem karoubiTensorUnit_X
+    [Category.{v} C] [MonoidalCategory C] :
     (𝟙_ (Karoubi C)).X = 𝟙_ C := rfl
 
-@[simp] private theorem karoubiAssociator_hom_f (X Y Z : Karoubi C) :
+@[simp] private theorem karoubiAssociator_hom_f
+    [Category.{v} C] [MonoidalCategory C]
+    (X Y Z : Karoubi C) :
     (α_ X Y Z).hom.f =
     ((X.p ⊗ₘ Y.p) ⊗ₘ Z.p) ≫ (α_ X.X Y.X Z.X).hom := rfl
 
-@[simp] private theorem karoubiLeftUnitor_hom_f (X : Karoubi C) :
+@[simp] private theorem karoubiLeftUnitor_hom_f
+    [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     (λ_ X).hom.f = (𝟙 (𝟙_ C) ⊗ₘ X.p) ≫ (λ_ X.X).hom := rfl
 
-@[simp] private theorem karoubiRightUnitor_hom_f (X : Karoubi C) :
+@[simp] private theorem karoubiRightUnitor_hom_f
+    [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     (ρ_ X).hom.f = (X.p ⊗ₘ 𝟙 (𝟙_ C)) ≫ (ρ_ X.X).hom := rfl
 
 @[simp] private theorem karoubiWhiskerLeft_f
+    [Category.{v} C] [MonoidalCategory C]
     (X : Karoubi C) {Y Z : Karoubi C} (f : Y ⟶ Z) :
     (X ◁ f).f = X.p ⊗ₘ f.f := rfl
 
 @[simp] private theorem karoubiWhiskerRight_f
+    [Category.{v} C] [MonoidalCategory C]
     {X Y : Karoubi C} (f : X ⟶ Y) (Z : Karoubi C) :
     (f ▷ Z).f = f.f ⊗ₘ Z.p := rfl
 
-@[simp] private theorem karoubiAssociator_inv_f (X Y Z : Karoubi C) :
+@[simp] private theorem karoubiAssociator_inv_f
+    [Category.{v} C] [MonoidalCategory C]
+    (X Y Z : Karoubi C) :
     (α_ X Y Z).inv.f =
     (X.p ⊗ₘ (Y.p ⊗ₘ Z.p)) ≫ (α_ X.X Y.X Z.X).inv := rfl
 
-@[simp] private theorem karoubiLeftUnitor_inv_f (X : Karoubi C) :
+@[simp] private theorem karoubiLeftUnitor_inv_f
+    [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     (λ_ X).inv.f = X.p ≫ (λ_ X.X).inv := rfl
 
-@[simp] private theorem karoubiRightUnitor_inv_f (X : Karoubi C) :
+@[simp] private theorem karoubiRightUnitor_inv_f
+    [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) :
     (ρ_ X).inv.f = X.p ≫ (ρ_ X.X).inv := rfl
 
 /-! ### Axioms: `MonoidalCategory` on `Karoubi C`
@@ -260,19 +290,22 @@ The monoidal axioms (interchange, naturality, pentagon, triangle) are
 proved by reducing to the underlying morphisms in `C` via `hom_ext` and
 the Karoubi simp lemmas `p_comp`, `comp_p`, `idem`. -/
 
-private theorem karoubi_id_tensorHom_id (X₁ X₂ : Karoubi C) :
+private theorem karoubi_id_tensorHom_id [Category.{v} C] [MonoidalCategory C]
+    (X₁ X₂ : Karoubi C) :
     tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
   apply Karoubi.hom_ext; simp [Karoubi.id_f]
 
-private theorem karoubi_id_tensorHom (X : Karoubi C) {Y₁ Y₂ : Karoubi C}
+private theorem karoubi_id_tensorHom [Category.{v} C] [MonoidalCategory C]
+    (X : Karoubi C) {Y₁ Y₂ : Karoubi C}
     (f : Y₁ ⟶ Y₂) : tensorHom (𝟙 X) f = whiskerLeft X f :=
   Karoubi.hom_ext _ _ rfl
 
-private theorem karoubi_tensorHom_id {X₁ X₂ : Karoubi C} (f : X₁ ⟶ X₂)
+private theorem karoubi_tensorHom_id [Category.{v} C] [MonoidalCategory C]
+    {X₁ X₂ : Karoubi C} (f : X₁ ⟶ X₂)
     (Y : Karoubi C) : tensorHom f (𝟙 Y) = whiskerRight f Y :=
   Karoubi.hom_ext _ _ rfl
 
-private theorem karoubi_tensorHom_comp
+private theorem karoubi_tensorHom_comp [Category.{v} C] [MonoidalCategory C]
     {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Karoubi C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
@@ -280,6 +313,7 @@ private theorem karoubi_tensorHom_comp
   simp [Karoubi.comp_f, tensorHom_comp_tensorHom]
 
 private theorem karoubi_associator_naturality
+    [Category.{v} C] [MonoidalCategory C]
     {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Karoubi C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
@@ -296,26 +330,35 @@ whiskerRight) while `ofTensorHom` expects `𝟙 X ⊗ₘ f` / `f ⊗ₘ 𝟙 Y`.
 These helpers restate the relevant C axioms in `tensorHom` form, proved
 outside the Karoubi struct context where `rw [id_tensorHom]` is safe. -/
 
-private theorem tensorHom_leftUnitor_naturality {X Y : C} (f : X ⟶ Y) :
+private theorem tensorHom_leftUnitor_naturality
+    [Category.{v} C] [MonoidalCategory C]
+    {X Y : C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ C) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   rw [id_tensorHom]; exact leftUnitor_naturality f
 
-private theorem tensorHom_rightUnitor_naturality {X Y : C} (f : X ⟶ Y) :
+private theorem tensorHom_rightUnitor_naturality
+    [Category.{v} C] [MonoidalCategory C]
+    {X Y : C} (f : X ⟶ Y) :
     (f ⊗ₘ 𝟙 (𝟙_ C)) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   rw [tensorHom_id]; exact rightUnitor_naturality f
 
-@[reassoc] private theorem tensorHom_pentagon_eq (W X Y Z : C) :
+@[reassoc] private theorem tensorHom_pentagon_eq
+    [Category.{v} C] [MonoidalCategory C]
+    (W X Y Z : C) :
     ((α_ W X Y).hom ⊗ₘ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫
       (𝟙 W ⊗ₘ (α_ X Y Z).hom) =
     (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
   rw [id_tensorHom, tensorHom_id]; exact pentagon W X Y Z
 
-@[reassoc] private theorem tensorHom_triangle_eq (X Y : C) :
+@[reassoc] private theorem tensorHom_triangle_eq
+    [Category.{v} C] [MonoidalCategory C]
+    (X Y : C) :
     (α_ X (𝟙_ C) Y).hom ≫ (𝟙 X ⊗ₘ (λ_ Y).hom) =
     (ρ_ X).hom ⊗ₘ 𝟙 Y := by
   rw [id_tensorHom, tensorHom_id]; exact triangle X Y
 
 private theorem karoubi_leftUnitor_naturality
+    [Category.{v} C] [MonoidalCategory C]
     {X Y : Karoubi C} (f : X ⟶ Y) :
     tensorHom (𝟙 (𝟙_ (Karoubi C))) f ≫ (leftUnitor Y).hom =
       (leftUnitor X).hom ≫ f := by
@@ -330,6 +373,7 @@ private theorem karoubi_leftUnitor_naturality
   rw [h, tensorHom_leftUnitor_naturality, leftUnit_nat, assoc, Karoubi.p_comp]
 
 private theorem karoubi_rightUnitor_naturality
+    [Category.{v} C] [MonoidalCategory C]
     {X Y : Karoubi C} (f : X ⟶ Y) :
     tensorHom f (𝟙 (𝟙_ (Karoubi C))) ≫ (rightUnitor Y).hom =
       (rightUnitor X).hom ≫ f := by
@@ -349,7 +393,8 @@ private theorem karoubi_rightUnitor_naturality
 -- `(α ⊗ 𝟙)` / `(𝟙 ⊗ α)` using the merge+congr technique, and finally
 -- apply the C pentagon.
 set_option maxHeartbeats 6400000 in
-private theorem karoubi_pentagon (W X Y Z : Karoubi C) :
+private theorem karoubi_pentagon [Category.{v} C] [MonoidalCategory C]
+    (W X Y Z : Karoubi C) :
     tensorHom (associator W X Y).hom (𝟙 Z) ≫
         (associator W (tensorObj X Y) Z).hom ≫
         tensorHom (𝟙 W) (associator X Y Z).hom =
@@ -400,7 +445,8 @@ private theorem karoubi_pentagon (W X Y Z : Karoubi C) :
 
 -- Triangle: same decomposition + merge+congr strategy as the pentagon.
 set_option maxHeartbeats 6400000 in
-private theorem karoubi_triangle (X Y : Karoubi C) :
+private theorem karoubi_triangle [Category.{v} C] [MonoidalCategory C]
+    (X Y : Karoubi C) :
     (associator X (𝟙_ (Karoubi C)) Y).hom ≫
       tensorHom (𝟙 X) (leftUnitor Y).hom =
     tensorHom (rightUnitor X).hom (𝟙 Y) := by
@@ -448,7 +494,8 @@ private theorem karoubi_triangle (X Y : Karoubi C) :
 set_option maxHeartbeats 400000 in
 /-- Those data satisfy the monoidal axioms, each inherited from the
 ambient category by conjugation. -/
-instance karoubiMonoidal : MonoidalCategory (Karoubi C) :=
+instance karoubiMonoidal
+    [Category.{v} C] [MonoidalCategory C] : MonoidalCategory (Karoubi C) :=
   MonoidalCategory.ofTensorHom
     (id_tensorHom_id := karoubi_id_tensorHom_id)
     (id_tensorHom := karoubi_id_tensorHom)
@@ -462,19 +509,19 @@ instance karoubiMonoidal : MonoidalCategory (Karoubi C) :=
 
 /-! ### The canonical functor `toKaroubi C` is strong monoidal -/
 
-omit [MonoidalCategory C] in
 /-- The underlying object of `toKaroubi C` on `X`. -/
-@[simp] private theorem toKaroubi_obj_X (X : C) :
+@[simp] private theorem toKaroubi_obj_X [Category.{v} C]
+    (X : C) :
     ((toKaroubi C).obj X).X = X := rfl
 
-omit [MonoidalCategory C] in
 /-- The idempotent of `toKaroubi C` on `X` is the identity. -/
-@[simp] private theorem toKaroubi_obj_p (X : C) :
+@[simp] private theorem toKaroubi_obj_p [Category.{v} C]
+    (X : C) :
     ((toKaroubi C).obj X).p = 𝟙 X := rfl
 
-omit [MonoidalCategory C] in
 /-- The underlying morphism of `toKaroubi C` on `f`. -/
-@[simp] private theorem toKaroubi_map_f {X Y : C} (f : X ⟶ Y) :
+@[simp] private theorem toKaroubi_map_f [Category.{v} C]
+    {X Y : C} (f : X ⟶ Y) :
     ((toKaroubi C).map f).f = f := rfl
 
 /-! ### Strong monoidality
@@ -487,7 +534,8 @@ canonical identification `𝟙 X ⊗ₘ 𝟙 Y = 𝟙 (X ⊗ Y)`. -/
 -- elaborate together.
 set_option maxHeartbeats 1600000 in
 /-- The embedding is monoidal. -/
-noncomputable instance toKaroubiMonoidal : Functor.Monoidal (toKaroubi C) where
+noncomputable instance toKaroubiMonoidal
+    [Category.{v} C] [MonoidalCategory C] : Functor.Monoidal (toKaroubi C) where
   ε := 𝟙 _
   μ X Y := ⟨𝟙 (X ⊗ Y), by simp [comp_id]⟩
   η := 𝟙 _
@@ -534,14 +582,16 @@ tensor of idempotents. -/
 
 section Braided
 
-variable [BraidedCategory C]
-
 /-- Naturality of the C braiding with respect to the idempotents. -/
-private theorem braid_nat (X Y : Karoubi C) :
+private theorem braid_nat
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (X.p ⊗ₘ Y.p) ≫ (β_ X.X Y.X).hom = (β_ X.X Y.X).hom ≫ (Y.p ⊗ₘ X.p) :=
   BraidedCategory.braiding_naturality X.p Y.p
 
-private theorem braid_inv_nat (X Y : Karoubi C) :
+private theorem braid_inv_nat
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (Y.p ⊗ₘ X.p) ≫ (β_ X.X Y.X).inv = (β_ X.X Y.X).inv ≫ (X.p ⊗ₘ Y.p) := by
   rw [← cancel_mono (β_ X.X Y.X).hom, assoc, Iso.inv_hom_id, comp_id,
       assoc, braid_nat, ← assoc, Iso.inv_hom_id, id_comp]
@@ -549,7 +599,9 @@ private theorem braid_inv_nat (X Y : Karoubi C) :
 /-- The braiding isomorphism on Karoubi objects, defined prior to the instance
 so that simp lemmas for the `.f` projection are available inside the axiom
 proofs. -/
-private noncomputable def karoubiBraidingIso (X Y : Karoubi C) :
+private noncomputable def karoubiBraidingIso
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     tensorObj X Y ≅ tensorObj Y X where
   hom := ⟨(X.p ⊗ₘ Y.p) ≫ (β_ X.X Y.X).hom,
           conj_comm _ _
@@ -570,20 +622,28 @@ private noncomputable def karoubiBraidingIso (X Y : Karoubi C) :
     exact conj_iso_inv_hom _ _
       (tensorHom_idem Y.idem X.idem) _ (braid_nat X Y)
 
-@[simp] private theorem karoubiBraidingIso_hom_f (X Y : Karoubi C) :
+@[simp] private theorem karoubiBraidingIso_hom_f
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (karoubiBraidingIso X Y).hom.f = (X.p ⊗ₘ Y.p) ≫ (β_ X.X Y.X).hom := rfl
 
-@[simp] private theorem karoubiBraidingIso_inv_f (X Y : Karoubi C) :
+@[simp] private theorem karoubiBraidingIso_inv_f
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (karoubiBraidingIso X Y).inv.f = (Y.p ⊗ₘ X.p) ≫ (β_ X.X Y.X).inv := rfl
 
 /-- Bridge lemma: the C hexagon_forward stated in `tensorHom` form. -/
-@[reassoc] private theorem tensorHom_hexagon_forward_eq (X Y Z : C) :
+@[reassoc] private theorem tensorHom_hexagon_forward_eq
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y Z : C) :
     (α_ X Y Z).hom ≫ (β_ X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
     ((β_ X Y).hom ⊗ₘ 𝟙 Z) ≫ (α_ Y X Z).hom ≫ (𝟙 Y ⊗ₘ (β_ X Z).hom) := by
   rw [id_tensorHom, tensorHom_id]; exact BraidedCategory.hexagon_forward X Y Z
 
 /-- Bridge lemma: the C hexagon_reverse stated in `tensorHom` form. -/
-@[reassoc] private theorem tensorHom_hexagon_reverse_eq (X Y Z : C) :
+@[reassoc] private theorem tensorHom_hexagon_reverse_eq
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y Z : C) :
     (α_ X Y Z).inv ≫ (β_ (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
     (𝟙 X ⊗ₘ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((β_ X Z).hom ⊗ₘ 𝟙 Y) := by
   rw [id_tensorHom, tensorHom_id]; exact BraidedCategory.hexagon_reverse X Y Z
@@ -593,7 +653,9 @@ private noncomputable def karoubiBraidingIso (X Y : Karoubi C) :
 set_option maxHeartbeats 6400000 in
 /-- A braiding on the ambient category conjugates to one on the
 envelope. -/
-noncomputable instance karoubiBraided : BraidedCategory (Karoubi C) where
+noncomputable instance karoubiBraided
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C] :
+    BraidedCategory (Karoubi C) where
   braiding := karoubiBraidingIso
   -- ═══════ NATURALITY ═══════
   braiding_naturality_right X {Y Z} f := by
@@ -744,20 +806,24 @@ noncomputable instance karoubiBraided : BraidedCategory (Karoubi C) where
       · rw [Y.idem, id_comp]
     rw [rhs_suf]
 
-@[simp] private theorem karoubiBraiding_hom_f (X Y : Karoubi C) :
+@[simp] private theorem karoubiBraiding_hom_f
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (β_ X Y).hom.f = (X.p ⊗ₘ Y.p) ≫ (β_ X.X Y.X).hom := rfl
 
-@[simp] private theorem karoubiBraiding_inv_f (X Y : Karoubi C) :
+@[simp] private theorem karoubiBraiding_inv_f
+    [Category.{v} C] [MonoidalCategory C] [BraidedCategory C]
+    (X Y : Karoubi C) :
     (β_ X Y).inv.f = (Y.p ⊗ₘ X.p) ≫ (β_ X.X Y.X).inv := rfl
 
 end Braided
 
 section Symmetric
 
-variable [SymmetricCategory C]
-
 /-- And a symmetric one stays symmetric. -/
-noncomputable instance karoubiSymmetric : SymmetricCategory (Karoubi C) where
+noncomputable instance karoubiSymmetric
+    [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C] :
+    SymmetricCategory (Karoubi C) where
   symmetry X Y := by
     apply Karoubi.hom_ext
     simp only [Karoubi.comp_f, Karoubi.id_f, karoubiBraiding_hom_f,

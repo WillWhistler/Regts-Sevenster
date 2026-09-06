@@ -455,14 +455,15 @@ end General
 
 section Order
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] (e : α ≃o β)
-  {W : Fragment α}
+variable {α β : Type}
 
 /-! ## The through product under a monotone relabel -/
 
 /-- The through product transports along a monotone relabel: the
 orientation guard is preserved by monotonicity. -/
-theorem relabel_throughProduct (F : EdgeSubset W) {k ℓ : ℕ}
+theorem relabel_throughProduct
+    [LinearOrder α] [LinearOrder β] (e : α ≃o β) {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (st : GenBoundaryState k ℓ β) :
     (F.relabelUp e.toEquiv).throughProduct st =
       F.throughProduct (fun a => st (e a)) := by
@@ -494,7 +495,9 @@ theorem relabel_throughProduct (F : EdgeSubset W) {k ℓ : ℕ}
 
 /-- The corrected constrained summand transports along a monotone
 relabel, at converted transition data. -/
-theorem relabel_throughSummand (F : EdgeSubset W) {k ℓ : ℕ}
+theorem relabel_throughSummand
+    [LinearOrder α] [LinearOrder β] (e : α ≃o β) {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ β)
     (hbnd : genBoundarySubsetMatches (W.relabel e.toEquiv)
       (F.relabelUp e.toEquiv).flags st)
@@ -538,13 +541,14 @@ preserves every comparison. -/
 
 section Canon
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] (e : α ≃o β)
-  {W : Fragment α}
+variable {α β : Type}
 
 open EdgeSubset
 
 /-- The boundary flags are untouched by a relabel. -/
-theorem relabelUp_boundaryFlags (F : EdgeSubset W) :
+theorem relabelUp_boundaryFlags
+    [LinearOrder α] [LinearOrder β] (e : α ≃o β) {W : Fragment α}
+    (F : EdgeSubset W) :
     (F.relabelUp e.toEquiv).boundaryFlags = F.boundaryFlags := by
   unfold EdgeSubset.boundaryFlags
   exact filter_eq_of_iff rfl fun f => relabel_attach_inr_exists e.toEquiv f
@@ -552,7 +556,9 @@ theorem relabelUp_boundaryFlags (F : EdgeSubset W) :
 /-- The path matching is untouched by a relabel: the transported
 walk agrees step by step, so the transported chain data terminate at
 the same flag. -/
-theorem relabel_pathMatch (F : EdgeSubset W) (κ : F.RelTransitionSystem)
+theorem relabel_pathMatch
+    [LinearOrder α] [LinearOrder β] (e : α ≃o β) {W : Fragment α}
+    (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     {b : W.Flag} (hb : b ∈ (F.relabelUp e.toEquiv).boundaryFlags)
     (hb' : b ∈ F.boundaryFlags) :
     (relabelTransUp e.toEquiv F κ).pathMatch b hb = κ.pathMatch b hb' := by
@@ -579,7 +585,9 @@ theorem relabel_pathMatch (F : EdgeSubset W) (κ : F.RelTransitionSystem)
 /-- **Canonicality transport**: the transported orientation of a
 path-canonical orientation is path-canonical — labels transport
 monotonically, and every other ingredient is untouched. -/
-theorem pathCanonical_relabelUp (F : EdgeSubset W)
+theorem pathCanonical_relabelUp
+    [LinearOrder α] [LinearOrder β] (e : α ≃o β) {W : Fragment α}
+    (F : EdgeSubset W)
     {κ : F.RelTransitionSystem} {o : κ.Orientation}
     (hc : PathCanonical o) :
     PathCanonical (relabelOrientUp e.toEquiv F o) := by

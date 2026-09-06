@@ -27,15 +27,16 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A]
+variable {A : Type u}
 
 /-! ## The adjacent braiding on the top two slots -/
 
 /-- **The top transposition**: braid the last two factors of
 `X ^ ⊗ (n + 2)`.  Reassociating exposes the last two tensorands, the
 braiding exchanges them, and the associator is undone. -/
-noncomputable def swapTop (X : A) (n : ℕ) :
+noncomputable def swapTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     tensorPow A X (n + 2) ⟶ tensorPow A X (n + 2) :=
   (α_ (tensorPow A X n) X X).hom ≫
     (tensorPow A X n ◁ (β_ X X).hom) ≫
@@ -44,7 +45,9 @@ noncomputable def swapTop (X : A) (n : ℕ) :
 /-- The top transposition is an involution: the braiding of a
 symmetric category squares to the identity. -/
 @[simp]
-theorem swapTop_swapTop (X : A) (n : ℕ) :
+theorem swapTop_swapTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     swapTop X n ≫ swapTop X n = 𝟙 (tensorPow A X (n + 2)) := by
   unfold swapTop
   slice_lhs 3 4 => rw [Iso.inv_hom_id]
@@ -61,7 +64,9 @@ one.  It is defined by bubbling one slot at a time, so no word is
 chosen: `insertTop X n n` is the identity, and each further step
 composes one more top transposition, whiskered by the factors above
 it.  The recursion is on the gap `n - p`. -/
-noncomputable def insertTop (X : A) : (n : ℕ) → (k : ℕ) →
+noncomputable def insertTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) : (n : ℕ) → (k : ℕ) →
     (tensorPow A X (n + 1) ⟶ tensorPow A X (n + 1))
   | _, 0 => 𝟙 _
   | 0, _ + 1 => 𝟙 _
@@ -70,25 +75,33 @@ noncomputable def insertTop (X : A) : (n : ℕ) → (k : ℕ) →
 
 /-- Bubbling by no steps is the identity. -/
 @[simp]
-theorem insertTop_zero (X : A) (n : ℕ) :
+theorem insertTop_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     insertTop (A := A) X n 0 = 𝟙 _ := by
   cases n <;> rfl
 
 /-- At arity one there is nothing to bubble. -/
 @[simp]
-theorem insertTop_of_zero (X : A) (k : ℕ) :
+theorem insertTop_of_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (k : ℕ) :
     insertTop (A := A) X 0 k = 𝟙 _ := by
   cases k <;> rfl
 
 /-- One bubbling step: braid the top factor past the one below it,
 then continue bubbling the result inside the lower part. -/
-theorem insertTop_succ (X : A) (n k : ℕ) :
+theorem insertTop_succ
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n k : ℕ) :
     insertTop (A := A) X (n + 1) (k + 1) =
       swapTop X n ≫ (insertTop X n k ▷ X) := rfl
 
 /-- Bubbling down by one step is the top swap. -/
 @[simp]
-theorem insertTop_one (X : A) (n : ℕ) :
+theorem insertTop_one
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     insertTop (A := A) X (n + 1) 1 = swapTop X n := by
   rw [insertTop_succ, insertTop_zero, MonoidalCategory.id_whiskerRight]
   exact Category.comp_id _
@@ -105,7 +118,9 @@ on disjoint parts of a tensor power.
 braiding touches only the top two slots, so a morphism of the factors
 below them passes through.  The computation is done at a general
 object, which keeps the tensor power's arity out of the rewrites. -/
-theorem swapTop_whiskerRight (X : A) (n : ℕ)
+theorem swapTop_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ)
     (f : tensorPow A X n ⟶ tensorPow A X n) :
     ((f ▷ X) ▷ X) ≫ swapTop X n = swapTop X n ≫ ((f ▷ X) ▷ X) := by
   have key : ∀ (P : A) (g : P ⟶ P),
@@ -130,12 +145,15 @@ itself is structural and is discharged by `monoidal`.
 -/
 
 /-- The full reassociation of three tensorands off a base. -/
-private noncomputable def assoc3 (P X : A) :
+private noncomputable def assoc3 [Category.{v} A] [MonoidalCategory A]
+    (P X : A) :
     ((P ⊗ X) ⊗ X) ⊗ X ≅ P ⊗ (X ⊗ (X ⊗ X)) :=
   (α_ (P ⊗ X) X X) ≪≫ (α_ P X (X ⊗ X))
 
 /-- Braiding the top two tensorands, reassociated off the base. -/
-private theorem braid_upper (P X : A) :
+private theorem braid_upper
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P X : A) :
     ((α_ (P ⊗ X) X X).hom ≫ ((P ⊗ X) ◁ (β_ X X).hom) ≫
         (α_ (P ⊗ X) X X).inv)
       = (assoc3 P X).hom ≫ (P ◁ (X ◁ (β_ X X).hom)) ≫
@@ -144,7 +162,9 @@ private theorem braid_upper (P X : A) :
   monoidal
 
 /-- Braiding the middle two tensorands, reassociated off the base. -/
-private theorem braid_lower (P X : A) :
+private theorem braid_lower
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P X : A) :
     (((α_ P X X).hom ≫ (P ◁ (β_ X X).hom) ≫ (α_ P X X).inv) ▷ X)
       = (assoc3 P X).hom ≫ (P ◁ ((α_ X X X).inv ≫
           ((β_ X X).hom ▷ X) ≫ (α_ X X X).hom)) ≫ (assoc3 P X).inv := by
@@ -152,7 +172,9 @@ private theorem braid_lower (P X : A) :
   monoidal
 
 /-- **The braid relation** for two adjacent top braidings. -/
-theorem swapTop_braid (X : A) (n : ℕ) :
+theorem swapTop_braid
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     swapTop X (n + 1) ≫ (swapTop X n ▷ X) ≫ swapTop X (n + 1) =
       (swapTop X n ▷ X) ≫ swapTop X (n + 1) ≫ (swapTop X n ▷ X) := by
   have key : ∀ P : A,
@@ -191,27 +213,27 @@ second case follows from the first because the braiding is an
 involution.
 -/
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
-private theorem id_sandwich {P Q : A} (f : P ⟶ Q) :
+private theorem id_sandwich [Category.{v} A]
+    {P Q : A} (f : P ⟶ Q) :
     f ≫ 𝟙 Q ≫ 𝟙 Q = 𝟙 P ≫ f := by simp
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
-private theorem comp_id_id_comp {P Q R : A} (f : P ⟶ Q) (g : Q ⟶ R) :
+private theorem comp_id_id_comp [Category.{v} A]
+    {P Q R : A} (f : P ⟶ Q) (g : Q ⟶ R) :
     f ≫ g ≫ 𝟙 R = 𝟙 P ≫ f ≫ g := by simp
 
-omit [SymmetricCategory A] in
-private theorem whisker_comp₂ {P Q R : A} (f : P ⟶ Q) (g : Q ⟶ R) (Y : A) :
+private theorem whisker_comp₂ [Category.{v} A] [MonoidalCategory A]
+    {P Q R : A} (f : P ⟶ Q) (g : Q ⟶ R) (Y : A) :
     (f ≫ g) ▷ Y = (f ▷ Y) ≫ (g ▷ Y) :=
   MonoidalCategory.comp_whiskerRight f g Y
 
-omit [SymmetricCategory A] in
-private theorem whisker_comp₃ {P Q R S : A} (f : P ⟶ Q) (g : Q ⟶ R)
+private theorem whisker_comp₃ [Category.{v} A] [MonoidalCategory A]
+    {P Q R S : A} (f : P ⟶ Q) (g : Q ⟶ R)
     (h : R ⟶ S) (Y : A) :
     (f ≫ g ≫ h) ▷ Y = (f ▷ Y) ≫ (g ▷ Y) ≫ (h ▷ Y) := by
   rw [whisker_comp₂, whisker_comp₂]
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
-private theorem braid_shuffle {P : A} {s t F G U : P ⟶ P}
+private theorem braid_shuffle [Category.{v} A]
+    {P : A} {s t F G U : P ⟶ P}
     (hbr : s ≫ t ≫ s = t ≫ s ≫ t)
     (hF : F ≫ s = s ≫ F) (hG : G ≫ s = s ≫ G)
     (hih : t ≫ F ≫ U = G ≫ t ≫ F) :
@@ -230,7 +252,9 @@ private theorem braid_shuffle {P : A} {s t F G U : P ⟶ P}
 /-- **The braid identity, first case**: when the top factor is
 bubbled at least as far as the one below it, the two bubblings and
 the braiding rearrange with the destinations shifted by one. -/
-theorem insertTop_braid_le (X : A) :
+theorem insertTop_braid_le
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) :
     ∀ (n a b : ℕ), b ≤ a → a ≤ n →
       swapTop X n ≫ (insertTop X n a ▷ X) ≫ insertTop X (n + 1) b =
         (insertTop X n b ▷ X) ≫ insertTop X (n + 1) (a + 1) := by
@@ -279,8 +303,8 @@ theorem insertTop_braid_le (X : A) :
         (swapTop_whiskerRight X (n' + 1) (insertTop X n' a'))
         (swapTop_whiskerRight X (n' + 1) (insertTop X n' b₀)) hih
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
-private theorem cancel_invol {P : A} {s : P ⟶ P} (hs : s ≫ s = 𝟙 P)
+private theorem cancel_invol [Category.{v} A]
+    {P : A} {s : P ⟶ P} (hs : s ≫ s = 𝟙 P)
     {Q : A} (f : P ⟶ Q) : s ≫ s ≫ f = f := by
   rw [← Category.assoc, hs, Category.id_comp]
 
@@ -288,7 +312,9 @@ private theorem cancel_invol {P : A} {s : P ⟶ P} (hs : s ≫ s = 𝟙 P)
 inserted above the one below it, the two bubblings exchange with the
 braiding the other way round.  It follows from the first case and the
 involutivity of the braiding. -/
-theorem insertTop_braid_lt (X : A) (n a b₀ : ℕ) (hab : a ≤ b₀)
+theorem insertTop_braid_lt
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n a b₀ : ℕ) (hab : a ≤ b₀)
     (hb : b₀ ≤ n) :
     swapTop X n ≫ (insertTop X n a ▷ X) ≫ insertTop X (n + 1) (b₀ + 1) =
       (insertTop X n b₀ ▷ X) ≫ insertTop X (n + 1) a := by
@@ -312,7 +338,9 @@ generation.
 
 /-- **The permutation action on a tensor power**: `permMor X σ`
 routes the factor in slot `i` to slot `σ i`. -/
-noncomputable def permMor (X : A) :
+noncomputable def permMor
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) :
     (n : ℕ) → Equiv.Perm (Fin n) → (tensorPow A X n ⟶ tensorPow A X n)
   | 0, _ => 𝟙 _
   | n + 1, σ =>
@@ -320,14 +348,16 @@ noncomputable def permMor (X : A) :
         insertTop X n (n - (topImage σ : ℕ))
 
 /-- The recursion equation. -/
-theorem permMor_succ (X : A) (n : ℕ) (σ : Equiv.Perm (Fin (n + 1))) :
+theorem permMor_succ [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) (σ : Equiv.Perm (Fin (n + 1))) :
     permMor X (n + 1) σ =
       (permMor X n (restPerm σ) ▷ X) ≫
         insertTop X n (n - (topImage σ : ℕ)) := rfl
 
 /-- The identity permutation acts as the identity. -/
 @[simp]
-theorem permMor_one (X : A) (n : ℕ) :
+theorem permMor_one [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     permMor X n 1 = 𝟙 (tensorPow A X n) := by
   induction n with
   | zero => rfl
@@ -337,7 +367,9 @@ theorem permMor_one (X : A) (n : ℕ) :
 
 /-- **A top-fixing permutation acts on the lower factors alone.** -/
 @[simp]
-theorem permMor_extPerm (X : A) (n : ℕ) (τ : Equiv.Perm (Fin n)) :
+theorem permMor_extPerm
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) (τ : Equiv.Perm (Fin n)) :
     permMor X (n + 1) (extPerm τ) = permMor X n τ ▷ X := by
   rw [permMor_succ, restPerm_extPerm, topImage_extPerm,
     show (Fin.last n : Fin (n + 1)).val = n from rfl, Nat.sub_self,
@@ -346,7 +378,9 @@ theorem permMor_extPerm (X : A) (n : ℕ) (τ : Equiv.Perm (Fin n)) :
 
 /-- **Functoriality against a top-fixing permutation**, granted
 functoriality one arity down. -/
-theorem permMor_mul_extPerm (X : A) (n : ℕ)
+theorem permMor_mul_extPerm
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ)
     (ih : ∀ ρ τ : Equiv.Perm (Fin n),
       permMor X n (ρ * τ) = permMor X n τ ≫ permMor X n ρ)
     (σ : Equiv.Perm (Fin (n + 1))) (τ : Equiv.Perm (Fin n)) :
@@ -367,14 +401,18 @@ the second-highest slot, so it acts by the top braiding.
 
 /-- **A cycle acts by bubbling.** -/
 @[simp]
-theorem permMor_topCycle (X : A) (n : ℕ) (q : Fin (n + 1)) :
+theorem permMor_topCycle
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) (q : Fin (n + 1)) :
     permMor X (n + 1) (topCycle q) = insertTop X n (n - (q : ℕ)) := by
   rw [permMor_succ, restPerm_topCycle, topImage_topCycle, permMor_one,
     MonoidalCategory.id_whiskerRight, Category.id_comp]
 
 /-- **The top transposition acts by the top braiding.**  It is the
 cycle at the second-highest slot, one bubbling step. -/
-theorem permMor_topSwap (X : A) (n : ℕ) :
+theorem permMor_topSwap
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     permMor X (n + 2) (topCycle (Fin.castSucc (Fin.last n))) =
       swapTop X n := by
   rw [permMor_topCycle,
@@ -384,15 +422,18 @@ theorem permMor_topSwap (X : A) (n : ℕ) :
 /-- **The top transposition acts by the top braiding**, in the form
 the generating set uses. -/
 @[simp]
-theorem permMor_topSwap_eq (X : A) (n : ℕ) :
+theorem permMor_topSwap_eq
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     permMor X (n + 2) (topSwap : Equiv.Perm (Fin (n + 2))) =
       swapTop X n := by
   rw [topSwap_eq_topCycle]
   exact permMor_topSwap X n
 
-
 /-- Whiskering the recursion equation by one more factor. -/
-theorem permMor_whiskerRight_succ (X : A) (n : ℕ)
+theorem permMor_whiskerRight_succ
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ)
     (τ : Equiv.Perm (Fin (n + 1))) :
     (permMor X (n + 1) τ ▷ X) =
       ((permMor X n (restPerm τ) ▷ X) ▷ X) ≫
@@ -400,18 +441,20 @@ theorem permMor_whiskerRight_succ (X : A) (n : ℕ)
   rw [permMor_succ]
   exact MonoidalCategory.comp_whiskerRight _ _ _
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
 /-- Commuting morphisms may be exchanged in front of a third.  Stated
 at general objects, so that no tensor-power arity enters the
 rewriting. -/
-private theorem comm_assoc {P R : A} {a b : P ⟶ P} (h : a ≫ b = b ≫ a)
+private theorem comm_assoc [Category.{v} A]
+    {P R : A} {a b : P ⟶ P} (h : a ≫ b = b ≫ a)
     (c : P ⟶ R) : a ≫ b ≫ c = b ≫ a ≫ c := by
   rw [← Category.assoc, h, Category.assoc]
 
 /-- **The top braiding passes the lower-lower permutation.**  Only
 the bubbling of the lower part can interact with the braiding of the
 top two slots; the permutation beneath it commutes through. -/
-theorem swapTop_comp_permMor_whiskerRight (X : A) (n : ℕ)
+theorem swapTop_comp_permMor_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ)
     (τ : Equiv.Perm (Fin (n + 1))) :
     swapTop X n ≫ (permMor X (n + 1) τ ▷ X) =
       ((permMor X n (restPerm τ) ▷ X) ▷ X) ≫
@@ -429,16 +472,16 @@ the twice-restricted permutation alone.  What is left is a relation
 between two bubblings and the braiding, with no permutation in it.
 -/
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
 /-- Congruence on the second factor of a composite.  Stated at
 general objects, so that no tensor-power arity enters. -/
-private theorem comp_congr_right {P Q R : A} (a : P ⟶ Q) {b b' : Q ⟶ R}
+private theorem comp_congr_right [Category.{v} A]
+    {P Q R : A} (a : P ⟶ Q) {b b' : Q ⟶ R}
     (h : b = b') : a ≫ b = a ≫ b' := by rw [h]
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
 /-- Rearranging a commutation in front of a common tail.  Stated at a
 general object, so that no tensor-power arity enters the rewriting. -/
-private theorem shuffle {P : A} {s v z v' w : P ⟶ P}
+private theorem shuffle [Category.{v} A]
+    {P : A} {s v z v' w : P ⟶ P}
     (h : s ≫ v = z ≫ (s ≫ v')) :
     s ≫ v ≫ w = z ≫ (s ≫ v' ≫ w) := by
   rw [← Category.assoc, h, Category.assoc, Category.assoc]
@@ -446,7 +489,9 @@ private theorem shuffle {P : A} {s v z v' w : P ⟶ P}
 /-- **The generator identity for the top transposition, reduced.**
 Granted the braid relation between the two bubblings, the action is
 functorial against the top transposition. -/
-theorem permMor_mul_topSwap_of_braid (X : A) (n : ℕ)
+theorem permMor_mul_topSwap_of_braid
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ)
     (σ : Equiv.Perm (Fin (n + 2)))
     (hbraid :
       swapTop X n ≫
@@ -480,7 +525,9 @@ theorem permMor_mul_topSwap_of_braid (X : A) (n : ℕ)
 /-- **Functoriality against the top transposition.**  The two cases
 are whether the top slot's image lies above or below the image of the
 slot beneath it; each feeds the corresponding braid identity. -/
-theorem permMor_mul_topSwap (X : A) (n : ℕ)
+theorem permMor_mul_topSwap
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ)
     (σ : Equiv.Perm (Fin (n + 2))) :
     permMor X (n + 2) (σ * topSwap) =
       swapTop X n ≫ permMor X (n + 2) σ := by
@@ -523,7 +570,8 @@ the symmetric group, and no coherence theorem.
 
 /-- **The action is functorial.**  Composition of permutations goes to
 composition of morphisms, in the order `End` multiplies. -/
-theorem permMor_mul (X : A) : ∀ (n : ℕ) (σ τ : Equiv.Perm (Fin n)),
+theorem permMor_mul [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) : ∀ (n : ℕ) (σ τ : Equiv.Perm (Fin n)),
     permMor X n (σ * τ) = permMor X n τ ≫ permMor X n σ := by
   intro n
   induction n with
@@ -584,7 +632,9 @@ asks for.  Only this last step needs the linear structure.
 
 /-- **The action as a monoid homomorphism.** -/
 @[simps]
-noncomputable def permHom (X : A) (n : ℕ) :
+noncomputable def permHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (n : ℕ) :
     Equiv.Perm (Fin n) →* End (tensorPow A X n) where
   toFun := permMor X n
   map_one' := permMor_one X n
@@ -592,17 +642,21 @@ noncomputable def permHom (X : A) (n : ℕ) :
 
 section Linear
 
-variable [Preadditive A] [Linear ℂ A]
-
 /-- **The symmetric-group algebra acting on a tensor power.** -/
-noncomputable def permAlg (X : A) (n : ℕ) :
+noncomputable def permAlg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X : A) (n : ℕ) :
     SymGroupAlgebra n →ₐ[ℂ] End (tensorPow A X n) :=
   MonoidAlgebra.lift ℂ (End (tensorPow A X n)) (Equiv.Perm (Fin n))
     (permHom X n)
 
 /-- The algebra map sends a group element to its action. -/
 @[simp]
-theorem permAlg_single (X : A) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+theorem permAlg_single
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X : A) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     permAlg X n (MonoidAlgebra.single σ (1 : ℂ)) = permMor X n σ := by
   rw [permAlg, MonoidAlgebra.lift_single, one_smul]
   rfl

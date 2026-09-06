@@ -24,15 +24,16 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+variable {A : Type u}
 
 /-- **Left whiskering by a fixed object is an algebra map** on
 endomorphisms, the mirror of `whiskerAlg`.  Multiplicativity is
 functoriality of `◁` — note that `End` multiplies in the order
 opposite to composition, which is why no reversal appears. -/
-noncomputable def whiskerLeftAlg (P X : A) :
+noncomputable def whiskerLeftAlg
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    (P X : A) :
     End X →ₐ[ℂ] End (P ⊗ X) where
   toFun f := P ◁ f
   map_one' := MonoidalCategory.whiskerLeft_id P X
@@ -48,7 +49,10 @@ noncomputable def whiskerLeftAlg (P X : A) :
 `X ^ ⊗ n ⊗ Y ^ ⊗ n`, as a monoid homomorphism on the product
 group: `(σ, τ)` acts by the two actions tensored together. -/
 @[simps]
-noncomputable def pairPermHom (X Y : A) (n : ℕ) :
+noncomputable def pairPermHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A]
+    (X Y : A) (n : ℕ) :
     Equiv.Perm (Fin n) × Equiv.Perm (Fin n) →*
       End (tensorPow A X n ⊗ tensorPow A Y n) where
   toFun g := permMor X n g.1 ⊗ₘ permMor Y n g.2
@@ -68,28 +72,35 @@ noncomputable def pairPermHom (X Y : A) (n : ℕ) :
 `(σ, τ) ↦ permMor X n σ ⊗ₘ permMor Y n τ`.  Since `End` multiplies
 in the order opposite to composition, `pairAlg (a * b)` is
 `pairAlg b ≫ pairAlg a` as a morphism. -/
-noncomputable def pairAlg (X Y : A) (n : ℕ) :
+noncomputable def pairAlg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) (n : ℕ) :
     MonoidAlgebra ℂ (Equiv.Perm (Fin n) × Equiv.Perm (Fin n)) →ₐ[ℂ]
       End (tensorPow A X n ⊗ tensorPow A Y n) :=
   MonoidAlgebra.lift ℂ (End (tensorPow A X n ⊗ tensorPow A Y n))
     (Equiv.Perm (Fin n) × Equiv.Perm (Fin n)) (pairPermHom X Y n)
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
 /-- The pair algebra map sends a pair of group elements to the
 tensor product of their two actions. -/
 @[simp]
-theorem pairAlg_single (X Y : A) (n : ℕ)
+theorem pairAlg_single
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) (n : ℕ)
     (σ τ : Equiv.Perm (Fin n)) :
     pairAlg X Y n (MonoidAlgebra.single (σ, τ) (1 : ℂ)) =
       permMor X n σ ⊗ₘ permMor Y n τ := by
   rw [pairAlg, MonoidAlgebra.lift_single, one_smul]
   rfl
 
-omit [MonoidalPreadditive A] [MonoidalLinear ℂ A] in
 /-- **The double action restricted to the diagonal** is the
 diagonal double action: `pairAlg` extends `diagAlg` along
 `diagEmbed`. -/
-theorem pairAlg_diagEmbed (X Y : A) (n : ℕ)
+theorem pairAlg_diagEmbed
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) (n : ℕ)
     (x : SymGroupAlgebra n) :
     pairAlg X Y n (diagEmbed x) = diagAlg X Y n x := by
   have hext : (pairAlg X Y n).comp diagEmbed = diagAlg X Y n := by
@@ -108,7 +119,11 @@ theorem pairAlg_diagEmbed (X Y : A) (n : ℕ)
 /-- **The double action on the first external image** is the right
 whiskering of the one-sided action: `pairAlg` extends
 `permAlg X n · ▷ Y ^ ⊗ n` along the first-factor embedding. -/
-theorem pairAlg_extFst (X Y : A) (n : ℕ) (x : SymGroupAlgebra n) :
+theorem pairAlg_extFst
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (X Y : A) (n : ℕ) (x : SymGroupAlgebra n) :
     pairAlg X Y n
         (MonoidAlgebra.mapDomainAlgHom ℂ ℂ (extFstHom n) x) =
       permAlg X n x ▷ tensorPow A Y n := by
@@ -136,7 +151,11 @@ theorem pairAlg_extFst (X Y : A) (n : ℕ) (x : SymGroupAlgebra n) :
 /-- **The double action on the second external image** is the left
 whiskering of the one-sided action: `pairAlg` extends
 `X ^ ⊗ n ◁ permAlg Y n ·` along the second-factor embedding. -/
-theorem pairAlg_extSnd (X Y : A) (n : ℕ) (y : SymGroupAlgebra n) :
+theorem pairAlg_extSnd
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (X Y : A) (n : ℕ) (y : SymGroupAlgebra n) :
     pairAlg X Y n
         (MonoidAlgebra.mapDomainAlgHom ℂ ℂ (extSndHom n) y) =
       tensorPow A X n ◁ permAlg Y n y := by
@@ -166,7 +185,11 @@ the left whiskering of the second factor's action followed by the
 right whiskering of the first's.  This composite order is `End`'s
 `pairAlg (extProd x y) = pairAlg (sndImage y) ≫ pairAlg
 (fstImage x)`, the form the per-term kill composes with. -/
-theorem pairAlg_extProd (X Y : A) (n : ℕ)
+theorem pairAlg_extProd
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (X Y : A) (n : ℕ)
     (x y : SymGroupAlgebra n) :
     pairAlg X Y n (extProd x y) =
       (tensorPow A X n ◁ permAlg Y n y) ≫
@@ -199,7 +222,11 @@ theorem sum_extProd_shape_e (P : SchurPackage.{v}) (n : ℕ) :
 vanishing for `X` at `μ` and `Y` at `ν` forces Schur vanishing for
 `X ⊗ Y` at every diagram containing the product-hook cell of the
 two bounding boxes. -/
-theorem SchurKilled.tensorObj (P : SchurPackage.{v}) {X Y : A}
+theorem SchurKilled.tensorObj
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) {X Y : A}
     {μ ν lam : YoungDiagram} {p q r s : ℕ}
     (hμc : μ.colLen 0 ≤ p + 1) (hμr : μ.rowLen 0 ≤ q + 1)
     (hνc : ν.colLen 0 ≤ r + 1) (hνr : ν.rowLen 0 ≤ s + 1)

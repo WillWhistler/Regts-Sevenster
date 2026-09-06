@@ -45,9 +45,11 @@ private theorem assoc_inv_odd_oe_ee_tmul {k ℓ a b : ℕ}
     (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
         (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).oddMap
       (((0 : (superPow (stdSuperPair k ℓ) a).even ⊗[ℂ]
-          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd),
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).odd),
         x ⊗ₜ[ℂ] ((w₁ ⊗ₜ[ℂ] x₁,
-          (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ] (stdSuperPair k ℓ).odd)) :
+          (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+            (stdSuperPair k ℓ).odd)) :
           (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k
             ℓ)).even)) :
         (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
@@ -73,7 +75,8 @@ private theorem assoc_inv_odd_oe_oo_tmul {k ℓ a b : ℕ}
     (((α_ (superPow (stdSuperPair k ℓ) a) (superPow (stdSuperPair k ℓ) b)
         (stdSuperPair k ℓ)).inv : SuperVect.Hom _ _).oddMap
       (((0 : (superPow (stdSuperPair k ℓ) a).even ⊗[ℂ]
-          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd),
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).odd),
         x ⊗ₜ[ℂ] (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
             (stdSuperPair k ℓ).even),
           w₂ ⊗ₜ[ℂ] x₂) :
@@ -105,8 +108,10 @@ private theorem assoc_inv_even_oe_eo_tmul {k ℓ a b : ℕ}
           (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k
             ℓ)).even),
         x ⊗ₜ[ℂ] ((w₁ ⊗ₜ[ℂ] x₂,
-          (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ] (stdSuperPair k ℓ).even)) :
-          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd))
+          (0 : (superPow (stdSuperPair k ℓ) b).odd ⊗[ℂ]
+            (stdSuperPair k ℓ).even)) :
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).odd))
             :
         (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
           (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k
@@ -136,7 +141,8 @@ private theorem assoc_inv_even_oe_oe_tmul {k ℓ a b : ℕ}
         x ⊗ₜ[ℂ] (((0 : (superPow (stdSuperPair k ℓ) b).even ⊗[ℂ]
             (stdSuperPair k ℓ).odd),
           w₂ ⊗ₜ[ℂ] x₁) :
-          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k ℓ)).odd))
+          (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b)
+            (stdSuperPair k ℓ)).odd))
             :
         (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) a)
           (SuperVect.tensorObj (superPow (stdSuperPair k ℓ) b) (stdSuperPair k
@@ -210,8 +216,10 @@ private theorem chain_odd_oe_ee {k ℓ a b : ℕ}
                   (stdSuperPair k ℓ))).odd)))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).oddEquiv ?_
   erw [assoc_inv_odd_oe_ee_tmul x w₁ x₁]
-  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap = LinearMap.id := rfl
-  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap = LinearMap.id := rfl
+  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap =
+      LinearMap.id := rfl
+  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap =
+      LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_oddMap, hid_o, hid_e]
   show LinearEquiv.prodCongr
@@ -280,8 +288,10 @@ private theorem chain_odd_oe_oo {k ℓ a b : ℕ}
                   (stdSuperPair k ℓ))).odd)))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).oddEquiv ?_
   erw [assoc_inv_odd_oe_oo_tmul x w₂ x₂]
-  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap = LinearMap.id := rfl
-  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap = LinearMap.id := rfl
+  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap =
+      LinearMap.id := rfl
+  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap =
+      LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_oddMap, hid_o, hid_e]
   show LinearEquiv.prodCongr
@@ -349,7 +359,8 @@ private theorem chain_even_oe_eo {k ℓ a b : ℕ}
                   (stdSuperPair k ℓ))).even)))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).evenEquiv ?_
   erw [assoc_inv_even_oe_eo_tmul x w₁ x₂]
-  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap = LinearMap.id := rfl
+  have hid_o : (SuperVect.Hom.id (stdSuperPair k ℓ)).oddMap =
+      LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_evenMap, hid_o]
   show LinearEquiv.prodCongr
@@ -418,7 +429,8 @@ private theorem chain_even_oe_oe {k ℓ a b : ℕ}
                   (stdSuperPair k ℓ))).even)))) = _
   refine congr_arg (colourPowerStep k ℓ (a + b)).evenEquiv ?_
   erw [assoc_inv_even_oe_oe_tmul x w₂ x₁]
-  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap = LinearMap.id := rfl
+  have hid_e : (SuperVect.Hom.id (stdSuperPair k ℓ)).evenMap =
+      LinearMap.id := rfl
   simp only [MonoidalCategoryStruct.whiskerRight,
     SuperVect.tensorHom_evenMap, hid_e]
   show LinearEquiv.prodCongr

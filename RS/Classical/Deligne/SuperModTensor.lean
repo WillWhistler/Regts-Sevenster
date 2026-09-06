@@ -72,16 +72,18 @@ universe u u' v w w'
 
 section GradedBlocks
 
-variable (P Q : Type*) [AddCommGroup P] [Module ℂ P]
-  [AddCommGroup Q] [Module ℂ Q]
-variable {A X₁ X₂ Y₁ Y₂ : Type*} [AddCommGroup A] [Module ℂ A]
-  [AddCommGroup X₁] [Module ℂ X₁] [AddCommGroup X₂] [Module ℂ X₂]
-  [AddCommGroup Y₁] [Module ℂ Y₁] [AddCommGroup Y₂] [Module ℂ Y₂]
+variable (P Q : Type*)
 
 /-- A pair of parity blocks acting on the *left* factor of a
 two-summand graded tensor product, in the degree-preserving
 pattern: each summand stays where it is. -/
-noncomputable def tensorLeftDiag (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
+noncomputable def tensorLeftDiag
+    [AddCommGroup P] [Module ℂ P] [AddCommGroup Q] [Module ℂ Q] {A : Type*}
+    {X₁ : Type*} {X₂ : Type*} {Y₁ : Type*} {Y₂ : Type*} [AddCommGroup A]
+    [Module ℂ A] [AddCommGroup X₁] [Module ℂ X₁] [AddCommGroup X₂]
+    [Module ℂ X₂] [AddCommGroup Y₁] [Module ℂ Y₁] [AddCommGroup Y₂]
+    [Module ℂ Y₂]
+    (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
     (g : A →ₗ[ℂ] Y₁ →ₗ[ℂ] Y₂) :
     A →ₗ[ℂ] (X₁ ⊗[ℂ] P) × (Y₁ ⊗[ℂ] Q) →ₗ[ℂ]
       (X₂ ⊗[ℂ] P) × (Y₂ ⊗[ℂ] Q) where
@@ -95,7 +97,13 @@ noncomputable def tensorLeftDiag (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
 
 /-- The degree-preserving block pattern, evaluated. -/
 @[simp]
-theorem tensorLeftDiag_apply (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
+theorem tensorLeftDiag_apply
+    [AddCommGroup P] [Module ℂ P] [AddCommGroup Q] [Module ℂ Q] {A : Type*}
+    {X₁ : Type*} {X₂ : Type*} {Y₁ : Type*} {Y₂ : Type*} [AddCommGroup A]
+    [Module ℂ A] [AddCommGroup X₁] [Module ℂ X₁] [AddCommGroup X₂]
+    [Module ℂ X₂] [AddCommGroup Y₁] [Module ℂ Y₁] [AddCommGroup Y₂]
+    [Module ℂ Y₂]
+    (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
     (g : A →ₗ[ℂ] Y₁ →ₗ[ℂ] Y₂) (a : A)
     (t : (X₁ ⊗[ℂ] P) × (Y₁ ⊗[ℂ] Q)) :
     tensorLeftDiag P Q f g a t =
@@ -104,7 +112,13 @@ theorem tensorLeftDiag_apply (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
 /-- A pair of parity blocks acting on the *left* factor of a
 two-summand graded tensor product, in the degree-reversing
 pattern: the two summands are interchanged. -/
-noncomputable def tensorLeftSwap (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
+noncomputable def tensorLeftSwap
+    [AddCommGroup P] [Module ℂ P] [AddCommGroup Q] [Module ℂ Q] {A : Type*}
+    {X₁ : Type*} {X₂ : Type*} {Y₁ : Type*} {Y₂ : Type*} [AddCommGroup A]
+    [Module ℂ A] [AddCommGroup X₁] [Module ℂ X₁] [AddCommGroup X₂]
+    [Module ℂ X₂] [AddCommGroup Y₁] [Module ℂ Y₁] [AddCommGroup Y₂]
+    [Module ℂ Y₂]
+    (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
     (g : A →ₗ[ℂ] Y₁ →ₗ[ℂ] Y₂) :
     A →ₗ[ℂ] (X₁ ⊗[ℂ] P) × (Y₁ ⊗[ℂ] Q) →ₗ[ℂ]
       (Y₂ ⊗[ℂ] Q) × (X₂ ⊗[ℂ] P) where
@@ -116,7 +130,13 @@ noncomputable def tensorLeftSwap (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
 
 /-- The degree-reversing block pattern, evaluated. -/
 @[simp]
-theorem tensorLeftSwap_apply (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
+theorem tensorLeftSwap_apply
+    [AddCommGroup P] [Module ℂ P] [AddCommGroup Q] [Module ℂ Q] {A : Type*}
+    {X₁ : Type*} {X₂ : Type*} {Y₁ : Type*} {Y₂ : Type*} [AddCommGroup A]
+    [Module ℂ A] [AddCommGroup X₁] [Module ℂ X₁] [AddCommGroup X₂]
+    [Module ℂ X₂] [AddCommGroup Y₁] [Module ℂ Y₁] [AddCommGroup Y₂]
+    [Module ℂ Y₂]
+    (f : A →ₗ[ℂ] X₁ →ₗ[ℂ] X₂)
     (g : A →ₗ[ℂ] Y₁ →ₗ[ℂ] Y₂) (a : A)
     (t : (X₁ ⊗[ℂ] P) × (Y₁ ⊗[ℂ] Q)) :
     tensorLeftSwap P Q f g a t =
@@ -128,14 +148,16 @@ end GradedBlocks
 
 section Descend
 
-variable {A T T' : Type*} [AddCommGroup A] [Module ℂ A]
-  [AddCommGroup T] [Module ℂ T] [AddCommGroup T'] [Module ℂ T']
+variable {A T T' : Type*}
 
 /-- Descend a bilinear action along a pair of quotients: a
 bilinear action of `A` carrying a submodule `R` of its source into
 a submodule `R'` of its target induces an action on the
 quotients. -/
-noncomputable def descendAct (R : Submodule ℂ T) (R' : Submodule ℂ T')
+noncomputable def descendAct
+    [AddCommGroup A] [Module ℂ A] [AddCommGroup T] [Module ℂ T]
+    [AddCommGroup T'] [Module ℂ T']
+    (R : Submodule ℂ T) (R' : Submodule ℂ T')
     (f : A →ₗ[ℂ] T →ₗ[ℂ] T')
     (h : ∀ a : A, ∀ t ∈ R, f a t ∈ R') :
     A →ₗ[ℂ] (T ⧸ R) →ₗ[ℂ] (T' ⧸ R') :=
@@ -147,7 +169,10 @@ noncomputable def descendAct (R : Submodule ℂ T) (R' : Submodule ℂ T')
 
 /-- The descended action, evaluated on a class. -/
 @[simp]
-theorem descendAct_apply (R : Submodule ℂ T) (R' : Submodule ℂ T')
+theorem descendAct_apply
+    [AddCommGroup A] [Module ℂ A] [AddCommGroup T] [Module ℂ T]
+    [AddCommGroup T'] [Module ℂ T']
+    (R : Submodule ℂ T) (R' : Submodule ℂ T')
     (f : A →ₗ[ℂ] T →ₗ[ℂ] T') (h : ∀ a : A, ∀ t ∈ R, f a t ∈ R')
     (a : A) (t : T) :
     descendAct R R' f h a (Submodule.Quotient.mk t) =
@@ -875,13 +900,13 @@ theorem actOO_tmulOE (c : S.odd) (m : M.odd) (n : N.even) :
 
 section Universal
 
-variable {P : Type v} [AddCommGroup P] [Module ℂ P]
+variable {P : Type v}
 
 /-- **The even-degree lift**: a pair of ℂ-bilinear maps out of the
 even-even and odd-odd blocks, balanced against the four
 even-degree relator families, factors through the even part of the
 tensor product. -/
-noncomputable def liftEven
+noncomputable def liftEven [AddCommGroup P] [Module ℂ P]
     (fee : M.even →ₗ[ℂ] N.even →ₗ[ℂ] P)
     (foo : M.odd →ₗ[ℂ] N.odd →ₗ[ℂ] P)
     (hee : ∀ (b : S.even) (m : M.even) (n : N.even),
@@ -917,7 +942,7 @@ noncomputable def liftEven
 even-odd and odd-even blocks, balanced against the four odd-degree
 relator families, factors through the odd part of the tensor
 product. -/
-noncomputable def liftOdd
+noncomputable def liftOdd [AddCommGroup P] [Module ℂ P]
     (feo : M.even →ₗ[ℂ] N.odd →ₗ[ℂ] P)
     (foe : M.odd →ₗ[ℂ] N.even →ₗ[ℂ] P)
     (heeo : ∀ (b : S.even) (m : M.even) (n : N.odd),
@@ -949,20 +974,20 @@ noncomputable def liftOdd
           TensorProduct.lift.tmul, add_eq_zero_iff_eq_neg]
         exact hooo c m n)
 
-variable (fee : M.even →ₗ[ℂ] N.even →ₗ[ℂ] P)
-  (foo : M.odd →ₗ[ℂ] N.odd →ₗ[ℂ] P)
-  (hee : ∀ (b : S.even) (m : M.even) (n : N.even),
-    fee (M.actEE b m) n = fee m (N.actEE b n))
-  (hoo : ∀ (b : S.even) (m : M.odd) (n : N.odd),
-    foo (M.actEO b m) n = foo m (N.actEO b n))
-  (hoeo : ∀ (c : S.odd) (m : M.even) (n : N.odd),
-    foo (M.actOE c m) n = fee m (N.actOO c n))
-  (hooe : ∀ (c : S.odd) (m : M.odd) (n : N.even),
-    fee (M.actOO c m) n = -foo m (N.actOE c n))
-
 /-- The even-degree lift computes on even-even products. -/
 @[simp]
-theorem liftEven_tmulEE (m : M.even) (n : N.even) :
+theorem liftEven_tmulEE
+    [AddCommGroup P] [Module ℂ P] (fee : M.even →ₗ[ℂ] N.even →ₗ[ℂ] P)
+    (foo : M.odd →ₗ[ℂ] N.odd →ₗ[ℂ] P)
+    (hee : ∀ (b : S.even) (m : M.even) (n : N.even), fee (M.actEE b m) n =
+      fee m (N.actEE b n))
+    (hoo : ∀ (b : S.even) (m : M.odd) (n : N.odd), foo (M.actEO b m) n = foo
+      m (N.actEO b n))
+    (hoeo : ∀ (c : S.odd) (m : M.even) (n : N.odd), foo (M.actOE c m) n =
+      fee m (N.actOO c n))
+    (hooe : ∀ (c : S.odd) (m : M.odd) (n : N.even), fee (M.actOO c m) n =
+      -foo m (N.actOE c n))
+    (m : M.even) (n : N.even) :
     liftEven M N fee foo hee hoo hoeo hooe (tmulEE M N m n)
       = fee m n := by
   show TensorProduct.lift fee (m ⊗ₜ[ℂ] n)
@@ -971,27 +996,38 @@ theorem liftEven_tmulEE (m : M.even) (n : N.even) :
 
 /-- The even-degree lift computes on odd-odd products. -/
 @[simp]
-theorem liftEven_tmulOO (m : M.odd) (n : N.odd) :
+theorem liftEven_tmulOO
+    [AddCommGroup P] [Module ℂ P] (fee : M.even →ₗ[ℂ] N.even →ₗ[ℂ] P)
+    (foo : M.odd →ₗ[ℂ] N.odd →ₗ[ℂ] P)
+    (hee : ∀ (b : S.even) (m : M.even) (n : N.even), fee (M.actEE b m) n =
+      fee m (N.actEE b n))
+    (hoo : ∀ (b : S.even) (m : M.odd) (n : N.odd), foo (M.actEO b m) n = foo
+      m (N.actEO b n))
+    (hoeo : ∀ (c : S.odd) (m : M.even) (n : N.odd), foo (M.actOE c m) n =
+      fee m (N.actOO c n))
+    (hooe : ∀ (c : S.odd) (m : M.odd) (n : N.even), fee (M.actOO c m) n =
+      -foo m (N.actOE c n))
+    (m : M.odd) (n : N.odd) :
     liftEven M N fee foo hee hoo hoeo hooe (tmulOO M N m n)
       = foo m n := by
   show TensorProduct.lift fee 0
       + TensorProduct.lift foo (m ⊗ₜ[ℂ] n) = foo m n
   rw [map_zero, zero_add, TensorProduct.lift.tmul]
 
-variable (feo : M.even →ₗ[ℂ] N.odd →ₗ[ℂ] P)
-  (foe : M.odd →ₗ[ℂ] N.even →ₗ[ℂ] P)
-  (heeo : ∀ (b : S.even) (m : M.even) (n : N.odd),
-    feo (M.actEE b m) n = feo m (N.actEO b n))
-  (heoe : ∀ (b : S.even) (m : M.odd) (n : N.even),
-    foe (M.actEO b m) n = foe m (N.actEE b n))
-  (hoee : ∀ (c : S.odd) (m : M.even) (n : N.even),
-    foe (M.actOE c m) n = feo m (N.actOE c n))
-  (hooo : ∀ (c : S.odd) (m : M.odd) (n : N.odd),
-    feo (M.actOO c m) n = -foe m (N.actOO c n))
-
 /-- The odd-degree lift computes on even-odd products. -/
 @[simp]
-theorem liftOdd_tmulEO (m : M.even) (n : N.odd) :
+theorem liftOdd_tmulEO
+    [AddCommGroup P] [Module ℂ P] (feo : M.even →ₗ[ℂ] N.odd →ₗ[ℂ] P)
+    (foe : M.odd →ₗ[ℂ] N.even →ₗ[ℂ] P)
+    (heeo : ∀ (b : S.even) (m : M.even) (n : N.odd), feo (M.actEE b m) n =
+      feo m (N.actEO b n))
+    (heoe : ∀ (b : S.even) (m : M.odd) (n : N.even), foe (M.actEO b m) n =
+      foe m (N.actEE b n))
+    (hoee : ∀ (c : S.odd) (m : M.even) (n : N.even), foe (M.actOE c m) n =
+      feo m (N.actOE c n))
+    (hooo : ∀ (c : S.odd) (m : M.odd) (n : N.odd), feo (M.actOO c m) n =
+      -foe m (N.actOO c n))
+    (m : M.even) (n : N.odd) :
     liftOdd M N feo foe heeo heoe hoee hooo (tmulEO M N m n)
       = feo m n := by
   show TensorProduct.lift feo (m ⊗ₜ[ℂ] n)
@@ -1000,7 +1036,18 @@ theorem liftOdd_tmulEO (m : M.even) (n : N.odd) :
 
 /-- The odd-degree lift computes on odd-even products. -/
 @[simp]
-theorem liftOdd_tmulOE (m : M.odd) (n : N.even) :
+theorem liftOdd_tmulOE
+    [AddCommGroup P] [Module ℂ P] (feo : M.even →ₗ[ℂ] N.odd →ₗ[ℂ] P)
+    (foe : M.odd →ₗ[ℂ] N.even →ₗ[ℂ] P)
+    (heeo : ∀ (b : S.even) (m : M.even) (n : N.odd), feo (M.actEE b m) n =
+      feo m (N.actEO b n))
+    (heoe : ∀ (b : S.even) (m : M.odd) (n : N.even), foe (M.actEO b m) n =
+      foe m (N.actEE b n))
+    (hoee : ∀ (c : S.odd) (m : M.even) (n : N.even), foe (M.actOE c m) n =
+      feo m (N.actOE c n))
+    (hooo : ∀ (c : S.odd) (m : M.odd) (n : N.odd), feo (M.actOO c m) n =
+      -foe m (N.actOO c n))
+    (m : M.odd) (n : N.even) :
     liftOdd M N feo foe heeo heoe hoee hooo (tmulOE M N m n)
       = foe m n := by
   show TensorProduct.lift feo 0
@@ -1009,7 +1056,8 @@ theorem liftOdd_tmulOE (m : M.odd) (n : N.even) :
 
 /-- **Uniqueness in even degree**: the even part of the tensor
 product is generated by the even-even and odd-odd products. -/
-theorem liftEven_unique (g g' : (tensor M N).even →ₗ[ℂ] P)
+theorem liftEven_unique [AddCommGroup P] [Module ℂ P]
+    (g g' : (tensor M N).even →ₗ[ℂ] P)
     (hE : ∀ m n, g (tmulEE M N m n) = g' (tmulEE M N m n))
     (hO : ∀ m n, g (tmulOO M N m n) = g' (tmulOO M N m n)) :
     g = g' :=
@@ -1018,18 +1066,28 @@ theorem liftEven_unique (g g' : (tensor M N).even →ₗ[ℂ] P)
 
 /-- **Uniqueness in odd degree**: the odd part of the tensor
 product is generated by the even-odd and odd-even products. -/
-theorem liftOdd_unique (g g' : (tensor M N).odd →ₗ[ℂ] P)
+theorem liftOdd_unique [AddCommGroup P] [Module ℂ P]
+    (g g' : (tensor M N).odd →ₗ[ℂ] P)
     (hE : ∀ m n, g (tmulEO M N m n) = g' (tmulEO M N m n))
     (hO : ∀ m n, g (tmulOE M N m n) = g' (tmulOE M N m n)) :
     g = g' :=
   Submodule.linearMap_qext _
     (LinearMap.prod_ext (TensorProduct.ext' hE) (TensorProduct.ext' hO))
 
-include hee hoo hoeo hooe in
 /-- **The universal property in even degree**: a balanced pair of
 ℂ-bilinear maps out of the even-even and odd-odd blocks factors
 uniquely through the even part of the tensor product. -/
-theorem exists_unique_liftEven :
+theorem exists_unique_liftEven
+    [AddCommGroup P] [Module ℂ P] (fee : M.even →ₗ[ℂ] N.even →ₗ[ℂ] P)
+    (foo : M.odd →ₗ[ℂ] N.odd →ₗ[ℂ] P)
+    (hee : ∀ (b : S.even) (m : M.even) (n : N.even), fee (M.actEE b m) n =
+      fee m (N.actEE b n))
+    (hoo : ∀ (b : S.even) (m : M.odd) (n : N.odd), foo (M.actEO b m) n = foo
+      m (N.actEO b n))
+    (hoeo : ∀ (c : S.odd) (m : M.even) (n : N.odd), foo (M.actOE c m) n =
+      fee m (N.actOO c n))
+    (hooe : ∀ (c : S.odd) (m : M.odd) (n : N.even), fee (M.actOO c m) n =
+      -foo m (N.actOE c n)) :
     ∃! g : (tensor M N).even →ₗ[ℂ] P,
       (∀ m n, g (tmulEE M N m n) = fee m n) ∧
         (∀ m n, g (tmulOO M N m n) = foo m n) :=
@@ -1042,11 +1100,20 @@ theorem exists_unique_liftEven :
       (fun m n => (hg.2 m n).trans
         (liftEven_tmulOO M N fee foo hee hoo hoeo hooe m n).symm)⟩
 
-include heeo heoe hoee hooo in
 /-- **The universal property in odd degree**: a balanced pair of
 ℂ-bilinear maps out of the even-odd and odd-even blocks factors
 uniquely through the odd part of the tensor product. -/
-theorem exists_unique_liftOdd :
+theorem exists_unique_liftOdd
+    [AddCommGroup P] [Module ℂ P] (feo : M.even →ₗ[ℂ] N.odd →ₗ[ℂ] P)
+    (foe : M.odd →ₗ[ℂ] N.even →ₗ[ℂ] P)
+    (heeo : ∀ (b : S.even) (m : M.even) (n : N.odd), feo (M.actEE b m) n =
+      feo m (N.actEO b n))
+    (heoe : ∀ (b : S.even) (m : M.odd) (n : N.even), foe (M.actEO b m) n =
+      foe m (N.actEE b n))
+    (hoee : ∀ (c : S.odd) (m : M.even) (n : N.even), foe (M.actOE c m) n =
+      feo m (N.actOE c n))
+    (hooo : ∀ (c : S.odd) (m : M.odd) (n : N.odd), feo (M.actOO c m) n =
+      -foe m (N.actOO c n)) :
     ∃! g : (tensor M N).odd →ₗ[ℂ] P,
       (∀ m n, g (tmulEO M N m n) = feo m n) ∧
         (∀ m n, g (tmulOE M N m n) = foe m n) :=

@@ -15,8 +15,7 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- The twist-shuffle coherence: extracting `A` from the twisted
 factor `V ⊗ R`, interchanging, and reinserting it between `R` and
@@ -28,7 +27,9 @@ naturality of the braiding and cancels against `(β_ R A).inv`, and
 the residual word is the interchange of `V ⊗ R` with
 `W ⊗ (A ⊗ S)`. -/
 @[reassoc]
-theorem twist_shuffle_coherence (V R A W S : D) :
+theorem twist_shuffle_coherence
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (V R A W S : D) :
     (β_ (V ⊗ R) A).hom ▷ (W ⊗ S) ≫
       (α_ A V R).inv ▷ (W ⊗ S) ≫
       (β_ A V).hom ▷ R ▷ (W ⊗ S) ≫
@@ -87,7 +88,9 @@ of the crossings of `A` past `V`, of `R` past `W`, and of `A` past
 order of the first two, which act on disjoint factors and are
 exchanged as whiskerings. -/
 @[reassoc]
-theorem twist_act_coherence (A V R W S : D) :
+theorem twist_act_coherence
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A V R W S : D) :
     (α_ A (V ⊗ R) (W ⊗ S)).inv ≫
       (α_ A V R).inv ▷ (W ⊗ S) ≫
       ((β_ A V).hom ▷ R) ▷ (W ⊗ S) ≫

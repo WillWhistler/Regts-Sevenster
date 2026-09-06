@@ -16,11 +16,12 @@ open scoped Classical
 
 open EdgeSubset
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] (e : α ≃o β)
-  {W : Fragment α}
+variable {α β : Type}
 
 /-- The boundary label shifts through the relabel. -/
-theorem relabel_boundaryLabel (F : EdgeSubset W) {b : W.Flag}
+theorem relabel_boundaryLabel
+    [LinearOrder α] [LinearOrder β] (e : α ≃o β) {W : Fragment α}
+    (F : EdgeSubset W) {b : W.Flag}
     (hb : b ∈ (F.relabelUp e.toEquiv).boundaryFlags)
     (hb' : b ∈ F.boundaryFlags) :
     (F.relabelUp e.toEquiv).boundaryLabel hb =

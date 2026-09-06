@@ -107,15 +107,16 @@ end SuperCommAlgebra.Mod
 
 section Realize
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **Realization is additive on endomorphisms**: a finite family
 of endomorphisms of a module object whose underlying morphisms sum
 to the identity realizes to a family summing to the identity. -/
-theorem sum_gammaModuleFunctor_map {P : Mod D R} {ι : Type*}
+theorem sum_gammaModuleFunctor_map
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {P : Mod D R} {ι : Type*}
     (s : Finset ι) (g : ι → (P ⟶ P))
     (h : ∑ i ∈ s, (g i).hom = 𝟙 P.X) :
     ∑ i ∈ s, (gammaModuleFunctor L R).map (g i) =

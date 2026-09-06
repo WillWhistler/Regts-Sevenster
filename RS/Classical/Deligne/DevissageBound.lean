@@ -21,22 +21,20 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
+variable {D : Type u}
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
 
 /-- **The counts of a dévissage state are bounded by the killing
 diagram.** -/
-theorem devissage_bound (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
+theorem devissage_bound
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (L : OddLine D) (X : D) {lam : YoungDiagram}
     (hcard : lam.card ≠ 0) (hkill : SchurKilled P X lam)
     (st : DevissageState D L X) :

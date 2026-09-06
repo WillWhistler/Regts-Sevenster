@@ -39,17 +39,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## The laws of head absorption -/
 
 section CollectLaws
 
-variable [BraidedCategory D] (A : D) [MonObj A]
-
 /-- Naturality of head absorption in the accumulated block. -/
 @[reassoc]
-theorem freeModShuffle_natural_left {P P' : D} (f : P ⟶ P') (V : D) :
+theorem freeModShuffle_natural_left
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A]
+    {P P' : D} (f : P ⟶ P') (V : D) :
     ((A ◁ f) ▷ (A ⊗ V)) ≫ freeModShuffle A P' V =
       freeModShuffle A P V ≫ (A ◁ (f ▷ V)) := by
   rw [freeModShuffle, freeModShuffle,
@@ -61,7 +62,10 @@ theorem freeModShuffle_natural_left {P P' : D} (f : P ⟶ P') (V : D) :
 /-- **Associativity of head absorption**, in inverse-associator
 form: the mirror of `RS.freeModShuffle_assoc`. -/
 @[reassoc]
-theorem freeModShuffle_assoc_inv (P Q R : D) :
+theorem freeModShuffle_assoc_inv
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A]
+    (P Q R : D) :
     (α_ (A ⊗ P) (A ⊗ Q) (A ⊗ R)).inv ≫
         (freeModShuffle A P Q ▷ (A ⊗ R)) ≫
         freeModShuffle A (P ⊗ Q) R =
@@ -76,7 +80,10 @@ theorem freeModShuffle_assoc_inv (P Q R : D) :
   exact freeModShuffle_assoc A P Q R
 
 /-- **Unitality of head absorption.** -/
-theorem freeModShuffle_unit (P : D) :
+theorem freeModShuffle_unit
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A]
+    (P : D) :
     ((A ⊗ P) ◁ ((λ_ (𝟙_ D)).inv ≫ (η[A] ▷ 𝟙_ D))) ≫
         freeModShuffle A P (𝟙_ D) ≫ (A ◁ (ρ_ P).hom) =
       (ρ_ (A ⊗ P)).hom := by
@@ -100,11 +107,12 @@ end CollectLaws
 
 section Concat
 
-variable [BraidedCategory D] (A : D) [MonObj A] (V : D)
-
 /-- The collapse of a concatenation, stated through head
 absorption. -/
-private theorem freeCollapse_concat_collect (a : ℕ) : ∀ b : ℕ,
+private theorem freeCollapse_concat_collect
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (V : D)
+    (a : ℕ) : ∀ b : ℕ,
     (tensorPowConcat (A ⊗ V) a b).hom ≫ freeCollapse A V (a + b) =
       (freeCollapse A V a ⊗ₘ freeCollapse A V b) ≫
         freeModShuffle A (tensorPow D V a) (tensorPow D V b) ≫
@@ -118,7 +126,7 @@ private theorem freeCollapse_concat_collect (a : ℕ) : ∀ b : ℕ,
       rw [MonoidalCategory.tensorHom_def, Category.assoc,
         freeModShuffle_unit, MonoidalCategory.rightUnitor_naturality]
   | b + 1 => by
-      have ih := freeCollapse_concat_collect a b
+      have ih := freeCollapse_concat_collect A V a b
       have hnat : (α_ (tensorPow D (A ⊗ V) a)
             (tensorPow D (A ⊗ V) b) (A ⊗ V)).inv ≫
           ((freeCollapse A V a ⊗ₘ freeCollapse A V b) ▷ (A ⊗ V)) =
@@ -163,7 +171,9 @@ private theorem freeCollapse_concat_collect (a : ℕ) : ∀ b : ℕ,
 /-- **The collapse of a concatenation**: collapsing a
 concatenated word is collapsing each part and multiplying the two
 heads. -/
-theorem freeCollapse_concat (A : D) [MonObj A] [IsCommMonObj A]
+theorem freeCollapse_concat
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] [IsCommMonObj A]
     (V : D) (a b : ℕ) :
     (tensorPowConcat (A ⊗ V) a b).hom ≫ freeCollapse A V (a + b) =
       (freeCollapse A V a ⊗ₘ freeCollapse A V b) ≫
@@ -180,11 +190,11 @@ end Concat
 
 section Window
 
-variable [BraidedCategory D]
-
 /-- The braid identity behind the window: the two legs differ by a
 single crossing of the two heads that are multiplied first. -/
-private theorem freeWindow_braid (A V : D) :
+private theorem freeWindow_braid
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A V : D) :
     ((β_ (A ⊗ V) A).hom ▷ (A ⊗ V)) ≫
         ((α_ A A V).inv ▷ (A ⊗ V)) ≫ tensorμ (A ⊗ A) V A V =
       ((α_ (A ⊗ V) A (A ⊗ V)).hom ≫
@@ -210,7 +220,9 @@ private theorem freeWindow_braid (A V : D) :
 
 /-- The first slot leg on a window of free letters, resolved into a
 braid and the product of the three heads. -/
-private theorem freeWindow_legM (A : D) [MonObj A] (V : D) :
+private theorem freeWindow_legM
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] (V : D) :
     winLegM A (freeMod A V).X ≫ freeModShuffle A V V =
       (((β_ (A ⊗ V) A).hom ▷ (A ⊗ V)) ≫
         ((α_ A A V).inv ▷ (A ⊗ V)) ≫ tensorμ (A ⊗ A) V A V) ≫
@@ -226,7 +238,9 @@ private theorem freeWindow_legM (A : D) [MonObj A] (V : D) :
 
 /-- The second slot leg on a window of free letters, resolved into a
 reassociation and the product of the three heads. -/
-private theorem freeWindow_legN (A : D) [MonObj A] (V : D) :
+private theorem freeWindow_legN
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] (V : D) :
     winLegN A (freeMod A V).X ≫ freeModShuffle A V V =
       ((α_ (A ⊗ V) A (A ⊗ V)).hom ≫
         ((A ⊗ V) ◁ (α_ A A V).inv) ≫ tensorμ A V (A ⊗ A) V) ≫
@@ -244,7 +258,9 @@ private theorem freeWindow_legN (A : D) [MonObj A] (V : D) :
 
 /-- **The window identity**: a scalar absorbed on either side of an
 adjacent pair of free letters ends in the same head. -/
-private theorem freeWindow (A : D) [MonObj A] [IsCommMonObj A]
+private theorem freeWindow
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] [IsCommMonObj A]
     (V : D) :
     winLegM A (freeMod A V).X ≫ freeModShuffle A V V =
       winLegN A (freeMod A V).X ≫ freeModShuffle A V V := by
@@ -267,11 +283,11 @@ end Window
 
 section Descent
 
-variable [BraidedCategory D]
-
 /-- A slot window inside a word, collapsed: only the composite of
 the window with one head absorption survives. -/
-private theorem freeLeg_window (A : D) [MonObj A] (V : D) (a b : ℕ)
+private theorem freeLeg_window
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] (V : D) (a b : ℕ)
     (L : ((A ⊗ V) ⊗ A) ⊗ (A ⊗ V) ⟶ (A ⊗ V) ⊗ (A ⊗ V)) :
     ((tensorPow D (A ⊗ V) a ◁ L) ▷ tensorPow D (A ⊗ V) b) ≫
         modPowGlue (A ⊗ V) a b ≫ freeCollapse A V (a + 2 + b) =
@@ -320,7 +336,9 @@ private theorem freeLeg_window (A : D) [MonObj A] (V : D) (a b : ℕ)
 
 /-- **The collapse coequalises the slot relations**: a scalar
 absorbed on either side of a slot ends up in the same head. -/
-theorem freeCollapse_leg (A : D) [MonObj A] [IsCommMonObj A]
+theorem freeCollapse_leg
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] [IsCommMonObj A]
     (V : D) {n : ℕ} (a b : ℕ) (hab : a + 2 + b = n) :
     modPowLegM A (freeMod A V).X a b ≫
         powCast (freeMod A V).X hab ≫ freeCollapse A V n =
@@ -350,17 +368,21 @@ theorem freeCollapse_leg (A : D) [MonObj A] [IsCommMonObj A]
         (A ◁ (tensorPowConcat V (a + 2) b).hom))
     (freeWindow A V)
 
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
 /-- **The descended collapse.** -/
-noncomputable def freeCollapseDesc (A : D) [MonObj A]
+noncomputable def freeCollapseDesc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    (A : D) [MonObj A]
     [IsCommMonObj A] (V : D) (n : ℕ) :
     modPow A (freeMod A V).X n ⟶ A ⊗ tensorPow D V n :=
   modPowDesc A (freeMod A V).X (freeCollapse A V n)
     (fun a b hab => freeCollapse_leg A V a b hab)
 
 @[reassoc (attr := simp)]
-theorem modPowπ_freeCollapseDesc (A : D) [MonObj A]
+theorem modPowπ_freeCollapseDesc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    (A : D) [MonObj A]
     [IsCommMonObj A] (V : D) (n : ℕ) :
     modPowπ A (freeMod A V).X n ≫ freeCollapseDesc A V n =
       freeCollapse A V n :=

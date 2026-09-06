@@ -15,8 +15,7 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
@@ -24,7 +23,8 @@ open Classical in
 /-- The signed canonical summand of one system: the path sign times
 the through summand at the open circuit count, at a chosen
 path-canonical orientation. -/
-noncomputable def signedValueAt {k ℓ : ℕ}
+noncomputable def signedValueAt [LinearOrder α] {W : Fragment α}
+    {k ℓ : ℕ}
     (F : EdgeSubset W) (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
@@ -37,7 +37,8 @@ noncomputable def signedValueAt {k ℓ : ℕ}
 
 /-- The signed value evaluates at any concrete path-canonical
 orientation. -/
-theorem signedValueAt_eq {k ℓ : ℕ} (hM : MixedFunctional k ℓ)
+theorem signedValueAt_eq [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ} (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation)
@@ -56,6 +57,7 @@ theorem signedValueAt_eq {k ℓ : ℕ} (hM : MixedFunctional k ℓ)
 pairing, given the ledger: fold the ledger down the block chain and
 cross the final `MatchEq`. -/
 theorem canonical_transfer_of_samePairing
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     (HLedger : MatchPreservingLedger) {k ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
@@ -74,6 +76,7 @@ theorem canonical_transfer_of_samePairing
 the pairing-preserving ledger): the signed canonical summand is a
 function of the boundary pairing alone. -/
 theorem signedValueAt_samePairing
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     (HLedger : MatchPreservingLedger) {k ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)

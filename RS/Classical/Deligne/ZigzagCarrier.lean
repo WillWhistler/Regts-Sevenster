@@ -35,11 +35,12 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D]
+variable {D : Type u}
 
 /-- Conjugation by an isomorphism preserves and reflects the
 identity. -/
-theorem iso_conj_id_iff {X Y : D} (i : X ≅ Y) {g : Y ⟶ Y} :
+theorem iso_conj_id_iff [Category.{v} D]
+    {X Y : D} (i : X ≅ Y) {g : Y ⟶ Y} :
     i.hom ≫ g ≫ i.inv = 𝟙 X ↔ g = 𝟙 Y := by
   constructor
   · intro h
@@ -48,43 +49,31 @@ theorem iso_conj_id_iff {X Y : D} (i : X ≅ Y) {g : Y ⟶ Y} :
   · intro h
     rw [h, Category.id_comp, Iso.hom_inv_id]
 
-variable [MonoidalCategory D] [BraidedCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A]
-
 /-! ## The singleton comparison as a conjugation -/
 
 section Single
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The singleton projection against the comparison iso: the right
 unitor of the carrier. -/
 @[reassoc]
-theorem modMultiπ_single (X : Mod D A) :
+theorem modMultiπ_single
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A]
+    (X : Mod D A) :
     modMultiπ A [X] ≫ (modMultiSingle A X).hom = (ρ_ X.X).hom := by
   show (modMultiTriv A (modSlots_singleton A X)).inv ≫
       (modMultiTriv A (modSlots_singleton A X)).hom ≫
       (ρ_ X.X).hom = (ρ_ X.X).hom
   rw [Iso.inv_hom_id_assoc]
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Recognise a singleton conjugate: a multi-level morphism whose
 projection matches a carrier morphism through the unitor is the
 conjugate of that morphism. -/
-theorem eq_single_conj {X Y : Mod D A}
+theorem eq_single_conj [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A]
+    {X Y : Mod D A}
     {f : modMulti A [X] ⟶ modMulti A [Y]} {g : X.X ⟶ Y.X}
     (h : modMultiπ A [X] ≫ f ≫ (modMultiSingle A Y).hom =
       (ρ_ X.X).hom ≫ g) :
@@ -111,17 +100,14 @@ end Single
 
 section ZigCarrier
 
-variable [IsCommMonObj A] {M M' : Mod D A}
-
-omit [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The trailing contraction fold against the singleton
 comparison: pair the trailing window, act on the head from the
 right. -/
-theorem contract3Fold_single (p : modTensor A M' M ⟶ A) :
+theorem contract3Fold_single
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A) :
     contract3Fold A p M ≫ (modMultiSingle A M).hom =
       (M.X ◁ ((M'.X ◁ (ρ_ M.X).hom) ≫
         modTensorπ A M' M ≫ p)) ≫ actRight A M.X := by
@@ -139,15 +125,14 @@ theorem contract3Fold_single (p : modTensor A M' M ⟶ A) :
   exact (congrArg (fun t => t ≫ (modMultiSingle A M).hom)
     hfold).trans hcancel
 
-omit [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A trailing window against the resolved contraction: stripping
 the unit seed of the fold, the window meets the carrier
 contraction word. -/
-theorem window_contract3Fold_carrier (p : modTensor A M' M ⟶ A)
+theorem window_contract3Fold_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (w : (M.X ⊗ A) ⊗ M'.X ⟶ M.X ⊗ M'.X) :
     ((((M.X ⊗ A) ⊗ M'.X) ◁ (ρ_ M.X).inv) ≫
         ((w ▷ modList A [M]) ≫
@@ -180,13 +165,15 @@ theorem window_contract3Fold_carrier (p : modTensor A M' M ⟶ A)
     rw [reassoc_of% hx, reassoc_of% hcoh]
   exact h1.trans h2
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The descent condition of the trailing carrier contraction: the
 two legs of the crossing pair agree, through the boundary
 condition of the fold-level contraction. -/
-theorem zigContract_cond (p : modTensor A M' M ⟶ A)
+theorem zigContract_cond
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
     (modTensorLegM A M M' ▷ M.X) ≫ (α_ M.X M'.X M.X).hom ≫
@@ -231,7 +218,13 @@ theorem zigContract_cond (p : modTensor A M' M ⟶ A)
 the trailing carrier through the descended pairing and the
 resulting scalar acts on the inserted `M`-half from the right.
 Descended along the right-whiskered module-tensor coequalizer. -/
-noncomputable def zigContract (p : modTensor A M' M ⟶ A)
+noncomputable def zigContract
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
     modTensor A M M' ⊗ M.X ⟶ M.X :=
@@ -240,11 +233,15 @@ noncomputable def zigContract (p : modTensor A M' M ⟶ A)
       (M.X ◁ (modTensorπ A M' M ≫ p)) ≫ actRight A M.X)
     (zigContract_cond A p hp)
 
-omit [MonoidalPreadditive D] in
 /-- Defining equation of the zig carrier contraction: the pairing
 occurrence is isolated as `modTensorπ A M' M ≫ p`. -/
 @[reassoc (attr := simp)]
 theorem whiskerRight_modTensorπ_zigContract
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
@@ -253,10 +250,15 @@ theorem whiskerRight_modTensorπ_zigContract
         (M.X ◁ (modTensorπ A M' M ≫ p)) ≫ actRight A M.X :=
   whiskerRight_modTensorπ_whiskerRDesc A M M' M.X _ _
 
-omit [MonoidalPreadditive D] in
 /-- The zig carrier contraction is the unique solution of its
 defining equation. -/
-theorem zigContract_unique (p : modTensor A M' M ⟶ A)
+theorem zigContract_unique
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
     {e : modTensor A M M' ⊗ M.X ⟶ M.X}
@@ -272,6 +274,12 @@ theorem zigContract_unique (p : modTensor A M' M ⟶ A)
 contraction: the multi-level word collapses to the carrier
 contraction. -/
 theorem pairInv_concat_contract3_single
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
@@ -329,14 +337,12 @@ theorem pairInv_concat_contract3_single
     rw [reassoc_of% hx, whiskerRight_modTensorπ_zigContract]
   exact (hL2.trans hnat).trans hR.symm
 
-omit [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The image of a copairing splits into the copairing and the
 pair comparison. -/
-theorem copairImage_eq (c : A ⟶ modTensor A M M') :
+theorem copairImage_eq [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M') :
     copairImage A c = (η[A] ≫ c) ≫ modMultiPairInv A M M' := by
   simp only [copairImage]
   rw [← Category.assoc]
@@ -346,7 +352,14 @@ theorem copairImage_eq (c : A ⟶ modTensor A M M') :
 singleton comparison, the multi-level zig composite is the
 carrier insertion of the copairing followed by the carrier
 contraction.  No zigzag law enters. -/
-theorem zigComposite_eq_carrier (c : A ⟶ modTensor A M M')
+theorem zigComposite_eq_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
@@ -398,7 +411,14 @@ theorem zigComposite_eq_carrier (c : A ⟶ modTensor A M M')
       ((η[A] ≫ c) ▷ modList A [M]) ≫ t) hcore).trans hfin)
 
 /-- The carrier zig identity from the multi-level zig law. -/
-theorem zig_carrier_of_multi (c : A ⟶ modTensor A M M')
+theorem zig_carrier_of_multi
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
@@ -409,7 +429,14 @@ theorem zig_carrier_of_multi (c : A ⟶ modTensor A M M')
     ((zigComposite_eq_carrier A c p hp).symm.trans h)
 
 /-- The multi-level zig law from the carrier zig identity. -/
-theorem multi_of_zig_carrier (c : A ⟶ modTensor A M M')
+theorem multi_of_zig_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
@@ -425,17 +452,14 @@ end ZigCarrier
 
 section ZagCarrier
 
-variable [IsCommMonObj A] {M M' : Mod D A}
-
-omit [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The leading contraction fold against the singleton
 comparison: pair the leading window, act on the remainder from
 the left. -/
-theorem contract3LFold_single (p : modTensor A M' M ⟶ A) :
+theorem contract3LFold_single
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A) :
     contract3LFold A p M' ≫ (modMultiSingle A M').hom =
       (α_ M'.X M.X (M'.X ⊗ 𝟙_ D)).inv ≫
         ((modTensorπ A M' M ≫ p) ▷ (M'.X ⊗ 𝟙_ D)) ≫
@@ -482,15 +506,14 @@ theorem contract3LFold_single (p : modTensor A M' M ⟶ A) :
   exact ((congrArg (fun t => t ≫ (modMultiSingle A M').hom)
     hfold).trans hstep).trans (hmid.trans htail)
 
-omit [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A leading window against the resolved contraction: stripping
 the unit seed of the fold, the window meets the carrier
 contraction word. -/
-theorem window_contract3LFold_carrier (p : modTensor A M' M ⟶ A)
+theorem window_contract3LFold_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (w : (M.X ⊗ A) ⊗ M'.X ⟶ M.X ⊗ M'.X) :
     (M'.X ◁ ((ρ_ ((M.X ⊗ A) ⊗ M'.X)).inv ≫
         ((w ▷ modList A []) ≫
@@ -536,13 +559,15 @@ theorem window_contract3LFold_carrier (p : modTensor A M' M ⟶ A)
     rw [reassoc_of% hx, reassoc_of% hcoh]
   exact h1.trans h2
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The descent condition of the leading carrier contraction: the
 two legs of the crossing pair agree, through the boundary
 condition of the fold-level contraction. -/
-theorem zagContract_cond (p : modTensor A M' M ⟶ A)
+theorem zagContract_cond
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
     (M'.X ◁ modTensorLegM A M M') ≫ (α_ M'.X M.X M'.X).inv ≫
@@ -593,7 +618,12 @@ theorem zagContract_cond (p : modTensor A M' M ⟶ A)
 inserted `M`-half through the descended pairing and the resulting
 scalar acts on the inserted `M'`-half from the left.  Descended
 along the left-whiskered module-tensor coequalizer. -/
-noncomputable def zagContract (p : modTensor A M' M ⟶ A)
+noncomputable def zagContract
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
     M'.X ⊗ modTensor A M M' ⟶ M'.X :=
@@ -602,13 +632,14 @@ noncomputable def zagContract (p : modTensor A M' M ⟶ A)
       ((modTensorπ A M' M ≫ p) ▷ M'.X) ≫ actLeft A M'.X)
     (zagContract_cond A p hp)
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Defining equation of the zag carrier contraction: the pairing
 occurrence is isolated as `modTensorπ A M' M ≫ p`. -/
 @[reassoc (attr := simp)]
 theorem whiskerLeft_modTensorπ_zagContract
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
@@ -617,12 +648,14 @@ theorem whiskerLeft_modTensorπ_zagContract
         ((modTensorπ A M' M ≫ p) ▷ M'.X) ≫ actLeft A M'.X :=
   whiskerLeft_modTensorπ_whiskerDesc A M M' M'.X _ _
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The zag carrier contraction is the unique solution of its
 defining equation. -/
-theorem zagContract_unique (p : modTensor A M' M ⟶ A)
+theorem zagContract_unique
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
     {e : M'.X ⊗ modTensor A M M' ⟶ M'.X}
@@ -638,6 +671,12 @@ theorem zagContract_unique (p : modTensor A M' M ⟶ A)
 contraction: the multi-level word collapses to the carrier
 contraction. -/
 theorem pairInv_concat_contract3L_single
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
@@ -718,7 +757,14 @@ theorem pairInv_concat_contract3L_single
 singleton comparison, the multi-level zag composite is the
 carrier insertion of the copairing followed by the carrier
 contraction.  No zigzag law enters. -/
-theorem zagComposite_eq_carrier (c : A ⟶ modTensor A M M')
+theorem zagComposite_eq_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :
@@ -771,7 +817,14 @@ theorem zagComposite_eq_carrier (c : A ⟶ modTensor A M M')
       (modList A [M'] ◁ (η[A] ≫ c)) ≫ t) hcore).trans hfin)
 
 /-- The carrier zag identity from the multi-level zag law. -/
-theorem zag_carrier_of_multi (c : A ⟶ modTensor A M M')
+theorem zag_carrier_of_multi
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
@@ -782,7 +835,14 @@ theorem zag_carrier_of_multi (c : A ⟶ modTensor A M M')
     ((zagComposite_eq_carrier A c p hp).symm.trans h)
 
 /-- The multi-level zag law from the carrier zag identity. -/
-theorem multi_of_zag_carrier (c : A ⟶ modTensor A M M')
+theorem multi_of_zag_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
@@ -798,14 +858,19 @@ end ZagCarrier
 
 section Datum
 
-variable [IsCommMonObj A] {M M' : Mod D A}
-variable {d : ModDualityDatum A M M'}
-
 /-- **The carrier zig identity of a zigzag datum**: insert the
 copairing on the left of the carrier and contract; the composite
 is the identity of `M.X`. -/
 @[reassoc]
-theorem zigzag_carrier_zig (hz : ModZigzagDatum A d) :
+theorem zigzag_carrier_zig
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    {d : ModDualityDatum A M M'}
+    (hz : ModZigzagDatum A d) :
     (λ_ M.X).inv ≫ ((η[A] ≫ d.copair) ▷ M.X) ≫
       zigContract A d.pair d.pair_linear = 𝟙 M.X :=
   zig_carrier_of_multi A d.copair d.pair d.pair_linear hz.zig
@@ -814,7 +879,15 @@ theorem zigzag_carrier_zig (hz : ModZigzagDatum A d) :
 copairing on the right of the dual carrier and contract; the
 composite is the identity of `M'.X`. -/
 @[reassoc]
-theorem zigzag_carrier_zag (hz : ModZigzagDatum A d) :
+theorem zigzag_carrier_zag
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    {d : ModDualityDatum A M M'}
+    (hz : ModZigzagDatum A d) :
     (ρ_ M'.X).inv ≫ (M'.X ◁ (η[A] ≫ d.copair)) ≫
       zagContract A d.pair d.pair_linear = 𝟙 M'.X :=
   zag_carrier_of_multi A d.copair d.pair d.pair_linear hz.zag
@@ -822,6 +895,13 @@ theorem zigzag_carrier_zag (hz : ModZigzagDatum A d) :
 /-- **The converse packaging**: the multi-level zigzag laws from
 the carrier-level triangle identities. -/
 theorem modZigzagDatum_of_carrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    {d : ModDualityDatum A M M'}
     (hzig : (λ_ M.X).inv ≫ ((η[A] ≫ d.copair) ▷ M.X) ≫
       zigContract A d.pair d.pair_linear = 𝟙 M.X)
     (hzag : (ρ_ M'.X).inv ≫ (M'.X ◁ (η[A] ≫ d.copair)) ≫

@@ -16,24 +16,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- **The base-change comparison is natural**, at the carrier. -/
-theorem baseChangeFreeInv_natural {V W : D} (f : V ⟶ W) :
+theorem baseChangeFreeInv_natural
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    {V W : D} (f : V ⟶ W) :
     (B ◁ f) ≫ baseChangeFreeInv A B φ W =
       baseChangeFreeInv A B φ V ≫
         (baseChangeMapMod A B φ (freeModMap A f)).hom := by
@@ -55,12 +47,14 @@ theorem baseChangeFreeInv_natural {V W : D} (f : V ⟶ W) :
     MonoidalCategory.whiskerLeft_comp_assoc]
   rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- **The base-change comparison is natural**, as module maps. -/
-theorem baseChangeFreeIso_inv_natural {V W : D} (f : V ⟶ W) :
+theorem baseChangeFreeIso_inv_natural
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    {V W : D} (f : V ⟶ W) :
     freeModMap B f ≫ (baseChangeFreeIso A B φ W).inv =
       (baseChangeFreeIso A B φ V).inv ≫
         baseChangeMapMod A B φ (freeModMap A f) := by
@@ -71,12 +65,13 @@ theorem baseChangeFreeIso_inv_natural {V W : D} (f : V ⟶ W) :
       (baseChangeMapMod A B φ (freeModMap A f)).hom
   exact baseChangeFreeInv_natural A B φ f
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- **A section of a free morphism base-changes.** -/
-theorem exists_section_baseChange (ψ : A ⟶ B) [IsMonHom ψ]
+theorem exists_section_baseChange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (ψ : A ⟶ B) [IsMonHom ψ]
     {V W : D} (g : V ⟶ W)
     (s : freeMod A W ⟶ freeMod A V)
     (hs : s ≫ freeModMap A g = 𝟙 (freeMod A W)) :

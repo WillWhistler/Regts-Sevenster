@@ -55,17 +55,15 @@ summand it names is RS21's `s_h`, with no chord sign in it.
 
 section DataFamily
 
-variable {L : Type} [LinearOrder L] (V : Fragment L)
+variable {L : Type}
 
 /-- **A choice of transition system and orientation at every good
 subset.** -/
-def DataFamily : Type :=
+def DataFamily [LinearOrder L] (V : Fragment L) : Type :=
   ∀ (s : Finset V.Flag) (hc : ∀ f ∈ s, V.pairing f ∈ s),
     (EdgeSubset.mk s hc).Eulerian →
     Nonempty (EdgeSubset.mk s hc).CanonData →
       Σ κ : (EdgeSubset.mk s hc).RelTransitionSystem, κ.Orientation
-
-variable {V}
 
 end DataFamily
 
@@ -79,9 +77,7 @@ which is the direction this construction runs.
 
 section UnglueData
 
-variable {L : Type} [LinearOrder L] {V : Fragment L} {i j : L}
-  (hij : i ≠ j)
-  (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+variable {L : Type}
 
 open Classical in
 /-- **The glued fragment's data, read on the base.**  At a subset
@@ -89,6 +85,8 @@ whose drop is closed under the rewire the base's data are the unglue
 of the glued fragment's; elsewhere any choice serves, the summand
 vanishing there. -/
 noncomputable def unglueDataOpen
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
     (𝒟' : DataFamily (V.gluePairOpen i j hij hopen)) : DataFamily V :=
   fun s hc hE hne =>
     if hag : ∀ f ∈ V.dropSubset i j s,
@@ -132,6 +130,8 @@ open Classical in
 case the drop is abstracted, so that the dependent proofs the
 definition carries can be substituted rather than rewritten. -/
 theorem unglueDataOpen_apply
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
     (𝒟' : DataFamily (V.gluePairOpen i j hij hopen))
     (s : Finset V.Flag) (hc : ∀ f ∈ s, V.pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc : EdgeSubset V).Eulerian)
@@ -160,14 +160,13 @@ end UnglueData
 
 section UnglueDataClosed
 
-variable {L : Type} [LinearOrder L] {V : Fragment L} {i j : L}
-  (hij : i ≠ j)
-  (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- A closed glue does not change any vertex's degree, so the lift is
 Eulerian exactly when the glued subset is. -/
-theorem eulerian_liftClosed_iff' (b : Bool)
+theorem eulerian_liftClosed_iff' {V : Fragment L} {i : L} {j : L}
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (b : Bool)
     (s' : Finset (SurvivingFlag V i j))
     (hc' : ∀ f ∈ s', (V.gluePairClosed i j hclosed).pairing f ∈ s')
     (hc : ∀ f ∈ liftSubsetClosed s' b,
@@ -190,6 +189,8 @@ open Classical in
 Here no agreement is needed: a closed subset's drop is always closed
 under the glued pairing, the two cut flags being partners. -/
 noncomputable def unglueDataClosed
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed)) : DataFamily V :=
   fun s hc hE hne =>
     have hc' : ∀ f ∈ V.dropSubset i j s,
@@ -238,6 +239,8 @@ abstracted so that the dependent proofs the definition carries can be
 substituted rather than rewritten: rewriting them in place is not
 type correct, every one of them mentioning the drop. -/
 theorem unglueDataClosed_apply
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (s : Finset V.Flag) (hc : ∀ f ∈ s, V.pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc : EdgeSubset V).Eulerian)

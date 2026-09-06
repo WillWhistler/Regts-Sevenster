@@ -18,18 +18,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-- **Surviving alternating powers become surviving symmetric
 powers after the odd twist.** -/
-theorem not_isZero_symPow_twist (L : OddLine D) (R : Mod D A)
+theorem not_isZero_symPow_twist
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D] (A : D) [MonObj A]
+    [IsCommMonObj A]
+    (L : OddLine D) (R : Mod D A)
     (hA : ∀ n : ℕ, ¬ IsZero (altPow A R.X n)) (n : ℕ) :
     ¬ IsZero (symPow A ((tensorLeftMod A L.obj R).X) n) := by
   cases n with

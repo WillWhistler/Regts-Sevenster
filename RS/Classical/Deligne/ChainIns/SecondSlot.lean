@@ -22,31 +22,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-! ## Braided crossings for the second-slot insertion -/
 
 section InsQCross
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A tensor pair passes the carried crossing of a letter: the
 crossing is natural in the context and in the tail at once. -/
-private theorem whiskerLeft_tensorHom_cross [BraidedCategory D]
+private theorem whiskerLeft_tensorHom_cross
+    [Category.{v} D] [MonoidalCategory D]
+    [BraidedCategory D]
     (X : D) {B B' T T' : D} (f : B ⟶ B') (g : T ⟶ T') :
     (X ◁ (f ⊗ₘ g)) ≫ (α_ X B' T').inv ≫
         ((β_ X B').hom ▷ T') ≫ (α_ B' X T').hom =
@@ -59,17 +45,11 @@ private theorem whiskerLeft_tensorHom_cross [BraidedCategory D]
     rw [braidPast_natural_tail, braidPast_natural_context_assoc]
   simpa only [braidPast_hom, Category.assoc] using h
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The carried crossing of a letter into the second slot of the
 first pair passes the interchange: crossing then interchanging is
 interchanging then crossing the merged context. -/
-private theorem cross_past_tensorμ [BraidedCategory D]
+private theorem cross_past_tensorμ [Category.{v} D] [MonoidalCategory D]
+    [BraidedCategory D]
     (X P Q R S : D) :
     (α_ X (P ⊗ Q) (R ⊗ S)).inv ≫
         ((α_ X P Q).inv ▷ (R ⊗ S)) ≫
@@ -133,17 +113,11 @@ private theorem cross_past_tensorμ [BraidedCategory D]
   rw [reassoc_of% hhead, ← braidPast_natural_tail_assoc, htail,
     reassoc_of% hctx, whiskerLeft_inv_hom_assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- An insertion into the first factor of the second pair, reached
 by carrying the letter across the first factor, passes the
 interchange. -/
-private theorem crossIns_past_tensorμ [BraidedCategory D]
+private theorem crossIns_past_tensorμ [Category.{v} D] [MonoidalCategory D]
+    [BraidedCategory D]
     {X P Q Q₂ R S : D} (f : X ⊗ Q ⟶ Q₂) :
     (α_ X (P ⊗ Q) (R ⊗ S)).inv ≫
         (((α_ X P Q).inv ≫ ((β_ X P).hom ▷ Q) ≫
@@ -167,15 +141,9 @@ end InsQCross
 
 section InsQSurgery
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Absorb a whiskered morphism into the second tensor factor. -/
 private theorem tensorHom_whiskerLeft_absorb
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₂ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (g : Y₂ ⟶ Z₂) (h : Y₁ ⊗ Z₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (Y₁ ◁ g) ≫ h = (a ⊗ₘ (b ≫ g)) ≫ h := by
@@ -187,13 +155,18 @@ end InsQSurgery
 
 section InsQ2Laws
 
-variable (M M' : Mod D A)
-
 /-- **The second-slot insertion passes the stage multiplication**:
 inserting a letter into the merged stage is inserting into the
 first factor's second slot and multiplying, up to the index
 transport. -/
-theorem chainInsQ_mul (p q r s : ℕ) :
+theorem chainInsQ_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q r s : ℕ) :
     (M.X ◁ chainMul2 A M M' p q r s) ≫
         chainInsQ A M M' (p + 1 + r) (q + 1 + s) =
       (α_ M.X (chainStage2 A M M' p q)
@@ -915,7 +888,14 @@ theorem chainInsQ_mul (p q r s : ℕ) :
 /-- **The transition square for the second-slot insertion**: the
 insertion passes the seed transition, raising the merged arities
 by one on each side. -/
-theorem chainInsQ_delta2 (d : ModDualityDatum A M M') (p q : ℕ) :
+theorem chainInsQ_delta2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (p q : ℕ) :
     (M.X ◁ chainDelta2 A M M' d p q) ≫
         chainInsQ A M M' (p + 1) (q + 1) =
       chainInsQ A M M' p q ≫ chainDelta2 A M M' d p (q + 1) := by

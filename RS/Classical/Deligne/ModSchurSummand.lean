@@ -16,20 +16,14 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Y)]
-variable (A : D) [MonObj A]
+variable {D : Type u}
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **Module-level Schur vanishing passes to retracts.** -/
-theorem ModSchurKilled.of_split {X Y : D} [ModObj A X] [ModObj A Y]
+theorem ModSchurKilled.of_split
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A]
+    {X Y : D} [ModObj A X] [ModObj A Y]
     (s : X ⟶ Y) [IsModHom A s] (r : Y ⟶ X) [IsModHom A r]
     (hsr : s ≫ r = 𝟙 X) (P : SchurPackage.{v})
     {lam : YoungDiagram} (h : ModSchurKilled A Y P lam) :
@@ -54,12 +48,13 @@ theorem ModSchurKilled.of_split {X Y : D} [ModObj A X] [ModObj A Y]
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
 
-omit [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **Module-level Schur vanishing passes to the first biproduct
 summand.** -/
-theorem ModSchurKilled.of_biprod_left (M N : Mod D A)
+theorem ModSchurKilled.of_biprod_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] (A : D) [MonObj A]
+    (M N : Mod D A)
     (P : SchurPackage.{v}) {lam : YoungDiagram}
     (h : ModSchurKilled A (modBiprod A M N).X P lam) :
     ModSchurKilled A M.X P lam := by
@@ -70,12 +65,13 @@ theorem ModSchurKilled.of_biprod_left (M N : Mod D A)
   show (biprod.inl : M.X ⟶ M.X ⊞ N.X) ≫ biprod.fst = 𝟙 M.X
   exact biprod.inl_fst
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Y)] in
 /-- **Module-level Schur vanishing is invariant under
 isomorphism.** -/
-theorem ModSchurKilled.of_modIso {M N : Mod D A} (e : M ≅ N)
+theorem ModSchurKilled.of_modIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A]
+    {M N : Mod D A} (e : M ≅ N)
     (P : SchurPackage.{v}) {lam : YoungDiagram}
     (h : ModSchurKilled A N.X P lam) :
     ModSchurKilled A M.X P lam := by

@@ -72,14 +72,6 @@ theorem oddPartnerSign_cast_sq (ℓ : ℕ) (c : Fin (2 * ℓ)) :
       ((oddPartnerSign ℓ c : ℤ) : ℂ) = 1 :=
   oddPartnerSign_sq ℓ c
 
-/-! ## Subset-sum reindexing -/
-
-namespace Fragment
-
-variable {α : Type} {W : Fragment α} {i j : α}
-
-end Fragment
-
 /-! ## The closed-case correspondence engine -/
 
 namespace EdgeSubset
@@ -95,48 +87,6 @@ theorem mem_throughFlags_iff {β : Type} {V : Fragment β}
       (∃ j : β, V.attach (V.pairing f) = Sum.inr j) := by
   unfold EdgeSubset.throughFlags
   exact Finset.mem_filter
-
-section ClosedEngine
-
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-  (b : Bool)
-  (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
-  (hc : ∀ f ∈ liftSubsetClosed s' b,
-    W.pairing f ∈ liftSubsetClosed s' b)
-
-/-- The glued edge subset (closed case). -/
-local notation "Fg" =>
-  (EdgeSubset.mk s' hc' : EdgeSubset (W.gluePairClosed i j hclosed))
-
-/-- The lifted edge subset (closed case). -/
-local notation "Fl" =>
-  (EdgeSubset.mk (liftSubsetClosed s' b) hc : EdgeSubset W)
-
-end ClosedEngine
-
-/-! ### The through-product across the closed glue -/
-
-section ClosedEngine
-
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-  (b : Bool)
-  (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
-  (hc : ∀ f ∈ liftSubsetClosed s' b,
-    W.pairing f ∈ liftSubsetClosed s' b)
-
-local notation "Fg" =>
-  (EdgeSubset.mk s' hc' : EdgeSubset (W.gluePairClosed i j hclosed))
-
-local notation "Fl" =>
-  (EdgeSubset.mk (liftSubsetClosed s' b) hc : EdgeSubset W)
-
-end ClosedEngine
 
 /-! ### List and membership helpers -/
 
@@ -191,7 +141,7 @@ theorem multiset_map_eq_of_bij {γ δ X : Type _}
 
 section ClosedEngine
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -221,7 +171,6 @@ local notation "oW" =>
 
 /-! ### The in-flag lists across the closed glue -/
 
-omit [LinearOrder α] in
 /-- The lifted in-flag list is a permutation of the projected
 glued in-flag list. -/
 theorem relInFlagsAt_perm_closed (v : W.Vertex) :
@@ -252,7 +201,6 @@ theorem relInFlagsAt_perm_closed (v : W.Vertex) :
         (glueAttach_inl_iff f₀ v).mp hv,
         (unglueIsOut_val o'.isOut f₀).trans hout⟩
 
-omit [LinearOrder α] in
 /-- Members of the projected glued in-flag list are internal in
 the lift. -/
 theorem mem_map_relInFlagsAt_internal {v : W.Vertex} :
@@ -265,7 +213,6 @@ theorem mem_map_relInFlagsAt_internal {v : W.Vertex} :
 
 /-! ### Pointwise core data agreement -/
 
-omit [LinearOrder α] in
 /-- The core-colour entry at the matched flag agrees. -/
 private theorem coreOdd_match_entry_closed {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -284,7 +231,6 @@ private theorem coreOdd_match_entry_closed {ℓ : ℕ}
   exact (congrArg φW.val (Subtype.ext hmv)).trans
     (hφ (κ'.match_ f') hmcoreW h2)
 
-omit [LinearOrder α] in
 /-- The core odd pair function agrees across the closed glue. -/
 private theorem coreOddPairFn_lift_closed {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -305,7 +251,6 @@ private theorem coreOddPairFn_lift_closed {ℓ : ℕ}
       (internalFlags_subset_coreFlags _ ((κW).match_mem _ hintW))
       (internalFlags_subset_coreFlags _ (κ'.match_mem _ hint))
 
-omit [LinearOrder α] in
 /-- The core odd sign function agrees across the closed glue. -/
 private theorem coreOddSignFn_lift_closed {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -325,7 +270,6 @@ private theorem coreOddSignFn_lift_closed {ℓ : ℕ}
 
 /-! ### The list conversions -/
 
-omit [LinearOrder α] in
 /-- Converting the flat-mapped pair list along the projection. -/
 private theorem flatMap_pair_map_val {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -356,7 +300,6 @@ private theorem flatMap_pair_map_val {ℓ : ℕ}
       (H1 f'.val (List.mem_map.mpr
         ⟨f', List.mem_cons_self, rfl⟩))
 
-omit [LinearOrder α] in
 /-- Converting the mapped sign list along the projection. -/
 private theorem map_sign_map_val {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -390,7 +333,7 @@ private theorem map_sign_map_val {ℓ : ℕ}
 /-! ### The vertex data transports -/
 
 /-- The even colour multiset agrees across the closed glue. -/
-theorem evenColoursAt_transport_closed {k : ℕ}
+theorem evenColoursAt_transport_closed [LinearOrder α] {k : ℕ}
     (ψW : (Fl).EvenColouring k) (ψ' : (Fg).EvenColouring k)
     (hψ : ∀ (g : SurvivingFlag W i j)
       (h1 : g.val ∉ liftSubsetClosed s' b) (h2 : g ∉ s'),
@@ -434,7 +377,6 @@ theorem evenColoursAt_transport_closed {k : ℕ}
   · intro y _
     exact hψ y.val (hemb y) y.prop
 
-omit [LinearOrder α] in
 /-- The core odd sign at a vertex agrees across the closed
 glue. -/
 theorem coreOddSignAt_transport_closed {ℓ : ℕ}
@@ -457,7 +399,6 @@ theorem coreOddSignAt_transport_closed {ℓ : ℕ}
     (fun _ hf => mem_internal_of_mem_relInFlagsAt hf)]
   rfl
 
-omit [LinearOrder α] in
 /-- The evaluated core odd list at a vertex agrees across the
 closed glue. -/
 theorem evalOdd_coreOddListAt_transport_closed {k ℓ : ℕ}
@@ -487,7 +428,7 @@ theorem evalOdd_coreOddListAt_transport_closed {k ℓ : ℕ}
 /-! ### Boundary-match transports -/
 
 /-- **The vertex factor transport across the closed glue.** -/
-theorem vertexFactor_transport_closed {k ℓ : ℕ}
+theorem vertexFactor_transport_closed [LinearOrder α] {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (ψW : (Fl).EvenColouring k) (ψ' : (Fg).EvenColouring k)
     (hψ : ∀ (g : SurvivingFlag W i j)

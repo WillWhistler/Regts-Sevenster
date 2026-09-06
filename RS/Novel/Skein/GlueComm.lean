@@ -19,7 +19,7 @@ namespace RS
 
 namespace Fragment
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type}
 
 /-! ### Label plumbing -/
 
@@ -85,7 +85,6 @@ private def doubleSurvivingSwap (W : Fragment α) {i j k l : α}
   left_inv _ := Subtype.ext (Subtype.ext rfl)
   right_inv _ := Subtype.ext (Subtype.ext rfl)
 
-omit [DecidableEq α] in
 /-- The partner of a flag can be the boundary flag of at most one
 label, so testing four labels in turn gives five cases: a match at
 one of them, carrying the failures before it, or no match at all. -/
@@ -109,7 +108,6 @@ private theorem partner_cases (W : Fragment α) (f : W.Flag) (a b c d : α) :
   · exact Or.inr (Or.inr (Or.inr (Or.inl ⟨ha, hb, hc, hd⟩)))
   exact Or.inr (Or.inr (Or.inr (Or.inr ⟨ha, hb, hc, hd⟩)))
 
-omit [DecidableEq α] in
 /-- The swap intertwines the two attachment maps.  Both sides trace
 the same flag of `W` down to `W.attach`: outer glue to inner glue to
 `W`, and back up the other order.  The vertex types are all `W.Vertex`
@@ -176,7 +174,8 @@ private theorem doubleGlueAttach_comm (W : Fragment α) {i j k l : α}
 -- The restricted pairing sends k's boundary flag to l's in the
 -- closed ij fragment.
 set_option linter.unusedSectionVars false in
-private theorem closedClosed_second_ij (W : Fragment α) {i j k l : α}
+private theorem closedClosed_second_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hclosed_ij : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
     (hclosed_kl : W.pairing (W.boundaryFlag k) = W.boundaryFlag l) :
@@ -188,7 +187,8 @@ private theorem closedClosed_second_ij (W : Fragment α) {i j k l : α}
 -- The restricted pairing sends i's boundary flag to j's in the
 -- closed kl fragment.
 set_option linter.unusedSectionVars false in
-private theorem closedClosed_second_kl (W : Fragment α) {i j k l : α}
+private theorem closedClosed_second_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hclosed_ij : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
     (hclosed_kl : W.pairing (W.boundaryFlag k) = W.boundaryFlag l) :
@@ -200,7 +200,8 @@ private theorem closedClosed_second_kl (W : Fragment α) {i j k l : α}
 /-- Configuration (4): commutativity when both `{i, j}` and
 `{k, l}` are edges of `W`.  Both glues are closed in both orders,
 giving circles `W.circles + 2` with the pairing restricted. -/
-private def closedClosed_equiv (W : Fragment α) {i j k l : α}
+private def closedClosed_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (_hij : i ≠ j) (_hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hclosed_ij : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
@@ -227,7 +228,6 @@ private def closedClosed_equiv (W : Fragment α) {i j k l : α}
 
 /-! ### Configuration (0): both pairs are open and disjoint (open-open) -/
 
-omit [DecidableEq α] in
 /-- Local helper: value of rewire in the "else" branch. -/
 private theorem rewire_val_ne' {W : Fragment α} {i j : α}
     {hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j}
@@ -237,7 +237,6 @@ private theorem rewire_val_ne' {W : Fragment α} {i j : α}
     (rewire hopen f).val = W.pairing f.val := by
   unfold rewire; simp [dif_neg hfi, dif_neg hfj]
 
-omit [DecidableEq α] in
 /-- Local helper: value of rewire in the first branch (partner is bFi). -/
 private theorem rewire_val_left' {W : Fragment α} {i j : α}
     {hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j}
@@ -246,7 +245,6 @@ private theorem rewire_val_left' {W : Fragment α} {i j : α}
     (rewire hopen f).val = W.pairing (W.boundaryFlag j) := by
   unfold rewire; simp [dif_pos hfi]
 
-omit [DecidableEq α] in
 /-- Local helper: value of rewire in the second branch (partner is bFj). -/
 private theorem rewire_val_right' {W : Fragment α} {i j : α}
     {hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j}
@@ -258,7 +256,8 @@ private theorem rewire_val_right' {W : Fragment α} {i j : α}
 
 -- The kl glue is open in the ij-first fragment.
 set_option linter.unusedSectionVars false in
-private theorem openOpen_second_open_ij (W : Fragment α) {i j k l : α}
+private theorem openOpen_second_open_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -283,7 +282,8 @@ private theorem openOpen_second_open_ij (W : Fragment α) {i j k l : α}
 
 -- The ij glue is open in the kl-first fragment.
 set_option linter.unusedSectionVars false in
-private theorem openOpen_second_open_kl (W : Fragment α) {i j k l : α}
+private theorem openOpen_second_open_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -308,7 +308,8 @@ private theorem openOpen_second_open_kl (W : Fragment α) {i j k l : α}
 are open (not edges) and disjoint (no cross-edges between the two
 pairs). Both glues are open in both orders, giving circles `W.circles`
 with a double-rewire that commutes. -/
-private def openOpen_disjoint_equiv (W : Fragment α) {i j k l : α}
+private def openOpen_disjoint_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -595,7 +596,8 @@ private def openOpen_disjoint_equiv (W : Fragment α) {i j k l : α}
 
 -- The kl glue is open after a closed ij glue.
 set_option linter.unusedSectionVars false in
-private theorem closedOpen_second_open (W : Fragment α) {i j k l : α}
+private theorem closedOpen_second_open [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hclosed_ij : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
     (hopen_kl : W.pairing (W.boundaryFlag k) ≠ W.boundaryFlag l) :
@@ -607,7 +609,8 @@ private theorem closedOpen_second_open (W : Fragment α) {i j k l : α}
 
 -- The ij glue is closed after an open kl glue.
 set_option linter.unusedSectionVars false in
-private theorem closedOpen_second_closed (W : Fragment α) {i j k l : α}
+private theorem closedOpen_second_closed [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hclosed_ij : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
@@ -630,7 +633,8 @@ private theorem closedOpen_second_closed (W : Fragment α) {i j k l : α}
 /-- Configuration (1): commutativity when `{i, j}` is an edge and
 `{k, l}` is not.  The ij-first order is closed then open; the kl-first
 order is open then closed; both give circles `W.circles + 1`. -/
-private def closedOpen_equiv (W : Fragment α) {i j k l : α}
+private def closedOpen_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (_hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hclosed_ij : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
@@ -728,7 +732,8 @@ private def closedOpen_equiv (W : Fragment α) {i j k l : α}
 
 -- The ij glue is open after a closed kl glue.
 set_option linter.unusedSectionVars false in
-private theorem openClosed_second_open (W : Fragment α) {i j k l : α}
+private theorem openClosed_second_open [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
     (hclosed_kl : W.pairing (W.boundaryFlag k) = W.boundaryFlag l) :
@@ -740,7 +745,8 @@ private theorem openClosed_second_open (W : Fragment α) {i j k l : α}
 
 -- The kl glue is closed after an open ij glue.
 set_option linter.unusedSectionVars false in
-private theorem openClosed_second_closed (W : Fragment α) {i j k l : α}
+private theorem openClosed_second_closed [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -761,7 +767,8 @@ private theorem openClosed_second_closed (W : Fragment α) {i j k l : α}
 /-- Configuration (1'): commutativity when `{k, l}` is an edge and
 `{i, j}` is not.  The ij-first order is open then closed; the kl-first
 order is closed then open; both give circles `W.circles + 1`. -/
-private def openClosed_equiv (W : Fragment α) {i j k l : α}
+private def openClosed_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (_hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -847,7 +854,8 @@ private def openClosed_equiv (W : Fragment α) {i j k l : α}
 
 -- Second kl-glue is open after ij-glue (cross ik variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_ik_second_open_kl (W : Fragment α) {i j k l : α}
+private theorem oneCross_ik_second_open_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (_hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -866,7 +874,8 @@ private theorem oneCross_ik_second_open_kl (W : Fragment α) {i j k l : α}
 
 -- Second ij-glue is open after kl-glue (cross ik variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_ik_second_open_ij (W : Fragment α) {i j k l : α}
+private theorem oneCross_ik_second_open_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (_hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_kl : W.pairing (W.boundaryFlag k) ≠ W.boundaryFlag l)
@@ -884,7 +893,8 @@ private theorem oneCross_ik_second_open_ij (W : Fragment α) {i j k l : α}
 
 /-- Configuration (2), variant {ik}: one cross-edge `W.pairing(bFi) = bFk`.
 Both glues are open in both orders; circles = `W.circles`. -/
-private def oneCross_ik_equiv (W : Fragment α) {i j k l : α}
+private def oneCross_ik_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1121,7 +1131,8 @@ private def oneCross_ik_equiv (W : Fragment α) {i j k l : α}
 
 -- Second kl-glue is open after ij-glue (cross il variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_il_second_open_kl (W : Fragment α) {i j k l : α}
+private theorem oneCross_il_second_open_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1144,7 +1155,8 @@ private theorem oneCross_il_second_open_kl (W : Fragment α) {i j k l : α}
 
 -- Second ij-glue is open after kl-glue (cross il variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_il_second_open_ij (W : Fragment α) {i j k l : α}
+private theorem oneCross_il_second_open_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (_hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (_hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1167,7 +1179,8 @@ private theorem oneCross_il_second_open_ij (W : Fragment α) {i j k l : α}
 set_option linter.unusedSectionVars false in
 /-- Configuration (2), variant {il}: one cross-edge `W.pairing(bFi) = bFl`.
 Both glues are open in both orders; circles = `W.circles`. -/
-private def oneCross_il_equiv (W : Fragment α) {i j k l : α}
+private def oneCross_il_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1360,7 +1373,8 @@ private def oneCross_il_equiv (W : Fragment α) {i j k l : α}
 
 -- Second kl-glue is open after ij-glue (cross jk variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_jk_second_open_kl (W : Fragment α) {i j k l : α}
+private theorem oneCross_jk_second_open_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (_hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1380,7 +1394,8 @@ private theorem oneCross_jk_second_open_kl (W : Fragment α) {i j k l : α}
 
 -- Second ij-glue is open after kl-glue (cross jk variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_jk_second_open_ij (W : Fragment α) {i j k l : α}
+private theorem oneCross_jk_second_open_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_kl : W.pairing (W.boundaryFlag k) ≠ W.boundaryFlag l)
@@ -1404,7 +1419,8 @@ private theorem oneCross_jk_second_open_ij (W : Fragment α) {i j k l : α}
 set_option linter.unusedSectionVars false in
 /-- Configuration (2), variant {jk}: one cross-edge `W.pairing(bFj) = bFk`.
 Both glues are open in both orders; circles = `W.circles`. -/
-private def oneCross_jk_equiv (W : Fragment α) {i j k l : α}
+private def oneCross_jk_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1600,7 +1616,8 @@ private def oneCross_jk_equiv (W : Fragment α) {i j k l : α}
 
 -- Second kl-glue is open after ij-glue (cross jl variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_jl_second_open_kl (W : Fragment α) {i j k l : α}
+private theorem oneCross_jl_second_open_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1623,7 +1640,8 @@ private theorem oneCross_jl_second_open_kl (W : Fragment α) {i j k l : α}
 
 -- Second ij-glue is open after kl-glue (cross jl variant).
 set_option linter.unusedSectionVars false in
-private theorem oneCross_jl_second_open_ij (W : Fragment α) {i j k l : α}
+private theorem oneCross_jl_second_open_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (_hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1649,7 +1667,8 @@ private theorem oneCross_jl_second_open_ij (W : Fragment α) {i j k l : α}
 set_option linter.unusedSectionVars false in
 /-- Configuration (2), variant {jl}: one cross-edge `W.pairing(bFj) = bFl`.
 Both glues are open in both orders; circles = `W.circles`. -/
-private def oneCross_jl_equiv (W : Fragment α) {i j k l : α}
+private def oneCross_jl_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1848,7 +1867,8 @@ private def oneCross_jl_equiv (W : Fragment α) {i j k l : α}
 
 -- Second kl-glue is CLOSED after ij-glue (two crosses, ik+jl variant).
 set_option linter.unusedSectionVars false in
-private theorem twoCross_ikjl_second_closed_kl (W : Fragment α) {i j k l : α}
+private theorem twoCross_ikjl_second_closed_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (_hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1867,7 +1887,8 @@ private theorem twoCross_ikjl_second_closed_kl (W : Fragment α) {i j k l : α}
 
 -- Second ij-glue is CLOSED after kl-glue (two crosses, ik+jl variant).
 set_option linter.unusedSectionVars false in
-private theorem twoCross_ikjl_second_closed_ij (W : Fragment α) {i j k l : α}
+private theorem twoCross_ikjl_second_closed_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (_hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_kl : W.pairing (W.boundaryFlag k) ≠ W.boundaryFlag l)
@@ -1886,7 +1907,8 @@ private theorem twoCross_ikjl_second_closed_ij (W : Fragment α) {i j k l : α}
 set_option linter.unusedSectionVars false in
 /-- Configuration (3), variant {ik,jl}: two cross-edges.
 First glue is open, second is closed; circles = `W.circles + 1`. -/
-private def twoCross_ikjl_equiv (W : Fragment α) {i j k l : α}
+private def twoCross_ikjl_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1944,7 +1966,8 @@ private def twoCross_ikjl_equiv (W : Fragment α) {i j k l : α}
 
 -- Second kl-glue is CLOSED after ij-glue (two crosses, il+jk variant).
 set_option linter.unusedSectionVars false in
-private theorem twoCross_iljk_second_closed_kl (W : Fragment α) {i j k l : α}
+private theorem twoCross_iljk_second_closed_kl [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (_hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -1965,7 +1988,8 @@ private theorem twoCross_iljk_second_closed_kl (W : Fragment α) {i j k l : α}
 
 -- Second ij-glue is CLOSED after kl-glue (two crosses, il+jk variant).
 set_option linter.unusedSectionVars false in
-private theorem twoCross_iljk_second_closed_ij (W : Fragment α) {i j k l : α}
+private theorem twoCross_iljk_second_closed_ij [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (_hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_kl : W.pairing (W.boundaryFlag k) ≠ W.boundaryFlag l)
@@ -1987,7 +2011,8 @@ private theorem twoCross_iljk_second_closed_ij (W : Fragment α) {i j k l : α}
 set_option linter.unusedSectionVars false in
 /-- Configuration (3), variant {il,jk}: two cross-edges.
 First glue is open, second is closed; circles = `W.circles + 1`. -/
-private def twoCross_iljk_equiv (W : Fragment α) {i j k l : α}
+private def twoCross_iljk_equiv [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l)
     (hopen_ij : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
@@ -2047,7 +2072,8 @@ private def twoCross_iljk_equiv (W : Fragment α) {i j k l : α}
 
 /-- Two single-pair glues at disjoint label pairs commute up to
 fragment equivalence. -/
-def gluePairComm (W : Fragment α) {i j k l : α}
+def gluePairComm [DecidableEq α]
+    (W : Fragment α) {i j k l : α}
     (hij : i ≠ j) (hkl : k ≠ l)
     (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     ((W.gluePair i j hij).gluePair

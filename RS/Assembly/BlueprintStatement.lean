@@ -2,6 +2,7 @@ import RS.Novel.Skein.LoopExample
 import RS.TheoremConverse
 import RS.TheoremForward
 import RS.TheoremQuant
+import RS.Summit
 
 /-!
 # The statement surface, pinned
@@ -23,15 +24,16 @@ convention could silently be wrong — `mixedPartition`, which carries
 the circuit sign, the Eulerian condition and the odd-colour
 bookkeeping — the last section pins a value instead of a type.
 
-The one statement the development *assumes* is held to a higher
-standard, because nothing downstream can contradict it: the cited
-input is pinned by content, and so is every predicate its hypothesis
-list is phrased in.  `Blueprint.lean` and its parts then pin what
+Deligne's theorem is pinned by content, as is every predicate its
+hypothesis list is phrased in. The corollary definitions are likewise
+pinned by content so the meaning of rank, minimum and prescribed
+dimensions is visible. `Blueprint.lean` and its parts then pin what
 the summits depend on.
 
-The definitions all live in `RS/Definitions.lean`, the
+The main definitions live in `RS/Definitions.lean`, the
 self-contained statement surface that the comparator certification
-trusts and the rest of the tree imports.
+trusts. `RS/DimensionDefinitions.lean` adds the growth, minimum and
+prescribed-dimension surface and imports only that main surface.
 -/
 
 namespace RS
@@ -81,6 +83,43 @@ a partition function, with and without a bound on the dimensions. -/
 #guard_msgs in
 #check @IsMixedPartitionFunctionBounded
 
+/-- info: TotalBoundedMixedModel : (ClosedFragment → ℂ) → ℕ → Type -/
+#guard_msgs in
+#check @TotalBoundedMixedModel
+
+/-- info: IsMixedPartitionFunctionTotalBounded : (ClosedFragment → ℂ) → ℕ → Prop -/
+#guard_msgs in
+#check @IsMixedPartitionFunctionTotalBounded
+
+/-! The total bound is pinned by content: its witness bounds the
+sum of both dimensions and evaluates to the original parameter. -/
+
+set_option pp.funBinderTypes true in
+/--
+info: structure RS.TotalBoundedMixedModel (f : ClosedFragment → ℂ) (B : ℕ) : Type
+number of parameters: 2
+fields:
+  RS.TotalBoundedMixedModel.k : ℕ
+  RS.TotalBoundedMixedModel.ℓ : ℕ
+  RS.TotalBoundedMixedModel.functional : MixedFunctional self.k self.ℓ
+  RS.TotalBoundedMixedModel.dimension_le : self.k + 2 * self.ℓ ≤ B
+  RS.TotalBoundedMixedModel.partition_eq : ∀ (W : ClosedFragment), f W = mixedPartition self.functional W
+constructor:
+  RS.TotalBoundedMixedModel.mk {f : ClosedFragment → ℂ} {B : ℕ} (k ℓ : ℕ) (functional : MixedFunctional k ℓ)
+    (dimension_le : k + 2 * ℓ ≤ B) (partition_eq : ∀ (W : ClosedFragment), f W = mixedPartition functional W) :
+    TotalBoundedMixedModel f B
+-/
+#guard_msgs in
+#print TotalBoundedMixedModel
+
+set_option pp.funBinderTypes true in
+/--
+info: def RS.IsMixedPartitionFunctionTotalBounded : (ClosedFragment → ℂ) → ℕ → Prop :=
+fun (f : ClosedFragment → ℂ) (B : ℕ) => Nonempty (TotalBoundedMixedModel f B)
+-/
+#guard_msgs in
+#print IsMixedPartitionFunctionTotalBounded
+
 /-! ## Edge-connection rank
 
 `EdgeRankBounded f R` says the connection pairings of `f` have rank
@@ -104,6 +143,18 @@ normalized, isomorphism-invariant parameter with that bound. -/
 /-- info: RegtsSevensterStatementQuant : Prop -/
 #guard_msgs in
 #check @RegtsSevensterStatementQuant
+
+/-- info: RegtsSevensterStatementTotal : Prop -/
+#guard_msgs in
+#check @RegtsSevensterStatementTotal
+
+set_option pp.funBinderTypes true in
+/--
+info: def RS.RegtsSevensterStatementTotal : Prop :=
+∀ (R : ℕ) (f : EdgeRankParameter R), IsMixedPartitionFunctionTotalBounded f.val R
+-/
+#guard_msgs in
+#print RegtsSevensterStatementTotal
 
 /-- info: RegtsSevensterConverseStatement : Prop -/
 #guard_msgs in
@@ -267,6 +318,14 @@ info: regts_sevenster_quant_deligne_only : DeligneTheoremStatement → RegtsSeve
 #guard_msgs in
 #check @regts_sevenster_quant_deligne_only
 
+/-- info: regts_sevenster_total_deligne_only : DeligneTheoremStatement → RegtsSevensterStatementTotal -/
+#guard_msgs in
+#check @regts_sevenster_total_deligne_only
+
+/-- info: regts_sevenster_total : RegtsSevensterStatementTotal -/
+#guard_msgs in
+#check @regts_sevenster_total
+
 /--
 info: @edgeRankBounded_of_mixedBounded : ∀ {f : ClosedFragment → ℂ} {B : ℕ},
   IsMixedPartitionFunctionBounded f B → EdgeRankBounded f (max 1 (2 * B))
@@ -328,5 +387,178 @@ worth `θ − 2` with a loop and `0` with a circle. -/
 /-- info: mixedPartition_loopGraphCircle : ∀ (θ : ℂ), mixedPartition (charPolyFunctional θ) loopGraphCircle = 0 -/
 #guard_msgs in
 #check @mixedPartition_loopGraphCircle
+
+/-! ## Minimum dimensions, rank growth and padding -/
+
+/--
+info: circlesClosed : ℕ → ClosedFragment
+-/
+#guard_msgs in
+#check @circlesClosed
+
+/--
+info: connectionRank : (ClosedFragment → ℂ) → ℕ → ℕ
+-/
+#guard_msgs in
+#check @connectionRank
+
+/--
+info: @MixedFunctional.Represents : {k ℓ : ℕ} → MixedFunctional k ℓ → (ClosedFragment → ℂ) → Prop
+-/
+#guard_msgs in
+#check @MixedFunctional.Represents
+
+/--
+info: minimumColourDimension : (ClosedFragment → ℂ) → ℕ
+-/
+#guard_msgs in
+#check @minimumColourDimension
+
+/--
+info: PrescribedColourBounds : (ClosedFragment → ℂ) → ℕ → ℕ → Prop
+-/
+#guard_msgs in
+#check @PrescribedColourBounds
+
+/--
+info: @regts_sevenster_minimum : ∀ {R : ℕ} (f : EdgeRankParameter R),
+  IsMixedPartitionFunctionTotalBounded f.val (minimumColourDimension f.val)
+-/
+#guard_msgs in
+#check @regts_sevenster_minimum
+
+/--
+info: @regts_sevenster_rank_growth : ∀ {R : ℕ} (f : EdgeRankParameter R),
+  Filter.Tendsto (fun n => ↑(connectionRank f.val (2 * n)) ^ (↑(2 * n))⁻¹) Filter.atTop
+    (nhds ↑(minimumColourDimension f.val))
+-/
+#guard_msgs in
+#check @regts_sevenster_rank_growth
+
+/--
+info: regts_sevenster_prescribed : ∀ (f : ClosedFragment → ℂ),
+  f emptyClosedFragment = 1 →
+    (∀ (W₁ W₂ : ClosedFragment) (a : Fragment.Equiv W₁ W₂), f W₁ = f W₂) →
+      ∀ (k ℓ : ℕ), (∃ h, h.Represents f) ↔ PrescribedColourBounds f k ℓ
+-/
+#guard_msgs in
+#check @regts_sevenster_prescribed
+
+/--
+info: regts_sevenster_minimum_deligne_only : DeligneTheoremStatement →
+  ∀ {R : ℕ} (f : EdgeRankParameter R), IsMixedPartitionFunctionTotalBounded f.val (minimumColourDimension f.val)
+-/
+#guard_msgs in
+#check @regts_sevenster_minimum_deligne_only
+
+/--
+info: regts_sevenster_rank_growth_deligne_only : DeligneTheoremStatement →
+  ∀ {R : ℕ} (f : EdgeRankParameter R),
+    Filter.Tendsto (fun n => ↑(connectionRank f.val (2 * n)) ^ (↑(2 * n))⁻¹) Filter.atTop
+      (nhds ↑(minimumColourDimension f.val))
+-/
+#guard_msgs in
+#check @regts_sevenster_rank_growth_deligne_only
+
+/--
+info: regts_sevenster_prescribed_deligne_only : DeligneTheoremStatement →
+  ∀ (f : ClosedFragment → ℂ),
+    f emptyClosedFragment = 1 →
+      (∀ (W₁ W₂ : ClosedFragment) (a : Fragment.Equiv W₁ W₂), f W₁ = f W₂) →
+        ∀ (K L : ℕ), (∃ h, h.Represents f) ↔ PrescribedColourBounds f K L
+-/
+#guard_msgs in
+#check @regts_sevenster_prescribed_deligne_only
+
+/--
+info: @minimumColourDimension_le_of_represents : ∀ {f : ClosedFragment → ℂ} {k ℓ : ℕ} (h : MixedFunctional k ℓ),
+  h.Represents f → minimumColourDimension f ≤ k + 2 * ℓ
+-/
+#guard_msgs in
+#check @minimumColourDimension_le_of_represents
+
+/--
+info: @TotalBoundedMixedModel.dimension_eq_minimum : ∀ {f : ClosedFragment → ℂ}
+  (M : TotalBoundedMixedModel f (minimumColourDimension f)), M.k + 2 * M.ℓ = minimumColourDimension f
+-/
+#guard_msgs in
+#check @TotalBoundedMixedModel.dimension_eq_minimum
+
+/--
+info: @TotalBoundedMixedModel.even_dimension_eq : ∀ {f : ClosedFragment → ℂ}
+  (M : TotalBoundedMixedModel f (minimumColourDimension f)),
+  ↑M.k = (↑(minimumColourDimension f) + f (circlesClosed 1)) / 2
+-/
+#guard_msgs in
+#check @TotalBoundedMixedModel.even_dimension_eq
+
+/--
+info: @TotalBoundedMixedModel.half_odd_dimension_eq : ∀ {f : ClosedFragment → ℂ}
+  (M : TotalBoundedMixedModel f (minimumColourDimension f)),
+  ↑M.ℓ = (↑(minimumColourDimension f) - f (circlesClosed 1)) / 4
+-/
+#guard_msgs in
+#check @TotalBoundedMixedModel.half_odd_dimension_eq
+
+/--
+info: @MixedFunctional.padColours : {k ℓ K L : ℕ} → MixedFunctional k ℓ → k ≤ K → ℓ ≤ L → MixedFunctional K L
+-/
+#guard_msgs in
+#check @MixedFunctional.padColours
+
+/--
+info: @MixedFunctional.padColours_represents : ∀ {k ℓ K L : ℕ} (h : MixedFunctional k ℓ) (hk : k ≤ K) (hℓ : ℓ ≤ L),
+  ↑K - 2 * ↑L = ↑k - 2 * ↑ℓ → ∀ {f : ClosedFragment → ℂ}, h.Represents f → (h.padColours hk hℓ).Represents f
+-/
+#guard_msgs in
+#check @MixedFunctional.padColours_represents
+
+/--
+info: @connectionRank_cast_eq_rank : ∀ {R : ℕ} (f : EdgeRankParameter R) (t : ℕ),
+  ↑(connectionRank f.val t) = Module.rank ℂ ↥(connectionMap f.val t).range
+-/
+#guard_msgs in
+#check @connectionRank_cast_eq_rank
+
+/--
+info: def RS.circlesClosed : ℕ → ClosedFragment :=
+fun c => (Fragment.circlesOnly c).relabel (Equiv.equivOfIsEmpty Empty (Fin 0))
+-/
+#guard_msgs in
+#print circlesClosed
+
+/--
+info: def RS.connectionRank : (ClosedFragment → ℂ) → ℕ → ℕ :=
+fun f t => Module.finrank ℂ ↥(connectionMap f t).range
+-/
+#guard_msgs in
+#print connectionRank
+
+/--
+info: def RS.MixedFunctional.Represents : {k ℓ : ℕ} → MixedFunctional k ℓ → (ClosedFragment → ℂ) → Prop :=
+fun {k ℓ} h f => ∀ (W : ClosedFragment), f W = mixedPartition h W
+-/
+#guard_msgs in
+#print MixedFunctional.Represents
+
+/--
+info: def RS.minimumColourDimension : (ClosedFragment → ℂ) → ℕ :=
+fun f => sInf {d | IsMixedPartitionFunctionTotalBounded f d}
+-/
+#guard_msgs in
+#print minimumColourDimension
+
+/--
+info: structure RS.PrescribedColourBounds (f : ClosedFragment → ℂ) (k ℓ : ℕ) : Prop
+number of parameters: 3
+fields:
+  RS.PrescribedColourBounds.circle_eq : f (circlesClosed 1) = ↑k - 2 * ↑ℓ
+  RS.PrescribedColourBounds.rank_bounded : EdgeRankBounded f (k + 2 * ℓ)
+constructor:
+  RS.PrescribedColourBounds.mk {f : ClosedFragment → ℂ} {k ℓ : ℕ} (circle_eq : f (circlesClosed 1) = ↑k - 2 * ↑ℓ)
+    (rank_bounded : EdgeRankBounded f (k + 2 * ℓ)) : PrescribedColourBounds f k ℓ
+-/
+#guard_msgs in
+#print PrescribedColourBounds
 
 end RS

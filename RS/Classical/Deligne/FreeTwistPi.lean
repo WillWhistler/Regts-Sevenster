@@ -22,28 +22,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [MonObj A] [IsCommMonObj A] in
 /-- The coherence behind the projection formula: crossing the
 generator, interchanging against the unit factor and collapsing
 the resulting right unitor is the crossing followed by the
 reassociation.  The interchange meets the tensor unit, so its
 braiding is a pair of unitors. -/
-theorem freeTwistInterchange (V X : D) :
+theorem freeTwistInterchange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (V X : D) :
     ((β_ A V).hom ⊗ₘ (λ_ X).inv) ≫ tensorμ V A (𝟙_ D) X ≫
         ((ρ_ V).hom ▷ (A ⊗ X)) =
       ((β_ A V).hom ▷ X) ≫ (α_ V A X).hom := by
@@ -51,16 +39,15 @@ theorem freeTwistInterchange (V X : D) :
   simp only [tensorHom_def, Category.assoc]
   monoidal
 
-variable (V : D) (M : Mod D A)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The free factor on the projection**: the isomorphism
 identifying the relative tensor of a free module with the twist of
 the module carries the projection to the crossing of the algebra
 past the generator, followed by the action. -/
-theorem modTensorπ_freeTensorTwistIso :
+theorem modTensorπ_freeTensorTwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (M : Mod D A) :
     modTensorπ A (freeMod A V) M ≫
         (freeTensorTwistIso A V M).hom.hom =
       ((β_ A V).hom ▷ M.X) ≫ (α_ V A M.X).hom ≫
@@ -88,15 +75,17 @@ theorem modTensorπ_freeTensorTwistIso :
   rw [whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp,
     hπ, reassoc_of% freeTwistInterchange A V M.X]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The free factor on the pairing**: the pairing `RS.gpair` of a
 morphism into a free module with a morphism into a module is, after
 the identification of the relative tensor with the twist, the
 tensor of the two morphisms followed by the crossing and the
 action. -/
-theorem freeTensorTwistIso_gpair {X Y : D} (m : X ⟶ A ⊗ V)
+theorem freeTensorTwistIso_gpair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D) (M : Mod D A)
+    {X Y : D} (m : X ⟶ A ⊗ V)
     (n : Y ⟶ M.X) :
     gpair (M := freeMod A V) (N := M) m n ≫
         (freeTensorTwistIso A V M).hom.hom =

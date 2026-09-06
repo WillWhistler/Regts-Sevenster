@@ -1994,16 +1994,17 @@ def interfaceEquivMatching {γ δ : Type} (e : γ ≃ δ) :
 
 section TwoSided
 
-variable {γ δ : Type} [Fintype γ] [DecidableEq γ] [Fintype δ]
-  [DecidableEq δ] (e : γ ≃ δ)
+variable {γ δ : Type}
 
 /-- The two-copy repair built from a one-copy one. -/
-private def sumRepair {A₁ B₁ : DirMatching γ}
+private def sumRepair (e : γ ≃ δ)
+    {A₁ B₁ : DirMatching γ}
     (_h : Alternating A₁ B₁) : DirMatching (γ ⊕ δ) :=
   sumMatching A₁ (B₁.map e)
 
 /-- The interface half of the two-copy repair. -/
-private def interfaceRepair {A₁ B₁ : DirMatching γ}
+private def interfaceRepair (e : γ ≃ δ)
+    {A₁ B₁ : DirMatching γ}
     (h : Alternating A₁ B₁) : DirMatching (γ ⊕ δ) where
   edge := Sum.elim (fun a => Sum.inr (e a)) (fun b => Sum.inl (e.symm b))
   edge_invol x := (interfaceEquivMatching e).edge_invol x
@@ -2016,18 +2017,18 @@ private def interfaceRepair {A₁ B₁ : DirMatching γ}
     · show (!A₁.tail (e.symm b)) = !(!B₁.tail (e.symm b))
       rw [h (e.symm b), Bool.not_not]
 
-omit [Fintype γ] [DecidableEq γ] [Fintype δ] [DecidableEq δ] in
-private theorem alternating_sumRepair {A₁ B₁ : DirMatching γ}
+private theorem alternating_sumRepair (e : γ ≃ δ)
+    {A₁ B₁ : DirMatching γ}
     (h : Alternating A₁ B₁) :
     Alternating (sumRepair (δ := δ) e h) (interfaceRepair e h) := by
   rintro (a | b)
   · rfl
   · rfl
 
-omit [Fintype γ] [DecidableEq γ] [Fintype δ] [DecidableEq δ] in
 /-- One step of the one-copy rotation is a walk of the two-copy
 one. -/
-private theorem sameCycle_inl {A₁ B₁ : DirMatching γ}
+private theorem sameCycle_inl (e : γ ≃ δ)
+    {A₁ B₁ : DirMatching γ}
     (h : Alternating A₁ B₁) (a : γ) :
     ((sumRepair (δ := δ) e h).rotPerm (interfaceRepair e h)
         (alternating_sumRepair e h)).SameCycle (Sum.inl a)
@@ -2076,9 +2077,9 @@ private theorem sameCycle_inl {A₁ B₁ : DirMatching γ}
     rw [show ((3 : ℤ)) = ((3 : ℕ) : ℤ) from rfl, zpow_natCast, this,
       rot, if_neg ha]
 
-omit [Fintype γ] [DecidableEq γ] [Fintype δ] [DecidableEq δ] in
 /-- The two-copy rotation projects to the one-copy one. -/
-private theorem sameCycle_proj {A₁ B₁ : DirMatching γ}
+private theorem sameCycle_proj (e : γ ≃ δ)
+    {A₁ B₁ : DirMatching γ}
     (h : Alternating A₁ B₁) (x : γ ⊕ δ) :
     (A₁.rotPerm B₁ h).SameCycle (Sum.elim id (fun b => e.symm b) x)
       (Sum.elim id (fun b => e.symm b)
@@ -2130,9 +2131,9 @@ private theorem sameCycle_proj {A₁ B₁ : DirMatching γ}
       rw [if_neg hb]
       rfl
 
-omit [Fintype γ] [DecidableEq γ] [Fintype δ] [DecidableEq δ] in
 /-- The two copies of a label lie on a common component. -/
-private theorem sameCycle_inl_proj {A₁ B₁ : DirMatching γ}
+private theorem sameCycle_inl_proj (e : γ ≃ δ)
+    {A₁ B₁ : DirMatching γ}
     (h : Alternating A₁ B₁) (x : γ ⊕ δ) :
     ((sumRepair (δ := δ) e h).rotPerm (interfaceRepair e h)
         (alternating_sumRepair e h)).SameCycle
@@ -2164,7 +2165,9 @@ private theorem sameCycle_inl_proj {A₁ B₁ : DirMatching γ}
 
 /-- **The union on two copies counts what the union on one copy
 counts.** -/
-theorem unionCount_sumMatching (M₁ : DirMatching γ)
+theorem unionCount_sumMatching
+    [Fintype γ] [DecidableEq γ] [Fintype δ] [DecidableEq δ] (e : γ ≃ δ)
+    (M₁ : DirMatching γ)
     (M₂ : DirMatching δ) :
     unionCount (sumMatching M₁ M₂) (interfaceEquivMatching e)
       = unionCount M₁ (M₂.map e.symm) := by

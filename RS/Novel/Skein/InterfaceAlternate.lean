@@ -24,27 +24,26 @@ open Fragment Classical
 
 section OpenCut
 
-variable {L : Type} [LinearOrder L] {V : Fragment L} {i j : L}
-  (hij : i ≠ j)
-  (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
-  (t : Finset (SurvivingFlag V i j))
-  (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
-  (hcL : ∀ f ∈ liftSubsetOpen hopen t,
-    V.pairing f ∈ liftSubsetOpen hopen t)
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- The glued fragment pairs the two glued flags' partners. -/
-theorem gluePairOpen_partnerSurvI :
+theorem gluePairOpen_partnerSurvI {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j) :
     (V.gluePairOpen i j hij hopen).pairing (partnerSurvI hopen)
       = partnerSurvJ hopen :=
   gluePairOpen_pairing_interface_i hij hopen (partnerSurvI hopen)
     (by rw [partnerSurvI_val hopen, V.pairing_invol])
 
-omit [LinearOrder L] in
 /-- **The interface alternates.**  At a label whose entry edges are
 internal on both sides, the unglued orientation's chain directions
 are opposite. -/
 theorem chainDir_unglueOpen_alternates
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    (hcL : ∀ f ∈ liftSubsetOpen hopen t, V.pairing f ∈ liftSubsetOpen hopen
+      t)
     (κ' : (EdgeSubset.mk t hct :
       EdgeSubset (V.gluePairOpen i j hij hopen)).RelTransitionSystem)
     (o' : κ'.Orientation)
@@ -81,9 +80,13 @@ theorem chainDir_unglueOpen_alternates
     unglueIsOut_val o'.isOut (partnerSurvI hopen)]
   exact hflip
 
-omit [LinearOrder L] in
 /-- An internal flag is not a glued boundary flag. -/
-theorem internal_ne_boundaryFlag {f : V.Flag} {b : L}
+theorem internal_ne_boundaryFlag {V : Fragment L} {i : L} {j : L}
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hcL : ∀ f ∈ liftSubsetOpen hopen t, V.pairing f ∈ liftSubsetOpen hopen
+      t)
+    {f : V.Flag} {b : L}
     (hint : f ∈ (EdgeSubset.mk (liftSubsetOpen hopen t) hcL :
       EdgeSubset V).internalFlags) :
     f ≠ V.boundaryFlag b := by
@@ -92,11 +95,16 @@ theorem internal_ne_boundaryFlag {f : V.Flag} {b : L}
   rw [hx, V.attach_boundaryFlag] at hv
   exact absurd hv (by simp)
 
-omit [LinearOrder L] in
 /-- **The chain direction survives the glue.**  At a surviving label
 whose entry edge is internal, the unglued orientation reads what the
 glued one does. -/
 theorem chainDir_unglueOpen_surviving
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    (hcL : ∀ f ∈ liftSubsetOpen hopen t, V.pairing f ∈ liftSubsetOpen hopen
+      t)
     (κ' : (EdgeSubset.mk t hct :
       EdgeSubset (V.gluePairOpen i j hij hopen)).RelTransitionSystem)
     (o' : κ'.Orientation) (b : SurvivingLabel L i j)
@@ -125,11 +133,16 @@ theorem chainDir_unglueOpen_surviving
     unglueIsOut_val o'.isOut ((V.gluePairOpen i j hij hopen).pairing
       (glueBoundaryFlag V i j b))]
 
-omit [LinearOrder L] in
 /-- **The alternation passes down an open glue.**  At a pair of
 surviving labels whose entry edges are internal, the base inherits
 the glued fragment's alternation. -/
 theorem chainDir_alternates_unglueOpen
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    (hcL : ∀ f ∈ liftSubsetOpen hopen t, V.pairing f ∈ liftSubsetOpen hopen
+      t)
     (κ' : (EdgeSubset.mk t hct :
       EdgeSubset (V.gluePairOpen i j hij hopen)).RelTransitionSystem)
     (o' : κ'.Orientation) (bl br : SurvivingLabel L i j)
@@ -172,18 +185,14 @@ reads through unchanged.
 
 section ClosedCut
 
-variable {L : Type} [LinearOrder L] {V : Fragment L} {i j : L}
-  (hij : i ≠ j)
-  (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
-  (t : Finset (SurvivingFlag V i j))
-  (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t)
-  (b : Bool)
-  (hcL : ∀ f ∈ liftSubsetClosed t b,
-    V.pairing f ∈ liftSubsetClosed t b)
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- **The chain direction survives a closing glue.** -/
-theorem chainDir_unglueClosed_surviving
+theorem chainDir_unglueClosed_surviving {V : Fragment L} {i : L} {j : L}
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t) (b : Bool)
+    (hcL : ∀ f ∈ liftSubsetClosed t b, V.pairing f ∈ liftSubsetClosed t b)
     (κ' : (EdgeSubset.mk t hct :
       EdgeSubset (V.gluePairClosed i j hclosed)).RelTransitionSystem)
     (o' : κ'.Orientation) (bl : SurvivingLabel L i j) :
@@ -202,9 +211,12 @@ theorem chainDir_unglueClosed_surviving
     unglueIsOut_val o'.isOut ((V.gluePairClosed i j hclosed).pairing
       (glueBoundaryFlag V i j bl))]
 
-omit [LinearOrder L] in
 /-- **The alternation passes down a closing glue.** -/
-theorem chainDir_alternates_unglueClosed
+theorem chainDir_alternates_unglueClosed {V : Fragment L} {i : L} {j : L}
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t) (b : Bool)
+    (hcL : ∀ f ∈ liftSubsetClosed t b, V.pairing f ∈ liftSubsetClosed t b)
     (κ' : (EdgeSubset.mk t hct :
       EdgeSubset (V.gluePairClosed i j hclosed)).RelTransitionSystem)
     (o' : κ'.Orientation) (bl br : SurvivingLabel L i j)
@@ -231,11 +243,11 @@ orientation's values, so neither touches the chain direction.
 
 section Transports
 
-variable {L : Type} [LinearOrder L] {V : Fragment L}
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- Transporting a subset does not move a direction. -/
-theorem chainDir_orientOfEq {F F' : EdgeSubset V} (hF : F = F')
+theorem chainDir_orientOfEq {V : Fragment L}
+    {F F' : EdgeSubset V} (hF : F = F')
     {κ : F.RelTransitionSystem} (o : κ.Orientation) (f : V.Flag) :
     chainDir (orientOfEq hF o) f = chainDir o f := by
   subst hF
@@ -248,7 +260,8 @@ noncomputable def flagOfEq {V₁ V₂ : Fragment L} (hV : V₁ = V₂)
 
 /-- The direction reads through a transport of the family along an
 equality of fragments. -/
-theorem chainDir_dataOfEq {V₁ V₂ : Fragment L} (hV : V₁ = V₂)
+theorem chainDir_dataOfEq [LinearOrder L]
+    {V₁ V₂ : Fragment L} (hV : V₁ = V₂)
     (𝒟 : DataFamily V₂) (s : Finset V₁.Flag)
     (hc : ∀ f ∈ s, V₁.pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc).Eulerian)
@@ -267,7 +280,8 @@ theorem chainDir_dataOfEq {V₁ V₂ : Fragment L} (hV : V₁ = V₂)
 
 /-- The direction reads through a transport of the family along a
 relabel. -/
-theorem chainDir_relabelDataDown {β : Type} [LinearOrder β]
+theorem chainDir_relabelDataDown [LinearOrder L] {V : Fragment L}
+    {β : Type} [LinearOrder β]
     (e : L ≃o β) (𝒟 : DataFamily (V.relabel e.toEquiv))
     (s : Finset V.Flag) (hc : ∀ f ∈ s, V.pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc).Eulerian)

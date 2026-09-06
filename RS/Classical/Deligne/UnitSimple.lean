@@ -34,11 +34,12 @@ and the identity. -/
 
 section UnitScalars
 
-variable {A : Type u} [Category.{v} A] [Preadditive A] [Linear ℂ A]
-  [MonoidalCategory A]
+variable {A : Type u}
 
 /-- Under `HasScalarUnit`, the identity of the unit is nonzero. -/
-theorem id_unit_ne_zero (hu : HasScalarUnit A) : 𝟙 (𝟙_ A) ≠ 0 := by
+theorem id_unit_ne_zero
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A) : 𝟙 (𝟙_ A) ≠ 0 := by
   intro h
   have h1 : ((1 : ℂ) • 𝟙 (𝟙_ A) : 𝟙_ A ⟶ 𝟙_ A) = (0 : ℂ) • 𝟙 (𝟙_ A) := by
     rw [one_smul, zero_smul, h]
@@ -47,7 +48,9 @@ theorem id_unit_ne_zero (hu : HasScalarUnit A) : 𝟙 (𝟙_ A) ≠ 0 := by
 /-- Under `HasScalarUnit`, the only idempotent endomorphisms of the
 unit are `0` and the identity: composition of scalar endomorphisms
 is multiplication in ℂ, and a field has no other idempotents. -/
-theorem HasScalarUnit.idempotent_eq_zero_or_id (hu : HasScalarUnit A)
+theorem HasScalarUnit.idempotent_eq_zero_or_id
+    [Category.{v} A] [Preadditive A] [Linear ℂ A] [MonoidalCategory A]
+    (hu : HasScalarUnit A)
     {e : 𝟙_ A ⟶ 𝟙_ A} (he : e ≫ e = e) : e = 0 ∨ e = 𝟙 (𝟙_ A) := by
   obtain ⟨c, hc⟩ := hu.surjective e
   replace hc : c • 𝟙 (𝟙_ A) = e := hc
@@ -78,31 +81,40 @@ sides, so it preserves monomorphisms, epimorphisms and kernels. -/
 
 section Whiskering
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [RigidCategory A]
+variable {A : Type u}
 
 /-- Whiskering on the left preserves monomorphisms. -/
-private theorem tensorLeft_preservesMono (X : A) :
+private theorem tensorLeft_preservesMono
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     (tensorLeft X).PreservesMonomorphisms :=
   Functor.preservesMonomorphisms_of_adjunction (tensorLeftAdjunction X (Xᘁ))
 
 /-- Whiskering on the left preserves epimorphisms. -/
-private theorem tensorLeft_preservesEpi (X : A) :
+private theorem tensorLeft_preservesEpi
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     (tensorLeft X).PreservesEpimorphisms :=
   Functor.preservesEpimorphisms_of_adjunction (tensorLeftAdjunction (ᘁX) X)
 
 /-- Whiskering on the right preserves monomorphisms. -/
-private theorem tensorRight_preservesMono (X : A) :
+private theorem tensorRight_preservesMono
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     (tensorRight X).PreservesMonomorphisms :=
   Functor.preservesMonomorphisms_of_adjunction (tensorRightAdjunction (ᘁX) X)
 
 /-- Whiskering on the right preserves epimorphisms. -/
-private theorem tensorRight_preservesEpi (X : A) :
+private theorem tensorRight_preservesEpi
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     (tensorRight X).PreservesEpimorphisms :=
   Functor.preservesEpimorphisms_of_adjunction (tensorRightAdjunction X (Xᘁ))
 
 /-- Whiskering on the left preserves limits, in particular kernels. -/
-private theorem tensorLeft_preservesLimits (X : A) :
+private theorem tensorLeft_preservesLimits
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     PreservesLimitsOfSize.{0, 0} (tensorLeft X) :=
   (tensorLeftAdjunction X (Xᘁ)).rightAdjoint_preservesLimits
 
@@ -116,36 +128,44 @@ by tensoring with `U`: if `x ≫ D = 0` then `x ▷ U = 0`. -/
 
 section Mate
 
-variable {A : Type u} [Category.{v} A] [Preadditive A]
-  [MonoidalCategory A] [MonoidalPreadditive A]
+variable {A : Type u}
 
-omit [MonoidalCategory A] [MonoidalPreadditive A] in
 /-- A monomorphism that vanishes has a zero source. -/
-private theorem isZero_of_mono_eq_zero {X Y : A} (f : X ⟶ Y) [Mono f]
+private theorem isZero_of_mono_eq_zero [Category.{v} A] [Preadditive A]
+    {X Y : A} (f : X ⟶ Y) [Mono f]
     (h : f = 0) : IsZero X := by
   rw [IsZero.iff_id_eq_zero, ← cancel_mono f, h, comp_zero, zero_comp]
 
 /-- The duality correspondence sends zero to zero. -/
-private theorem tensorRightHomEquiv_zero (X Y Y' Z : A)
+private theorem tensorRightHomEquiv_zero
+    [Category.{v} A] [Preadditive A] [MonoidalCategory A]
+    [MonoidalPreadditive A]
+    (X Y Y' Z : A)
     [ExactPairing Y Y'] : tensorRightHomEquiv X Y Y' Z 0 = 0 := by
   simp [tensorRightHomEquiv]
 
 /-- The inverse duality correspondence sends zero to zero. -/
-private theorem tensorRightHomEquiv_symm_zero (X Y Y' Z : A)
+private theorem tensorRightHomEquiv_symm_zero
+    [Category.{v} A] [Preadditive A] [MonoidalCategory A]
+    [MonoidalPreadditive A]
+    (X Y Y' Z : A)
     [ExactPairing Y Y'] : (tensorRightHomEquiv X Y Y' Z).symm 0 = 0 := by
   simp [tensorRightHomEquiv]
 
-variable [RigidCategory A]
-
 /-- The mate `𝟙 ⟶ 𝟙 ⊗ Uᘁ` of a subobject inclusion `i : U ⟶ 𝟙`
 under the duality adjunction for `U`. -/
-private noncomputable def unitMate {U : A} (i : U ⟶ 𝟙_ A) :
+private noncomputable def unitMate
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    {U : A} (i : U ⟶ 𝟙_ A) :
     𝟙_ A ⟶ 𝟙_ A ⊗ Uᘁ :=
   tensorRightHomEquiv (𝟙_ A) U (Uᘁ) (𝟙_ A) ((λ_ U).hom ≫ i)
 
 /-- Maps into the unit annihilated by the mate are annihilated by
 tensoring with the subobject. -/
-private theorem whiskerRight_eq_zero_of_comp_unitMate {U X : A}
+private theorem whiskerRight_eq_zero_of_comp_unitMate
+    [Category.{v} A] [Preadditive A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    {U X : A}
     (i : U ⟶ 𝟙_ A) [Mono i] (x : X ⟶ 𝟙_ A)
     (hx : x ≫ unitMate i = 0) : x ▷ U = 0 := by
   have h1 : (tensorRightHomEquiv X U (Uᘁ) (𝟙_ A)).symm (x ≫ unitMate i)
@@ -169,13 +189,13 @@ mate. -/
 
 section Vanishing
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
-  [MonoidalCategory A] [MonoidalPreadditive A] [RigidCategory A]
+variable {A : Type u}
 
-omit [MonoidalPreadditive A] in
 /-- `V ⊗ U = 0` for the cokernel `V` of a subobject `U` of the
 unit. -/
-private theorem isZero_coker_tensor {U : A} (i : U ⟶ 𝟙_ A) [Mono i] :
+private theorem isZero_coker_tensor
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [RigidCategory A]
+    {U : A} (i : U ⟶ 𝟙_ A) [Mono i] :
     IsZero (cokernel i ⊗ U) := by
   haveI := tensorLeft_preservesMono (A := A) (cokernel i)
   haveI := tensorRight_preservesEpi (A := A) U
@@ -188,10 +208,11 @@ private theorem isZero_coker_tensor {U : A} (i : U ⟶ 𝟙_ A) [Mono i] :
     simp [unitors_inv_equal]
   exact isZero_of_mono_eq_zero _ (zero_of_epi_comp _ hcomp)
 
-omit [MonoidalPreadditive A] in
 /-- `U ⊗ V = 0` for the cokernel `V` of a subobject `U` of the
 unit. -/
-private theorem isZero_tensor_coker {U : A} (i : U ⟶ 𝟙_ A) [Mono i] :
+private theorem isZero_tensor_coker
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [RigidCategory A]
+    {U : A} (i : U ⟶ 𝟙_ A) [Mono i] :
     IsZero (U ⊗ cokernel i) := by
   haveI := tensorRight_preservesMono (A := A) (cokernel i)
   haveI := tensorLeft_preservesEpi (A := A) U
@@ -205,7 +226,10 @@ private theorem isZero_tensor_coker {U : A} (i : U ⟶ 𝟙_ A) [Mono i] :
   exact isZero_of_mono_eq_zero _ (zero_of_epi_comp _ hcomp)
 
 /-- `W ⊗ U = 0` for the kernel `W` of the mate of `i : U ⟶ 𝟙`. -/
-private theorem isZero_kernelMate_tensor {U : A} (i : U ⟶ 𝟙_ A)
+private theorem isZero_kernelMate_tensor
+    [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    {U : A} (i : U ⟶ 𝟙_ A)
     [Mono i] : IsZero (kernel (unitMate i) ⊗ U) := by
   haveI := tensorRight_preservesMono (A := A) U
   haveI : Mono (kernel.ι (unitMate i) ▷ U) :=
@@ -224,11 +248,13 @@ isomorphism `V ⊗ W ≅ V ⊗ 𝟙`. -/
 
 section KernelMate
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
-  [MonoidalCategory A] [MonoidalPreadditive A] [RigidCategory A]
+variable {A : Type u}
 
 /-- Whiskering the mate of `i` by the cokernel of `i` gives zero. -/
-private theorem whiskerLeft_unitMate_zero {U : A} (i : U ⟶ 𝟙_ A)
+private theorem whiskerLeft_unitMate_zero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    {U : A} (i : U ⟶ 𝟙_ A)
     [Mono i] : cokernel i ◁ unitMate i = 0 := by
   have hz : cokernel i ◁ i = 0 :=
     (isZero_coker_tensor i).eq_zero_of_src _
@@ -254,7 +280,10 @@ private theorem whiskerLeft_unitMate_zero {U : A} (i : U ⟶ 𝟙_ A)
 
 /-- The cokernel-whiskered kernel inclusion of the mate is an
 isomorphism `V ⊗ W ≅ V ⊗ 𝟙`. -/
-private theorem isIso_whiskerLeft_kernelMate {U : A} (i : U ⟶ 𝟙_ A)
+private theorem isIso_whiskerLeft_kernelMate
+    [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    {U : A} (i : U ⟶ 𝟙_ A)
     [Mono i] : IsIso (cokernel i ◁ kernel.ι (unitMate i)) := by
   haveI : PreservesLimitsOfSize.{0, 0} (tensorLeft (cokernel i)) :=
     tensorLeft_preservesLimits (cokernel i)
@@ -286,12 +315,12 @@ vanishing ends. -/
 
 section Subobjects
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
-  [MonoidalCategory A] [MonoidalPreadditive A] [RigidCategory A]
+variable {A : Type u}
 
-omit [MonoidalPreadditive A] in
 /-- A subobject of `U` annihilated by tensoring with `U` is zero. -/
-private theorem isZero_of_sub_of_tensor_isZero {U T : A}
+private theorem isZero_of_sub_of_tensor_isZero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [RigidCategory A]
+    {U T : A}
     (i : U ⟶ 𝟙_ A) [Mono i] (t : T ⟶ U) (ht : Mono t)
     (hT : IsZero (T ⊗ U)) : IsZero T := by
   haveI := ht

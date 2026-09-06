@@ -1,4 +1,5 @@
 import RS.Novel.Coordinates.MultiStar
+import RS.DimensionDefinitions
 
 /-!
 # Free circles as scalars
@@ -11,11 +12,6 @@ class level.
 -/
 
 namespace RS
-
-/-- The closed fragment of `c` free circles. -/
-noncomputable def circlesClosed (c : ℕ) : ClosedFragment :=
-  (Fragment.circlesOnly c).relabel
-    (_root_.Equiv.equivOfIsEmpty Empty (Fin 0))
 
 /-- The circle value of a parameter. -/
 noncomputable def circleVal {R : ℕ} (f : EdgeRankParameter R) : ℂ :=

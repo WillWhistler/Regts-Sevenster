@@ -19,7 +19,7 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 namespace EdgeSubset
 
@@ -27,7 +27,8 @@ namespace EdgeSubset
 boundary-to-boundary chain is directed from its lower-labelled end
 to its higher-labelled one — the entry edge at the lower end is
 incoming. -/
-def PathCanonical {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+def PathCanonical [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W} {κ : F.RelTransitionSystem}
     (o : κ.Orientation) : Prop :=
   ∀ (i j : α) (hb : W.boundaryFlag i ∈ F.boundaryFlags),
     W.pairing (W.boundaryFlag i) ∈ F.internalFlags →
@@ -37,7 +38,8 @@ def PathCanonical {F : EdgeSubset W} {κ : F.RelTransitionSystem}
 
 /-- On an all-internal subset every orientation is path-canonical:
 there are no participating boundary flags. -/
-theorem pathCanonical_of_allInternal {F : EdgeSubset W}
+theorem pathCanonical_of_allInternal [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W}
     (hall : F.allInternal) {κ : F.RelTransitionSystem}
     (o : κ.Orientation) : PathCanonical o := by
   intro i j hb _ _ _
@@ -48,7 +50,8 @@ theorem pathCanonical_of_allInternal {F : EdgeSubset W}
 /-- The chord-interleaving condition between two boundary chains:
 both chords are recorded at their lower-labelled ends and
 interleave. -/
-def ChordCross {F : EdgeSubset W} (κ : F.RelTransitionSystem)
+def ChordCross [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W} (κ : F.RelTransitionSystem)
     (b b' : {x : W.Flag // x ∈ F.boundaryFlags}) : Prop :=
   ∃ i j i' j' : α,
     W.attach b.val = Sum.inr i ∧
@@ -60,7 +63,8 @@ def ChordCross {F : EdgeSubset W} (κ : F.RelTransitionSystem)
 open Classical in
 /-- The number of interleaving chain-chord pairs of a transition
 system. -/
-noncomputable def chordCrossingCount {F : EdgeSubset W}
+noncomputable def chordCrossingCount [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W}
     (κ : F.RelTransitionSystem) : ℕ :=
   ((F.boundaryFlags.attach ×ˢ F.boundaryFlags.attach).filter
     (fun bb => ChordCross κ bb.1 bb.2)).card
@@ -68,12 +72,14 @@ noncomputable def chordCrossingCount {F : EdgeSubset W}
 /-- **The path-sector sign**: the crossing sign of the boundary
 chain pairing — the Pfaffian chord-diagram sign forced by the
 two-path repair obstruction. -/
-noncomputable def pathSign {F : EdgeSubset W}
+noncomputable def pathSign [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W}
     (κ : F.RelTransitionSystem) : ℂ :=
   (-1 : ℂ) ^ chordCrossingCount κ
 
 /-- On an all-internal subset the path sign is trivial. -/
-theorem pathSign_of_allInternal {F : EdgeSubset W}
+theorem pathSign_of_allInternal [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W}
     (hall : F.allInternal) (κ : F.RelTransitionSystem) :
     pathSign κ = 1 := by
   unfold pathSign chordCrossingCount
@@ -87,13 +93,15 @@ theorem pathSign_of_allInternal {F : EdgeSubset W}
 
 /-- Canonical transition data: a relative system with a
 path-canonical orientation. -/
-def CanonData (F : EdgeSubset W) : Type :=
+def CanonData [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) : Type :=
   (κ : F.RelTransitionSystem) × {o : κ.Orientation // PathCanonical o}
 
 open Classical in
 /-- **The canonical constrained value**: the through summand at the
 open circuit count, chosen among path-canonical data. -/
-noncomputable def throughValueC (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def throughValueC [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st) : ℂ :=
   if hne : Nonempty F.CanonData then
@@ -107,7 +115,8 @@ end EdgeSubset
 open Classical in
 /-- **The canonical state-constrained partition value** of an open
 fragment. -/
-noncomputable def throughMixedPartitionC {k ℓ : ℕ}
+noncomputable def throughMixedPartitionC [LinearOrder α]
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (W : Fragment α)
     (st : GenBoundaryState k ℓ α) : ℂ :=
   ((k : ℂ) - 2 * ℓ) ^ W.circles *
@@ -126,7 +135,8 @@ namespace EdgeSubset
 circuit components, so their summands agree — the difference set
 avoids every chain (both orientations direct each chain the same
 way) and is therefore pairing-closed on internal flags. -/
-theorem throughSummand_canonical_unique {F : EdgeSubset W}
+theorem throughSummand_canonical_unique [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W}
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)

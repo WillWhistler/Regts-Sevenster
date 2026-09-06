@@ -32,23 +32,25 @@ open CategoryTheory.Limits CategoryTheory.MonoidalPreadditive
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] [MonoidalCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type u}
 
 /-! ### Tensor product data on `Mat_ C` -/
 
 /-- Tensor product of objects in `Mat_ C`: index by the product, with
 componentwise tensor in `C`. -/
-@[reducible] private def matTensorObj (M N : Mat_ C) : Mat_ C :=
+@[reducible] private def matTensorObj [Category.{v} C] [MonoidalCategory C]
+    (M N : Mat_ C) : Mat_ C :=
   ⟨M.ι × N.ι, fun p => M.X p.1 ⊗ N.X p.2⟩
 
 /-- Tensor product of morphisms in `Mat_ C`: the Kronecker product. -/
-private def matTensorHom {M₁ N₁ M₂ N₂ : Mat_ C}
+private def matTensorHom [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {M₁ N₁ M₂ N₂ : Mat_ C}
     (f : M₁ ⟶ N₁) (g : M₂ ⟶ N₂) : matTensorObj M₁ M₂ ⟶ matTensorObj N₁ N₂ :=
   fun (i₁, i₂) (j₁, j₂) => f i₁ j₁ ⊗ₘ g i₂ j₂
 
 /-- The tensor unit in `Mat_ C`. -/
-@[reducible] private def matTensorUnit : Mat_ C := ⟨PUnit, fun _ => 𝟙_ C⟩
+@[reducible] private def matTensorUnit
+    [Category.{v} C] [MonoidalCategory C] : Mat_ C := ⟨PUnit, fun _ => 𝟙_ C⟩
 
 /-! ### Structural isomorphisms
 
@@ -57,7 +59,8 @@ index types, the entry at `(i, e i)` is the corresponding structural morphism
 of `C`, and all other entries are zero. -/
 
 /-- The associator hom in `Mat_ C`. -/
-private def matAssocHom (M N K : Mat_ C) :
+private def matAssocHom [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C) :
     matTensorObj (matTensorObj M N) K ⟶ matTensorObj M (matTensorObj N K) :=
   fun ((i, j), k) (i', (j', k')) =>
     if hi : i = i' then
@@ -70,7 +73,8 @@ private def matAssocHom (M N K : Mat_ C) :
     else 0
 
 /-- The associator inv in `Mat_ C`. -/
-private def matAssocInv (M N K : Mat_ C) :
+private def matAssocInv [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C) :
     matTensorObj M (matTensorObj N K) ⟶ matTensorObj (matTensorObj M N) K :=
   fun (i, (j, k)) ((i', j'), k') =>
     if hi : i = i' then
@@ -83,7 +87,9 @@ private def matAssocInv (M N K : Mat_ C) :
     else 0
 
 /-- The left unitor hom in `Mat_ C`. -/
-private def matLeftUnitorHom (M : Mat_ C) :
+private def matLeftUnitorHom
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matTensorObj matTensorUnit M ⟶ M :=
   fun ((), i) j =>
     if h : i = j then
@@ -91,7 +97,9 @@ private def matLeftUnitorHom (M : Mat_ C) :
     else 0
 
 /-- The left unitor inv in `Mat_ C`. -/
-private def matLeftUnitorInv (M : Mat_ C) :
+private def matLeftUnitorInv
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     M ⟶ matTensorObj matTensorUnit M :=
   fun i ((), j) =>
     if h : i = j then
@@ -99,7 +107,9 @@ private def matLeftUnitorInv (M : Mat_ C) :
     else 0
 
 /-- The right unitor hom in `Mat_ C`. -/
-private def matRightUnitorHom (M : Mat_ C) :
+private def matRightUnitorHom
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matTensorObj M matTensorUnit ⟶ M :=
   fun (i, ()) j =>
     if h : i = j then
@@ -107,7 +117,9 @@ private def matRightUnitorHom (M : Mat_ C) :
     else 0
 
 /-- The right unitor inv in `Mat_ C`. -/
-private def matRightUnitorInv (M : Mat_ C) :
+private def matRightUnitorInv
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     M ⟶ matTensorObj M matTensorUnit :=
   fun i (j, ()) =>
     if h : i = j then
@@ -120,8 +132,9 @@ Diagonal ≫ diagonal collapses to a single summand: all off-diagonal entries
 in the intermediate sum vanish.  `Finset.sum_eq_single_of_mem` identifies the
 unique nonzero term, and the on-diagonal entry then simplifies. -/
 
-omit [MonoidalPreadditive C] in
-private theorem matAssoc_hom_inv (M N K : Mat_ C) :
+private theorem matAssoc_hom_inv
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C) :
     matAssocHom M N K ≫ matAssocInv M N K = 𝟙 _ := by
   apply Mat_.hom_ext
   intro ⟨⟨i, j⟩, k⟩ ⟨⟨i', j'⟩, k'⟩
@@ -143,8 +156,9 @@ private theorem matAssoc_hom_inv (M N K : Mat_ C) :
       · simp [h2, zero_comp]
       · simp [h2, zero_comp]
 
-omit [MonoidalPreadditive C] in
-private theorem matAssoc_inv_hom (M N K : Mat_ C) :
+private theorem matAssoc_inv_hom
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C) :
     matAssocInv M N K ≫ matAssocHom M N K = 𝟙 _ := by
   apply Mat_.hom_ext
   intro ⟨i, j, k⟩ ⟨i', j', k'⟩
@@ -164,8 +178,9 @@ private theorem matAssoc_inv_hom (M N K : Mat_ C) :
       · simp [h2, zero_comp]
       · simp [h2, zero_comp]
 
-omit [MonoidalPreadditive C] in
-private theorem matLeftUnitor_hom_inv (M : Mat_ C) :
+private theorem matLeftUnitor_hom_inv
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matLeftUnitorHom M ≫ matLeftUnitorInv M = 𝟙 _ := by
   apply Mat_.hom_ext
   intro ⟨⟨⟩, i⟩ ⟨⟨⟩, j⟩
@@ -179,8 +194,9 @@ private theorem matLeftUnitor_hom_inv (M : Mat_ C) :
     have : ¬(i = b) := fun h => hb h.symm
     simp [this, zero_comp]
 
-omit [MonoidalPreadditive C] in
-private theorem matLeftUnitor_inv_hom (M : Mat_ C) :
+private theorem matLeftUnitor_inv_hom
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matLeftUnitorInv M ≫ matLeftUnitorHom M = 𝟙 _ := by
   apply Mat_.hom_ext
   intro i j
@@ -194,8 +210,9 @@ private theorem matLeftUnitor_inv_hom (M : Mat_ C) :
     have : ¬(i = b) := fun h => hb (by subst h; rfl)
     simp [this, zero_comp]
 
-omit [MonoidalPreadditive C] in
-private theorem matRightUnitor_hom_inv (M : Mat_ C) :
+private theorem matRightUnitor_hom_inv
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matRightUnitorHom M ≫ matRightUnitorInv M = 𝟙 _ := by
   apply Mat_.hom_ext
   intro ⟨i, ⟨⟩⟩ ⟨j, ⟨⟩⟩
@@ -210,8 +227,9 @@ private theorem matRightUnitor_hom_inv (M : Mat_ C) :
     have : ¬(i = b) := fun h => hb h.symm
     simp [this, zero_comp]
 
-omit [MonoidalPreadditive C] in
-private theorem matRightUnitor_inv_hom (M : Mat_ C) :
+private theorem matRightUnitor_inv_hom
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matRightUnitorInv M ≫ matRightUnitorHom M = 𝟙 _ := by
   apply Mat_.hom_ext
   intro i j
@@ -227,7 +245,8 @@ private theorem matRightUnitor_inv_hom (M : Mat_ C) :
     simp [this, zero_comp]
 
 /-- The associator isomorphism in `Mat_ C`. -/
-private def matAssociator (M N K : Mat_ C) :
+private def matAssociator [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C) :
     matTensorObj (matTensorObj M N) K ≅ matTensorObj M (matTensorObj N K) where
   hom := matAssocHom M N K
   inv := matAssocInv M N K
@@ -235,7 +254,8 @@ private def matAssociator (M N K : Mat_ C) :
   inv_hom_id := matAssoc_inv_hom M N K
 
 /-- The left unitor isomorphism in `Mat_ C`. -/
-private def matLeftUnitor (M : Mat_ C) :
+private def matLeftUnitor [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matTensorObj matTensorUnit M ≅ M where
   hom := matLeftUnitorHom M
   inv := matLeftUnitorInv M
@@ -243,7 +263,8 @@ private def matLeftUnitor (M : Mat_ C) :
   inv_hom_id := matLeftUnitor_inv_hom M
 
 /-- The right unitor isomorphism in `Mat_ C`. -/
-private def matRightUnitor (M : Mat_ C) :
+private def matRightUnitor [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) :
     matTensorObj M matTensorUnit ≅ M where
   hom := matRightUnitorHom M
   inv := matRightUnitorInv M
@@ -254,7 +275,9 @@ private def matRightUnitor (M : Mat_ C) :
 
 /-- The monoidal data on the matrix category: index products on
 objects, Kronecker products on morphisms. -/
-instance matMonoidalStruct : MonoidalCategoryStruct (Mat_ C) where
+instance matMonoidalStruct
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C] :
+    MonoidalCategoryStruct (Mat_ C) where
   tensorObj := matTensorObj
   whiskerLeft M _ _ f := matTensorHom (𝟙 M) f
   whiskerRight f N := matTensorHom f (𝟙 N)
@@ -272,7 +295,10 @@ coherence identities.  Each proof goes pointwise via `Mat_.hom_ext`, collapses
 diagonal sums via `Finset.sum_eq_single_of_mem`, and reduces to the
 corresponding axiom in `C`. -/
 
-private theorem mat_id_tensorHom_id (M₁ M₂ : Mat_ C) :
+private theorem mat_id_tensorHom_id
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C]
+    (M₁ M₂ : Mat_ C) :
     matTensorHom (𝟙 M₁) (𝟙 M₂) = 𝟙 (matTensorObj M₁ M₂) := by
   apply Mat_.hom_ext; intro ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
   simp only [matTensorHom, Mat_.id_apply]
@@ -284,6 +310,8 @@ private theorem mat_id_tensorHom_id (M₁ M₂ : Mat_ C) :
   · simp [h₁, MonoidalPreadditive.zero_tensor]
 
 private theorem mat_tensorHom_comp
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C]
     {M₁ N₁ K₁ M₂ N₂ K₂ : Mat_ C}
     (f₁ : M₁ ⟶ N₁) (f₂ : M₂ ⟶ N₂) (g₁ : N₁ ⟶ K₁) (g₂ : N₂ ⟶ K₂) :
     matTensorHom f₁ f₂ ≫ matTensorHom g₁ g₂ = matTensorHom (f₁ ≫ g₁) (f₂ ≫ g₂)
@@ -295,8 +323,8 @@ private theorem mat_tensorHom_comp
   simp_rw [← tensor_sum Finset.univ]
   rw [← sum_tensor Finset.univ]
 
-omit [MonoidalPreadditive C] in
 private theorem mat_associator_naturality
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
     {M₁ M₂ M₃ N₁ N₂ N₃ : Mat_ C}
     (f₁ : M₁ ⟶ N₁) (f₂ : M₂ ⟶ N₂) (f₃ : M₃ ⟶ N₃) :
     matTensorHom (matTensorHom f₁ f₂) f₃ ≫ (matAssociator N₁ N₂ N₃).hom =
@@ -323,8 +351,9 @@ private theorem mat_associator_naturality
     · simp [h1]
     · rcases not_and_or.mp h1 with h2 | h2 <;> simp [h2]
 
-omit [MonoidalPreadditive C] in
-private theorem mat_leftUnitor_naturality {M N : Mat_ C} (f : M ⟶ N) :
+private theorem mat_leftUnitor_naturality
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {M N : Mat_ C} (f : M ⟶ N) :
     matTensorHom (𝟙 matTensorUnit) f ≫ (matLeftUnitor N).hom =
       (matLeftUnitor M).hom ≫ f := by
   apply Mat_.hom_ext; intro ⟨⟨⟩, i⟩ j
@@ -340,8 +369,9 @@ private theorem mat_leftUnitor_naturality {M N : Mat_ C} (f : M ⟶ N) :
     have : b ≠ j := fun h => hne (by subst h; rfl)
     simp [this]
 
-omit [MonoidalPreadditive C] in
-private theorem mat_rightUnitor_naturality {M N : Mat_ C} (f : M ⟶ N) :
+private theorem mat_rightUnitor_naturality
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {M N : Mat_ C} (f : M ⟶ N) :
     matTensorHom f (𝟙 matTensorUnit) ≫ (matRightUnitor N).hom =
       (matRightUnitor M).hom ≫ f := by
   apply Mat_.hom_ext; intro ⟨i, ⟨⟩⟩ j
@@ -369,7 +399,10 @@ gone both sides reduce to the corresponding coherence in `C`. -/
 -- Raised budget: the pentagon is checked entrywise on a quadruple
 -- index, so four matrix compositions expand.
 set_option maxHeartbeats 6400000 in
-private theorem mat_pentagon (M₁ M₂ M₃ M₄ : Mat_ C) :
+private theorem mat_pentagon
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C]
+    (M₁ M₂ M₃ M₄ : Mat_ C) :
     matTensorHom (matAssociator M₁ M₂ M₃).hom (𝟙 M₄) ≫
       (matAssociator M₁ (matTensorObj M₂ M₃) M₄).hom ≫
         matTensorHom (𝟙 M₁) (matAssociator M₂ M₃ M₄).hom =
@@ -422,7 +455,10 @@ private theorem mat_pentagon (M₁ M₂ M₃ M₄ : Mat_ C) :
       · simp [h2]
       · rcases not_and_or.mp h2 with h3 | h3 <;> simp [h3]
 
-private theorem mat_triangle (M₁ M₂ : Mat_ C) :
+private theorem mat_triangle
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C]
+    (M₁ M₂ : Mat_ C) :
     (matAssociator M₁ matTensorUnit M₂).hom ≫
       matTensorHom (𝟙 M₁) (matLeftUnitor M₂).hom =
     matTensorHom (matRightUnitor M₁).hom (𝟙 M₂) := by
@@ -449,7 +485,8 @@ private theorem mat_triangle (M₁ M₂ : Mat_ C) :
 
 /-- The monoidal structure on `Mat_ C` induced by the componentwise tensor
 product and Kronecker product of morphisms. -/
-instance matMonoidal : MonoidalCategory (Mat_ C) :=
+instance matMonoidal [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] : MonoidalCategory (Mat_ C) :=
   MonoidalCategory.ofTensorHom
     (id_tensorHom_id := mat_id_tensorHom_id)
     (id_tensorHom := fun _ {_ _} _ => rfl)
@@ -461,10 +498,10 @@ instance matMonoidal : MonoidalCategory (Mat_ C) :=
     (pentagon := mat_pentagon)
     (triangle := mat_triangle)
 
-omit [MonoidalPreadditive C] in
 /-- Composition through a right-associated triple tensor, entry by
 entry. -/
-theorem mat_comp_XYZ_apply {A D : Mat_ C} (X Y Z : Mat_ C)
+theorem mat_comp_XYZ_apply [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {A D : Mat_ C} (X Y Z : Mat_ C)
     (f : A ⟶ X ⊗ (Y ⊗ Z)) (g : X ⊗ (Y ⊗ Z) ⟶ D)
     (i : A.ι) (d : D.ι) :
     (f ≫ g) i d = ∑ ax : X.ι, ∑ ay : Y.ι, ∑ az : Z.ι,
@@ -473,10 +510,11 @@ theorem mat_comp_XYZ_apply {A D : Mat_ C} (X Y Z : Mat_ C)
     ((Fintype.sum_prod_type _).trans
       (Finset.sum_congr rfl fun _ _ => Fintype.sum_prod_type _))
 
-omit [MonoidalPreadditive C] in
 /-- And through a left-associated one — the two sides of the
 pentagon. -/
-theorem mat_comp_XY_Z_apply {A D : Mat_ C} (X Y Z : Mat_ C)
+theorem mat_comp_XY_Z_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {A D : Mat_ C} (X Y Z : Mat_ C)
     (f : A ⟶ (X ⊗ Y) ⊗ Z) (g : (X ⊗ Y) ⊗ Z ⟶ D)
     (i : A.ι) (d : D.ι) :
     (f ≫ g) i d = ∑ ax : X.ι, ∑ ay : Y.ι, ∑ az : Z.ι,
@@ -484,9 +522,10 @@ theorem mat_comp_XY_Z_apply {A D : Mat_ C} (X Y Z : Mat_ C)
   (Mat_.comp_apply f g i d).trans
     ((Fintype.sum_prod_type _).trans (Fintype.sum_prod_type _))
 
-omit [MonoidalPreadditive C] in
 /-- Composition through a tensor of two objects, entry by entry. -/
-theorem mat_comp_tensor_apply {A : Mat_ C} {B₁ B₂ : Mat_ C} {D : Mat_ C}
+theorem mat_comp_tensor_apply
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {A : Mat_ C} {B₁ B₂ : Mat_ C} {D : Mat_ C}
     (f : A ⟶ B₁ ⊗ B₂) (g : B₁ ⊗ B₂ ⟶ D) (i : A.ι) (k : D.ι) :
     (f ≫ g) i k = ∑ j₁ : B₁.ι, ∑ j₂ : B₂.ι,
       f i (j₁, j₂) ≫ g (j₁, j₂) k :=

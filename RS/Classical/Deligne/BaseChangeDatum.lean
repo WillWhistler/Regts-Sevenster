@@ -18,20 +18,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable {M M' : Mod D A}
+variable {D : Type u}
 
 /-- **The base-changed pairing is linear.** -/
-theorem baseChangePair_linear (d : ModDualityDatum A M M') :
+theorem baseChangePair_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     modTensorAct B (baseChangeMod φ M')
         (baseChangeMod φ M) ≫ baseChangePair A B φ d =
       (B ◁ baseChangePair A B φ d) ≫ μ[B] := by
@@ -64,7 +61,14 @@ theorem baseChangePair_linear (d : ModDualityDatum A M M') :
   exact Category.assoc _ _ _
 
 /-- **The base-changed copairing is linear.** -/
-theorem baseChangeCopair_linear (d : ModDualityDatum A M M') :
+theorem baseChangeCopair_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     μ[B] ≫ baseChangeCopair A B φ d =
       (B ◁ baseChangeCopair A B φ d) ≫
         modTensorAct B (baseChangeMod φ M)
@@ -112,7 +116,14 @@ theorem baseChangeCopair_linear (d : ModDualityDatum A M M') :
   exact Category.assoc _ _ _
 
 /-- **The base change of a duality datum.** -/
-noncomputable def baseChangeDatum (d : ModDualityDatum A M M') :
+noncomputable def baseChangeDatum
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     ModDualityDatum B (baseChangeMod φ M)
       (baseChangeMod φ M') where
   pair := baseChangePair A B φ d
@@ -124,7 +135,12 @@ section Unit
 
 /-- **The unit of the base-change structure**: the base change of
 the regular module is the regular module over the new base. -/
-noncomputable def baseChangeUnitIso :
+noncomputable def baseChangeUnitIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] :
     baseChangeMod φ (regularMod A) ≅ regularMod B where
   hom := Mod.Hom.mk'
     (modTensorUnitRight A (restrictRegular φ)).hom (by

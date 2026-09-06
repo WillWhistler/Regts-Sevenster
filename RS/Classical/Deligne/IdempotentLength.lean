@@ -26,26 +26,30 @@ universe v u
 
 section Helpers
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u}
 
 /-- An endomorphism, retyped as a morphism, so that morphism-level
 notation (`≫`, subtraction of parallel morphisms) elaborates
 without fuss. -/
-private def endHom {Y : C} (e : End Y) : Y ⟶ Y := e
+private def endHom [Category.{v} C]
+    {Y : C} (e : End Y) : Y ⟶ Y := e
 
 /-- A finite family of endomorphisms, extended by zero to a family
 indexed by `ℕ`. -/
-private def extendZero {Y : C} {k : ℕ} (f : Fin k → End Y) (n : ℕ) :
+private def extendZero [Category.{v} C] [Abelian C]
+    {Y : C} {k : ℕ} (f : Fin k → End Y) (n : ℕ) :
     End Y :=
   if h : n < k then f ⟨n, h⟩ else 0
 
 /-- Below `k`, the extension agrees with the original family. -/
-private lemma extendZero_of_lt {Y : C} {k : ℕ} (f : Fin k → End Y)
+private lemma extendZero_of_lt [Category.{v} C] [Abelian C]
+    {Y : C} {k : ℕ} (f : Fin k → End Y)
     {n : ℕ} (h : n < k) : extendZero f n = f ⟨n, h⟩ :=
   dif_pos h
 
 /-- The extension by zero inherits idempotence. -/
-private lemma extendZero_idem {Y : C} {k : ℕ} {f : Fin k → End Y}
+private lemma extendZero_idem [Category.{v} C] [Abelian C]
+    {Y : C} {k : ℕ} {f : Fin k → End Y}
     (hidem : ∀ i, f i * f i = f i) (n : ℕ) :
     extendZero f n * extendZero f n = extendZero f n := by
   unfold extendZero
@@ -54,7 +58,8 @@ private lemma extendZero_idem {Y : C} {k : ℕ} {f : Fin k → End Y}
   · exact zero_mul 0
 
 /-- The extension by zero inherits pairwise orthogonality. -/
-private lemma extendZero_orth {Y : C} {k : ℕ} {f : Fin k → End Y}
+private lemma extendZero_orth [Category.{v} C] [Abelian C]
+    {Y : C} {k : ℕ} {f : Fin k → End Y}
     (horth : ∀ i j, i ≠ j → f i * f j = 0) {m n : ℕ} (h : m ≠ n) :
     extendZero f m * extendZero f n = 0 := by
   unfold extendZero
@@ -66,12 +71,14 @@ private lemma extendZero_orth {Y : C} {k : ℕ} {f : Fin k → End Y}
 
 /-- The partial sum `g 0 + ⋯ + g n` of a family of
 endomorphisms. -/
-private def partialSum {Y : C} (g : ℕ → End Y) (n : ℕ) : End Y :=
+private def partialSum [Category.{v} C] [Abelian C]
+    {Y : C} (g : ℕ → End Y) (n : ℕ) : End Y :=
   ∑ i ∈ Finset.range (n + 1), g i
 
 /-- Multiplying a partial sum of an orthogonal idempotent family
 by a member already collected picks out that member. -/
-private lemma partialSum_mul {Y : C} {g : ℕ → End Y}
+private lemma partialSum_mul [Category.{v} C] [Abelian C]
+    {Y : C} {g : ℕ → End Y}
     (hidem : ∀ i, g i * g i = g i)
     (horth : ∀ i j, i ≠ j → g i * g j = 0)
     {j n : ℕ} (h : j ≤ n) : partialSum g n * g j = g j := by
@@ -83,7 +90,8 @@ private lemma partialSum_mul {Y : C} {g : ℕ → End Y}
 
 /-- A partial sum of an orthogonal family annihilates the members
 not yet collected. -/
-private lemma partialSum_mul_of_lt {Y : C} {g : ℕ → End Y}
+private lemma partialSum_mul_of_lt [Category.{v} C] [Abelian C]
+    {Y : C} {g : ℕ → End Y}
     (horth : ∀ i j, i ≠ j → g i * g j = 0)
     {j n : ℕ} (h : n < j) : partialSum g n * g j = 0 := by
   unfold partialSum
@@ -93,7 +101,8 @@ private lemma partialSum_mul_of_lt {Y : C} {g : ℕ → End Y}
 
 /-- Consecutive partial sums of an orthogonal idempotent family
 multiply to the shorter one. -/
-private lemma partialSum_succ_mul {Y : C} {g : ℕ → End Y}
+private lemma partialSum_succ_mul [Category.{v} C] [Abelian C]
+    {Y : C} {g : ℕ → End Y}
     (hidem : ∀ i, g i * g i = g i)
     (horth : ∀ i j, i ≠ j → g i * g j = 0) (n : ℕ) :
     partialSum g (n + 1) * partialSum g n = partialSum g n := by
@@ -105,12 +114,14 @@ private lemma partialSum_succ_mul {Y : C} {g : ℕ → End Y}
 
 /-- The subobject of `Y` carried by an idempotent `e`, realised as
 the kernel of `𝟙 Y - e`. -/
-private noncomputable def idemKer {Y : C} (e : End Y) :
+private noncomputable def idemKer [Category.{v} C] [Abelian C]
+    {Y : C} (e : End Y) :
     Subobject Y :=
   Subobject.mk (kernel.ι (𝟙 Y - endHom e))
 
 /-- The kernel inclusion of `𝟙 Y - e` is fixed by `e`. -/
-private lemma kernel_comp_self {Y : C} (e : End Y) :
+private lemma kernel_comp_self [Category.{v} C] [Abelian C]
+    {Y : C} (e : End Y) :
     kernel.ι (𝟙 Y - endHom e) ≫ endHom e =
       kernel.ι (𝟙 Y - endHom e) := by
   have h := kernel.condition (𝟙 Y - endHom e)
@@ -119,14 +130,16 @@ private lemma kernel_comp_self {Y : C} (e : End Y) :
 
 /-- Anything that factors through the kernel of `𝟙 Y - e` is fixed
 by `e`. -/
-private lemma comp_self_of_factors {Y T : C} {e : End Y}
+private lemma comp_self_of_factors [Category.{v} C] [Abelian C]
+    {Y T : C} {e : End Y}
     {x : T ⟶ Y} {w : T ⟶ kernel (𝟙 Y - endHom e)}
     (hw : w ≫ kernel.ι (𝟙 Y - endHom e) = x) : x ≫ endHom e = x := by
   rw [← hw, Category.assoc, kernel_comp_self]
 
 /-- If `e' * e = e` then the subobject carried by `e` is contained
 in the one carried by `e'`. -/
-private lemma idemKer_le {Y : C} {e e' : End Y} (h : e' * e = e) :
+private lemma idemKer_le [Category.{v} C] [Abelian C]
+    {Y : C} {e e' : End Y} (h : e' * e = e) :
     idemKer e ≤ idemKer e' := by
   have hc : endHom e ≫ endHom e' = endHom e := by
     rw [← End.mul_def]; exact h
@@ -147,7 +160,8 @@ private lemma idemKer_le {Y : C} {e e' : End Y} (h : e' * e = e) :
 /-- If the subobjects carried by two idempotents coincide, an
 endomorphism fixed by the second and annihilated by the first must
 vanish. -/
-private lemma eq_zero_of_idemKer_eq {Y : C} {e e' a : End Y}
+private lemma eq_zero_of_idemKer_eq [Category.{v} C] [Abelian C]
+    {Y : C} {e e' a : End Y}
     (hfix : e' * a = a) (hkill : e * a = 0)
     (hU : idemKer e = idemKer e') : a = 0 := by
   have hfix' : endHom a ≫ endHom e' = endHom a := by

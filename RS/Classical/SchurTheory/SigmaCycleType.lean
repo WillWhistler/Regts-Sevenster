@@ -12,11 +12,11 @@ namespace RS
 
 open Equiv Equiv.Perm Finset
 
-variable {I : Type*} [DecidableEq I] [Fintype I]
-  {β : I → Type*} [∀ i, DecidableEq (β i)] [∀ i, Fintype (β i)]
+variable {I : Type*}
 
 /-- The equivalence between `β i` and `{x : Σ j, β j // x.1 = i}`. -/
-private def eComp (i : I) : β i ≃ {x : Σ j, β j // x.1 = i} where
+private def eComp {β : I → Type*}
+    (i : I) : β i ≃ {x : Σ j, β j // x.1 = i} where
   toFun b := ⟨⟨i, b⟩, rfl⟩
   invFun x := cast (congrArg β x.2) x.1.2
   left_inv b := by simp
@@ -24,16 +24,16 @@ private def eComp (i : I) : β i ≃ {x : Σ j, β j // x.1 = i} where
     rintro ⟨⟨j, b⟩, rfl : j = i⟩
     simp
 
-omit [Fintype I] [(i : I) → DecidableEq (β i)] [(i : I) → Fintype (β i)] in
-private theorem mulSingle_perm_eq_one {σ : ∀ i, Perm (β i)} {i k : I} (hki : k ≠
+private theorem mulSingle_perm_eq_one [DecidableEq I] {β : I → Type*}
+    {σ : ∀ i, Perm (β i)} {i k : I} (hki : k ≠
   i) :
     @Pi.mulSingle I (fun j => Perm (β j)) _ _ i (σ i) k = 1 :=
   @Pi.mulSingle_eq_of_ne I (fun j => Perm (β j)) _ _ i k hki (σ i)
 
-omit [Fintype I] [(i : I) → DecidableEq (β i)] [(i : I) → Fintype (β i)] in
 /-- `sigmaCongrRight (Pi.mulSingle i (σ i))` equals
 `(σ i).extendDomain (eComp i)`. -/
 private theorem sigmaCongrRight_mulSingle_eq_extendDomain
+    [DecidableEq I] {β : I → Type*}
     (σ : ∀ i, Perm (β i)) (i : I) :
     Perm.sigmaCongrRight (Pi.mulSingle i (σ i)) = (σ i).extendDomain (eComp i)
       := by
@@ -56,10 +56,10 @@ private theorem sigmaCongrRight_mulSingle_eq_extendDomain
       Perm.extendDomain_apply_not_subtype _ _ hij
     rw [lhs, rhs]
 
-omit [Fintype I] [(i : I) → DecidableEq (β i)] [(i : I) → Fintype (β i)] in
 /-- Permutations obtained from `Pi.mulSingle` at different indices are
 disjoint. -/
 private theorem disjoint_sigmaCongrRight_mulSingle
+    [DecidableEq I] {β : I → Type*}
     (σ : ∀ i, Perm (β i)) {i j : I} (hij : i ≠ j) :
     Perm.Disjoint (Perm.sigmaCongrRight (Pi.mulSingle i (σ i)))
       (Perm.sigmaCongrRight (Pi.mulSingle j (σ j))) := by
@@ -71,10 +71,11 @@ private theorem disjoint_sigmaCongrRight_mulSingle
   · left; congr 1; rw [mulSingle_perm_eq_one hki, Perm.one_apply]
   · left; congr 1; rw [mulSingle_perm_eq_one hki, Perm.one_apply]
 
-omit [(i : I) → DecidableEq (β i)] [(i : I) → Fintype (β i)] in
 set_option backward.isDefEq.respectTransparency false in
 /-- `sigmaCongrRight σ` decomposes as a `noncommProd` over indices. -/
-private theorem sigmaCongrRight_eq_noncommProd (σ : ∀ i, Perm (β i)) :
+private theorem sigmaCongrRight_eq_noncommProd
+    [DecidableEq I] [Fintype I] {β : I → Type*}
+    (σ : ∀ i, Perm (β i)) :
     Perm.sigmaCongrRight σ =
       univ.noncommProd (fun i => Perm.sigmaCongrRight (Pi.mulSingle i (σ i)))
         (fun _i _ _j _ hij =>

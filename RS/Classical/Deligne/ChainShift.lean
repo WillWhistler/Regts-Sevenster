@@ -20,11 +20,11 @@ open CategoryTheory Limits
 
 universe v u
 
-variable {E : Type u} [Category.{v} E]
-variable (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+variable {E : Type u}
 
 /-- Legs absorbed by the transitions absorb all chain morphisms. -/
-theorem chainMap_legs {Z : E} (legs : ∀ n, B n ⟶ Z)
+theorem chainMap_legs [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    {Z : E} (legs : ∀ n, B n ⟶ Z)
     (h : ∀ n, δ n ≫ legs (n + 1) = legs n) {a b : ℕ}
     (hab : a ≤ b) : chainMap B δ hab ≫ legs b = legs a := by
   induction b, hab using Nat.le_induction with
@@ -33,11 +33,11 @@ theorem chainMap_legs {Z : E} (legs : ∀ n, B n ⟶ Z)
     rw [chainMap_succ_of_le B δ hab, Category.assoc, h]
     exact ih
 
-variable [HasColimitsOfShape SmallNat.{v} E]
-
 /-- The cocone on the chain diagram assembled from legs absorbed by
 the transitions. -/
-noncomputable def chainCocone {Z : E} (legs : ∀ n, B n ⟶ Z)
+noncomputable def chainCocone
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    {Z : E} (legs : ∀ n, B n ⟶ Z)
     (h : ∀ n, δ n ≫ legs (n + 1) = legs n) :
     Cocone (chainDiagram B δ) where
   pt := Z
@@ -53,14 +53,19 @@ noncomputable def chainCocone {Z : E} (legs : ∀ n, B n ⟶ Z)
 
 /-- The descent out of the chain colimit determined by legs absorbed
 by the transitions. -/
-noncomputable def chainDesc {Z : E} (legs : ∀ n, B n ⟶ Z)
+noncomputable def chainDesc
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    {Z : E} (legs : ∀ n, B n ⟶ Z)
     (h : ∀ n, δ n ≫ legs (n + 1) = legs n) :
     chainColimit B δ ⟶ Z :=
   colimit.desc _ (chainCocone B δ legs h)
 
 /-- On a stage, the descent is the corresponding leg. -/
 @[reassoc (attr := simp)]
-theorem ι_chainDesc {Z : E} (legs : ∀ n, B n ⟶ Z)
+theorem ι_chainDesc [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    {Z : E} (legs : ∀ n, B n ⟶ Z)
     (h : ∀ n, δ n ≫ legs (n + 1) = legs n) (n : ℕ) :
     chainColimitι B δ n ≫ chainDesc B δ legs h = legs n :=
   colimit.ι_desc (chainCocone B δ legs h)
@@ -68,7 +73,9 @@ theorem ι_chainDesc {Z : E} (legs : ∀ n, B n ⟶ Z)
 
 /-- The comparison from the colimit of the shifted chain, whose leg
 at a stage is the next stage inclusion of the full chain. -/
-noncomputable def chainColimitTail :
+noncomputable def chainColimitTail
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] :
     chainColimit (fun k => B (k + 1)) (fun k => δ (k + 1)) ⟶
       chainColimit B δ :=
   chainDesc (fun k => B (k + 1)) (fun k => δ (k + 1))
@@ -77,7 +84,10 @@ noncomputable def chainColimitTail :
 
 /-- On a stage, the tail comparison is the next stage inclusion. -/
 @[reassoc (attr := simp)]
-theorem ι_chainColimitTail (k : ℕ) :
+theorem ι_chainColimitTail
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    (k : ℕ) :
     chainColimitι (fun k => B (k + 1)) (fun k => δ (k + 1)) k ≫
         chainColimitTail B δ =
       chainColimitι B δ (k + 1) :=
@@ -87,7 +97,9 @@ theorem ι_chainColimitTail (k : ℕ) :
 
 /-- The comparison to the colimit of the shifted chain, whose leg at
 a stage is the transition followed by the shifted inclusion. -/
-noncomputable def chainColimitUntail :
+noncomputable def chainColimitUntail
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] :
     chainColimit B δ ⟶
       chainColimit (fun k => B (k + 1)) (fun k => δ (k + 1)) :=
   chainDesc B δ
@@ -101,7 +113,10 @@ noncomputable def chainColimitUntail :
 /-- On a stage, the comparison to the shifted colimit is the
 transition followed by the shifted inclusion. -/
 @[reassoc (attr := simp)]
-theorem ι_chainColimitUntail (k : ℕ) :
+theorem ι_chainColimitUntail
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E]
+    (k : ℕ) :
     chainColimitι B δ k ≫ chainColimitUntail B δ =
       δ k ≫
         chainColimitι (fun k => B (k + 1)) (fun k => δ (k + 1)) k :=
@@ -115,7 +130,9 @@ theorem ι_chainColimitUntail (k : ℕ) :
 
 /-- Dropping the bottom stage of a chain does not change the
 colimit. -/
-noncomputable def chainColimitTailIso :
+noncomputable def chainColimitTailIso
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] :
     chainColimit (fun k => B (k + 1)) (fun k => δ (k + 1)) ≅
       chainColimit B δ where
   hom := chainColimitTail B δ
@@ -137,12 +154,14 @@ noncomputable def chainColimitTailIso :
 
 section MapIso
 
-variable {C : ℕ → E} (δC : ∀ n, C n ⟶ C (n + 1))
-
 /-- **The chain colimit is invariant under stagewise
 isomorphism**: compatible stage isomorphisms induce an
 isomorphism of the chain colimits. -/
-noncomputable def chainColimitMapIso (φ : ∀ n, B n ≅ C n)
+noncomputable def chainColimitMapIso
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] {C : ℕ → E}
+    (δC : ∀ n, C n ⟶ C (n + 1))
+    (φ : ∀ n, B n ≅ C n)
     (hφ : ∀ n, δ n ≫ (φ (n + 1)).hom = (φ n).hom ≫ δC n) :
     chainColimit B δ ≅ chainColimit C δC where
   hom := chainDesc B δ
@@ -171,7 +190,11 @@ noncomputable def chainColimitMapIso (φ : ∀ n, B n ≅ C n)
 
 /-- The stage insertions under the stagewise isomorphism. -/
 @[reassoc (attr := simp)]
-theorem ι_chainColimitMapIso_hom (φ : ∀ n, B n ≅ C n)
+theorem ι_chainColimitMapIso_hom
+    [Category.{v} E] (B : ℕ → E) (δ : ∀ n, B n ⟶ B (n + 1))
+    [HasColimitsOfShape SmallNat.{v} E] {C : ℕ → E}
+    (δC : ∀ n, C n ⟶ C (n + 1))
+    (φ : ∀ n, B n ≅ C n)
     (hφ : ∀ n, δ n ≫ (φ (n + 1)).hom = (φ n).hom ≫ δC n)
     (n : ℕ) :
     chainColimitι B δ n ≫ (chainColimitMapIso B δ δC φ hφ).hom =

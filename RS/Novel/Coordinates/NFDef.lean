@@ -3,7 +3,7 @@ import RS.Novel.Coordinates.BlockCanon
 /-!
 # The h-generic normal form
 
-The master-sum analog where an arbitrary mixed functional `h` is
+The master-sum analogue where an arbitrary mixed functional `h` is
 evaluated at the colour-data extractors of the sorted blocks: the
 per-vertex factor carries a Nodup guard mirroring `evalOdd`.
 
@@ -54,15 +54,6 @@ noncomputable def hMaster (h : MixedFunctional k ℓ)
 
 /-! ## Per-vertex value lemmas -/
 
-/-- Sorting signs square to one over ℂ (re-export from VertexValue). -/
-private theorem sortSign_sq' {α : Type} [LinearOrder α]
-    (l : List α) :
-    (sortSign l : ℂ) * (sortSign l : ℂ) = 1 := by
-  rw [sortSign]
-  push_cast
-  rw [← pow_add, ← two_mul, pow_mul]
-  norm_num
-
 -- Raised budget: the block factor is matched with the vertex
 -- factor, unfolding the sorted colouring and its restriction.
 set_option maxHeartbeats 3200000 in
@@ -102,7 +93,7 @@ theorem hMaster_vertex_nodup (h : MixedFunctional k ℓ)
   set B := (sortSign (F.oddListAt o φ (blockVertex W v)) : ℂ)
   set hval := h (F.evenColoursAt ψ (blockVertex W v))
     (F.oddListAt o φ (blockVertex W v)).toFinset
-  have hB : B * B = 1 := sortSign_sq' _
+  have hB : B * B = 1 := sortSign_sq _
   calc A * hval = A * ((B * B) * hval) := by rw [hB, one_mul]
     _ = A * (B * (B * hval)) := by ring
 

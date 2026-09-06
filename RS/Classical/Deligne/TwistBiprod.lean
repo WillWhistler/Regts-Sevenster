@@ -23,51 +23,57 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D]
+variable {D : Type u}
 
 /-! ## The carrier-level distributivity -/
 
 section Carrier
 
-variable (V X Y : D)
-
 /-- **Distributivity of the tensor over a binary biproduct**: the
 comparison map assembled from the two whiskered projections. -/
-noncomputable def tensorLeftBiprodHom :
+noncomputable def tensorLeftBiprodHom
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     V ⊗ (X ⊞ Y) ⟶ (V ⊗ X) ⊞ (V ⊗ Y) :=
   biprod.lift (V ◁ biprod.fst) (V ◁ biprod.snd)
 
 /-- The inverse comparison map, assembled from the two whiskered
 injections. -/
-noncomputable def tensorLeftBiprodInv :
+noncomputable def tensorLeftBiprodInv
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     (V ⊗ X) ⊞ (V ⊗ Y) ⟶ V ⊗ (X ⊞ Y) :=
   biprod.desc (V ◁ biprod.inl) (V ◁ biprod.inr)
 
-omit [MonoidalPreadditive D] in
-@[simp] lemma tensorLeftBiprodHom_fst :
+@[simp] lemma tensorLeftBiprodHom_fst
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     tensorLeftBiprodHom V X Y ≫ biprod.fst = V ◁ biprod.fst :=
   biprod.lift_fst _ _
 
-omit [MonoidalPreadditive D] in
-@[simp] lemma tensorLeftBiprodHom_snd :
+@[simp] lemma tensorLeftBiprodHom_snd
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     tensorLeftBiprodHom V X Y ≫ biprod.snd = V ◁ biprod.snd :=
   biprod.lift_snd _ _
 
-omit [MonoidalPreadditive D] in
-@[simp] lemma inl_tensorLeftBiprodInv :
+@[simp] lemma inl_tensorLeftBiprodInv
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     biprod.inl ≫ tensorLeftBiprodInv V X Y = V ◁ biprod.inl :=
   biprod.inl_desc _ _
 
-omit [MonoidalPreadditive D] in
-@[simp] lemma inr_tensorLeftBiprodInv :
+@[simp] lemma inr_tensorLeftBiprodInv
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     biprod.inr ≫ tensorLeftBiprodInv V X Y = V ◁ biprod.inr :=
   biprod.inr_desc _ _
 
 /-- The comparison map is split by its inverse: the totality
 relation of the biproduct, whiskered. -/
-@[simp] theorem tensorLeftBiprodHom_inv :
+@[simp] theorem tensorLeftBiprodHom_inv
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     tensorLeftBiprodHom V X Y ≫ tensorLeftBiprodInv V X Y =
       𝟙 (V ⊗ (X ⊞ Y)) := by
   rw [tensorLeftBiprodHom, tensorLeftBiprodInv, biprod.lift_desc,
@@ -77,7 +83,9 @@ relation of the biproduct, whiskered. -/
     MonoidalCategory.whiskerLeft_id]
 
 /-- The inverse comparison map is split by the comparison map. -/
-@[simp] theorem tensorLeftBiprodInv_hom :
+@[simp] theorem tensorLeftBiprodInv_hom
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] (V : D) (X : D) (Y : D) :
     tensorLeftBiprodInv V X Y ≫ tensorLeftBiprodHom V X Y =
       𝟙 ((V ⊗ X) ⊞ (V ⊗ Y)) := by
   refine biprod.hom_ext' _ _ ?_ ?_
@@ -106,16 +114,13 @@ end Carrier
 
 section ModuleMap
 
-variable [SymmetricCategory D]
-variable (A : D) [MonObj A]
-variable (V : D) (P Q : Mod D A)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D] in
 /-- **The twist of a module map is a module map**: a map
 intertwining the actions still intertwines them after whiskering
 by a fixed object on the left. -/
-theorem actAcross_whiskerLeft_of {X Y : D} [ModObj A X] [ModObj A Y]
+theorem actAcross_whiskerLeft_of
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D)
+    {X Y : D} [ModObj A X] [ModObj A Y]
     (g : X ⟶ Y)
     (hg : actLeft A X ≫ g = (A ◁ g) ≫ actLeft A Y) :
     actAcross A V X ≫ (V ◁ g) =
@@ -126,19 +131,27 @@ theorem actAcross_whiskerLeft_of {X Y : D} [ModObj A X] [ModObj A Y]
     braidPast_natural_tail_assoc]
 
 /-- The action on the twist of the module biproduct, retyped. -/
-noncomputable def twistBiprodActL :
+noncomputable def twistBiprodActL
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     A ⊗ (V ⊗ (P.X ⊞ Q.X)) ⟶ V ⊗ (P.X ⊞ Q.X) :=
   actAcross A V (modBiprod A P Q).X
 
 /-- The componentwise action on the biproduct of the twists,
 retyped. -/
-noncomputable def twistBiprodActR :
+noncomputable def twistBiprodActR
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     A ⊗ ((V ⊗ P.X) ⊞ (V ⊗ Q.X)) ⟶ (V ⊗ P.X) ⊞ (V ⊗ Q.X) :=
   modBiprodAct A (tensorLeftMod A V P) (tensorLeftMod A V Q)
 
-omit [MonoidalPreadditive D] in
 /-- The twisted first projection intertwines the actions. -/
-theorem twistBiprodActL_fst :
+theorem twistBiprodActL_fst
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     twistBiprodActL A V P Q ≫
         (V ◁ (biprod.fst : P.X ⊞ Q.X ⟶ P.X)) =
       (A ◁ (V ◁ (biprod.fst : P.X ⊞ Q.X ⟶ P.X))) ≫
@@ -147,9 +160,11 @@ theorem twistBiprodActL_fst :
   exact actAcross_whiskerLeft_of A V biprod.fst
     (modBiprodAct_fst A P Q)
 
-omit [MonoidalPreadditive D] in
 /-- The twisted second projection intertwines the actions. -/
-theorem twistBiprodActL_snd :
+theorem twistBiprodActL_snd
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     twistBiprodActL A V P Q ≫
         (V ◁ (biprod.snd : P.X ⊞ Q.X ⟶ Q.X)) =
       (A ◁ (V ◁ (biprod.snd : P.X ⊞ Q.X ⟶ Q.X))) ≫
@@ -158,25 +173,31 @@ theorem twistBiprodActL_snd :
   exact actAcross_whiskerLeft_of A V biprod.snd
     (modBiprodAct_snd A P Q)
 
-omit [MonoidalPreadditive D] in
 /-- The first component of the componentwise action. -/
-theorem twistBiprodActR_fst :
+theorem twistBiprodActR_fst
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     twistBiprodActR A V P Q ≫ biprod.fst =
       (A ◁ biprod.fst) ≫ actAcross A V P.X :=
   modBiprodAct_fst A (tensorLeftMod A V P) (tensorLeftMod A V Q)
 
-omit [MonoidalPreadditive D] in
 /-- The second component of the componentwise action. -/
-theorem twistBiprodActR_snd :
+theorem twistBiprodActR_snd
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     twistBiprodActR A V P Q ≫ biprod.snd =
       (A ◁ biprod.snd) ≫ actAcross A V Q.X :=
   modBiprodAct_snd A (tensorLeftMod A V P) (tensorLeftMod A V Q)
 
-omit [MonoidalPreadditive D] in
 /-- **The distributivity map is linear**: it intertwines the action
 through the right tensor factor with the componentwise action of
 the biproduct. -/
-theorem twistBiprodActL_hom :
+theorem twistBiprodActL_hom
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     twistBiprodActL A V P Q ≫ tensorLeftBiprodHom V P.X Q.X =
       (A ◁ tensorLeftBiprodHom V P.X Q.X) ≫
         twistBiprodActR A V P Q := by
@@ -193,7 +214,10 @@ theorem twistBiprodActL_hom :
     exact twistBiprodActL_snd A V P Q
 
 /-- **The inverse distributivity map is linear.** -/
-theorem twistBiprodActR_inv :
+theorem twistBiprodActR_inv
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] [SymmetricCategory D]
+    (A : D) [MonObj A] (V : D) (P : Mod D A) (Q : Mod D A) :
     twistBiprodActR A V P Q ≫ tensorLeftBiprodInv V P.X Q.X =
       (A ◁ tensorLeftBiprodInv V P.X Q.X) ≫
         twistBiprodActL A V P Q := by
@@ -208,7 +232,10 @@ theorem twistBiprodActR_inv :
     MonoidalCategory.whiskerLeft_id, Category.id_comp]
 
 /-- The distributivity map, as a module map. -/
-noncomputable def tensorLeftBiprodModHom :
+noncomputable def tensorLeftBiprodModHom
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     tensorLeftMod A V (modBiprod A P Q) ⟶
       modBiprod A (tensorLeftMod A V P)
         (tensorLeftMod A V Q) :=
@@ -216,24 +243,36 @@ noncomputable def tensorLeftBiprodModHom :
     (by exact twistBiprodActL_hom A V P Q)
 
 /-- The inverse distributivity map, as a module map. -/
-noncomputable def tensorLeftBiprodModInv :
+noncomputable def tensorLeftBiprodModInv
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] [SymmetricCategory D]
+    (A : D) [MonObj A] (V : D) (P : Mod D A) (Q : Mod D A) :
     modBiprod A (tensorLeftMod A V P) (tensorLeftMod A V Q) ⟶
       tensorLeftMod A V (modBiprod A P Q) :=
   Mod.Hom.mk' (tensorLeftBiprodInv V P.X Q.X)
     (by exact twistBiprodActR_inv A V P Q)
 
-omit [MonoidalPreadditive D] in
-@[simp] lemma tensorLeftBiprodModHom_hom :
+@[simp] lemma tensorLeftBiprodModHom_hom
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] [SymmetricCategory D] (A : D) [MonObj A] (V : D)
+    (P : Mod D A) (Q : Mod D A) :
     (tensorLeftBiprodModHom A V P Q).hom =
       tensorLeftBiprodHom V P.X Q.X := rfl
 
-@[simp] lemma tensorLeftBiprodModInv_hom :
+@[simp] lemma tensorLeftBiprodModInv_hom
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] [SymmetricCategory D]
+    (A : D) [MonObj A] (V : D) (P : Mod D A) (Q : Mod D A) :
     (tensorLeftBiprodModInv A V P Q).hom =
       tensorLeftBiprodInv V P.X Q.X := rfl
 
 /-- **Twisting distributes over the biproduct of modules**: the
 twist of a biproduct of modules is the biproduct of the twists. -/
-noncomputable def tensorLeftBiprodIso (V : D) (P Q : Mod D A) :
+noncomputable def tensorLeftBiprodIso
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] [SymmetricCategory D]
+    (A : D) [MonObj A]
+    (V : D) (P Q : Mod D A) :
     tensorLeftMod A V (modBiprod A P Q) ≅
       modBiprod A (tensorLeftMod A V P)
         (tensorLeftMod A V Q) where

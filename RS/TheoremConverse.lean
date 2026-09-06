@@ -14,6 +14,14 @@ namespace RS
 
 open Classical
 
+/-- The converse rank bound with the exact total dimension as its
+base, including the zero-dimensional model. -/
+theorem mixedPartition_edgeRankBounded {k ℓ : ℕ}
+    (h : MixedFunctional k ℓ) :
+    EdgeRankBounded (fun W => mixedPartition h W) (k + 2 * ℓ) :=
+  edgeRankBounded_of_superGram (fragmentTensor h)
+    (EdgeSubset.superGramIdentity h)
+
 /-- **THE CONVERSE** (Regts–Sevenster, arXiv:1807.04494, Theorem 6):
 every mixed partition function is an edge-rank-bounded parameter,
 with base `max 1 (k + 2ℓ)`. -/

@@ -1043,11 +1043,12 @@ theorem one_mem_span_classSum (n : ℕ) :
       calc g = k⁻¹ * (k * g * k⁻¹) * k := by group
         _ = 1 := by rw [h]; group))]
 
-/-- **Completeness of the blocks**: at every size the recast
-central idempotents sum to the identity of the group algebra. -/
-theorem SchurPackage.sum_shape_e_eq_one (P : SchurPackage.{u})
-    (n : ℕ) :
-    ∑ μ : Shape n, Shape.e P μ = 1 := by
+/-- Every element in the class-sum span has coordinates in the recast
+central idempotents. -/
+theorem eq_sum_shape_e_of_mem_span (P : SchurPackage.{u}) {n : ℕ}
+    {x : SymGroupAlgebra n}
+    (hx : x ∈ Submodule.span ℂ (Set.range (classSum n))) :
+    ∃ c : Shape n → ℂ, ∑ μ, c μ • Shape.e P μ = x := by
   classical
   set W := Submodule.span ℂ (Set.range (classSum n)) with hWdef
   haveI : FiniteDimensional ℂ W :=
@@ -1067,19 +1068,27 @@ theorem SchurPackage.sum_shape_e_eq_one (P : SchurPackage.{u})
         (le_of_eq (Fintype.card_congr (shapeEquivPartition n)).symm))
   have hspan : Submodule.span ℂ (Set.range E') = ⊤ :=
     hli'.span_eq_top_of_card_eq_finrank' hcard
-  have h1W : (1 : SymGroupAlgebra n) ∈ W := one_mem_span_classSum n
-  have h1sp : (⟨1, h1W⟩ : W) ∈ Submodule.span ℂ (Set.range E') := by
+  have h1sp : (⟨x, hx⟩ : W) ∈ Submodule.span ℂ (Set.range E') := by
     rw [hspan]
     exact Submodule.mem_top
   rw [Submodule.mem_span_range_iff_exists_fun] at h1sp
   obtain ⟨c, hc⟩ := h1sp
-  have hc' : ∑ μ : Shape n, c μ • Shape.e P μ = 1 := by
-    have hval : W.subtype (∑ μ : Shape n, c μ • E' μ) =
-        W.subtype ⟨1, h1W⟩ := congrArg _ hc
-    rw [map_sum] at hval
-    rw [Finset.sum_congr rfl fun μ _ =>
-      map_smul W.subtype (c μ) (E' μ)] at hval
-    exact hval
+  refine ⟨c, ?_⟩
+  have hval : W.subtype (∑ μ : Shape n, c μ • E' μ) =
+      W.subtype ⟨x, hx⟩ := congrArg _ hc
+  rw [map_sum] at hval
+  rw [Finset.sum_congr rfl fun μ _ =>
+    map_smul W.subtype (c μ) (E' μ)] at hval
+  exact hval
+
+/-- **Completeness of the blocks**: at every size the recast
+central idempotents sum to the identity of the group algebra. -/
+theorem SchurPackage.sum_shape_e_eq_one (P : SchurPackage.{u})
+    (n : ℕ) :
+    ∑ μ : Shape n, Shape.e P μ = 1 := by
+  classical
+  obtain ⟨c, hc'⟩ := eq_sum_shape_e_of_mem_span P
+    (one_mem_span_classSum n)
   have hone : ∀ ν : Shape n, c ν = 1 := by
     intro ν
     have h := congrArg

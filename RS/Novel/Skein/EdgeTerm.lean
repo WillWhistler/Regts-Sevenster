@@ -18,11 +18,11 @@ namespace EdgeSubset
 
 open Fragment Classical
 
-variable {L : Type} [LinearOrder L] {V : Fragment L}
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- Transporting the colouring sum along an equality of subsets. -/
-theorem edgeSum_relOfEq {F F' : EdgeSubset V} (hF : F = F')
+theorem edgeSum_relOfEq {V : Fragment L}
+    {F F' : EdgeSubset V} (hF : F = F')
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ L)
     (hbnd : genBoundarySubsetMatches V F.flags st)
@@ -35,7 +35,8 @@ theorem edgeSum_relOfEq {F F' : EdgeSubset V} (hF : F = F')
 
 open Classical in
 /-- **RS21's summand at a prescribed circuit count.** -/
-noncomputable def edgeTermAt {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+noncomputable def edgeTermAt [LinearOrder L] {V : Fragment L}
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟 : DataFamily V) (st : GenBoundaryState k ℓ L)
     (s : Finset V.Flag) (C : ℕ) : ℂ :=
   if hc : ∀ f ∈ s, V.pairing f ∈ s then
@@ -52,7 +53,8 @@ noncomputable def edgeTermAt {k ℓ : ℕ} (h : MixedFunctional k ℓ)
 
 open Classical in
 /-- The summand vanishes off edge-closed flag sets. -/
-theorem edgeTermAt_eq_zero_of_not_closed {k ℓ : ℕ}
+theorem edgeTermAt_eq_zero_of_not_closed [LinearOrder L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (𝒟 : DataFamily V)
     (st : GenBoundaryState k ℓ L) {s : Finset V.Flag}
     (hc : ¬ ∀ f ∈ s, V.pairing f ∈ s) (C : ℕ) :
@@ -62,7 +64,8 @@ theorem edgeTermAt_eq_zero_of_not_closed {k ℓ : ℕ}
 
 open Classical in
 /-- And off subsets that do not match the boundary state. -/
-theorem edgeTermAt_eq_zero_of_not_matches {k ℓ : ℕ}
+theorem edgeTermAt_eq_zero_of_not_matches [LinearOrder L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (𝒟 : DataFamily V)
     (st : GenBoundaryState k ℓ L) {s : Finset V.Flag}
     (hbnd : ¬ genBoundarySubsetMatches V s st) (C : ℕ) :
@@ -74,7 +77,8 @@ theorem edgeTermAt_eq_zero_of_not_matches {k ℓ : ℕ}
 
 open Classical in
 /-- And off non-Eulerian subsets. -/
-theorem edgeTermAt_eq_zero_of_not_eulerian {k ℓ : ℕ}
+theorem edgeTermAt_eq_zero_of_not_eulerian [LinearOrder L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (𝒟 : DataFamily V)
     (st : GenBoundaryState k ℓ L) {s : Finset V.Flag}
     (hc : ∀ f ∈ s, V.pairing f ∈ s)
@@ -89,7 +93,8 @@ theorem edgeTermAt_eq_zero_of_not_eulerian {k ℓ : ℕ}
 open Classical in
 /-- And off subsets carrying no canonical datum — so the sum runs
 over the good subsets only. -/
-theorem edgeTermAt_eq_zero_of_not_canon {k ℓ : ℕ}
+theorem edgeTermAt_eq_zero_of_not_canon [LinearOrder L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (𝒟 : DataFamily V)
     (st : GenBoundaryState k ℓ L) {s : Finset V.Flag}
     (hc : ∀ f ∈ s, V.pairing f ∈ s)
@@ -106,7 +111,8 @@ theorem edgeTermAt_eq_zero_of_not_canon {k ℓ : ℕ}
 
 open Classical in
 /-- The summand at a good subset. -/
-theorem edgeTermAt_pos {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_pos [LinearOrder L] {V : Fragment L}
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟 : DataFamily V) (st : GenBoundaryState k ℓ L)
     {s : Finset V.Flag} (hc : ∀ f ∈ s, V.pairing f ∈ s)
     (hbnd : genBoundarySubsetMatches V s st)
@@ -128,15 +134,11 @@ and is the glued fragment's summand.
 
 section OpenCut
 
-variable {i j : L} (hij : i ≠ j)
-  (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
-  (t : Finset (SurvivingFlag V i j))
-  (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
-
-omit [LinearOrder L] in
-include hij hopen in
 /-- A missed cut admits no odd colour at the interface. -/
 theorem not_matches_liftOpen_odd_of_miss
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
     (hni : partnerSurvI hopen ∉ t) {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (d : Fin (2 * ℓ)) (c' : Fin k ⊕ Fin (2 * ℓ)) :
@@ -147,10 +149,11 @@ theorem not_matches_liftOpen_odd_of_miss
     ((hm i).mpr ⟨d, ?_⟩))
   exact GenBoundaryState.extendPair_left st' _ _
 
-omit [LinearOrder L] in
-include hij hopen in
 /-- A carried cut admits no even colour at the interface. -/
 theorem not_matches_liftOpen_even_of_hit
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
     (hpi : partnerSurvI hopen ∈ t) {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (a : Fin k) (c' : Fin k ⊕ Fin (2 * ℓ)) :
@@ -162,10 +165,12 @@ theorem not_matches_liftOpen_even_of_hit
   rw [GenBoundaryState.extendPair_left] at he
   exact absurd he (by simp)
 
-omit [LinearOrder L] in
-include hij hopen hct in
 /-- On a missed cut the even extensions all match. -/
-theorem matches_liftOpen_of_miss (hni : partnerSurvI hopen ∉ t)
+theorem matches_liftOpen_of_miss {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    (hni : partnerSurvI hopen ∉ t)
     {k ℓ : ℕ} (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairOpen i j hij hopen) t st')
@@ -197,10 +202,12 @@ theorem matches_liftOpen_of_miss (hni : partnerSurvI hopen ∉ t)
         surviving_val_mem_liftOpen_iff hopen t, hst]
       exact hbnd' ⟨b, hbi, hbj⟩
 
-omit [LinearOrder L] in
-include hij hopen hct in
 /-- On a carried cut the odd extensions all match. -/
-theorem matches_liftOpen_of_hit (hpi : partnerSurvI hopen ∈ t)
+theorem matches_liftOpen_of_hit {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    (hpi : partnerSurvI hopen ∈ t)
     {k ℓ : ℕ} (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairOpen i j hij hopen) t st') (d : Fin (2 * ℓ)) :
@@ -228,11 +235,15 @@ theorem matches_liftOpen_of_hit (hpi : partnerSurvI hopen ∈ t)
         surviving_val_mem_liftOpen_iff hopen t, hst]
       exact hbnd' ⟨b, hbi, hbj⟩
 
-include hij hopen in
 open Classical in
 /-- **The base's summand at an open lift** is the glued fragment's
 data, unglued. -/
-theorem edgeTermAt_liftOpen {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_liftOpen
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairOpen i j hij hopen))
     (hcL : ∀ f ∈ liftSubsetOpen hopen t,
       V.pairing f ∈ liftSubsetOpen hopen t)
@@ -262,12 +273,16 @@ theorem edgeTermAt_liftOpen {k ℓ : ℕ} (h : MixedFunctional k ℓ)
   exact congrArg (fun z => ((-1 : ℂ) ^ C) * z)
     (edgeSum_relOfEq rfl h st hbnd hbnd _)
 
-include hij hopen in
 open Classical in
 /-- **One open cut, on RS21's summands.**  The interface colour is
 even exactly when the subset misses the cut, so the sum over it is
 the glued fragment's summand. -/
-theorem edgeTermAt_openCut {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_openCut
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairOpen i j hij hopen).pairing f ∈ t)
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairOpen i j hij hopen))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
@@ -340,14 +355,12 @@ odd at one label and even at the other.
 
 section OpenCutAll
 
-variable {i j : L} (hij : i ≠ j)
-  (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
-  (t : Finset (SurvivingFlag V i j))
-
-omit [LinearOrder L] in
-include hij hopen in
 /-- **A diagonal state forces the glue's closure.** -/
-theorem rewire_closed_of_liftOpen_closed {k ℓ : ℕ}
+theorem rewire_closed_of_liftOpen_closed
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (c : Fin k ⊕ Fin (2 * ℓ))
     (hcl : ∀ f ∈ liftSubsetOpen hopen t,
@@ -376,10 +389,13 @@ theorem rewire_closed_of_liftOpen_closed {k ℓ : ℕ}
       exact hcl _ ((surviving_val_mem_liftOpen_iff hopen t
         g).mpr hg)
 
-include hij hopen in
 open Classical in
 /-- **One open cut, with nothing assumed of the subset.** -/
-theorem edgeTermAt_openCut_all {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_openCut_all
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hopen : V.pairing (V.boundaryFlag i) ≠ V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairOpen i j hij hopen))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j)) (C : ℕ) :
     (∑ c : Fin k ⊕ Fin (2 * ℓ),
@@ -436,15 +452,11 @@ branches then weigh `k` and `−2ℓ`, which is the circle's own value.
 
 section ClosedCut
 
-variable {i j : L} (hij : i ≠ j)
-  (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
-  (t : Finset (SurvivingFlag V i j))
-  (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t)
-
-omit [LinearOrder L] in
-include hij in
 /-- The empty branch admits no odd colour at the cut. -/
-theorem not_matches_liftClosed_odd_false {k ℓ : ℕ}
+theorem not_matches_liftClosed_odd_false
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (d : Fin (2 * ℓ)) (c' : Fin k ⊕ Fin (2 * ℓ)) :
     ¬ genBoundarySubsetMatches V (liftSubsetClosed t false)
@@ -455,10 +467,11 @@ theorem not_matches_liftClosed_odd_false {k ℓ : ℕ}
       ((hm i).mpr ⟨d, ?_⟩))
   exact GenBoundaryState.extendPair_left st' _ _
 
-omit [LinearOrder L] in
-include hij in
 /-- The carried branch admits no even colour at the cut. -/
-theorem not_matches_liftClosed_even_true {k ℓ : ℕ}
+theorem not_matches_liftClosed_even_true
+    {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (a : Fin k) (c' : Fin k ⊕ Fin (2 * ℓ)) :
     ¬ genBoundarySubsetMatches V (liftSubsetClosed t true)
@@ -469,10 +482,11 @@ theorem not_matches_liftClosed_even_true {k ℓ : ℕ}
   rw [GenBoundaryState.extendPair_left] at he
   exact absurd he (by simp)
 
-omit [LinearOrder L] in
-include hij in
 /-- On the empty branch the even extensions all match. -/
-theorem matches_liftClosed_false {k ℓ : ℕ}
+theorem matches_liftClosed_false {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairClosed i j hclosed) t st') (a : Fin k) :
@@ -501,10 +515,11 @@ theorem matches_liftClosed_false {k ℓ : ℕ}
         surviving_val_mem_liftClosed_iff t false, hst]
       exact hbnd' ⟨b, hbi, hbj⟩
 
-omit [LinearOrder L] in
-include hij in
 /-- On the carried branch the odd extensions all match. -/
-theorem matches_liftClosed_true {k ℓ : ℕ}
+theorem matches_liftClosed_true {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
       (V.gluePairClosed i j hclosed) t st') (d : Fin (2 * ℓ)) :
@@ -531,11 +546,15 @@ theorem matches_liftClosed_true {k ℓ : ℕ}
         surviving_val_mem_liftClosed_iff t true, hst]
       exact hbnd' ⟨b, hbi, hbj⟩
 
-include hij in
 open Classical in
 /-- **The base's summand at a closed lift** is the glued fragment's
 data, unglued. -/
-theorem edgeTermAt_liftClosed {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_liftClosed
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t)
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed)) (b : Bool)
     (hcL : ∀ f ∈ liftSubsetClosed t b,
       V.pairing f ∈ liftSubsetClosed t b)
@@ -566,12 +585,16 @@ theorem edgeTermAt_liftClosed {k ℓ : ℕ} (h : MixedFunctional k ℓ)
   exact congrArg (fun z => ((-1 : ℂ) ^ C) * z)
     (edgeSum_relOfEq rfl h st hbnd hbnd _)
 
-include hij in
 open Classical in
 /-- **The empty branch of a closing cut weighs `k`.**  Only the even
 colours reach it — the odd ones would ask for the cut's own edge —
 and each of them gives the glued term back. -/
-theorem edgeTermAt_closedCut_false_row {k ℓ : ℕ}
+theorem edgeTermAt_closedCut_false_row
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t)
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
@@ -608,12 +631,16 @@ theorem edgeTermAt_closedCut_false_row {k ℓ : ℕ}
     Finset.sum_const, Finset.card_univ, Fintype.card_fin,
     nsmul_eq_mul, edgeTermAt_pos h 𝒟' st' hct hbnd' hEt hnet C]
 
-include hij in
 open Classical in
 /-- **The carried branch of a closing cut weighs `−2ℓ`.**  Only the
 odd colours reach it, and each of them gives the glued term back with
 the sign the extra carried cut supplies. -/
-theorem edgeTermAt_closedCut_true_row {k ℓ : ℕ}
+theorem edgeTermAt_closedCut_true_row
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t)
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
@@ -653,11 +680,15 @@ theorem edgeTermAt_closedCut_true_row {k ℓ : ℕ}
   push_cast
   ring
 
-include hij in
 open Classical in
 /-- **One closing cut, on RS21's summands.**  The two branches of the
 closed edge weigh `k` and `−2ℓ`, the free circle's own value. -/
-theorem edgeTermAt_closedCut {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_closedCut
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (hct : ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t)
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (hbnd' : genBoundarySubsetMatches
@@ -742,13 +773,12 @@ end ClosedCut
 
 section ClosedCutAll
 
-variable {i j : L} (hij : i ≠ j)
-  (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
-  (t : Finset (SurvivingFlag V i j))
-
-omit [LinearOrder L] in
 /-- **The glued boundary constraint from the lift's.** -/
-theorem genBoundarySubsetMatches_glued_of_liftClosed {k ℓ : ℕ}
+theorem genBoundarySubsetMatches_glued_of_liftClosed
+    {V : Fragment L} {i : L} {j : L}
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (b : Bool) (st' : GenBoundaryState k ℓ (SurvivingLabel L i j))
     (c c' : Fin k ⊕ Fin (2 * ℓ))
     (hm : genBoundarySubsetMatches V (liftSubsetClosed t b)
@@ -761,9 +791,11 @@ theorem genBoundarySubsetMatches_glued_of_liftClosed {k ℓ : ℕ}
   exact (surviving_val_mem_liftClosed_iff t b
     (glueBoundaryFlag V i j a)).symm.trans hval
 
-omit [LinearOrder L] in
 /-- **A closed lift's closure is the glue's.** -/
-theorem glued_closed_of_liftClosed_closed (b : Bool)
+theorem glued_closed_of_liftClosed_closed {V : Fragment L} {i : L} {j : L}
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    (b : Bool)
     (hcl : ∀ f ∈ liftSubsetClosed t b,
       V.pairing f ∈ liftSubsetClosed t b) :
     ∀ f ∈ t, (V.gluePairClosed i j hclosed).pairing f ∈ t := by
@@ -771,10 +803,13 @@ theorem glued_closed_of_liftClosed_closed (b : Bool)
     (liftSubsetClosed t b) hcl
   rwa [dropSubset_liftSubsetClosed t b] at h
 
-include hij in
 open Classical in
 /-- **One closing cut, with nothing assumed of the subset.** -/
-theorem edgeTermAt_closedCut_all {k ℓ : ℕ}
+theorem edgeTermAt_closedCut_all
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j)) (C : ℕ) :
@@ -846,11 +881,14 @@ theorem edgeTermAt_closedCut_all {k ℓ : ℕ}
         · exact edgeTermAt_eq_zero_of_not_closed h _ _ hcT (C + 1))]
     ring
 
-include hij in
 open Classical in
 /-- **The empty branch of a closing cut weighs `k`**, with nothing
 assumed of the subset. -/
-theorem edgeTermAt_closedCut_false_row_all {k ℓ : ℕ}
+theorem edgeTermAt_closedCut_false_row_all
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j)) (C : ℕ) :
@@ -898,11 +936,14 @@ theorem edgeTermAt_closedCut_false_row_all {k ℓ : ℕ}
         · exact edgeTermAt_eq_zero_of_not_closed h _ _ hcF C)]
     ring
 
-include hij in
 open Classical in
 /-- **The carried branch of a closing cut weighs `−2ℓ`**, with
 nothing assumed of the subset. -/
-theorem edgeTermAt_closedCut_true_row_all {k ℓ : ℕ}
+theorem edgeTermAt_closedCut_true_row_all
+    [LinearOrder L] {V : Fragment L} {i : L} {j : L} (hij : i ≠ j)
+    (hclosed : V.pairing (V.boundaryFlag i) = V.boundaryFlag j)
+    (t : Finset (SurvivingFlag V i j))
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
     (𝒟' : DataFamily (V.gluePairClosed i j hclosed))
     (st' : GenBoundaryState k ℓ (SurvivingLabel L i j)) (C : ℕ) :
@@ -961,15 +1002,11 @@ agreement splits with the sum.
 
 section DisjUnion
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] [Fintype α]
-  [Fintype β] [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
-  {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
-
-omit [LinearOrder α] in
-omit [LinearOrder β] in
-omit [Fintype α] [Fintype β] in
 /-- The named colour of a left flag is the left half's. -/
-theorem usedColour_inl {k ℓ : ℕ} (st : GenBoundaryState k ℓ (α ⊕ β))
+theorem usedColour_inl
+    {α : Type} {β : Type} [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    {k ℓ : ℕ} (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
     (hbnd₁ : genBoundarySubsetMatches W₁ (leftSub F).flags
       (fun a => st (Sum.inl a)))
@@ -985,11 +1022,11 @@ theorem usedColour_inl {k ℓ : ℕ} (st : GenBoundaryState k ℓ (α ⊕ β))
   rw [boundaryLabel_inl hbD hb] at h1
   exact Sum.inr.inj (h1.symm.trans h2)
 
-omit [LinearOrder β] in
-omit [LinearOrder α] in
-omit [Fintype α] [Fintype β] in
 /-- The named colour of a right flag is the right half's. -/
-theorem usedColour_inr {k ℓ : ℕ} (st : GenBoundaryState k ℓ (α ⊕ β))
+theorem usedColour_inr
+    {α : Type} {β : Type} [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    {k ℓ : ℕ} (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
     (hbnd₂ : genBoundarySubsetMatches W₂ (rightSub F).flags
       (fun b => st (Sum.inr b)))
@@ -1005,11 +1042,11 @@ theorem usedColour_inr {k ℓ : ℕ} (st : GenBoundaryState k ℓ (α ⊕ β))
   rw [boundaryLabel_inr hbD hb] at h1
   exact Sum.inr.inj (h1.symm.trans h2)
 
-omit [LinearOrder α] in
-omit [LinearOrder β] in
-omit [Fintype α] [Fintype β] in
 /-- **Agreement restricts to the left half.** -/
-theorem throughAgree_left {k ℓ : ℕ}
+theorem throughAgree_left
+    {α : Type} {β : Type} [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    {k ℓ : ℕ}
     (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
     (hbnd₁ : genBoundarySubsetMatches W₁ (leftSub F).flags
@@ -1025,11 +1062,11 @@ theorem throughAgree_left {k ℓ : ℕ}
     ← usedColour_inl F st hbnd hbnd₁ hbD hb]
   exact hag (Sum.inl g) hbD hbpD
 
-omit [LinearOrder β] in
-omit [LinearOrder α] in
-omit [Fintype α] [Fintype β] in
 /-- **Agreement restricts to the right half.** -/
-theorem throughAgree_right {k ℓ : ℕ}
+theorem throughAgree_right
+    {α : Type} {β : Type} [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    {k ℓ : ℕ}
     (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
     (hbnd₂ : genBoundarySubsetMatches W₂ (rightSub F).flags
@@ -1045,10 +1082,11 @@ theorem throughAgree_right {k ℓ : ℕ}
     ← usedColour_inr F st hbnd hbnd₂ hbD hb]
   exact hag (Sum.inr g) hbD hbpD
 
-omit [LinearOrder α] [LinearOrder β] in
-omit [Fintype α] [Fintype β] in
 /-- **Agreement on both halves is agreement.** -/
-theorem throughAgree_of_parts {k ℓ : ℕ}
+theorem throughAgree_of_parts
+    {α : Type} {β : Type} [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    {k ℓ : ℕ}
     (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
     (hbnd₁ : genBoundarySubsetMatches W₁ (leftSub F).flags
@@ -1085,10 +1123,11 @@ theorem throughAgree_of_parts {k ℓ : ℕ}
     rw [e1, e2]
     exact hag₂ g hb' hbp'
 
-omit [LinearOrder α] [LinearOrder β] in
-omit [Fintype α] [Fintype β] in
 /-- **RS21's colouring sum splits over a disjoint union.** -/
-theorem edgeSum_disjUnion {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeSum_disjUnion
+    {α : Type} {β : Type} [LinearOrder (α ⊕ β)] {W₁ : Fragment α}
+    {W₂ : Fragment β} (F : EdgeSubset (W₁.disjUnion W₂))
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ (α ⊕ β))
     (hbnd : genBoundarySubsetMatches (W₁.disjUnion W₂) F.flags st)
     (hbnd₁ : genBoundarySubsetMatches W₁ (leftSub F).flags
@@ -1131,12 +1170,10 @@ colouring sum does not see the labels beyond the boundary match.
 
 section Relabel
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] {W : Fragment α}
-  (ee : α ≃ β)
-
-omit [LinearOrder α] [LinearOrder β] in
 /-- The odd boundary constraint reindexes through the relabel. -/
-theorem relabel_edgeOddBoundaryMatch_iff (F : EdgeSubset W)
+theorem relabel_edgeOddBoundaryMatch_iff
+    {α : Type} {β : Type} {W : Fragment α} (ee : α ≃ β)
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (st : GenBoundaryState k ℓ β)
     (φ : (F.relabelUp ee).EdgeOddColouring ℓ) :
     edgeOddBoundaryMatch (F.relabelUp ee) st φ ↔
@@ -1161,21 +1198,22 @@ theorem relabel_edgeOddBoundaryMatch_iff (F : EdgeSubset W)
 
 /-- The odd colourings are the same on both sides of a relabel: the
 flags and the pairing are untouched. -/
-def edgeOddRelabelEquiv (F : EdgeSubset W) (ℓ : ℕ) :
+def edgeOddRelabelEquiv {α : Type} {β : Type} {W : Fragment α} (ee : α ≃ β)
+    (F : EdgeSubset W) (ℓ : ℕ) :
     (F.relabelUp ee).EdgeOddColouring ℓ ≃ F.EdgeOddColouring ℓ :=
   Equiv.refl _
 
-omit [LinearOrder α] [LinearOrder β] in
 /-- The core of a relabelled colouring is the relabelled core. -/
-theorem core_relabel_eq (F : EdgeSubset W) {ℓ : ℕ}
+theorem core_relabel_eq {α : Type} {β : Type} {W : Fragment α} (ee : α ≃ β)
+    (F : EdgeSubset W) {ℓ : ℕ}
     (φ : (F.relabelUp ee).EdgeOddColouring ℓ) :
     coreOddRelabelEquiv ee F ℓ φ.core
       = (edgeOddRelabelEquiv ee F ℓ φ).core :=
   Subtype.ext (funext fun _ => congrArg φ.val (Subtype.ext rfl))
 
-omit [LinearOrder α] [LinearOrder β] in
 /-- **RS21's colouring sum is untouched by a relabel.** -/
-theorem relabel_edgeSum (F : EdgeSubset W) {k ℓ : ℕ}
+theorem relabel_edgeSum {α : Type} {β : Type} {W : Fragment α} (ee : α ≃ β)
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ β)
     (hbnd : genBoundarySubsetMatches (W.relabel ee)
       (F.relabelUp ee).flags st)

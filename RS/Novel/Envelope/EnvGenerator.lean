@@ -1,7 +1,6 @@
 import RS.Novel.Envelope.EnvInstances
 import RS.Classical.CatTheory.TensorPow
 
-
 /-!
 # The strand generator of the envelope
 
@@ -48,26 +47,31 @@ theorem strandK_tensor (a b : ℕ) :
 
 section MatEmb
 
-variable {D : Type u} [Category.{v} D] [Preadditive D]
-  [MonoidalCategory D] [MonoidalPreadditive D]
+variable {D : Type u}
 
 /-- The diagonal comparison from the tensor of embeddings to the
 embedding of the tensor. -/
-noncomputable def matEmbTensorHom (x y : D) :
+noncomputable def matEmbTensorHom
+    [Category.{v} D] [Preadditive D] [MonoidalCategory D]
+    (x y : D) :
     (Mat_.embedding D).obj x ⊗ (Mat_.embedding D).obj y ⟶
       (Mat_.embedding D).obj (x ⊗ y) :=
   fun _ _ => 𝟙 (x ⊗ y)
 
 /-- The diagonal comparison from the embedding of the tensor to
 the tensor of embeddings. -/
-noncomputable def matEmbTensorInv (x y : D) :
+noncomputable def matEmbTensorInv
+    [Category.{v} D] [Preadditive D] [MonoidalCategory D]
+    (x y : D) :
     (Mat_.embedding D).obj (x ⊗ y) ⟶
       (Mat_.embedding D).obj x ⊗ (Mat_.embedding D).obj y :=
   fun _ _ => 𝟙 (x ⊗ y)
 
 /-- The diagonal isomorphism between the tensor of embeddings and
 the embedding of the tensor. -/
-noncomputable def matEmbTensorIso (x y : D) :
+noncomputable def matEmbTensorIso
+    [Category.{v} D] [Preadditive D] [MonoidalCategory D]
+    (x y : D) :
     (Mat_.embedding D).obj x ⊗ (Mat_.embedding D).obj y ≅
       (Mat_.embedding D).obj (x ⊗ y) where
   hom := matEmbTensorHom x y

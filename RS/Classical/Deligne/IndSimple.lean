@@ -46,12 +46,13 @@ universe v
 
 section Embedding
 
-variable {C : Type v} [SmallCategory C] [Abelian C]
+variable {C : Type v}
 
 /-- **The ind-embedding preserves simplicity.**  If `X` is a simple
 object of a small abelian category `C`, then `indOf.obj X` is a
 simple object of `Ind C`. -/
-theorem simple_indOf (X : C) [Simple X] : Simple (indOf.obj X) := by
+theorem simple_indOf [SmallCategory C] [Abelian C]
+    (X : C) [Simple X] : Simple (indOf.obj X) := by
   haveI := indOf_additive (C := C)
   constructor
   intro U m hm
@@ -98,13 +99,13 @@ end Embedding
 
 section Unit
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C]
+variable {C : Type v}
 
 /-- **The unit of `Ind C` is simple** whenever the unit of `C` is:
 the unit of `Ind C` is the embedded unit (`RS.indOfUnitIso`), and
 the embedding preserves simplicity. -/
-theorem simple_unit_ind (hsimple : Simple (𝟙_ C)) :
+theorem simple_unit_ind [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    (hsimple : Simple (𝟙_ C)) :
     Simple (𝟙_ (Ind C)) :=
   haveI := hsimple
   haveI := simple_indOf (𝟙_ C)
@@ -114,7 +115,8 @@ theorem simple_unit_ind (hsimple : Simple (𝟙_ C)) :
 is the faithful-flatness input to faithfulness of Deligne's fibre
 functor: the unit of `Ind C` is simple, so any nonzero morphism out
 of it is a monomorphism. -/
-theorem mono_unit_ind (hsimple : Simple (𝟙_ C)) (A : Ind C)
+theorem mono_unit_ind [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    (hsimple : Simple (𝟙_ C)) (A : Ind C)
     [MonObj A] (hne : η[A] ≠ 0) : Mono η[A] :=
   haveI := simple_unit_ind hsimple
   mono_of_nonzero_from_simple hne

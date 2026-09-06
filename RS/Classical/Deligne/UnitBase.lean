@@ -25,22 +25,25 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section UnitModule
 
 /-- Any object, as a module over the tensor unit through the
 trivial action. -/
-def unitMod (X : D) : Mod D (𝟙_ D) := ⟨X⟩
+def unitMod [Category.{v} D] [MonoidalCategory D]
+    (X : D) : Mod D (𝟙_ D) := ⟨X⟩
 
-@[simp] lemma unitMod_X (X : D) : (unitMod X).X = X := rfl
+@[simp] lemma unitMod_X [Category.{v} D] [MonoidalCategory D]
+    (X : D) : (unitMod X).X = X := rfl
 
 /-- Any action of the tensor unit is the left unitor: the unit
 law forces it, since the unit of the trivial base is the
 identity.  The instance is quantified, so the lemma applies to
 the action of any module over the unit, not only the trivial
 one. -/
-lemma modObj_unitBase_smul (X : D) [inst : ModObj (𝟙_ D) X] :
+lemma modObj_unitBase_smul
+    [Category.{v} D] [MonoidalCategory D] (X : D) [inst : ModObj (𝟙_ D) X] :
     γ[𝟙_ D, X] = (λ_ X).hom := by
   have h := ModObj.one_smul_self (𝟙_ D) X
   rw [MonObj.one_def, MonoidalCategory.id_whiskerRight,
@@ -48,7 +51,8 @@ lemma modObj_unitBase_smul (X : D) [inst : ModObj (𝟙_ D) X] :
   exact h
 
 /-- The action of any module over the unit, in `actLeft` form. -/
-lemma actLeft_unitBase (X : D) [inst : ModObj (𝟙_ D) X] :
+lemma actLeft_unitBase
+    [Category.{v} D] [MonoidalCategory D] (X : D) [inst : ModObj (𝟙_ D) X] :
     actLeft (𝟙_ D) X = (λ_ X).hom :=
   modObj_unitBase_smul X
 
@@ -56,33 +60,33 @@ end UnitModule
 
 section TensorUnitBase
 
-variable [BraidedCategory D]
-
 /-- The braided right action of any module over the unit is the
 right unitor. -/
-lemma actRight_unitBase (X : D) [inst : ModObj (𝟙_ D) X] :
+lemma actRight_unitBase
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (X : D) [inst : ModObj (𝟙_ D) X] :
     actRight (𝟙_ D) X = (ρ_ X).hom := by
   rw [actRight, actLeft_unitBase, braiding_tensorUnit_right]
   simp
 
-variable (M N : Mod D (𝟙_ D))
-
 /-- Over the trivial base the two coequalizer legs of the module
 tensor product are equal morphisms. -/
-lemma modTensorLegM_unitBase_eq :
+lemma modTensorLegM_unitBase_eq
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (M : Mod D (𝟙_ D)) (N : Mod D (𝟙_ D)) :
     modTensorLegM (𝟙_ D) M N = modTensorLegN (𝟙_ D) M N := by
   rw [modTensorLegM, modTensorLegN,
     actRight_unitBase M.X (inst := M.mod),
     actLeft_unitBase N.X (inst := N.mod)]
   monoidal
 
-variable [HasCoequalizers D]
-
 /-- **Over the trivial base the module tensor product is the
 plain tensor product**: the coequalizer of a pair of equal legs
 is the target itself. -/
 @[simps]
-noncomputable def modTensorUnitBase :
+noncomputable def modTensorUnitBase
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (M : Mod D (𝟙_ D)) (N : Mod D (𝟙_ D)) [HasCoequalizers D] :
     modTensor (𝟙_ D) M N ≅ M.X ⊗ N.X where
   hom := modTensorDesc (𝟙_ D) M N (𝟙 (M.X ⊗ N.X))
     (by rw [modTensorLegM_unitBase_eq])
@@ -97,11 +101,9 @@ end TensorUnitBase
 
 section FreeUnitBase
 
-variable (V : D)
-
 /-- The left unitor intertwines the free action over the unit
 with the trivial action. -/
-theorem freeModUnitBase_linear :
+theorem freeModUnitBase_linear [Category.{v} D] [MonoidalCategory D] (V : D) :
     ((α_ (𝟙_ D) (𝟙_ D) V).inv ≫ (λ_ (𝟙_ D)).hom ▷ V) ≫
         (λ_ V).hom =
       (𝟙_ D) ◁ (λ_ V).hom ≫ (λ_ V).hom := by
@@ -109,7 +111,8 @@ theorem freeModUnitBase_linear :
 
 /-- The left unitor intertwines the trivial action with the free
 action over the unit. -/
-theorem freeModUnitBase_linear_inv :
+theorem freeModUnitBase_linear_inv
+    [Category.{v} D] [MonoidalCategory D] (V : D) :
     (λ_ V).hom ≫ (λ_ V).inv =
       (𝟙_ D) ◁ (λ_ V).inv ≫
         ((α_ (𝟙_ D) (𝟙_ D) V).inv ≫ (λ_ (𝟙_ D)).hom ▷ V) := by
@@ -117,7 +120,8 @@ theorem freeModUnitBase_linear_inv :
 
 /-- **The free module over the trivial base is its generator**,
 via the left unitor. -/
-noncomputable def freeModUnitBase :
+noncomputable def freeModUnitBase
+    [Category.{v} D] [MonoidalCategory D] (V : D) :
     freeMod (𝟙_ D) V ≅ unitMod V where
   hom := Mod.Hom.mk' (λ_ V).hom (by
     show ((α_ (𝟙_ D) (𝟙_ D) V).inv ≫ (λ_ (𝟙_ D)).hom ▷ V) ≫
@@ -140,14 +144,14 @@ end FreeUnitBase
 
 section BiprodZero
 
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D]
-variable (A : D) [MonObj A] (Z N : Mod D A)
-
 /-- **Collapse of a zero summand**: over any base, the module
 biproduct with a module whose carrier is zero is the other
 summand. -/
-noncomputable def modBiprodZeroLeft (hZ : IsZero Z.X) :
+noncomputable def modBiprodZeroLeft
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] (A : D) [MonObj A]
+    (Z : Mod D A) (N : Mod D A)
+    (hZ : IsZero Z.X) :
     modBiprod A Z N ≅ N where
   hom := modBiprodSnd A Z N
   inv := modBiprodInr A Z N

@@ -69,9 +69,7 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-! ## The chain to a complex point -/
 
@@ -90,7 +88,10 @@ index families is what keeps the assembled algebra of countable
 dimension; and the linear structures are the ones installed from the
 scalar unit `ψ`, for which the ℂ-linearity of the embedding is
 automatic. -/
-theorem exists_superPoint_of_countable_family (ψ : ℂ ≃+* End (𝟙_ C))
+theorem exists_superPoint_of_countable_family
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (L : OddLine (Ind C)) {J K : Type v} [Countable J] [Countable K]
     (Xf : J → C) (V W : K → C)
     (g : ∀ k, (indOf : C ⥤ Ind C).obj (V k) ⟶
@@ -142,16 +143,17 @@ theorem exists_superPoint_of_countable_family (ψ : ℂ ≃+* End (𝟙_ C))
 
 section Fibre
 
-variable [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
-variable (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
-  [IsCommMonObj 𝔸]
-
 /-- **The fibre of a mixed object is a free super module.**  An object
 that becomes the mixed sum `L.mix p q` after base change to the algebra
 has for its fibre the free super module of rank `(p | q)`: apply the
 realization functor to the isomorphism of free modules, then
 `RS.fibreMixIso`. -/
-noncomputable def fibreFreeIso {X : Ind C} {p q : ℕ}
+noncomputable def fibreFreeIso
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
+    {X : Ind C} {p q : ℕ}
     (e : freeMod 𝔸 X ≅ freeMod 𝔸 (L.mix p q)) :
     (fibreFun L 𝔸).obj X ≅
       ⨁ fun i : Fin p ⊕ Fin q =>
@@ -160,49 +162,64 @@ noncomputable def fibreFreeIso {X : Ind C} {p q : ℕ}
             (gammaAlgebra (Ind C) L 𝔸).unitMod) i :=
   (gammaModuleFunctor L 𝔸).mapIso e ≪≫ fibreMixIso L 𝔸 p q
 
-omit [RigidCategory C] in
 /-- **The even part of the fibre at a point is finite
 dimensional.** -/
 theorem finiteDimensional_fibre_tensor_point_even
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) {X : Ind C}
     {p q : ℕ} (e : freeMod 𝔸 X ≅ freeMod 𝔸 (L.mix p q)) :
     FiniteDimensional ℂ
       (((fibreFun L 𝔸).obj X).tensor (pointMod P)).even :=
   finiteDimensional_even_of_free P p q _ (fibreFreeIso L 𝔸 e)
 
-omit [RigidCategory C] in
 /-- **The odd part of the fibre at a point is finite
 dimensional.** -/
 theorem finiteDimensional_fibre_tensor_point_odd
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) {X : Ind C}
     {p q : ℕ} (e : freeMod 𝔸 X ≅ freeMod 𝔸 (L.mix p q)) :
     FiniteDimensional ℂ
       (((fibreFun L 𝔸).obj X).tensor (pointMod P)).odd :=
   finiteDimensional_odd_of_free P p q _ (fibreFreeIso L 𝔸 e)
 
-omit [RigidCategory C] in
 /-- **The even dimension of the fibre at a point is `p`.** -/
 theorem finrank_fibre_tensor_point_even
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) {X : Ind C}
     {p q : ℕ} (e : freeMod 𝔸 X ≅ freeMod 𝔸 (L.mix p q)) :
     Module.finrank ℂ
       (((fibreFun L 𝔸).obj X).tensor (pointMod P)).even = p :=
   finrank_even_of_free P p q _ (fibreFreeIso L 𝔸 e)
 
-omit [RigidCategory C] in
 /-- **The odd dimension of the fibre at a point is `q`.** -/
 theorem finrank_fibre_tensor_point_odd
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) {X : Ind C}
     {p q : ℕ} (e : freeMod 𝔸 X ≅ freeMod 𝔸 (L.mix p q)) :
     Module.finrank ℂ
       (((fibreFun L 𝔸).obj X).tensor (pointMod P)).odd = q :=
   finrank_odd_of_free P p q _ (fibreFreeIso L 𝔸 e)
 
-omit [RigidCategory C] in
 /-- **The fibre at a point, as a super vector space of dimension
 `(p | q)`.**  The packaging is `RS.toSuperVect`, whose components are
 coordinate spaces of the two dimensions just computed. -/
 theorem exists_superVect_fibre
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) {X : Ind C}
     {p q : ℕ} (e : freeMod 𝔸 X ≅ freeMod 𝔸 (L.mix p q)) :
     ∃ E : SuperVect, Module.finrank ℂ E.even = p ∧
@@ -223,6 +240,8 @@ the point of `RS.exists_superPoint_of_countable_family`, with the fibre
 of each object of the family recorded as a super vector space of the
 dimension pair its mixed sum prescribes. -/
 theorem exists_superPoint_fibre_of_countable_family
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
     (ψ : ℂ ≃+* End (𝟙_ C)) (L : OddLine (Ind C)) {J K : Type v}
     [Countable J] [Countable K] (Xf : J → C) (V W : K → C)
     (g : ∀ k, (indOf : C ⥤ Ind C).obj (V k) ⟶
@@ -281,7 +300,10 @@ countable; there are no morphisms to split. -/
 
 section Acceptance
 
-example (ψ : ℂ ≃+* End (𝟙_ C)) (L : OddLine (Ind C))
+example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (L : OddLine (Ind C))
     (Xf : ULift.{v} (ℕ × ℕ) → C)
     (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     (hmix : ∀ j, L.LocallyMixed ((indOf : C ⥤ Ind C).obj (Xf j))) :

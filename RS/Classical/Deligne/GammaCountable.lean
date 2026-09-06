@@ -70,13 +70,14 @@ set. -/
 
 section CountableRank
 
-variable {K : Type*} [DivisionRing K]
-variable {M : Type*} [AddCommGroup M] [Module K M]
+variable {K : Type*}
 
 /-- **A countable union of subspaces of countable dimension has
 countable dimension**: the union of chosen bases of the pieces is a
 countable spanning set. -/
-theorem rank_le_aleph0_of_countable_cover {I : Type*} [Countable I]
+theorem rank_le_aleph0_of_countable_cover
+    [DivisionRing K] {M : Type*} [AddCommGroup M] [Module K M]
+    {I : Type*} [Countable I]
     (p : I → Submodule K M)
     (hp : ∀ i, Module.rank K (p i) ≤ Cardinal.aleph0)
     (hcover : ∀ x : M, ∃ i, x ∈ p i) :
@@ -123,14 +124,16 @@ applies. -/
 
 section IndColimit
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ (Ind C)]
+variable {C : Type v}
 
 /-- **A countable filtered colimit of objects with countable even
 component again has countable even component.**  Compactness of the
 unit (`RS.exists_factor_of_unit_hom_colimit`) covers `𝟙 ⟶ colimit D`
 by the countably many images of the `𝟙 ⟶ D.obj i`. -/
-theorem rank_hom_unit_colimit_le_aleph0 {I : Type v} [SmallCategory I]
+theorem rank_hom_unit_colimit_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] [Countable I] (D : I ⥤ Ind C)
     (h : ∀ i : I,
       Module.rank ℂ (𝟙_ (Ind C) ⟶ D.obj i) ≤ Cardinal.aleph0) :
@@ -157,24 +160,27 @@ soon as each finite stage is. -/
 
 section BigTensorRank
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ (Ind C)]
-variable {J : Type v} [LinearOrder J] (B : J → Ind C)
-  [∀ j, MonObj (B j)]
+variable {C : Type v}
 
 /-- **The big tensor product of a countable family has countable
 even component**, provided each finite sub-tensor-product does: the
 stages are indexed by `Finset J`, which is countable. -/
-theorem rank_hom_unit_bigTensor_le_aleph0 [Countable J]
+theorem rank_hom_unit_bigTensor_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)] {J : Type v} [LinearOrder J]
+    (B : J → Ind C) [∀ j, MonObj (B j)]
+    [Countable J]
     (h : ∀ s : Finset J,
       Module.rank ℂ (𝟙_ (Ind C) ⟶ finTensor B s) ≤ Cardinal.aleph0) :
     Module.rank ℂ (𝟙_ (Ind C) ⟶ bigTensor B) ≤ Cardinal.aleph0 :=
   rank_hom_unit_colimit_le_aleph0 (finTensorDiagram B) h
 
-omit [∀ j, MonObj (B j)] in
 /-- The finite stages are the tensor words of the family: a bound on
 every word bounds every stage. -/
 theorem rank_hom_unit_finTensor_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)] {J : Type v} [LinearOrder J]
+    (B : J → Ind C)
     (h : ∀ l : List J,
       Module.rank ℂ (𝟙_ (Ind C) ⟶ listTensor B l) ≤ Cardinal.aleph0)
     (s : Finset J) :
@@ -187,18 +193,22 @@ end BigTensorRank
 
 section Transport
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ (Ind C)]
+variable {C : Type v}
 
 /-- Isomorphic objects have isomorphic even components. -/
-theorem rank_hom_unit_congr {Y Z : Ind C} (e : Y ≅ Z) :
+theorem rank_hom_unit_congr [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)]
+    {Y Z : Ind C} (e : Y ≅ Z) :
     Module.rank ℂ (𝟙_ (Ind C) ⟶ Y) =
       Module.rank ℂ (𝟙_ (Ind C) ⟶ Z) :=
   (Linear.homCongr ℂ (Iso.refl (𝟙_ (Ind C))) e).rank_eq
 
 /-- Countability of the even component is an isomorphism
 invariant. -/
-theorem rank_hom_unit_le_aleph0_of_iso {Y Z : Ind C} (e : Y ≅ Z)
+theorem rank_hom_unit_le_aleph0_of_iso
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)]
+    {Y Z : Ind C} (e : Y ≅ Z)
     (h : Module.rank ℂ (𝟙_ (Ind C) ⟶ Z) ≤ Cardinal.aleph0) :
     Module.rank ℂ (𝟙_ (Ind C) ⟶ Y) ≤ Cardinal.aleph0 :=
   (rank_hom_unit_congr e).trans_le h
@@ -218,22 +228,23 @@ supplies it. -/
 
 section Embedded
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
+variable {C : Type v}
 
 variable (C) in
 /-- ℂ-linearity of the embedding `C ⥤ Ind C`, as a hypothesis on the
 ambient linear structure of the ind-completion. -/
-def IndOfLinear : Prop :=
+def IndOfLinear [SmallCategory C] [Abelian C] [CategoryTheory.Linear ℂ C]
+    [CategoryTheory.Linear ℂ (Ind C)] : Prop :=
   ∀ (X Y : C) (c : ℂ) (f : X ⟶ Y),
     (indOf (C := C)).map (c • f) = c • (indOf (C := C)).map f
 
 /-- **Full faithfulness of the embedding, ℂ-linearly**: for a
 ℂ-linear embedding the hom-modules downstairs and upstairs are the
 same ℂ-module. -/
-noncomputable def indOfHomEquiv (hsmul : IndOfLinear C) (X Y : C) :
+noncomputable def indOfHomEquiv
+    [SmallCategory C] [Abelian C] [CategoryTheory.Linear ℂ C]
+    [CategoryTheory.Linear ℂ (Ind C)]
+    (hsmul : IndOfLinear C) (X Y : C) :
     (X ⟶ Y) ≃ₗ[ℂ] (indOf.obj X ⟶ indOf.obj Y) :=
   letI := indOf_additive (C := C)
   { toFun := fun f => indOf.map f
@@ -247,7 +258,11 @@ noncomputable def indOfHomEquiv (hsmul : IndOfLinear C) (X Y : C) :
 component**, hence countable dimension: the even component is
 `𝟙_ C ⟶ W`, which `RS.finiteDimensional_hom_unit` makes finite
 dimensional. -/
-theorem rank_hom_unit_indOf_le_aleph0 (hu : HasScalarUnit C)
+theorem rank_hom_unit_indOf_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) {W : C} (hW : ∃ N : ℕ, LengthLE W N) :
     Module.rank ℂ (𝟙_ (Ind C) ⟶ indOf.obj W) ≤ Cardinal.aleph0 := by
   haveI : FiniteDimensional ℂ (𝟙_ C ⟶ W) :=
@@ -281,22 +296,21 @@ needed. -/
 
 section Presented
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [RigidCategory C] [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- An object of the ind-completion is *countably presented* when it
 is the colimit of a countable filtered diagram of embedded objects.
 This is the shape in which "built from countably much data" enters
 the dimension count of the Γ-algebra. -/
-def CountablyPresented (Z : Ind C) : Prop :=
+def CountablyPresented [SmallCategory C]
+    (Z : Ind C) : Prop :=
   ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I)
     (_ : Countable I) (G : I ⥤ C),
     Nonempty (Z ≅ colimit (G ⋙ indOf))
 
-omit [MonoidalCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- Being countably presented is an isomorphism invariant. -/
-theorem CountablyPresented.of_iso {Y Z : Ind C} (e : Y ≅ Z)
+theorem CountablyPresented.of_iso [SmallCategory C]
+    {Y Z : Ind C} (e : Y ≅ Z)
     (h : CountablyPresented Y) : CountablyPresented Z := by
   obtain ⟨I, hcat, hfil, hcnt, G, ⟨eY⟩⟩ := h
   exact ⟨I, hcat, hfil, hcnt, G, ⟨e.symm ≪≫ eY⟩⟩
@@ -308,16 +322,16 @@ private def punitIsTerminal :
   IsTerminal.ofUniqueHom (fun X => Discrete.eqToHom (by cases X; rfl))
     (fun _ _ => Subsingleton.elim _ _)
 
-variable [CategoryTheory.Linear ℂ (Ind C)]
-
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **Absorbing a countably presented factor.**  A tensor word `Y`
 whose even component stays countable against every embedded factor
 keeps that property after `Y` is enlarged by a countably presented
 factor: the enlarged word against an embedded factor is a countable
 filtered colimit of copies of the original word against an embedded
 factor. -/
-theorem rank_hom_unit_tensor_presented {Y Z : Ind C}
+theorem rank_hom_unit_tensor_presented
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)]
+    {Y Z : Ind C}
     (hZ : CountablyPresented Z)
     (hY : ∀ W : C, Module.rank ℂ (𝟙_ (Ind C) ⟶ Y ⊗ indOf.obj W) ≤
       Cardinal.aleph0) (W : C) :
@@ -340,11 +354,13 @@ theorem rank_hom_unit_tensor_presented {Y Z : Ind C}
       (whiskerLeftIso Y (indOfTensorIso (G.obj i) W))
       (hY (G.obj i ⊗ W))
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- The induction along a tensor word: each factor is absorbed by
 `RS.rank_hom_unit_tensor_presented`, the accumulated word being
 carried as the parameter `Y`. -/
-private theorem rank_tensor_listTensor_aux {J : Type v}
+private theorem rank_tensor_listTensor_aux
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)]
+    {J : Type v}
     (B : J → Ind C) (hB : ∀ j, CountablyPresented (B j)) :
     ∀ (l : List J) (Y : Ind C),
       (∀ W : C, Module.rank ℂ (𝟙_ (Ind C) ⟶ Y ⊗ indOf.obj W) ≤
@@ -362,12 +378,14 @@ private theorem rank_tensor_listTensor_aux {J : Type v}
       (rank_tensor_listTensor_aux B hB l (Y ⊗ B j)
         (rank_hom_unit_tensor_presented (hB j) hY) W)
 
-variable [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
-
 /-- **The tensor words of countably presented algebras have countable
 even component.**  This is the finite-stage input of
 `RS.rank_hom_unit_bigTensor_le_aleph0`, discharged. -/
-theorem rank_hom_unit_listTensor_le_aleph0 (hu : HasScalarUnit C)
+theorem rank_hom_unit_listTensor_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ X : C, ∃ N : ℕ, LengthLE X N)
     {J : Type v} (B : J → Ind C)
     (hB : ∀ j, CountablyPresented (B j)) (l : List J) :
@@ -394,11 +412,7 @@ component. -/
 
 section CommonAlgebraRank
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [SymmetricCategory (Ind C)]
+variable {C : Type v}
 
 /-- **A countable family of nonzero algebras has a common nonzero
 extension of countable even dimension**: the tensor product of the
@@ -407,7 +421,12 @@ family, as in `RS.exists_common_algebra`, with the dimension count of
 countability of the even component of every tensor word of the
 family, which is the finite-stage input the colimit argument
 consumes. -/
-theorem exists_common_algebra_rank_le_aleph0 (hu : HasScalarUnit C)
+theorem exists_common_algebra_rank_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
+    [SymmetricCategory (Ind C)]
+    (hu : HasScalarUnit C)
     {J : Type v} [Countable J] (B : J → Ind C) [∀ j, MonObj (B j)]
     [∀ j, IsCommMonObj (B j)] (hB : ∀ j, MonObj.one (X := B j) ≠ 0)
     (hrk : ∀ l : List J,
@@ -427,10 +446,14 @@ theorem exists_common_algebra_rank_le_aleph0 (hu : HasScalarUnit C)
 
 /-- **The common extension of a countable family of countably
 presented algebras has countable even component.**  The hypothesis is
-now structural: each member of the family is a countable filtered
+structural: each member of the family is a countable filtered
 colimit of embedded objects, which is what "built from countably much
 data" means for the algebras of Deligne 2.11. -/
 theorem exists_common_algebra_rank_le_aleph0_of_presented
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
+    [SymmetricCategory (Ind C)]
     (hu : HasScalarUnit C) (hsmul : IndOfLinear C)
     (hlen : ∀ X : C, ∃ N : ℕ, LengthLE X N) {J : Type v} [Countable J]
     (B : J → Ind C) [∀ j, MonObj (B j)] [∀ j, IsCommMonObj (B j)]
@@ -456,15 +479,7 @@ component. -/
 
 section UniversalAlgebraRank
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [SymmetricCategory (Ind C)]
-variable [HasCoequalizers (Ind C)]
-variable [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [HasFiniteBiproducts (Ind C)]
+variable {C : Type v}
 
 /-- **The universal algebra over countable families has countable
 even component**: one nonzero algebra over which every object of the
@@ -472,7 +487,14 @@ family becomes a mixed sum and every chosen morphism acquires a
 section, whose Γ-algebra is of at most countable dimension over ℂ.
 The hypotheses are those of `RS.exists_universal_algebra` with the
 chosen algebras required to be countably presented. -/
-theorem exists_universal_algebra_rank_le_aleph0 (hu : HasScalarUnit C)
+theorem exists_universal_algebra_rank_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
+    [SymmetricCategory (Ind C)] [HasCoequalizers (Ind C)]
+    [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair (tensorLeft
+      Z)] [HasFiniteBiproducts (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     (L : OddLine (Ind C)) {J K : Type v} [Countable J] [Countable K]
     (X : J → Ind C) (V W : K → Ind C) (g : ∀ k, V k ⟶ W k)
@@ -560,15 +582,16 @@ end SuperPointCountable
 
 section GammaRank
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  [SymmetricCategory (Ind C)]
+variable {C : Type v}
 
 /-- **The even component of the Γ-algebra has countable dimension**
 whenever the even hom-module of the algebra does: the two are the
 same ℂ-module. -/
-theorem rank_gammaEven_le_aleph0 (L : OddLine (Ind C)) (R : Ind C)
+theorem rank_gammaEven_le_aleph0
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalPreadditive (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] [SymmetricCategory (Ind C)]
+    (L : OddLine (Ind C)) (R : Ind C)
     [MonObj R] [IsCommMonObj R]
     (h : Module.rank ℂ (𝟙_ (Ind C) ⟶ R) ≤ Cardinal.aleph0) :
     Module.rank ℂ (gammaAlgebra (Ind C) L R).even ≤
@@ -578,7 +601,11 @@ theorem rank_gammaEven_le_aleph0 (L : OddLine (Ind C)) (R : Ind C)
 component**: the last step of the descent to the complex numbers, run
 over the countable-dimension Nullstellensatz.  Nontriviality of the
 even ring is exactly the nonvanishing of the unit of the algebra. -/
-theorem nonempty_superPoint_gammaAlgebra (L : OddLine (Ind C))
+theorem nonempty_superPoint_gammaAlgebra
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalPreadditive (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] [SymmetricCategory (Ind C)]
+    (L : OddLine (Ind C))
     (R : Ind C) [MonObj R] [IsCommMonObj R]
     (hR : MonObj.one (X := R) ≠ 0)
     (h : Module.rank ℂ (𝟙_ (Ind C) ⟶ R) ≤ Cardinal.aleph0) :

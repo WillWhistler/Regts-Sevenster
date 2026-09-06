@@ -17,28 +17,28 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
-variable {κ : F.RelTransitionSystem} {a b c d : W.Flag}
-  {v : W.Vertex}
-
-omit [LinearOrder α] in
 /-- The separated transport preserves the chain direction at every
 flag. -/
-theorem chainDir_transportRepair (hsq : RepairSquare κ a b c d v)
+theorem chainDir_transportRepair
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {a : W.Flag} {b : W.Flag} {c : W.Flag} {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     (o : κ.Orientation) (hflip : o.isOut c = !o.isOut a)
     (δ : W.Flag) :
     chainDir (RelTransitionSystem.Orientation.transportRepair hsq
         o hflip) δ = chainDir o δ := rfl
 
-omit [LinearOrder α] in
 /-- **The re-paired ends carry opposite directions**: the new
 chord's rigidity, read back through the preserved directions, is a
 constraint on the old frame. -/
-theorem swap_dirs_opposite (hsq : RepairSquare κ a b c d v)
+theorem swap_dirs_opposite
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {a : W.Flag} {b : W.Flag} {c : W.Flag} {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     (o : κ.Orientation) (hflip : o.isOut c = !o.isOut a)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
     (hcross : (κ.repair a b c d v hsq).pathMatch e₁ he₁ = e₂)
@@ -53,7 +53,11 @@ theorem swap_dirs_opposite (hsq : RepairSquare κ a b c d v)
 
 /-- Membership in the transported frame's anti-canonical set:
 directions are the old ones, labels are the new chords'. -/
-theorem mem_antiLowSet_transport (hsq : RepairSquare κ a b c d v)
+theorem mem_antiLowSet_transport
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     (o : κ.Orientation) (hflip : o.isOut c = !o.isOut a)
     {x : W.Flag} :
     x ∈ antiLowSet
@@ -74,6 +78,9 @@ theorem mem_antiLowSet_transport (hsq : RepairSquare κ a b c d v)
 transported step: off the four re-paired ends both the label
 comparison and the direction are unchanged. -/
 theorem mem_antiLowSet_transport_untouched
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v)
     (o : κ.Orientation) (hflip : o.isOut c = !o.isOut a)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
@@ -103,7 +110,10 @@ theorem mem_antiLowSet_transport_untouched
 
 /-- **The canonical direction formula**: on a participating chain a
 canonical frame points `true` exactly at the high-labelled end. -/
-theorem chainDir_true_iff_high {o : κ.Orientation}
+theorem chainDir_true_iff_high
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {o : κ.Orientation}
     (hc : PathCanonical o) {x : W.Flag}
     (hx : x ∈ F.boundaryFlags)
     (hint : W.pairing x ∈ F.internalFlags) :
@@ -149,6 +159,9 @@ exactly when it is low in its new chord but was high in its old
 one.  (Instantiate at the four swap ends with the new partners
 from `pathMatch_repair_swap`.) -/
 theorem mem_antiLowSet_transport_of_canonical
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {x y : W.Flag} (hx : x ∈ F.boundaryFlags)
@@ -178,6 +191,9 @@ theorem mem_antiLowSet_transport_of_canonical
 re-paired ends**: from a canonical source frame, every other chain
 stays canonical. -/
 theorem antiLowSet_transport_subset
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
@@ -214,7 +230,8 @@ theorem antiLowSet_transport_subset
   exact Finset.notMem_empty x hx'
 
 /-- The low end of the `(e₁, e₂)` chord, as a flag. -/
-noncomputable def newLow (F : EdgeSubset W) {e₁ : W.Flag}
+noncomputable def newLow [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {e₁ : W.Flag}
     (he₁ : e₁ ∈ F.boundaryFlags) (e₂ : W.Flag)
     (he₂ : e₂ ∈ F.boundaryFlags) : W.Flag :=
   if F.boundaryLabel he₁ < F.boundaryLabel he₂ then e₁ else e₂
@@ -223,6 +240,9 @@ noncomputable def newLow (F : EdgeSubset W) {e₁ : W.Flag}
 low ends, each present exactly when it was high in its old
 chord. -/
 theorem antiLowSet_transport_eq
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
@@ -397,6 +417,9 @@ theorem antiLowSet_transport_eq
 /-- **The flip count of a separated canonical step**: the four-label
 indicator sum — the exact left side of the parity identity. -/
 theorem antiLowSet_transport_card
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) {o : κ.Orientation}
     (hflip : o.isOut c = !o.isOut a) (hc : PathCanonical o)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
@@ -468,11 +491,10 @@ theorem antiLowSet_transport_card
       | (rw [Finset.empty_union]
          rfl)
 
-variable {k ℓ : ℕ}
-
 /-- Canonicality and the summand cross a `MatchEq` unchanged (the
 unsigned endpoint transfer). -/
 theorem matchEq_canonical_transfer
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ₁ κ₂ : F.RelTransitionSystem} (heq : κ₁.MatchEq κ₂)

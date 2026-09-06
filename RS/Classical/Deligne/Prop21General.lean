@@ -38,21 +38,23 @@ universe v
 
 noncomputable section
 
-variable {A : Type v} [SmallCategory A] [MonoidalCategory A]
-  [SymmetricCategory A] [Abelian A] [RigidCategory A]
-  [MonoidalPreadditive A] [CategoryTheory.Linear ℂ A]
+variable {A : Type v}
 
 /-- **The scalar unit of the doubling**, as the ring isomorphism
 that Proposition 2.1 consumes: the unit of the doubling is the unit
 of `A` in even degree, so its endomorphisms are the scalars. -/
-def doubledScalarUnit (hu : HasScalarUnit A) :
+def doubledScalarUnit [SmallCategory A] [MonoidalCategory A] [Abelian A]
+    [MonoidalPreadditive A] [CategoryTheory.Linear ℂ A]
+    (hu : HasScalarUnit A) :
     ℂ ≃+* End (𝟙_ (Doubled A)) :=
   scalarUnitEquiv (hasScalarUnit_doubled hu)
 
 /-- **The odd line of the ind-completion of the doubling**: the
 image of the odd line of the doubling under the embedding, which is
 strong braided monoidal and additive. -/
-def doubledIndOddLine : OddLine (Ind (Doubled A)) :=
+def doubledIndOddLine
+    [SmallCategory A] [MonoidalCategory A] [SymmetricCategory A] [Abelian A]
+    [MonoidalPreadditive A] : OddLine (Ind (Doubled A)) :=
   letI := indOf_additive (C := Doubled A)
   OddLine.map (indOf : Doubled A ⥤ Ind (Doubled A)) doubledOddLine
 
@@ -62,7 +64,10 @@ doubling — whose ind-completion carries an odd line — and the fibre
 functor obtained there is restricted along the even embedding.  The
 composite is strong monoidal, preserves finite limits and finite
 colimits, and is faithful. -/
-theorem exists_fibre_functor_general (P : SchurPackage.{v})
+theorem exists_fibre_functor_general
+    [SmallCategory A] [MonoidalCategory A] [SymmetricCategory A] [Abelian A]
+    [RigidCategory A] [MonoidalPreadditive A] [CategoryTheory.Linear ℂ A]
+    (P : SchurPackage.{v})
     (P₀ : SchurPackage.{0}) (hu : HasScalarUnit A)
     (hgrow : ModerateLengthGrowth A) :
     letI := linearOfScalarUnit (doubledScalarUnit hu)

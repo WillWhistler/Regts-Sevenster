@@ -22,9 +22,7 @@ open CategoryTheory MonoidalCategory Category
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 open Functor.Monoidal
 
-variable {C D : Type*} [Category C] [Category D]
-  [MonoidalCategory C] [MonoidalCategory D]
-  (F : C ⥤ D) [F.Monoidal]
+variable {C D : Type*}
 
 /-- Monoidal functors preserve exact pairings:
 an `ExactPairing X Y` in `C` yields an
@@ -33,7 +31,10 @@ with evaluation and coevaluation conjugated
 through the tensorator and unit isomorphisms
 of `F`. -/
 @[instance_reducible]
-def ExactPairing.map {X Y : C}
+def ExactPairing.map
+    [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
+    (F : C ⥤ D) [F.Monoidal]
+    {X Y : C}
     [ExactPairing X Y] :
     ExactPairing (F.obj X) (F.obj Y) where
   evaluation' :=

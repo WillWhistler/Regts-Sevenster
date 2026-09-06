@@ -16,15 +16,13 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (A : D) [MonObj A] [IsCommMonObj A] (V : D)
+variable {D : Type u}
 
-omit [SymmetricCategory D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- Passing a sum across a collapse-type intertwiner. -/
-private theorem add_pass_free {P W Y : D} {T : P ⟶ W ⊗ Y}
+private theorem add_pass_free
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D]
+    {P W Y : D} {T : P ⟶ W ⊗ Y}
     {u v : P ⟶ P} {u' v' : Y ⟶ Y}
     (hu : u ≫ T = T ≫ (W ◁ u'))
     (hv : v ≫ T = T ≫ (W ◁ v')) :
@@ -32,9 +30,11 @@ private theorem add_pass_free {P W Y : D} {T : P ⟶ W ⊗ Y}
   rw [Preadditive.add_comp, hu, hv,
     MonoidalPreadditive.whiskerLeft_add, Preadditive.comp_add]
 
-omit [SymmetricCategory D] [IsCommMonObj A] in
 /-- Passing a scalar across a collapse-type intertwiner. -/
-private theorem smul_pass_free {P W Y : D} {T : P ⟶ W ⊗ Y}
+private theorem smul_pass_free
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    {P W Y : D} {T : P ⟶ W ⊗ Y}
     {u : P ⟶ P} {u' : Y ⟶ Y} (r : ℂ)
     (h : u ≫ T = T ≫ (W ◁ u')) :
     (r • u) ≫ T = T ≫ (W ◁ (r • u')) := by
@@ -42,7 +42,11 @@ private theorem smul_pass_free {P W Y : D} {T : P ⟶ W ⊗ Y}
     Linear.comp_smul]
 
 /-- **Equivariance of the collapse for the group algebra.** -/
-theorem freeCollapse_permAlg (n : ℕ) (z : SymGroupAlgebra n) :
+theorem freeCollapse_permAlg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (A : D) [MonObj A] [IsCommMonObj A] (V : D)
+    (n : ℕ) (z : SymGroupAlgebra n) :
     (permAlg (A ⊗ V) n z : tensorPow D (A ⊗ V) n ⟶
         tensorPow D (A ⊗ V) n) ≫ freeCollapse A V n =
       freeCollapse A V n ≫

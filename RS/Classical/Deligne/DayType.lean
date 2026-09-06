@@ -38,63 +38,152 @@ universe v v₁ v₂ u₁ u₂
 
 noncomputable section
 
-variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
-    [MonoidalCategory C] [MonoidalCategory V]
-    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
-    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
-      (Functor.fromPUnit.{0} <| 𝟙_ V)]
-    [∀ (v : V) (d : C), PreservesColimitsOfShape
-      (CostructuredArrow (tensor C) d) (tensorLeft v)]
-    [∀ (v : V) (d : C), PreservesColimitsOfShape
-      (CostructuredArrow (tensor C) d) (tensorRight v)]
-    [∀ (v : V) (d : C), PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
-    [∀ (v : V) (d : C), PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
-    [∀ (v : V) (d : C × C),
-      PreservesColimitsOfShape
-        (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
-        (tensorRight v)]
-    [∀ (v : V) (d : C × C),
-      PreservesColimitsOfShape
-        (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+variable {C : Type u₁}
 
 /-- The underlying functor of a tensor product in `C ⊛⥤ V` is a Day
 convolution of the underlying functors.  Local instance: Mathlib advises
 against registering `DayConvolution` instances globally. -/
-local instance dayConv (F G : C ⊛⥤ V) :
+local instance dayConv
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    (F G : C ⊛⥤ V) :
     DayConvolution F.functor G.functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolution C V (C ⊛⥤ V) F G
 
 /-- Right-nested triple Day convolutions, phrased so that instance search
 finds them behind the `⊛` notation. -/
-local instance dayConv₂ (F G H : C ⊛⥤ V) :
+local instance dayConv₂
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    (F G H : C ⊛⥤ V) :
     DayConvolution F.functor (G.functor ⊛ H.functor) :=
   dayConv F (G ⊗ H)
 
 /-- Left-nested triple Day convolutions, phrased so that instance search
 finds them behind the `⊛` notation. -/
-local instance dayConv₂' (F G H : C ⊛⥤ V) :
+local instance dayConv₂'
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    (F G H : C ⊛⥤ V) :
     DayConvolution (F.functor ⊛ G.functor) H.functor :=
   dayConv (F ⊗ G) H
 
 /-- The underlying natural transformation of a tensor product of
 morphisms of `C ⊛⥤ V` is the induced morphism of Day convolutions. -/
-lemma natTrans_tensorHom {F F' G G' : C ⊛⥤ V} (f : F ⟶ F') (g : G ⟶ G') :
+lemma natTrans_tensorHom
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    {F F' G G' : C ⊛⥤ V} (f : F ⟶ F') (g : G ⟶ G') :
     (f ⊗ₘ g).natTrans = DayConvolution.map f.natTrans g.natTrans :=
   LawfulDayConvolutionMonoidalCategoryStruct.ι_map_tensorHom_hom_eq_tensorHom
     (C := C) (V := V) (D := C ⊛⥤ V) f g
 
 /-- Left whiskering in `C ⊛⥤ V`, read off on underlying natural
 transformations. -/
-lemma natTrans_whiskerLeft (F : C ⊛⥤ V) {G H : C ⊛⥤ V} (g : G ⟶ H) :
+lemma natTrans_whiskerLeft
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    (F : C ⊛⥤ V) {G H : C ⊛⥤ V} (g : G ⟶ H) :
     (F ◁ g).natTrans = DayConvolution.map (𝟙 F.functor) g.natTrans := by
   rw [← MonoidalCategory.id_tensorHom, natTrans_tensorHom]
   rfl
 
 /-- Right whiskering in `C ⊛⥤ V`, read off on underlying natural
 transformations. -/
-lemma natTrans_whiskerRight {F G : C ⊛⥤ V} (f : F ⟶ G) (H : C ⊛⥤ V) :
+lemma natTrans_whiskerRight
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    {F G : C ⊛⥤ V} (f : F ⟶ G) (H : C ⊛⥤ V) :
     (f ▷ H).natTrans = DayConvolution.map f.natTrans (𝟙 H.functor) := by
   rw [← MonoidalCategory.tensorHom_id, natTrans_tensorHom]
   rfl
@@ -102,14 +191,50 @@ lemma natTrans_whiskerRight {F G : C ⊛⥤ V} (f : F ⟶ G) (H : C ⊛⥤ V) :
 open LawfulDayConvolutionMonoidalCategoryStruct in
 /-- The associator of `C ⊛⥤ V`, read off on underlying natural
 transformations. -/
-lemma natTrans_associator (F G H : C ⊛⥤ V) :
+lemma natTrans_associator
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    (F G H : C ⊛⥤ V) :
     (α_ F G H).hom.natTrans =
     (DayConvolution.associator F.functor G.functor H.functor).hom :=
   ι_map_associator_hom_eq_associator_hom
     (C := C) (V := V) (D := C ⊛⥤ V) F G H
 
 /-- Inverse form of `RS.natTrans_associator`. -/
-lemma natTrans_associator_inv (F G H : C ⊛⥤ V) :
+lemma natTrans_associator_inv
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+    (F G H : C ⊛⥤ V) :
     (α_ F G H).inv.natTrans =
     (DayConvolution.associator F.functor G.functor H.functor).inv := by
   refine (Iso.inv_ext ?_).symm
@@ -117,11 +242,28 @@ lemma natTrans_associator_inv (F G H : C ⊛⥤ V) :
 
 section Braided
 
-variable [BraidedCategory C] [BraidedCategory V]
-
 /-- The braiding on `C ⊛⥤ V`, inherited from the Day-convolution
 braiding of the underlying functors. -/
-def dayFunctorBraiding (F G : C ⊛⥤ V) : F ⊗ G ≅ G ⊗ F where
+def dayFunctorBraiding
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)] [BraidedCategory C]
+    [BraidedCategory V]
+    (F G : C ⊛⥤ V) : F ⊗ G ≅ G ⊗ F where
   hom := .mk (DayConvolution.braiding F.functor G.functor).hom
   inv := .mk (DayConvolution.braiding F.functor G.functor).inv
   hom_inv_id := by
@@ -135,7 +277,25 @@ def dayFunctorBraiding (F G : C ⊛⥤ V) : F ⊗ G ≅ G ⊗ F where
 `C` and `V` are.  This discharges, for the type synonym, what
 `Mathlib.CategoryTheory.Monoidal.DayConvolution.Braided` proves at the
 level of individual convolutions. -/
-instance dayFunctorBraided : BraidedCategory (C ⊛⥤ V) where
+instance dayFunctorBraided
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)] [BraidedCategory C]
+    [BraidedCategory V] : BraidedCategory (C ⊛⥤ V) where
   braiding := dayFunctorBraiding
   braiding_naturality_right F G H f := by
     ext1
@@ -160,11 +320,27 @@ end Braided
 
 section Symmetric
 
-variable [SymmetricCategory C] [SymmetricCategory V]
-
 /-- The Day-convolution monoidal structure on `C ⊛⥤ V` is symmetric when
 `C` and `V` are, via `DayConvolution.symmetry`. -/
-instance dayFunctorSymmetric : SymmetricCategory (C ⊛⥤ V) where
+instance dayFunctorSymmetric
+    [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V] [MonoidalCategory C]
+    [MonoidalCategory V]
+    [∀ (F G : C ⥤ V), (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
+    [(Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+      (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow (tensor
+      C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), PreservesColimitsOfShape (CostructuredArrow
+      (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow ((𝟭
+      C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C), PreservesColimitsOfShape (CostructuredArrow
+      ((tensor C).prod (𝟭 C)) d) (tensorRight v)] [SymmetricCategory C]
+    [SymmetricCategory V] : SymmetricCategory (C ⊛⥤ V) where
   toBraidedCategory := inferInstance
   symmetry F G := by
     ext1

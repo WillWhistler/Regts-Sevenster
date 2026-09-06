@@ -23,15 +23,17 @@ infinite matrix visible on a single finite submatrix.
 
 namespace RS
 
-variable {K : Type*} [Field K] {ι κ : Type*}
+variable {K : Type*}
 
 /-! ## Separating a space of functions on finitely many coordinates -/
 
 /-- Restriction of functions on `κ` to a finite set of coordinates. -/
-private def restrictTo (T : Finset κ) : (κ → K) →ₗ[K] (T → K) :=
+private def restrictTo [Field K] {κ : Type*}
+    (T : Finset κ) : (κ → K) →ₗ[K] (T → K) :=
   LinearMap.funLeft K K ((↑) : T → κ)
 
-private theorem separating_aux (n : ℕ) :
+private theorem separating_aux [Field K] {κ : Type*}
+    (n : ℕ) :
     ∀ U : Submodule K (κ → K), FiniteDimensional K U →
       Module.finrank K U ≤ n →
       ∃ T : Finset κ, ∀ w ∈ U, (∀ j ∈ T, w j = 0) → w = 0 := by
@@ -76,7 +78,8 @@ private theorem separating_aux (n : ℕ) :
 /-- A finite-dimensional space of functions on `κ` is separated by
 finitely many coordinates: some finite `T` is such that a vector of the
 space vanishing throughout `T` is zero. -/
-theorem exists_finset_separating (U : Submodule K (κ → K))
+theorem exists_finset_separating [Field K] {κ : Type*}
+    (U : Submodule K (κ → K))
     [FiniteDimensional K U] :
     ∃ T : Finset κ, ∀ w ∈ U, (∀ j ∈ T, w j = 0) → w = 0 :=
   separating_aux (Module.finrank K U) U inferInstance le_rfl
@@ -84,25 +87,31 @@ theorem exists_finset_separating (U : Submodule K (κ → K))
 /-! ## Finite submatrices and the row span -/
 
 /-- The submatrix of `M` on the rows `S` and the columns `T`. -/
-def submatrixOn (M : ι → κ → K) (S : Finset ι) (T : Finset κ) :
+def submatrixOn {ι : Type*} {κ : Type*}
+    (M : ι → κ → K) (S : Finset ι) (T : Finset κ) :
     Matrix S T K :=
   (Matrix.of M).submatrix ((↑) : S → ι) ((↑) : T → κ)
 
-variable (M : ι → κ → K)
-
 /-- The span of the rows of `M` indexed by a finite set of rows. -/
-private noncomputable def rowsOn (S : Finset ι) : Submodule K (κ → K) :=
+private noncomputable def rowsOn
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (S : Finset ι) : Submodule K (κ → K) :=
   Submodule.span K (Set.range fun i : S => M (i : ι))
 
-private theorem rowsOn_le (S : Finset ι) :
+private theorem rowsOn_le [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (S : Finset ι) :
     rowsOn M S ≤ Submodule.span K (Set.range M) :=
   Submodule.span_mono (by rintro _ ⟨i, rfl⟩; exact ⟨(i : ι), rfl⟩)
 
-private instance rowsOn_finiteDimensional (S : Finset ι) :
+private instance rowsOn_finiteDimensional
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (S : Finset ι) :
     FiniteDimensional K (rowsOn M S) :=
   FiniteDimensional.span_of_finite K (Set.finite_range _)
 
-private theorem span_rows_submatrixOn (S : Finset ι) (T : Finset κ) :
+private theorem span_rows_submatrixOn
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (S : Finset ι) (T : Finset κ) :
     Submodule.span K (Set.range (submatrixOn M S T).row)
       = Submodule.map (restrictTo T) (rowsOn M S) := by
   rw [rowsOn, ← Submodule.span_image]
@@ -110,17 +119,23 @@ private theorem span_rows_submatrixOn (S : Finset ι) (T : Finset κ) :
   rw [← Set.range_comp]
   rfl
 
-private instance span_rows_finiteDimensional (S : Finset ι) (T : Finset κ) :
+private instance span_rows_finiteDimensional
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (S : Finset ι) (T : Finset κ) :
     FiniteDimensional K (Submodule.map (restrictTo T) (rowsOn M S)) := by
   rw [← span_rows_submatrixOn]
   exact FiniteDimensional.span_of_finite K (Set.finite_range _)
 
-private theorem rank_submatrixOn (S : Finset ι) (T : Finset κ) :
+private theorem rank_submatrixOn
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (S : Finset ι) (T : Finset κ) :
     (submatrixOn M S T).rank
       = Module.finrank K (Submodule.map (restrictTo T) (rowsOn M S)) := by
   rw [Matrix.rank_eq_finrank_span_row, span_rows_submatrixOn]
 
-private theorem card_le_of_independent_in_span {n : ℕ}
+private theorem card_le_of_independent_in_span
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    {n : ℕ}
     (h : ∀ (S : Finset ι) (T : Finset κ), (submatrixOn M S T).rank ≤ n)
     {σ : Type*} [Fintype σ] (w : σ → (κ → K)) (hw : LinearIndependent K w)
     (hmem : ∀ i, w i ∈ Submodule.span K (Set.range M)) :
@@ -164,7 +179,8 @@ private theorem card_le_of_independent_in_span {n : ℕ}
 /-- **The row span and the finite submatrices agree in bounded form.**
 The span of the rows of `M` has dimension at most `n` exactly when
 every finite submatrix of `M` has rank at most `n`. -/
-theorem rank_span_rows_le_iff (n : ℕ) :
+theorem rank_span_rows_le_iff [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (n : ℕ) :
     Module.rank K (Submodule.span K (Set.range M)) ≤ (n : Cardinal) ↔
       ∀ (S : Finset ι) (T : Finset κ), (submatrixOn M S T).rank ≤ n := by
   constructor
@@ -190,7 +206,8 @@ theorem rank_span_rows_le_iff (n : ℕ) :
 
 /-- The range of `Finsupp.lift` at `M` is the span of the rows of
 `M`. -/
-theorem range_lift_eq_span_rows :
+theorem range_lift_eq_span_rows
+    [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K) :
     LinearMap.range (Finsupp.lift (κ → K) K ι M)
       = Submodule.span K (Set.range M) := by
   have hlift : (Finsupp.lift (κ → K) K ι M) = Finsupp.linearCombination K M :=
@@ -200,7 +217,8 @@ theorem range_lift_eq_span_rows :
 
 /-- **The bounded row-rank criterion**, for the row span presented as
 the range of `Finsupp.lift`. -/
-theorem rank_range_lift_le_iff (n : ℕ) :
+theorem rank_range_lift_le_iff [Field K] {ι : Type*} {κ : Type*} (M : ι → κ → K)
+    (n : ℕ) :
     Module.rank K (LinearMap.range (Finsupp.lift (κ → K) K ι M))
         ≤ (n : Cardinal) ↔
       ∀ (S : Finset ι) (T : Finset κ), (submatrixOn M S T).rank ≤ n := by

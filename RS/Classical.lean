@@ -1,4 +1,9 @@
+import RS.Classical.Algebra.TraceCriterion
+import RS.Classical.CatTheory.KaroubiLinear
+import RS.Classical.CatTheory.KaroubiTrace
+import RS.Classical.Algebra.FactorialTrace
 import RS.Classical.CatTheory.Growth
+import RS.Classical.CatTheory.Intertwine
 import RS.Classical.CatTheory.Length
 import RS.Classical.CatTheory.LengthBound
 import RS.Classical.CatTheory.LinearCategory
@@ -19,6 +24,7 @@ import RS.Classical.Interfaces.OmegaTensorPower
 import RS.Classical.Interfaces.SchurPackage
 import RS.Classical.Interfaces.SectorDischarge
 import RS.Classical.Interfaces.SectorIntertwine
+import RS.Classical.Interfaces.TotalDimension
 import RS.Classical.SchurTheory.BlockKill
 import RS.Classical.SchurTheory.BranchTrace
 import RS.Classical.SchurTheory.CentralElem
@@ -27,6 +33,7 @@ import RS.Classical.SchurTheory.CharDecomp
 import RS.Classical.SchurTheory.CharEquiv
 import RS.Classical.SchurTheory.ColourCycleSum
 import RS.Classical.SchurTheory.ColourWeight
+import RS.Classical.SchurTheory.CommutantBound
 import RS.Classical.SchurTheory.ContentCount
 import RS.Classical.SchurTheory.CycleFactor
 import RS.Classical.SchurTheory.CycleSum
@@ -73,6 +80,7 @@ import RS.Classical.SchurTheory.SquareStair
 import RS.Classical.SchurTheory.StabCount
 import RS.Classical.SchurTheory.TensorNonvanishing
 import RS.Classical.SchurTheory.TensorTrace
+import RS.Classical.SchurTheory.WordCommutant
 import RS.Classical.Super.ColourAction
 import RS.Classical.Super.ColourConj
 import RS.Classical.Super.ColourConjStep
@@ -85,11 +93,13 @@ import RS.Classical.Super.ColourMergeOdd
 import RS.Classical.Super.ColourPairing
 import RS.Classical.Super.ColourPairingSymm
 import RS.Classical.Super.ColourPower
+import RS.Classical.Super.ColourTotal
 import RS.Classical.Super.ColourWord
 import RS.Classical.Super.OrthonormalBasis
 import RS.Classical.Super.PowBraid
 import RS.Classical.Super.SuperVect
 import RS.Classical.Super.SymplecticBasis
+import RS.Classical.Super.TotalSpace
 import RS.Classical.Super.WordSignPerm
 import RS.Classical.SymFun.AlternantExpand
 import RS.Classical.SymFun.AlternantPieri

@@ -71,12 +71,13 @@ instance skeinMonoidalLinear :
 
 section KaroubiLift
 
-variable (C : Type*) [Category C] [Preadditive C]
-  [MonoidalCategory C] [MonoidalPreadditive C]
+variable (C : Type*)
 
 /-- Monoidal preadditivity lifts to the Karoubi envelope, where
 tensoring acts on underlying morphisms. -/
-instance karoubiMonoidalPreadditive :
+instance karoubiMonoidalPreadditive
+    [Category C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] :
     MonoidalPreadditive (Karoubi C) where
   whiskerLeft_zero := by
     intro X Y Z
@@ -99,10 +100,9 @@ instance karoubiMonoidalPreadditive :
     show (g.f + g'.f) ⊗ₘ X.p = g.f ⊗ₘ X.p + g'.f ⊗ₘ X.p
     rw [MonoidalPreadditive.add_tensor]
 
-variable [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
-
 /-- And so does monoidal linearity. -/
-instance karoubiMonoidalLinear :
+instance karoubiMonoidalLinear [Category C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C] :
     MonoidalLinear ℂ (Karoubi C) where
   whiskerLeft_smul := by
     intro X Y Z c g
@@ -125,11 +125,12 @@ end KaroubiLift
 
 section MatLift
 
-variable (C : Type*) [Category C] [Preadditive C]
-  [MonoidalCategory C] [MonoidalPreadditive C]
+variable (C : Type*)
 
 /-- Monoidal preadditivity lifts to the matrix layer entrywise. -/
-instance matMonoidalPreadditive :
+instance matMonoidalPreadditive
+    [Category C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] :
     MonoidalPreadditive (Mat_ C) where
   whiskerLeft_zero := by
     intro X Y Z
@@ -170,16 +171,18 @@ instance matMonoidalPreadditive :
       MonoidalPreadditive.add_tensor]
     rfl
 
-variable [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
-
 /-- The entrywise linear structure on matrix Homs (general
 base). -/
-noncomputable instance matHomSMul' (M N : Mat_ C) :
+noncomputable instance matHomSMul'
+    [Category C] [Preadditive C] [CategoryTheory.Linear ℂ C]
+    (M N : Mat_ C) :
     SMul ℂ (M ⟶ N) where
   smul c φ := fun i j => c • φ i j
 
 /-- The matrix layer's hom-sets are ℂ-modules, entrywise. -/
-noncomputable instance matHomModule' (M N : Mat_ C) :
+noncomputable instance matHomModule'
+    [Category C] [Preadditive C] [CategoryTheory.Linear ℂ C]
+    (M N : Mat_ C) :
     Module ℂ (M ⟶ N) where
   one_smul φ := by funext i j; exact one_smul ℂ (φ i j)
   mul_smul c d φ := by funext i j; exact mul_smul c d (φ i j)
@@ -195,7 +198,8 @@ noncomputable instance matHomModule' (M N : Mat_ C) :
   zero_smul φ := by funext i j; exact zero_smul ℂ (φ i j)
 
 /-- Hence the matrix layer is ℂ-linear. -/
-noncomputable instance matLinear' :
+noncomputable instance matLinear'
+    [Category C] [Preadditive C] [CategoryTheory.Linear ℂ C] :
     CategoryTheory.Linear ℂ (Mat_ C) where
   smul_comp M N K c φ ψ := by
     funext i k
@@ -210,14 +214,20 @@ noncomputable instance matLinear' :
     refine Finset.sum_congr rfl fun j _ => ?_
     rw [CategoryTheory.Linear.comp_smul]
 
-private theorem base_tensor_smul {W X Y Z : C}
+private theorem base_tensor_smul
+    [Category C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
+    {W X Y Z : C}
     (a : W ⟶ X) (c : ℂ) (b : Y ⟶ Z) :
     a ⊗ₘ (c • b) = c • (a ⊗ₘ b) := by
   rw [tensorHom_def, tensorHom_def,
     MonoidalLinear.whiskerLeft_smul,
     CategoryTheory.Linear.comp_smul]
 
-private theorem base_smul_tensor {W X Y Z : C}
+private theorem base_smul_tensor
+    [Category C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
+    {W X Y Z : C}
     (c : ℂ) (a : W ⟶ X) (b : Y ⟶ Z) :
     (c • a) ⊗ₘ b = c • (a ⊗ₘ b) := by
   rw [tensorHom_def, tensorHom_def,
@@ -226,7 +236,9 @@ private theorem base_smul_tensor {W X Y Z : C}
 
 /-- And monoidal-linear, completing the instance chain for the
 envelope. -/
-instance matMonoidalLinear : MonoidalLinear ℂ (Mat_ C) where
+instance matMonoidalLinear [Category C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C] :
+    MonoidalLinear ℂ (Mat_ C) where
   whiskerLeft_smul := by
     intro X Y Z c g
     apply Mat_.hom_ext

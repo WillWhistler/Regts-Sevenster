@@ -118,7 +118,7 @@ section PathMatchGlue
 
 open EdgeSubset Fragment
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -135,7 +135,6 @@ local notation "Fl" =>
   (EdgeSubset.mk (liftSubsetOpen hopen s') hc :
     EdgeSubset W)
 
-omit [LinearOrder α] in
 /-- Walk agreement from a corresponding pair of starting flags:
 while the base walk's pairings stay internal, the glued walk
 projects to it and stays in the subset. -/
@@ -195,7 +194,6 @@ theorem iterWalk_glueOpen_from
           ((RelTransitionSystem.glueOpen hij hopen s' hc' hc κ).match_mem _
             hpair)
 
-omit [LinearOrder α] in
 /-- A surviving flag over a lifted boundary flag is a glued
 boundary flag. -/
 theorem boundary_mk_of_glueOpen
@@ -210,7 +208,6 @@ theorem boundary_mk_of_glueOpen
     cases hspec
   · exact ⟨lb, hga⟩
 
-omit [LinearOrder α] in
 /-- A glued boundary flag lies over a lifted boundary flag. -/
 theorem boundary_val_of_glueOpen
     {f' : SurvivingFlag W i j}
@@ -259,6 +256,7 @@ theorem pathMatch_exit_unique {α' : Type} [LinearOrder α']
 original chain's endpoint avoids both cut flags, the glued chain
 has the same endpoint. -/
 theorem pathMatch_glueOpen_of_ne
+    [LinearOrder α]
     (κ : (Fl).RelTransitionSystem)
     {b' : SurvivingFlag W i j}
     (hbg : b' ∈ (Fg).boundaryFlags)
@@ -322,6 +320,7 @@ original chain from a surviving boundary flag ends at the `i`-cut
 flag, the glued chain continues through the cut and ends at the
 `j`-side chain's endpoint. -/
 theorem pathMatch_glueOpen_hit_i
+    [LinearOrder α]
     (κ : (Fl).RelTransitionSystem)
     {b' : SurvivingFlag W i j}
     (hbg : b' ∈ (Fg).boundaryFlags)
@@ -570,6 +569,7 @@ original chain from a surviving boundary flag ends at the `j`-cut
 flag, the glued chain continues through the cut and ends at the
 `i`-side chain's endpoint. -/
 theorem pathMatch_glueOpen_hit_j
+    [LinearOrder α]
     (κ : (Fl).RelTransitionSystem)
     {b' : SurvivingFlag W i j}
     (hbg : b' ∈ (Fg).boundaryFlags)

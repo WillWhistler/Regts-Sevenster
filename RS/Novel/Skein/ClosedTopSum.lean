@@ -17,11 +17,12 @@ namespace EdgeSubset
 
 open Fragment Classical
 
-variable {L : Type} [LinearOrder L] {V : Fragment L}
+variable {L : Type}
 
 open Classical in
 /-- **The circuit sign of a subset**, off the family. -/
-noncomputable def circuitWeight (𝒟 : DataFamily V)
+noncomputable def circuitWeight [LinearOrder L] {V : Fragment L}
+    (𝒟 : DataFamily V)
     (s : Finset V.Flag) : ℂ :=
   if hc : ∀ f ∈ s, V.pairing f ∈ s then
     if hE : (EdgeSubset.mk s hc).Eulerian then
@@ -34,7 +35,8 @@ noncomputable def circuitWeight (𝒟 : DataFamily V)
 open Classical in
 /-- At a good subset the circuit weight is the sign of the datum's
 own circuit count. -/
-theorem circuitWeight_pos (𝒟 : DataFamily V) {s : Finset V.Flag}
+theorem circuitWeight_pos [LinearOrder L] {V : Fragment L}
+    (𝒟 : DataFamily V) {s : Finset V.Flag}
     (hc : ∀ f ∈ s, V.pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc).Eulerian)
     (hne : Nonempty (EdgeSubset.mk s hc).CanonData) :
@@ -45,12 +47,10 @@ theorem circuitWeight_pos (𝒟 : DataFamily V) {s : Finset V.Flag}
 
 section ClosedTop
 
-variable [IsEmpty L]
-
-omit [LinearOrder L] in
 /-- At the composition the agreement is vacuous: there are no
 labelled ends. -/
-theorem throughAgree_isEmpty {k ℓ : ℕ} (F : EdgeSubset V)
+theorem throughAgree_isEmpty {V : Fragment L} [IsEmpty L]
+    {k ℓ : ℕ} (F : EdgeSubset V)
     (st : GenBoundaryState k ℓ L)
     (hbnd : genBoundarySubsetMatches V F.flags st) :
     ThroughAgree F st hbnd := by
@@ -60,7 +60,8 @@ theorem throughAgree_isEmpty {k ℓ : ℕ} (F : EdgeSubset V)
 
 /-- **At the composition the summand is the colouring sum, signed.**
 -/
-theorem throughSummand_eq_edgeSum {k ℓ : ℕ} (F : EdgeSubset V)
+theorem throughSummand_eq_edgeSum [LinearOrder L] {V : Fragment L} [IsEmpty L]
+    {k ℓ : ℕ} (F : EdgeSubset V)
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L)
     (hbnd : genBoundarySubsetMatches V F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation) (C : ℕ) :

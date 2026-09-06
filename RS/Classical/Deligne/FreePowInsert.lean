@@ -28,36 +28,40 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Unit words and unit-filled powers -/
 
 /-- The unit word: the empty product of units in an ambient
 power. -/
-noncomputable def unitWord (A : D) [MonObj A] :
+noncomputable def unitWord [Category.{v} D] [MonoidalCategory D]
+    (A : D) [MonObj A] :
     (n : ℕ) → (𝟙_ D ⟶ tensorPow D A n)
   | 0 => 𝟙 (𝟙_ D)
   | n + 1 => (ρ_ (𝟙_ D)).inv ≫ (unitWord A n ⊗ₘ η[A])
 
-@[simp] theorem unitWord_zero (A : D) [MonObj A] :
+@[simp] theorem unitWord_zero [Category.{v} D] [MonoidalCategory D]
+    (A : D) [MonObj A] :
     unitWord A 0 = 𝟙 (𝟙_ D) := rfl
 
 /-- Insert the monoid unit into every letter of an ambient
 power. -/
-noncomputable def freeUnitPow (A : D) [MonObj A] (V : D) :
+noncomputable def freeUnitPow [Category.{v} D] [MonoidalCategory D]
+    (A : D) [MonObj A] (V : D) :
     (n : ℕ) → (tensorPow D V n ⟶ tensorPow D (A ⊗ V) n)
   | 0 => 𝟙 (𝟙_ D)
   | n + 1 => freeUnitPow A V n ⊗ₘ ((λ_ V).inv ≫ (η[A] ▷ V))
 
-@[simp] theorem unitPow_zero (A : D) [MonObj A] (V : D) :
+@[simp] theorem unitPow_zero [Category.{v} D] [MonoidalCategory D]
+    (A : D) [MonObj A] (V : D) :
     freeUnitPow A V 0 = 𝟙 (𝟙_ D) := rfl
 
 section Fold
 
-variable [BraidedCategory D]
-
 /-- Folding a word of units gives the unit. -/
-theorem unitWord_muFold (A : D) [MonObj A] [IsCommMonObj A] (n : ℕ) :
+theorem unitWord_muFold
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (A : D) [MonObj A] [IsCommMonObj A] (n : ℕ) :
     unitWord A n ≫ muFold A n = η[A] := by
   induction n with
   | zero => exact Category.id_comp _
@@ -78,11 +82,11 @@ end Fold
 
 section Shuffle
 
-variable [SymmetricCategory D]
-
 /-- Two unit-inserted legs are merged by the interchange into a
 single unit pair in front of the ambient pair. -/
-private theorem unitPair_tensorμ {X₁ Y₁ : D} (g : 𝟙_ D ⟶ X₁)
+private theorem unitPair_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {X₁ Y₁ : D} (g : 𝟙_ D ⟶ X₁)
     (h : 𝟙_ D ⟶ Y₁) (X₂ Y₂ : D) :
     (((λ_ X₂).inv ≫ (g ▷ X₂)) ⊗ₘ ((λ_ Y₂).inv ≫ (h ▷ Y₂))) ≫
         tensorμ X₁ X₂ Y₁ Y₂ =
@@ -103,7 +107,9 @@ private theorem unitPair_tensorμ {X₁ Y₁ : D} (g : 𝟙_ D ⟶ X₁)
 
 /-- Shuffling a word of unit-filled letters separates the unit
 word from the ambient word. -/
-theorem unitPow_plainShuffle (A : D) [MonObj A] (V : D) (n : ℕ) :
+theorem unitPow_plainShuffle
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A : D) [MonObj A] (V : D) (n : ℕ) :
     freeUnitPow A V n ≫ (plainShuffle A V n).hom =
       (λ_ (tensorPow D V n)).inv ≫
         (unitWord A n ▷ tensorPow D V n) := by
@@ -132,11 +138,11 @@ end Shuffle
 
 section Insert
 
-variable [SymmetricCategory D]
-
 /-- With the unit in the first slot, the interchange is a single
 braiding, conjugated by associators. -/
-private theorem unitTensorμ (P A V : D) :
+private theorem unitTensorμ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (P A V : D) :
     ((λ_ P).inv ▷ (A ⊗ V)) ≫ tensorμ (𝟙_ D) P A V ≫
         ((λ_ A).hom ▷ (P ⊗ V)) =
       (α_ P A V).inv ≫ ((β_ P A).hom ▷ V) ≫ (α_ A P V).hom := by
@@ -158,7 +164,9 @@ private theorem unitTensorμ (P A V : D) :
 
 /-- **The free insertion**: carry the head into the top letter of
 the word and fill every other letter with the unit. -/
-noncomputable def freeInsert (A : D) [MonObj A] (V : D) (n : ℕ) :
+noncomputable def freeInsert
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A : D) [MonObj A] (V : D) (n : ℕ) :
     A ⊗ tensorPow D V (n + 1) ⟶ tensorPow D (A ⊗ V) (n + 1) :=
   (α_ A (tensorPow D V n) V).inv ≫
     ((β_ A (tensorPow D V n)).hom ▷ V) ≫
@@ -166,7 +174,9 @@ noncomputable def freeInsert (A : D) [MonObj A] (V : D) (n : ℕ) :
     (freeUnitPow A V n ▷ (A ⊗ V))
 
 /-- **The free insertion is a section of the free collapse.** -/
-theorem freeInsert_freeCollapse (A : D) [MonObj A] [IsCommMonObj A]
+theorem freeInsert_freeCollapse
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A : D) [MonObj A] [IsCommMonObj A]
     (V : D) (n : ℕ) :
     freeInsert A V n ≫ freeCollapse A V (n + 1) =
       𝟙 (A ⊗ tensorPow D V (n + 1)) := by

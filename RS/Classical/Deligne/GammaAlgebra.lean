@@ -5,7 +5,7 @@ import RS.Classical.Deligne.SuperRealize
 # The Γ-algebra of a commutative monoid object
 
 A commutative monoid object `R` of a symmetric ℂ-linear monoidal
-category `D` equipped with an odd line `L` realizes as an honest
+category `D` equipped with an odd line `L` realizes as a
 super-commutative ℂ-algebra (`RS.SuperCommAlgebra`): the even part
 is `𝟙_ D ⟶ R`, the odd part is `L.obj ⟶ R`, and the four graded
 multiplication blocks are the convolution product of the monoid
@@ -40,29 +40,32 @@ universe v u
 
 section Convolution
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable {R : D} [MonObj R]
+variable {D : Type u}
 
 /-- The *convolution product* of two morphisms into a monoid
 object, taken at arbitrary sources: tensor the two morphisms and
 multiply. -/
-noncomputable def gmul {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
+noncomputable def gmul [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
     X ⊗ Y ⟶ R :=
   (a ⊗ₘ b) ≫ μ
 
 /-- Convolution unfolded. -/
-theorem gmul_def {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
+theorem gmul_def [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
     gmul a b = (a ⊗ₘ b) ≫ μ[R] := rfl
 
 /-- Reindexing the left source of a convolution. -/
-theorem comp_gmul {W X Y : D} (f : W ⟶ X) (a : X ⟶ R)
+theorem comp_gmul [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {W X Y : D} (f : W ⟶ X) (a : X ⟶ R)
     (b : Y ⟶ R) : gmul (f ≫ a) b = f ▷ Y ≫ gmul a b := by
   have h : f ▷ Y ≫ (a ⊗ₘ b) = (f ≫ a) ⊗ₘ b := by
     rw [← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp]
   rw [gmul_def, gmul_def, ← h, Category.assoc]
 
 /-- Reindexing the right source of a convolution. -/
-theorem gmul_comp {X Y Z : D} (a : X ⟶ R) (g : Z ⟶ Y)
+theorem gmul_comp [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {X Y Z : D} (a : X ⟶ R) (g : Z ⟶ Y)
     (b : Y ⟶ R) : gmul a (g ≫ b) = X ◁ g ≫ gmul a b := by
   have h : X ◁ g ≫ (a ⊗ₘ b) = a ⊗ₘ (g ≫ b) := by
     rw [← id_tensorHom, tensorHom_comp_tensorHom, Category.id_comp]
@@ -70,7 +73,8 @@ theorem gmul_comp {X Y Z : D} (a : X ⟶ R) (g : Z ⟶ Y)
 
 /-- **Convolution is associative**, up to the associator of the
 three sources. -/
-theorem gmul_assoc {X Y Z : D} (a : X ⟶ R) (b : Y ⟶ R)
+theorem gmul_assoc [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {X Y Z : D} (a : X ⟶ R) (b : Y ⟶ R)
     (c : Z ⟶ R) :
     gmul (gmul a b) c = (α_ X Y Z).hom ≫ gmul a (gmul b c) := by
   have hl : ((a ⊗ₘ b) ⊗ₘ c) ≫ (μ[R] ▷ R) ≫ μ[R] =
@@ -87,20 +91,23 @@ theorem gmul_assoc {X Y Z : D} (a : X ⟶ R) (b : Y ⟶ R)
     associator_naturality, Category.assoc]
 
 /-- The monoid unit is a left unit for convolution. -/
-theorem gmul_one_left {Y : D} (b : Y ⟶ R) :
+theorem gmul_one_left [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {Y : D} (b : Y ⟶ R) :
     gmul (η[R]) b = (λ_ Y).hom ≫ b := by
   rw [gmul_def, tensorHom_def', Category.assoc, MonObj.one_mul,
     leftUnitor_naturality]
 
 /-- The monoid unit is a right unit for convolution. -/
-theorem gmul_one_right {X : D} (a : X ⟶ R) :
+theorem gmul_one_right [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    {X : D} (a : X ⟶ R) :
     gmul a (η[R]) = (ρ_ X).hom ≫ a := by
   rw [gmul_def, tensorHom_def, Category.assoc, MonObj.mul_one,
     rightUnitor_naturality]
 
 /-- **Convolution against a commutative monoid object is
 commutative**, up to the braiding of the two sources. -/
-theorem gmul_comm [BraidedCategory D] [IsCommMonObj R] {X Y : D}
+theorem gmul_comm [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R]
+    [BraidedCategory D] [IsCommMonObj R] {X Y : D}
     (a : X ⟶ R) (b : Y ⟶ R) :
     gmul a b = (β_ X Y).hom ≫ gmul b a := by
   rw [gmul_def, gmul_def]
@@ -109,16 +116,20 @@ theorem gmul_comm [BraidedCategory D] [IsCommMonObj R] {X Y : D}
 
 section Additive
 
-variable [Preadditive D] [MonoidalPreadditive D]
-
 /-- Convolution is additive in its left argument. -/
-theorem add_gmul {X Y : D} (a a' : X ⟶ R) (b : Y ⟶ R) :
+theorem add_gmul
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D]
+    {X Y : D} (a a' : X ⟶ R) (b : Y ⟶ R) :
     gmul (a + a') b = gmul a b + gmul a' b := by
   rw [gmul_def, gmul_def, gmul_def, MonoidalPreadditive.add_tensor,
     Preadditive.add_comp]
 
 /-- Convolution is additive in its right argument. -/
-theorem gmul_add {X Y : D} (a : X ⟶ R) (b b' : Y ⟶ R) :
+theorem gmul_add
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D]
+    {X Y : D} (a : X ⟶ R) (b b' : Y ⟶ R) :
     gmul a (b + b') = gmul a b + gmul a b' := by
   rw [gmul_def, gmul_def, gmul_def, MonoidalPreadditive.tensor_add,
     Preadditive.add_comp]
@@ -127,11 +138,11 @@ end Additive
 
 section Homogeneous
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- Convolution is ℂ-homogeneous in its left argument. -/
-theorem smul_gmul (r : ℂ) {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
+theorem smul_gmul
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (r : ℂ) {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
     gmul (r • a) b = r • gmul a b := by
   have h : (r • a) ⊗ₘ b = r • (a ⊗ₘ b) := by
     rw [tensorHom_def, tensorHom_def,
@@ -139,7 +150,10 @@ theorem smul_gmul (r : ℂ) {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
   rw [gmul_def, gmul_def, h, Linear.smul_comp]
 
 /-- Convolution is ℂ-homogeneous in its right argument. -/
-theorem gmul_smul (r : ℂ) {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
+theorem gmul_smul
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (r : ℂ) {X Y : D} (a : X ⟶ R) (b : Y ⟶ R) :
     gmul a (r • b) = r • gmul a b := by
   have h : a ⊗ₘ (r • b) = r • (a ⊗ₘ b) := by
     rw [tensorHom_def', tensorHom_def',
@@ -152,15 +166,15 @@ end Homogeneous
 
 section Bundled
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- The convolution product as a ℂ-bilinear map of hom-modules,
 transported along a chosen morphism `s` from the intended source
 into the tensor product of the two given sources.  The four graded
 multiplication blocks of `RS.gammaAlgebra` are the four instances
 of this construction. -/
-noncomputable def gmulLin {W X Y : D} (s : W ⟶ X ⊗ Y) :
+noncomputable def gmulLin
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    {W X Y : D} (s : W ⟶ X ⊗ Y) :
     (X ⟶ R) →ₗ[ℂ] (Y ⟶ R) →ₗ[ℂ] (W ⟶ R) :=
   LinearMap.mk₂ ℂ (fun a b => s ≫ gmul a b)
     (fun a a' b => by rw [add_gmul, Preadditive.comp_add])
@@ -169,13 +183,19 @@ noncomputable def gmulLin {W X Y : D} (s : W ⟶ X ⊗ Y) :
     (fun r a b => by rw [gmul_smul, Linear.comp_smul])
 
 @[simp]
-theorem gmulLin_apply {W X Y : D} (s : W ⟶ X ⊗ Y) (a : X ⟶ R)
+theorem gmulLin_apply
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    {W X Y : D} (s : W ⟶ X ⊗ Y) (a : X ⟶ R)
     (b : Y ⟶ R) : gmulLin s a b = s ≫ gmul a b := rfl
 
 /-- **The transported associativity law**: given a coherence
 identity between the two ways of reassociating the chosen sources,
 the two bracketings of a triple convolution agree. -/
-theorem gmulLin_assoc {W W' V X Y Z : D} (s₁ : W' ⟶ W ⊗ Z)
+theorem gmulLin_assoc
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    {W W' V X Y Z : D} (s₁ : W' ⟶ W ⊗ Z)
     (s₂ : W ⟶ X ⊗ Y) (s₃ : W' ⟶ X ⊗ V) (s₄ : V ⟶ Y ⊗ Z)
     (h : s₁ ≫ s₂ ▷ Z ≫ (α_ X Y Z).hom = s₃ ≫ X ◁ s₄)
     (a : X ⟶ R) (b : Y ⟶ R) (c : Z ⟶ R) :

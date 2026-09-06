@@ -787,13 +787,12 @@ end RepairLedger
 
 section SummandRepair
 
-variable [LinearOrder α] {k ℓ : ℕ} {κ : F.RelTransitionSystem}
-  {a b c d : W.Flag} {v : W.Vertex}
-
 /-- **The separated-case ledger**: one repair move negates the
 constrained summand at every fixed circuit exponent, over the
 transported orientation. -/
 theorem throughSummand_transportRepair
+    [LinearOrder α] {k : ℕ} {ℓ : ℕ} {κ : F.RelTransitionSystem} {a : W.Flag}
+    {b : W.Flag} {c : W.Flag} {d : W.Flag} {v : W.Vertex}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (hsq : RepairSquare κ a b c d v) (o : κ.Orientation)
@@ -854,7 +853,9 @@ theorem throughSummand_transportRepair
   · rw [neg_zero]
 
 /-- The summand at exponent `n` factors through exponent `0`. -/
-theorem throughSummand_exp (hM : MixedFunctional k ℓ)
+theorem throughSummand_exp
+    [LinearOrder α] {k : ℕ} {ℓ : ℕ} {κ : F.RelTransitionSystem}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (o : κ.Orientation) (n : ℕ) :
@@ -882,7 +883,10 @@ private theorem neg_one_pow_eq_neg {m n : ℕ} (hodd : Odd (n + m)) :
 circuit-count parity flips across the move, the summand at the
 open circuit counts is preserved, over the transported
 orientation. -/
-theorem throughSummand_repair (hM : MixedFunctional k ℓ)
+theorem throughSummand_repair
+    [LinearOrder α] {k : ℕ} {ℓ : ℕ} {κ : F.RelTransitionSystem} {a : W.Flag}
+    {b : W.Flag} {c : W.Flag} {d : W.Flag} {v : W.Vertex}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (hsq : RepairSquare κ a b c d v) (o : κ.Orientation)

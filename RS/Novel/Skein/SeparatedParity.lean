@@ -52,15 +52,17 @@ section AbstractOrbit
 
 open Equiv Equiv.Perm
 
-variable {Y : Type} [Fintype Y] [DecidableEq Y]
+variable {Y : Type}
 
 /-- The total orbit count of a permutation: nontrivial cycles plus
 fixed points. -/
-noncomputable def permOrbitCount (g : Perm Y) : ℕ :=
+noncomputable def permOrbitCount [Fintype Y] [DecidableEq Y]
+    (g : Perm Y) : ℕ :=
   g.cycleType.card + Fintype.card (Function.fixedPoints g)
 
 /-- Fixed points and support partition the domain. -/
-theorem card_fixedPoints_add_card_support (g : Perm Y) :
+theorem card_fixedPoints_add_card_support [Fintype Y] [DecidableEq Y]
+    (g : Perm Y) :
     Fintype.card (Function.fixedPoints g) + g.support.card =
       Fintype.card Y := by
   have h1 : Fintype.card (Function.fixedPoints g) =
@@ -72,7 +74,6 @@ theorem card_fixedPoints_add_card_support (g : Perm Y) :
   rw [h1, h2, ← Finset.card_univ]
   exact Finset.card_filter_add_card_filter_not (fun x => g x = x)
 
-omit [Fintype Y] [DecidableEq Y] in
 /-- Reduce a permutation power at a recurrent point. -/
 theorem perm_pow_mod {g : Perm Y} {x : Y} {p : ℕ} (_hp : 1 ≤ p)
     (hper : (g ^ p) x = x) (i : ℕ) :
@@ -92,16 +93,15 @@ theorem perm_pow_mod {g : Perm Y} {x : Y} {p : ℕ} (_hp : 1 ≤ p)
     rw [show i = p * (i / p) + i % p from (Nat.div_add_mod i p).symm]
   exact key (i / p) (i % p)
 
-omit [Fintype Y] [DecidableEq Y] in
 /-- A `SameCycle` witness from a power. -/
 theorem sameCycle_of_pow_eq {g : Perm Y} {x y : Y} {n : ℕ}
     (h : (g ^ n) x = y) : g.SameCycle x y :=
   ⟨(n : ℤ), by rw [zpow_natCast]; exact h⟩
 
-omit [Fintype Y] in
 /-- Trajectories avoiding both swapped points are untouched by the
 swap. -/
-private theorem swap_mul_pow_eq {g : Perm Y} {x y u : Y}
+private theorem swap_mul_pow_eq [DecidableEq Y]
+    {g : Perm Y} {x y u : Y}
     (hx : ∀ k : ℕ, (g ^ k) u ≠ x) (hy : ∀ k : ℕ, (g ^ k) u ≠ y) :
     ∀ k : ℕ, ((Equiv.swap x y * g) ^ k) u = (g ^ k) u := by
   intro k
@@ -118,7 +118,8 @@ private theorem swap_mul_pow_eq {g : Perm Y} {x y u : Y}
 
 /-- **Untouched orbits**: `SameCycle` from a point in neither
 swapped orbit transfers across the swap-multiplication. -/
-theorem sameCycle_swap_mul_iff {g : Perm Y} {x y u : Y}
+theorem sameCycle_swap_mul_iff [Fintype Y] [DecidableEq Y]
+    {g : Perm Y} {x y u : Y}
     (hux : ¬ g.SameCycle u x) (huy : ¬ g.SameCycle u y) (v : Y) :
     (Equiv.swap x y * g).SameCycle u v ↔ g.SameCycle u v := by
   have hx : ∀ k : ℕ, (g ^ k) u ≠ x := by
@@ -137,10 +138,10 @@ theorem sameCycle_swap_mul_iff {g : Perm Y} {x y u : Y}
     rw [← swap_mul_pow_eq hx hy] at hiv
     exact sameCycle_of_pow_eq hiv
 
-omit [Fintype Y] in
 /-- Along the swap-multiplied permutation, every point of a
 `g`-trajectory of `x` is in the orbit of `x` or of `y`. -/
-private theorem sameCycle_swap_mul_pow_target (g : Perm Y)
+private theorem sameCycle_swap_mul_pow_target [DecidableEq Y]
+    (g : Perm Y)
     (x y : Y) :
     ∀ k : ℕ, (Equiv.swap x y * g).SameCycle x ((g ^ k) x) ∨
       (Equiv.swap x y * g).SameCycle y ((g ^ k) x) := by
@@ -171,7 +172,8 @@ private theorem sameCycle_swap_mul_pow_target (g : Perm Y)
 
 /-- Cover: every support point of a cycle lands in the swap-orbit
 of `x` or of `y`. -/
-private theorem swap_mul_cycle_cover {c : Perm Y} (hc : c.IsCycle)
+private theorem swap_mul_cycle_cover [Fintype Y] [DecidableEq Y]
+    {c : Perm Y} (hc : c.IsCycle)
     {x y z : Y} (hx : x ∈ c.support) (hz : z ∈ c.support) :
     (Equiv.swap x y * c).SameCycle x z ∨
       (Equiv.swap x y * c).SameCycle y z := by
@@ -184,7 +186,8 @@ private theorem swap_mul_cycle_cover {c : Perm Y} (hc : c.IsCycle)
 
 /-- Fixed points of the swapped cycle inside the old support are
 the swapped points. -/
-private theorem swap_mul_cycle_fixed {c : Perm Y} (hc : c.IsCycle)
+private theorem swap_mul_cycle_fixed [Fintype Y] [DecidableEq Y]
+    {c : Perm Y} (hc : c.IsCycle)
     {x y z : Y} (hx : x ∈ c.support) (hz : z ∈ c.support)
     (hfix : (Equiv.swap x y * c) z = z) : z = x ∨ z = y := by
   rcases swap_mul_cycle_cover (y := y) hc hx hz with h | h
@@ -192,7 +195,8 @@ private theorem swap_mul_cycle_fixed {c : Perm Y} (hc : c.IsCycle)
   · exact Or.inr (h.eq_of_right hfix).symm
 
 /-- The swapped cycle has support inside the old support. -/
-private theorem swap_mul_support_subset {c : Perm Y} {x y : Y}
+private theorem swap_mul_support_subset [Fintype Y] [DecidableEq Y]
+    {c : Perm Y} {x y : Y}
     (hx : x ∈ c.support) (hy : y ∈ c.support) :
     (Equiv.swap x y * c).support ⊆ c.support := by
   intro z hz
@@ -207,7 +211,8 @@ private theorem swap_mul_support_subset {c : Perm Y} {x y : Y}
 
 /-- **No crossover**: swapping two points of one cycle separates
 them. -/
-private theorem not_sameCycle_swap_mul {g : Perm Y} {x y : Y}
+private theorem not_sameCycle_swap_mul [Fintype Y] [DecidableEq Y]
+    {g : Perm Y} {x y : Y}
     (hxy : x ≠ y) (hsc : g.SameCycle x y) :
     ¬ (Equiv.swap x y * g).SameCycle x y := by
   have hex : ∃ i, 0 < i ∧ (g ^ i) x = y := by
@@ -265,7 +270,8 @@ private theorem not_sameCycle_swap_mul {g : Perm Y} {x y : Y}
 
 /-- **Merging**: swapping two points of different orbits joins
 them. -/
-theorem sameCycle_swap_mul_of_not {g : Perm Y} {x y : Y}
+theorem sameCycle_swap_mul_of_not [Fintype Y] [DecidableEq Y]
+    {g : Perm Y} {x y : Y}
     (_hxy : x ≠ y) (hsc : ¬ g.SameCycle x y) :
     (Equiv.swap x y * g).SameCycle x y := by
   have hex : ∃ i, 0 < i ∧ (g ^ i) x = x := by
@@ -311,7 +317,8 @@ theorem sameCycle_swap_mul_of_not {g : Perm Y} {x y : Y}
 
 /-- **Orbit counting by representatives**: a set meeting every
 orbit exactly once has the orbit count as its cardinality. -/
-theorem permOrbitCount_eq_card_of_reps (g : Perm Y) (S : Finset Y)
+theorem permOrbitCount_eq_card_of_reps [Fintype Y] [DecidableEq Y]
+    (g : Perm Y) (S : Finset Y)
     (hcover : ∀ z : Y, ∃ w ∈ S, g.SameCycle w z)
     (hsep : ∀ w ∈ S, ∀ w' ∈ S, g.SameCycle w w' → w = w') :
     permOrbitCount g = S.card := by
@@ -372,7 +379,8 @@ theorem permOrbitCount_eq_card_of_reps (g : Perm Y) (S : Finset Y)
 
 /-- **The cycle split count**: swapping two support points of a
 cycle yields exactly two orbits on its support. -/
-private theorem swap_mul_cycle_count {c : Perm Y} (hc : c.IsCycle)
+private theorem swap_mul_cycle_count [Fintype Y] [DecidableEq Y]
+    {c : Perm Y} (hc : c.IsCycle)
     {x y : Y} (hxy : x ≠ y) (hx : x ∈ c.support)
     (hy : y ∈ c.support) :
     (Equiv.swap x y * c).cycleType.card + c.support.card =
@@ -571,7 +579,8 @@ private theorem swap_mul_cycle_count {c : Perm Y} (hc : c.IsCycle)
 
 /-- **Splitting**: multiplying by a transposition of two points on
 one orbit raises the orbit count by one. -/
-theorem permOrbitCount_swap_mul_sameCycle {g : Perm Y} {x y : Y}
+theorem permOrbitCount_swap_mul_sameCycle [Fintype Y] [DecidableEq Y]
+    {g : Perm Y} {x y : Y}
     (hxy : x ≠ y) (hsc : g.SameCycle x y) :
     permOrbitCount (Equiv.swap x y * g) = permOrbitCount g + 1 := by
   have hgx : g x ≠ x := by
@@ -662,7 +671,8 @@ theorem permOrbitCount_swap_mul_sameCycle {g : Perm Y} {x y : Y}
 
 /-- **Merging**: multiplying by a transposition of two points on
 different orbits lowers the orbit count by one. -/
-theorem permOrbitCount_swap_mul_not_sameCycle {g : Perm Y}
+theorem permOrbitCount_swap_mul_not_sameCycle [Fintype Y] [DecidableEq Y]
+    {g : Perm Y}
     {x y : Y} (hxy : x ≠ y) (hsc : ¬ g.SameCycle x y) :
     permOrbitCount g = permOrbitCount (Equiv.swap x y * g) + 1 := by
   have h2 : (Equiv.swap x y * g).SameCycle x y :=
@@ -674,7 +684,8 @@ theorem permOrbitCount_swap_mul_not_sameCycle {g : Perm Y}
 /-- **The coherent double swap**: with the mirror equivalence
 `b ∼ c ↔ a ∼ d` and the two exclusions `a ≁ b`, `a ≁ c`, the double
 transposition moves the orbit count by exactly two. -/
-theorem permOrbitCount_swap_swap_mul {g : Perm Y} {a b c d : Y}
+theorem permOrbitCount_swap_swap_mul [Fintype Y] [DecidableEq Y]
+    {g : Perm Y} {a b c d : Y}
     (hbc : b ≠ c) (had : a ≠ d)
     (hiff : g.SameCycle b c ↔ g.SameCycle a d)
     (hab : ¬ g.SameCycle a b) (hac : ¬ g.SameCycle a c) :
@@ -937,8 +948,7 @@ theorem sameCycle_periodic_val {κ : F.RelTransitionSystem}
 
 /-- **Mirror collision, periodic case**: a periodic flag is never
 on the same full-walk orbit as its pairing. -/
-theorem not_sameCycle_pairingPermSP_of_periodic
-    {κ : F.RelTransitionSystem}
+theorem not_sameCycle_pairingPermSP_of_periodic {κ : F.RelTransitionSystem}
     {x : {f : W.Flag // f ∈ F.flags}}
     (hper : κ.PeriodicFlag x.val) :
     ¬ (fullPerm κ).SameCycle x (pairingPermSP F x) := by
@@ -1003,8 +1013,7 @@ theorem fullPerm_chain_wrap :
 
 /-- Values on the full-walk orbit of a boundary flag are chain
 values. -/
-theorem fullPerm_chain_sameCycle_val
-    {z : {f : W.Flag // f ∈ F.flags}}
+theorem fullPerm_chain_sameCycle_val {z : {f : W.Flag // f ∈ F.flags}}
     (h : (fullPerm κ).SameCycle
       ⟨β, mem_flags_of_boundaryFlags F hβ⟩ z) :
     ∃ j, j ≤ k ∧ z.val = iterWalk κ β j := by
@@ -1017,8 +1026,7 @@ theorem fullPerm_chain_sameCycle_val
 
 /-- A boundary flag on the full-walk orbit of a boundary flag is
 the base point. -/
-theorem fullPerm_chain_boundary_eq
-    {z : {f : W.Flag // f ∈ F.flags}}
+theorem fullPerm_chain_boundary_eq {z : {f : W.Flag // f ∈ F.flags}}
     (h : (fullPerm κ).SameCycle
       ⟨β, mem_flags_of_boundaryFlags F hβ⟩ z)
     (hzb : z.val ∈ F.boundaryFlags) :
@@ -1259,8 +1267,7 @@ theorem permOrbitCount_fullPermPeriodic :
   rw [walkPermPeriodic_eq_permCongr κ, permOrbitCount_permCongr]
 
 /-- Values of powers of the chain part. -/
-theorem fullPermChain_pow_val
-    (z : {x : {f : W.Flag // f ∈ F.flags} //
+theorem fullPermChain_pow_val (z : {x : {f : W.Flag // f ∈ F.flags} //
       ¬ x.val ∈ κ.periodicFlags}) (n : ℕ) :
     (((fullPermChain κ) ^ n) z).val = ((fullPerm κ) ^ n) z.val := by
   induction n with
@@ -1276,8 +1283,7 @@ theorem fullPermChain_pow_val
     rfl
 
 /-- `SameCycle` in the chain part descends to the full walk. -/
-theorem sameCycle_fullPermChain_val
-    {z w : {x : {f : W.Flag // f ∈ F.flags} //
+theorem sameCycle_fullPermChain_val {z w : {x : {f : W.Flag // f ∈ F.flags} //
       ¬ x.val ∈ κ.periodicFlags}}
     (h : (fullPermChain κ).SameCycle z w) :
     (fullPerm κ).SameCycle z.val w.val := by

@@ -40,13 +40,13 @@ section Monoidal
 
 open ZeroObject
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A]
+variable {A : Type u}
 
 /-- The even component of the unit comparison is the identity. -/
 @[simp]
-theorem evenHom_evenEmbedUnitIso_hom :
+theorem evenHom_evenEmbedUnitIso_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
     evenHom (evenEmbedUnitIso (A := A)).hom = 𝟙 (𝟙_ A) :=
   rfl
 
@@ -54,7 +54,10 @@ theorem evenHom_evenEmbedUnitIso_hom :
 identity, because the unit of `Doubled A` *is* the even embedding
 of the unit of `A`, and the tensor comparison is
 `evenEmbedTensorIso`. -/
-instance evenEmbedLaxMonoidal : (evenEmbed (A := A)).LaxMonoidal where
+instance evenEmbedLaxMonoidal
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    (evenEmbed (A := A)).LaxMonoidal where
   ε := evenEmbedUnitIso.hom
   μ X Y := (evenEmbedTensorIso X Y).hom
   μ_natural_left := by
@@ -93,7 +96,9 @@ instance evenEmbedLaxMonoidal : (evenEmbed (A := A)).LaxMonoidal where
 
 /-- The even embedding is strong monoidal: both comparisons are
 isomorphisms by construction. -/
-noncomputable instance evenEmbedMonoidal :
+noncomputable instance evenEmbedMonoidal
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
     (evenEmbed (A := A)).Monoidal := by
   haveI hε : IsIso (Functor.LaxMonoidal.ε (evenEmbed (A := A))) :=
     inferInstanceAs (IsIso (evenEmbedUnitIso (A := A)).hom)
@@ -109,19 +114,23 @@ installed, so that their left-hand sides use the instance that a
 downstream file resolves. -/
 
 @[simp]
-theorem evenEmbed_ε :
+theorem evenEmbed_ε [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
     Functor.LaxMonoidal.ε (evenEmbed (A := A)) =
       (evenEmbedUnitIso (A := A)).hom :=
   rfl
 
 @[simp]
-theorem evenEmbed_μ (X Y : A) :
+theorem evenEmbed_μ [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y : A) :
     Functor.LaxMonoidal.μ (evenEmbed (A := A)) X Y =
       (evenEmbedTensorIso X Y).hom :=
   rfl
 
 @[simp]
-theorem evenEmbed_η :
+theorem evenEmbed_η [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
     Functor.OplaxMonoidal.η (evenEmbed (A := A)) =
       (evenEmbedUnitIso (A := A)).inv := by
   have h : Functor.LaxMonoidal.ε (evenEmbed (A := A)) ≫
@@ -136,7 +145,9 @@ theorem evenEmbed_η :
         rw [Category.assoc, h, Category.comp_id]
 
 @[simp]
-theorem evenEmbed_δ (X Y : A) :
+theorem evenEmbed_δ [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y : A) :
     Functor.OplaxMonoidal.δ (evenEmbed (A := A)) X Y =
       (evenEmbedTensorIso X Y).inv := by
   have h : Functor.LaxMonoidal.μ (evenEmbed (A := A)) X Y ≫
@@ -156,14 +167,15 @@ section Braided
 
 open ZeroObject
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A] [SymmetricCategory A]
+variable {A : Type u}
 
 /-- The even embedding is braided: the Koszul sign is invisible on
 purely even objects, so the tensor comparison intertwines the two
 braidings. -/
-noncomputable instance evenEmbedBraided :
+noncomputable instance evenEmbedBraided
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A] :
     (evenEmbed (A := A)).Braided where
   braided X Y := (evenEmbedTensorIso_braided X Y).symm
 
@@ -173,13 +185,12 @@ section Exactness
 
 open ZeroObject
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A]
+variable {A : Type u}
 
 /-- The even embedding is left adjoint to the even-component
 functor: a morphism out of the zero object is unique. -/
-def evenEmbedAdjEvenFunctor : evenEmbed (A := A) ⊣ evenFunctor :=
+def evenEmbedAdjEvenFunctor [Category.{v} A] [Preadditive A] [HasZeroObject A] :
+    evenEmbed (A := A) ⊣ evenFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ Y =>
         { toFun := fun f => evenHom f
@@ -193,7 +204,8 @@ def evenEmbedAdjEvenFunctor : evenEmbed (A := A) ⊣ evenFunctor :=
 
 /-- The even embedding is right adjoint to the even-component
 functor: a morphism into the zero object is unique. -/
-def evenFunctorAdjEvenEmbed : evenFunctor ⊣ evenEmbed (A := A) :=
+def evenFunctorAdjEvenEmbed [Category.{v} A] [Preadditive A] [HasZeroObject A] :
+    evenFunctor ⊣ evenEmbed (A := A) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun Y _ =>
         { toFun := fun g => homMk g ((isZero_zero A).from_ Y.odd)
@@ -206,14 +218,16 @@ def evenFunctorAdjEvenEmbed : evenFunctor ⊣ evenEmbed (A := A) :=
         hom_ext rfl ((isZero_zero A).eq_of_tgt _ _) }
 
 /-- Being a right adjoint, the even embedding is left exact. -/
-instance evenEmbedPreservesFiniteLimits :
+instance evenEmbedPreservesFiniteLimits
+    [Category.{v} A] [Preadditive A] [HasZeroObject A] :
     PreservesFiniteLimits (evenEmbed (A := A)) := by
   haveI : PreservesLimitsOfSize.{0, 0} (evenEmbed (A := A)) :=
     (evenFunctorAdjEvenEmbed (A := A)).rightAdjoint_preservesLimits
   infer_instance
 
 /-- Being a left adjoint, the even embedding is right exact. -/
-instance evenEmbedPreservesFiniteColimits :
+instance evenEmbedPreservesFiniteColimits
+    [Category.{v} A] [Preadditive A] [HasZeroObject A] :
     PreservesFiniteColimits (evenEmbed (A := A)) := by
   haveI : PreservesColimitsOfSize.{0, 0} (evenEmbed (A := A)) :=
     (evenEmbedAdjEvenFunctor (A := A)).leftAdjoint_preservesColimits

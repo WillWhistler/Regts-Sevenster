@@ -29,15 +29,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable (A : D) [MonObj A]
+variable {D : Type u}
 
 /-! ## The unit twist -/
 
 /-- The left unitor intertwines the twist by the tensor unit with
 the plain action. -/
-theorem actAcross_unit (X : D) [ModObj A X] :
+theorem actAcross_unit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (X : D) [ModObj A X] :
     actAcross A (𝟙_ D) X ≫ (λ_ X).hom =
       (A ◁ (λ_ X).hom) ≫ actLeft A X := by
   have h : (α_ A (𝟙_ D) X).inv ≫ ((β_ A (𝟙_ D)).hom ▷ X) ≫
@@ -51,7 +52,10 @@ theorem actAcross_unit (X : D) [ModObj A X] :
 
 /-- **The unit twist collapses**: twisting a module by the tensor
 unit is the left unitor, as a module isomorphism. -/
-noncomputable def tensorLeftUnitMod (M : Mod D A) :
+noncomputable def tensorLeftUnitMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (M : Mod D A) :
     tensorLeftMod A (𝟙_ D) M ≅ M where
   hom := Mod.Hom.mk' (λ_ M.X).hom (by
     show actAcross A (𝟙_ D) M.X ≫ (λ_ M.X).hom =
@@ -72,7 +76,10 @@ noncomputable def tensorLeftUnitMod (M : Mod D A) :
 
 /-- The associator intertwines the twist by a tensor of twisting
 objects with the nested twist. -/
-theorem actAcross_assoc_split (V W : D) (M : Mod D A) :
+theorem actAcross_assoc_split
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V W : D) (M : Mod D A) :
     actAcross A (V ⊗ W) M.X ≫ (α_ V W M.X).hom =
       (A ◁ (α_ V W M.X).hom) ≫
         actAcross A V (tensorLeftMod A W M).X := by
@@ -85,7 +92,10 @@ theorem actAcross_assoc_split (V W : D) (M : Mod D A) :
 
 /-- **Nested twists collapse**: twisting by `W` and then by `V` is
 twisting by `V ⊗ W`, through the associator. -/
-noncomputable def tensorLeftAssocMod (V W : D) (M : Mod D A) :
+noncomputable def tensorLeftAssocMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V W : D) (M : Mod D A) :
     tensorLeftMod A V (tensorLeftMod A W M) ≅
       tensorLeftMod A (V ⊗ W) M where
   hom := Mod.Hom.mk' (α_ V W M.X).inv (by
@@ -109,7 +119,9 @@ noncomputable def tensorLeftAssocMod (V W : D) (M : Mod D A) :
 /-! ## The free module on a twisted object -/
 
 /-- The carrying isomorphism is natural in the crossing object. -/
-theorem braidPast_natural_head {P Q : D} (f : P ⟶ Q) (V T : D) :
+theorem braidPast_natural_head
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {P Q : D} (f : P ⟶ Q) (V T : D) :
     (f ▷ (V ⊗ T)) ≫ (braidPast Q V T).hom =
       (braidPast P V T).hom ≫ (V ◁ (f ▷ T)) := by
   simp only [braidPast_hom]
@@ -121,7 +133,10 @@ theorem braidPast_natural_head {P Q : D} (f : P ⟶ Q) (V T : D) :
 
 /-- The carrying isomorphism intertwines the free action on a
 twisted object with the twist of the free action. -/
-theorem freeTwist_act (V X : D) :
+theorem freeTwist_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V X : D) :
     ((α_ A A (V ⊗ X)).inv ≫ (μ[A] ▷ (V ⊗ X))) ≫
         (braidPast A V X).hom =
       (A ◁ (braidPast A V X).hom) ≫
@@ -145,7 +160,10 @@ theorem freeTwist_act (V X : D) :
 /-- **The free module on a twisted object**: the free module on
 `V ⊗ X` is the twist by `V` of the free module on `X`, through the
 isomorphism carrying the algebra across the twisting object. -/
-noncomputable def freeTwistIso (V X : D) :
+noncomputable def freeTwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V X : D) :
     freeMod A (V ⊗ X) ≅ tensorLeftMod A V (freeMod A X) where
   hom := Mod.Hom.mk' (braidPast A V X).hom (by
     show ((α_ A A (V ⊗ X)).inv ≫ (μ[A] ▷ (V ⊗ X))) ≫

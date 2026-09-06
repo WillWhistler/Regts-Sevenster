@@ -51,12 +51,13 @@ namespace Doubled
 
 section Components
 
-variable {A : Type u} [Category.{v} A] [Preadditive A]
+variable {A : Type u}
 
 /-- The even component of a monomorphism of super-objects is a
 monomorphism: a morphism killed by it is the even component of a
 morphism killed by it. -/
-theorem mono_evenHom {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
+theorem mono_evenHom [Category.{v} A] [Preadditive A]
+    {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
     Mono (evenHom m) := by
   refine (Preadditive.mono_iff_cancel_zero _).2 fun T g hg => ?_
   have hzero : (homMk g 0 : (⟨T, S.odd⟩ : Doubled A) ⟶ S) ≫ m = 0 := by
@@ -68,7 +69,8 @@ theorem mono_evenHom {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
 
 /-- The odd component of a monomorphism of super-objects is a
 monomorphism. -/
-theorem mono_oddHom {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
+theorem mono_oddHom [Category.{v} A] [Preadditive A]
+    {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
     Mono (oddHom m) := by
   refine (Preadditive.mono_iff_cancel_zero _).2 fun T g hg => ?_
   have hzero : (homMk 0 g : (⟨S.even, T⟩ : Doubled A) ⟶ S) ≫ m = 0 := by
@@ -80,7 +82,8 @@ theorem mono_oddHom {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
 
 /-- A morphism of super-objects with monomorphic components is a
 monomorphism: morphisms are compared componentwise. -/
-theorem mono_of_components {S Z : Doubled A} (m : S ⟶ Z)
+theorem mono_of_components [Category.{v} A] [Preadditive A]
+    {S Z : Doubled A} (m : S ⟶ Z)
     (he : Mono (evenHom m)) (ho : Mono (oddHom m)) : Mono m := by
   refine (Preadditive.mono_of_cancel_zero _) fun g hg => ?_
   have he' : evenHom g = 0 :=
@@ -93,7 +96,8 @@ theorem mono_of_components {S Z : Doubled A} (m : S ⟶ Z)
 
 /-- A morphism of super-objects with epimorphic components is an
 epimorphism. -/
-theorem epi_of_components {S Z : Doubled A} (m : S ⟶ Z)
+theorem epi_of_components [Category.{v} A] [Preadditive A]
+    {S Z : Doubled A} (m : S ⟶ Z)
     (he : Epi (evenHom m)) (ho : Epi (oddHom m)) : Epi m := by
   refine (Preadditive.epi_of_cancel_zero _) fun g hg => ?_
   have he' : evenHom g = 0 :=
@@ -108,12 +112,13 @@ end Components
 
 section TotalMono
 
-variable {A : Type u} [Category.{v} A] [Preadditive A]
-  [HasBinaryBiproducts A]
+variable {A : Type u}
 
 /-- A biproduct of two monomorphisms is a monomorphism: a morphism
 killed by it is killed in each matrix entry. -/
-theorem eq_zero_of_comp_biprod_map {P M N M' N' : A}
+theorem eq_zero_of_comp_biprod_map
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {P M N M' N' : A}
     (g : P ⟶ M ⊞ N) {f₁ : M ⟶ M'} {f₂ : N ⟶ N'} (h₁ : Mono f₁)
     (h₂ : Mono f₂) (hg : g ≫ biprod.map f₁ f₂ = 0) : g = 0 := by
   have e₁ : g ≫ biprod.fst = 0 := by
@@ -131,7 +136,8 @@ theorem eq_zero_of_comp_biprod_map {P M N M' N' : A}
 /-- The summing functor preserves monomorphisms: on components a
 monomorphism of super-objects is a pair of monomorphisms, and the
 biproduct of two monomorphisms is one. -/
-instance total_map_mono {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
+instance total_map_mono [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
     Mono (total.map m) := by
   refine Preadditive.mono_of_cancel_zero _ ?_
   intro P g hg
@@ -142,7 +148,9 @@ instance total_map_mono {S Z : Doubled A} (m : S ⟶ Z) [Mono m] :
 /-- The diagonal matrix entries of a factorisation of one
 biproduct of morphisms through another factor the two given
 morphisms. -/
-theorem diag_of_comp_biprod_map {M N M' N' P Q : A}
+theorem diag_of_comp_biprod_map
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {M N M' N' P Q : A}
     (u : M ⊞ N ⟶ M' ⊞ N') {t₁ : M' ⟶ P} {t₂ : N' ⟶ Q}
     {s₁ : M ⟶ P} {s₂ : N ⟶ Q}
     (hu : u ≫ biprod.map t₁ t₂ = biprod.map s₁ s₂) :
@@ -155,7 +163,9 @@ theorem diag_of_comp_biprod_map {M N M' N' P Q : A}
 /-- A factorisation of the summed subobjects splits back into its
 diagonal matrix entries, which assemble into a factorisation of the
 subobjects themselves. -/
-theorem le_of_total_comm {Z : Doubled A} {S T : Subobject Z}
+theorem le_of_total_comm
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {Z : Doubled A} {S T : Subobject Z}
     (u : total.obj (S : Doubled A) ⟶ total.obj (T : Doubled A))
     (hu : u ≫ total.map T.arrow = total.map S.arrow) : S ≤ T := by
   have hu' : u ≫ biprod.map (evenHom T.arrow) (oddHom T.arrow) =
@@ -166,7 +176,8 @@ theorem le_of_total_comm {Z : Doubled A} {S T : Subobject Z}
   exact hom_ext he ho
 
 /-- The summing functor reflects the subobject order. -/
-theorem le_of_total_le {Z : Doubled A} {S T : Subobject Z}
+theorem le_of_total_le [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {Z : Doubled A} {S T : Subobject Z}
     (h : Subobject.mk (total.map S.arrow) ≤
       Subobject.mk (total.map T.arrow)) : S ≤ T :=
   le_of_total_comm
@@ -176,7 +187,9 @@ theorem le_of_total_le {Z : Doubled A} {S T : Subobject Z}
 /-- Length in the doubling is length of the total object: a
 strictly increasing chain of subobjects of `Z` maps to a strictly
 increasing chain of subobjects of `total.obj Z`. -/
-theorem lengthLE_of_total {Z : Doubled A} {k : ℕ}
+theorem lengthLE_of_total
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {Z : Doubled A} {k : ℕ}
     (h : LengthLE (total.obj Z) k) : LengthLE Z k := by
   intro f hf
   refine h (fun i => Subobject.mk (total.map (f i).arrow)) ?_
@@ -196,15 +209,15 @@ end TotalMono
 
 section GrowthTransport
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A]
+variable {A : Type u}
 
 /-- The summing functor carries the graded tensor powers of `Y` to
 the ambient tensor powers of `total.obj Y`: the comparison
 isomorphisms of the monoidal functor `total`, assembled by
 induction on the exponent. -/
-def totalTensorPowIso (Y : Doubled A) : ∀ N : ℕ,
+def totalTensorPowIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (Y : Doubled A) : ∀ N : ℕ,
     total.obj (tensorPow (Doubled A) Y N) ≅
       tensorPow A (total.obj Y) N
   | 0 => epsIso.symm
@@ -217,25 +230,29 @@ end Doubled
 
 section Retracts
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u}
 
 /-- **`Y` is a retract of `Z`**: a section split by a retraction.
 A retract is in particular a subquotient, and — unlike the
 subquotient relation — the property is visibly stable under tensor
 products, tensor powers and biproducts. -/
-def IsRetractOf (Y Z : C) : Prop :=
+def IsRetractOf [Category.{v} C]
+    (Y Z : C) : Prop :=
   ∃ (s : Y ⟶ Z) (r : Z ⟶ Y), s ≫ r = 𝟙 Y
 
 /-- An isomorphism is a retraction. -/
-theorem isRetractOf_of_iso {Y Z : C} (e : Y ≅ Z) : IsRetractOf Y Z :=
+theorem isRetractOf_of_iso [Category.{v} C]
+    {Y Z : C} (e : Y ≅ Z) : IsRetractOf Y Z :=
   ⟨e.hom, e.inv, e.hom_inv_id⟩
 
 /-- Every object is a retract of itself. -/
-theorem isRetractOf_rfl (Y : C) : IsRetractOf Y Y :=
+theorem isRetractOf_rfl [Category.{v} C]
+    (Y : C) : IsRetractOf Y Y :=
   isRetractOf_of_iso (Iso.refl Y)
 
 /-- Retractions compose. -/
-theorem IsRetractOf.trans {Y Z W : C} (h : IsRetractOf Y Z)
+theorem IsRetractOf.trans [Category.{v} C]
+    {Y Z W : C} (h : IsRetractOf Y Z)
     (h' : IsRetractOf Z W) : IsRetractOf Y W := by
   obtain ⟨s, r, hsr⟩ := h
   obtain ⟨s', r', hsr'⟩ := h'
@@ -246,7 +263,8 @@ theorem IsRetractOf.trans {Y Z W : C} (h : IsRetractOf Y Z)
 /-- A subquotient sandwiched between two retractions is a
 subquotient: a split monomorphism extends the inclusion and a split
 epimorphism extends the quotient map. -/
-theorem IsSubquotientOf.sandwich {Y Y' Z' Z : C}
+theorem IsSubquotientOf.sandwich [Category.{v} C]
+    {Y Y' Z' Z : C}
     (hY : IsRetractOf Y Y') (h : IsSubquotientOf Y' Z')
     (hZ : IsRetractOf Z' Z) : IsSubquotientOf Y Z := by
   obtain ⟨s, r, hsr⟩ := hY
@@ -262,10 +280,11 @@ end Retracts
 
 section RetractsMonoidal
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u}
 
 /-- Retractions multiply. -/
-theorem IsRetractOf.tensor {Y Z Y' Z' : C} (h : IsRetractOf Y Z)
+theorem IsRetractOf.tensor [Category.{v} C] [MonoidalCategory C]
+    {Y Z Y' Z' : C} (h : IsRetractOf Y Z)
     (h' : IsRetractOf Y' Z') : IsRetractOf (Y ⊗ Y') (Z ⊗ Z') := by
   obtain ⟨s, r, hsr⟩ := h
   obtain ⟨s', r', hsr'⟩ := h'
@@ -274,7 +293,8 @@ theorem IsRetractOf.tensor {Y Z Y' Z' : C} (h : IsRetractOf Y Z)
       MonoidalCategory.id_tensorHom_id]⟩
 
 /-- Retractions raise to tensor powers. -/
-theorem IsRetractOf.tensorPow {Y Z : C} (h : IsRetractOf Y Z) :
+theorem IsRetractOf.tensorPow [Category.{v} C] [MonoidalCategory C]
+    {Y Z : C} (h : IsRetractOf Y Z) :
     ∀ n : ℕ, IsRetractOf (tensorPow C Y n) (tensorPow C Z n)
   | 0 => isRetractOf_rfl _
   | n + 1 => (h.tensorPow n).tensor h
@@ -283,10 +303,11 @@ end RetractsMonoidal
 
 section RetractsBiproduct
 
-variable {C : Type u} [Category.{v} C] [Preadditive C]
+variable {C : Type u}
 
 /-- Retractions assemble over a finite biproduct. -/
-theorem IsRetractOf.biproduct {J : Type} [Fintype J] {f g : J → C}
+theorem IsRetractOf.biproduct [Category.{v} C] [Preadditive C]
+    {J : Type} [Fintype J] {f g : J → C}
     [HasBiproduct f] [HasBiproduct g]
     (h : ∀ t, IsRetractOf (f t) (g t)) :
     IsRetractOf (⨁ f) (⨁ g) := by
@@ -301,43 +322,44 @@ namespace Doubled
 
 section Diagonal
 
-variable {A : Type u} [Category.{v} A] [Preadditive A]
+variable {A : Type u}
 
 /-- The diagonal embedding `M ↦ (M, M)`: the ambient object placed
 in both degrees at once. -/
-def dbl : A ⥤ Doubled A where
+def dbl [Category.{v} A] : A ⥤ Doubled A where
   obj M := ⟨M, M⟩
   map f := homMk f f
   map_id _ := rfl
   map_comp _ _ := rfl
 
-omit [Preadditive A] in
 @[simp]
-theorem dbl_obj_even (M : A) : (dbl.obj M).even = M :=
+theorem dbl_obj_even [Category.{v} A]
+    (M : A) : (dbl.obj M).even = M :=
   rfl
 
-omit [Preadditive A] in
 @[simp]
-theorem dbl_obj_odd (M : A) : (dbl.obj M).odd = M :=
+theorem dbl_obj_odd [Category.{v} A]
+    (M : A) : (dbl.obj M).odd = M :=
   rfl
 
 /-- The diagonal embedding is additive. -/
-instance : (dbl (A := A)).Additive where
+instance [Category.{v} A] [Preadditive A] : (dbl (A := A)).Additive where
   map_add := rfl
 
 /-- The diagonal embedding preserves subquotients: its components
 are the given morphisms, so monomorphisms and epimorphisms are
 preserved. -/
-theorem isSubquotientOf_dbl {P Q : A} (h : IsSubquotientOf P Q) :
+theorem isSubquotientOf_dbl [Category.{v} A] [Preadditive A]
+    {P Q : A} (h : IsSubquotientOf P Q) :
     IsSubquotientOf (dbl.obj P) (dbl.obj Q) := by
   obtain ⟨S, i, p, hi, hp⟩ := h
   exact ⟨dbl.obj S, dbl.map i, dbl.map p,
     mono_of_components _ hi hi, epi_of_components _ hp hp⟩
 
-omit [Preadditive A] in
 /-- A retraction of super-objects from a pair of component
 retractions. -/
-theorem isRetractOf_of_components {V W : Doubled A}
+theorem isRetractOf_of_components [Category.{v} A]
+    {V W : Doubled A}
     (se : V.even ⟶ W.even) (re : W.even ⟶ V.even)
     (he : se ≫ re = 𝟙 V.even) (so : V.odd ⟶ W.odd)
     (ro : W.odd ⟶ V.odd) (ho : so ≫ ro = 𝟙 V.odd) :
@@ -349,12 +371,13 @@ end Diagonal
 
 section DiagonalBiprod
 
-variable {A : Type u} [Category.{v} A] [Preadditive A]
-  [HasBinaryBiproducts A]
+variable {A : Type u}
 
 /-- Every super-object is a retract of the diagonal double of the
 sum of its two components. -/
-theorem isRetractOf_dbl_self (Y : Doubled A) :
+theorem isRetractOf_dbl_self
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (Y : Doubled A) :
     IsRetractOf Y (dbl.obj (Y.even ⊞ Y.odd)) :=
   isRetractOf_of_components biprod.inl biprod.fst (by simp)
     biprod.inr biprod.snd (by simp)
@@ -363,28 +386,32 @@ end DiagonalBiprod
 
 section EvenTensor
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A]
+variable {A : Type u}
 
 open ZeroObject
 
 /-- Tensoring an even object on the left multiplies both graded
 components: the mixed blocks vanish. -/
-def evenTensorIso (Z : A) (V : Doubled A) :
+def evenTensorIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (Z : A) (V : Doubled A) :
     evenEmbed.obj Z ⊗ V ≅ ⟨Z ⊗ V.even, Z ⊗ V.odd⟩ :=
   isoMk (isoBiprodZero (isZero_zeroTensor _)).symm
     (isoBiprodZero (isZero_zeroTensor _)).symm
 
 /-- Tensoring an even object on the right multiplies both graded
 components. -/
-def tensorEvenIso (V : Doubled A) (Z : A) :
+def tensorEvenIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (V : Doubled A) (Z : A) :
     V ⊗ evenEmbed.obj Z ≅ ⟨V.even ⊗ Z, V.odd ⊗ Z⟩ :=
   isoMk (isoBiprodZero (isZero_tensorZero _)).symm
     (isoZeroBiprod (isZero_tensorZero _)).symm
 
 /-- Tensor powers of an even object are even. -/
-def evenTensorPowIso (Z : A) : ∀ n : ℕ,
+def evenTensorPowIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (Z : A) : ∀ n : ℕ,
     tensorPow (Doubled A) (evenEmbed.obj Z) n ≅
       evenEmbed.obj (tensorPow A Z n)
   | 0 => Iso.refl _
@@ -395,9 +422,7 @@ end EvenTensor
 
 section Generator
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A] [RigidCategory A]
+variable {A : Type u}
 
 open ZeroObject
 
@@ -409,29 +434,37 @@ component are what let the words of a mixed power be read off
 without ever forming a dual in the doubling.  It is reducible, so
 that the component computations below see its two blocks. -/
 @[reducible]
-def gen (X : A) : Doubled A :=
+def gen [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A] [RigidCategory A]
+    (X : A) : Doubled A :=
   ⟨X ⊞ Xᘁ ⊞ 𝟙_ A, 𝟙_ A⟩
 
-omit [MonoidalPreadditive A] in
 /-- The even copy of `X` is a retract of the generator. -/
-theorem isRetractOf_evenEmbed_gen (X : A) :
+theorem isRetractOf_evenEmbed_gen
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A] [HasZeroObject A] [RigidCategory A]
+    (X : A) :
     IsRetractOf (evenEmbed.obj X) (gen X) :=
   isRetractOf_of_components biprod.inl biprod.fst (by simp) 0 0
     ((isZero_zero A).eq_of_src _ _)
 
-omit [MonoidalPreadditive A] in
 /-- The even copy of the dual of `X` is a retract of the
 generator. -/
-theorem isRetractOf_evenEmbedDual_gen (X : A) :
+theorem isRetractOf_evenEmbedDual_gen
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A] [HasZeroObject A] [RigidCategory A]
+    (X : A) :
     IsRetractOf (evenEmbed.obj (Xᘁ)) (gen X) :=
   isRetractOf_of_components (biprod.inl ≫ biprod.inr)
     (biprod.snd ≫ biprod.fst) (by simp) 0 0
     ((isZero_zero A).eq_of_src _ _)
 
-omit [MonoidalPreadditive A] [HasZeroObject A] in
 /-- The diagonal double of the unit is a retract of the
 generator. -/
-theorem isRetractOf_dblUnit_gen (X : A) :
+theorem isRetractOf_dblUnit_gen
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A] [RigidCategory A]
+    (X : A) :
     IsRetractOf (dbl.obj (𝟙_ A)) (gen X) :=
   isRetractOf_of_components (biprod.inr ≫ biprod.inr)
     (biprod.snd ≫ biprod.snd) (by simp) (𝟙 _) (𝟙 _) (by simp)
@@ -439,14 +472,20 @@ theorem isRetractOf_dblUnit_gen (X : A) :
 /-- The word in the generator that reads off a mixed power: `a`
 even copies of `X`, then the diagonal double of the unit, then `b`
 even copies of the dual of `X`. -/
-def genWord (X : A) (a : ℕ) : ℕ → Doubled A
+def genWord [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [RigidCategory A]
+    (X : A) (a : ℕ) : ℕ → Doubled A
   | 0 => tensorPow (Doubled A) (evenEmbed.obj X) a ⊗ dbl.obj (𝟙_ A)
   | b + 1 => genWord X a b ⊗ evenEmbed.obj (Xᘁ)
 
 /-- The word is the diagonal double of the mixed power: the
 diagonal factor spreads the even word over both degrees, and the
 remaining brackets are reassociated. -/
-def genWordIso (X : A) (a : ℕ) : ∀ b : ℕ,
+def genWordIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [RigidCategory A]
+    (X : A) (a : ℕ) : ∀ b : ℕ,
     genWord X a b ≅ dbl.obj (mixedPow A X a b)
   | 0 => tensorIso (evenTensorPowIso X a) (Iso.refl _) ≪≫
       evenTensorIso _ _
@@ -455,7 +494,11 @@ def genWordIso (X : A) (a : ℕ) : ∀ b : ℕ,
 
 /-- The word is a retract of a tensor power of the generator:
 letter by letter. -/
-theorem isRetractOf_genWord (X : A) (a : ℕ) : ∀ b : ℕ,
+theorem isRetractOf_genWord
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [RigidCategory A]
+    (X : A) (a : ℕ) : ∀ b : ℕ,
     IsRetractOf (genWord X a b)
       (tensorPow (Doubled A) (gen X) (a + 1 + b))
   | 0 => ((isRetractOf_evenEmbed_gen X).tensorPow a).tensor
@@ -466,7 +509,11 @@ theorem isRetractOf_genWord (X : A) (a : ℕ) : ∀ b : ℕ,
 /-- The diagonal double of a mixed power of `X` is a retract of a
 pure power of the generator — a mixed power of the generator with
 no dual factors. -/
-theorem isRetractOf_dbl_mixedPow (X : A) (a b : ℕ) :
+theorem isRetractOf_dbl_mixedPow
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [RigidCategory A]
+    (X : A) (a b : ℕ) :
     IsRetractOf (dbl.obj (mixedPow A X a b))
       (mixedPow (Doubled A) (gen X) (a + 1 + b) 0) :=
   (isRetractOf_of_iso (genWordIso X a b).symm).trans
@@ -479,14 +526,15 @@ end Doubled
 
 section Hypotheses
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
-  [HasZeroObject A]
+variable {A : Type u}
 
 /-- **Moderate length growth passes to the doubling.**  The
 constants bounding the growth of `total.obj Y` in `A` bound the
 growth of `Y` in the doubling verbatim. -/
-theorem moderateLengthGrowth_doubled (h : ModerateLengthGrowth A) :
+theorem moderateLengthGrowth_doubled
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (h : ModerateLengthGrowth A) :
     ModerateLengthGrowth (Doubled A) := by
   intro Y
   obtain ⟨C, c, hC⟩ := h (Doubled.total.obj Y)
@@ -497,9 +545,7 @@ end Hypotheses
 
 section Generation
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
-  [MonoidalCategory A] [MonoidalPreadditive A]
-  [HasFiniteBiproducts A] [RigidCategory A]
+variable {A : Type u}
 
 attribute [local instance] Doubled.hasFiniteBiproducts
 
@@ -508,7 +554,10 @@ is a retract of the diagonal double of the sum of its components,
 that sum is a subquotient of a biproduct of mixed powers of `X`,
 and the diagonal double of a mixed power of `X` is a retract of a
 pure power of `Doubled.gen X`. -/
-theorem tensorGeneratedBy_doubled {X : A}
+theorem tensorGeneratedBy_doubled
+    [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [HasFiniteBiproducts A] [RigidCategory A]
+    {X : A}
     (h : TensorGeneratedBy A X) :
     TensorGeneratedBy (Doubled A) (Doubled.gen X) := by
   intro Y

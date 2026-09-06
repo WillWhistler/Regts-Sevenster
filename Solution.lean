@@ -36,6 +36,11 @@ both dimensions at most `⌊2eR⌋`. -/
 theorem regts_sevenster_quant : RegtsSevensterStatementQuant :=
   RS.regts_sevenster_quant
 
+/-- The total-dimension forward direction: the representing model
+has `k + 2 * ℓ ≤ R`. -/
+theorem regts_sevenster_total : RegtsSevensterStatementTotal :=
+  RS.regts_sevenster_total
+
 /-- **The characterisation**: a fragment parameter has bounded edge
 rank exactly when it is a mixed partition function. -/
 theorem regts_sevenster_characterisation

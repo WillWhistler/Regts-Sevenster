@@ -14,11 +14,12 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- A map from the monoidal unit of the ind-category into a
 filtered colimit factors through a stage. -/
-theorem exists_factor_of_unit_hom_colimit {I : Type v}
+theorem exists_factor_of_unit_hom_colimit [SmallCategory C] [MonoidalCategory C]
+    {I : Type v}
     [SmallCategory I] [IsFiltered I] (D : I ⥤ Ind C)
     (f : 𝟙_ (Ind C) ⟶ colimit D) :
     ∃ (i : I) (g : 𝟙_ (Ind C) ⟶ D.obj i),
@@ -31,7 +32,8 @@ theorem exists_factor_of_unit_hom_colimit {I : Type v}
 
 /-- Two maps from the unit merged in a filtered colimit merge at a
 stage. -/
-theorem unit_factor_eq_of_hom_colimit {I : Type v}
+theorem unit_factor_eq_of_hom_colimit [SmallCategory C] [MonoidalCategory C]
+    {I : Type v}
     [SmallCategory I] [IsFiltered I] (D : I ⥤ Ind C) {i j : I}
     (g₁ : 𝟙_ (Ind C) ⟶ D.obj i) (g₂ : 𝟙_ (Ind C) ⟶ D.obj j)
     (h : g₁ ≫ colimit.ι D i = g₂ ≫ colimit.ι D j) :
@@ -58,11 +60,12 @@ theorem unit_factor_eq_of_hom_colimit {I : Type v}
     _ = g₂ ≫ D.map β := by
         rw [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
 
-variable [Preadditive C] [HasFiniteColimits C]
-
 /-- **Vanishing at a stage**: a unit-map's image in the colimit is
 zero exactly when a transition map kills it. -/
-theorem unit_colimit_eq_zero_iff {I : Type v} [SmallCategory I]
+theorem unit_colimit_eq_zero_iff
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C]
+    {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) {i : I}
     (u : 𝟙_ (Ind C) ⟶ D.obj i) :
     u ≫ colimit.ι D i = 0 ↔

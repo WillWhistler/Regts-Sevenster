@@ -48,16 +48,17 @@ structure FrobeniusTower (P : SchurPackage.{u}) (E : ℕ → Type u)
 
 namespace FrobeniusTower
 
-variable {P : SchurPackage.{u}} {E : ℕ → Type u} [∀ n, Ring (E n)]
-  [∀ n, Algebra ℂ (E n)] {A : ℝ} {Alg : Type u} [Ring Alg]
-  [Algebra ℂ Alg]
+variable {P : SchurPackage.{u}} {E : ℕ → Type u}
 
 /-- **Schur vanishing from hook confinement**: if every shape alive in
 the tower lies in the `(s − 1, s − 1)` hook, the Schur specialization
 of the power-trace sequence vanishes on every shape outside it.  The
 Frobenius identity turns a dead idempotent into a vanishing
 specialization, and the block dimension is nonzero. -/
-theorem schur_vanishing_of_confinement (T : FrobeniusTower P E A Alg)
+theorem schur_vanishing_of_confinement
+    [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ} {Alg : Type u}
+    [Ring Alg] [Algebra ℂ Alg]
+    (T : FrobeniusTower P E A Alg)
     (g : Alg) {s : ℕ}
     (hconf : ∀ μ : YoungDiagram, T.toPermTower.Alive P μ →
       IsInHook (s - 1) (s - 1) μ) :
@@ -75,7 +76,10 @@ theorem schur_vanishing_of_confinement (T : FrobeniusTower P E A Alg)
 /-- **The nilpotent-trace theorem**: in a Frobenius tower with
 finite-dimensional levels, every nilpotent element of the ambient
 algebra has trace zero. -/
-theorem traceA_eq_zero_of_isNilpotent [∀ n, Module.Finite ℂ (E n)]
+theorem traceA_eq_zero_of_isNilpotent
+    [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ} {Alg : Type u}
+    [Ring Alg] [Algebra ℂ Alg]
+    [∀ n, Module.Finite ℂ (E n)]
     (T : FrobeniusTower P E A Alg) {g : Alg} (hg : IsNilpotent g) :
     T.traceA g = 0 := by
   obtain ⟨s, hconf⟩ := T.toPermTower.hook_confinement P
@@ -96,7 +100,7 @@ theorem traceA_eq_zero_of_isNilpotent [∀ n, Module.Finite ℂ (E n)]
     simp [ht, hzero]
   -- ═══════ The engine ═══════
   have := powerSums_zero_of_hook_and_eventually_zero
-    (le_refl (s - 1)) hvan hev 1 le_rfl
+    hvan hev 1 le_rfl
   simpa [ht] using this
 
 end FrobeniusTower

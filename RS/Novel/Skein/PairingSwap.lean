@@ -17,19 +17,16 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
-variable {κ : F.RelTransitionSystem} {a b c d : W.Flag}
-  {v : W.Vertex}
-
-omit [LinearOrder α] in
 /-- Once two ends of distinct chords re-pair and every end off the
 two chords keeps its match, the two far ends must re-pair with each
 other: elimination over the fixed-point-free involution. -/
-private theorem far_ends_pair (κ' : F.RelTransitionSystem)
+private theorem far_ends_pair
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    (κ' : F.RelTransitionSystem)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
     (he₂ : e₂ ∈ F.boundaryFlags)
     (hP₁2 : κ.pathMatch e₁ he₁ ≠ e₂)
@@ -77,7 +74,11 @@ re-pairs one end of each of its two distinct boundary chords with
 one end of the other, re-pairs the two far ends with each other,
 and preserves every other path match — the boundary pairing changes
 by conjugation with a transposition. -/
-theorem pathMatch_repair_swap (hsq : RepairSquare κ a b c d v)
+theorem pathMatch_repair_swap
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     (hnl : ¬ SquareLocalized κ a b c d) :
     ∃ (e₁ e₂ : W.Flag) (he₁ : e₁ ∈ F.boundaryFlags)
       (he₂ : e₂ ∈ F.boundaryFlags),

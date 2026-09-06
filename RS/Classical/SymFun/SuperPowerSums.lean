@@ -6,9 +6,9 @@ import RS.Classical.SymFun.PowerSums
 The central symmetric-function lemmas for the Regts–Sevenster
 development.  Given a sequence `t : ℕ → ℂ` whose Schur specialization
 vanishes outside a hook, `t` decomposes as a difference of power sums
-of two disjoint multisets of nonzero complex numbers (Lemma A.8 of
+of two disjoint multisets of nonzero complex numbers (Lemma A.9 of
 the accompanying paper); if `t` is eventually zero, then `t` is
-identically zero from degree 1 onward (Lemma A.9 there).
+identically zero from degree 1 onward (Lemma A.10 there).
 
 The key technical ingredient is the identity `derivative H = T * H`
 where `H` is the generating power series of `newtonH t` and `T` is
@@ -76,7 +76,7 @@ theorem powerSeries_eq_coe_trunc_of_eventually_zero {R : Type*} [CommSemiring R]
   · rfl
   · rename_i h; simp only [not_lt] at h; exact hf m h
 
-/-! ### Lemma A.9: eventually zero power sums vanish -/
+/-! ### Lemma A.10: eventually zero power sums vanish -/
 
 /-- A weighted exponential sum over `Fin n` that vanishes at sufficiently many
 consecutive exponents must have all weights zero, by the Vandermonde
@@ -117,7 +117,7 @@ private theorem multiset_sum_eq_finset_sum
     rw [Multiset.count_eq_zero.mpr (Multiset.mem_toFinset.not.mp hx),
         Nat.cast_zero, zero_mul])
 
-/-- **Lemma A.9 of the accompanying paper.**
+/-- **Lemma A.10 of the accompanying paper.**
 If `t m = ∑ αᵢ^m − ∑ βⱼ^m` for all `m ≥ 1` with `α` and `β`
 multisets of nonzero complex numbers having disjoint supports, and
 `t` is eventually zero, then `t m = 0` for all `m ≥ 1`.

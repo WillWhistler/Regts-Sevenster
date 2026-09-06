@@ -17,29 +17,24 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [BraidedCategory D]
-variable (A : D) [MonObj A]
+variable {D : Type u}
 
-omit [BraidedCategory D] in
 /-- The action square of the free module on a morphism. -/
-theorem freeModMap_lin {V W : D} (f : V ⟶ W) :
+theorem freeModMap_lin [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {V W : D} (f : V ⟶ W) :
     ((α_ A A V).inv ≫ (μ[A] ▷ V)) ≫ (A ◁ f) =
       (A ◁ (A ◁ f)) ≫ ((α_ A A W).inv ≫ (μ[A] ▷ W)) := by
   rw [Category.assoc, ← whisker_exchange,
     ← associator_inv_naturality_right_assoc]
 
-omit [BraidedCategory D] in
 /-- The free module on a morphism. -/
-noncomputable def freeModMap {V W : D} (f : V ⟶ W) :
+noncomputable def freeModMap
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {V W : D} (f : V ⟶ W) :
     freeMod A V ⟶ freeMod A W :=
   Mod.Hom.mk' (A ◁ f) (freeModMap_lin A f)
 
-variable {A}
-
 section Statement
-
-variable [Abelian D]
 
 -- The short-exactness datum indexes the statement: it records which
 -- sequences the assertion is made of, and the proofs of record are
@@ -49,7 +44,9 @@ the consumed direction): a short exact sequence acquires a
 module-level section of its epimorphism after base change to
 some nonzero commutative algebra. -/
 @[nolint unusedArguments]
-def Rappel210Statement (S : ShortComplex D) (_ : S.ShortExact) :
+def Rappel210Statement
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] [Abelian D]
+    (S : ShortComplex D) (_ : S.ShortExact) :
     Prop :=
   ∃ (A : D) (_ : MonObj A) (_ : IsCommMonObj A),
     η[A] ≠ 0 ∧

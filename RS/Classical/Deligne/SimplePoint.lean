@@ -20,18 +20,18 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
+variable {C : Type v}
 
 /-- **The structure map of the scalars is bijective** for a simple
 countably presented algebra: injective because the scalars form a
 field, surjective because every scalar is a complex multiple of the
 unit. -/
-theorem bijective_algebraMap_gammaEven (hu : HasScalarUnit C)
+theorem bijective_algebraMap_gammaEven
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C]
+    [MonoidalLinear ℂ C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     (L : OddLine (Ind C)) {𝔸 𝔹 : Ind C} [MonObj 𝔸] [MonObj 𝔹]
     [IsCommMonObj 𝔹] (π : 𝔸 ⟶ 𝔹) [Epi π]
@@ -52,7 +52,12 @@ theorem bijective_algebraMap_gammaEven (hu : HasScalarUnit C)
 The even part is the complex numbers and the odd part vanishes, so
 the point is the inverse of the structure map and the vanishing
 condition is vacuous. -/
-noncomputable def superPointOfSimple (hu : HasScalarUnit C)
+noncomputable def superPointOfSimple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C]
+    [MonoidalLinear ℂ C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     (L : OddLine (Ind C)) {𝔸 𝔹 : Ind C} [MonObj 𝔸] [MonObj 𝔹]
     [IsCommMonObj 𝔹] (π : 𝔸 ⟶ 𝔹) [Epi π]

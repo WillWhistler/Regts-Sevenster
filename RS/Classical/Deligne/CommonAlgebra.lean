@@ -19,19 +19,15 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  [SymmetricCategory (Ind C)]
+variable {C : Type v}
 
-omit [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)] in
 /-- **A family of nonzero algebras has a common nonzero
 extension**: their tensor product, into which each factor maps by
 a morphism of monoid objects. -/
-theorem exists_common_algebra (hu : HasScalarUnit C) {ι : Type v}
+theorem exists_common_algebra [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [SymmetricCategory (Ind C)]
+    (hu : HasScalarUnit C) {ι : Type v}
     (B : ι → Ind C) [∀ i, MonObj (B i)] [∀ i, IsCommMonObj (B i)]
     (hB : ∀ i, MonObj.one (X := B i) ≠ 0) :
     ∃ (𝔸 : Ind C) (_ : MonObj 𝔸) (_ : IsCommMonObj 𝔸),

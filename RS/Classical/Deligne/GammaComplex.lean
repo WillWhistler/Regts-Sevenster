@@ -23,18 +23,18 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
+variable {C : Type v}
 
 /-- **The scalars of a simple countably presented algebra are the
 complex numbers.**  The algebra is presented as a quotient of a
 countably presented one, which is how the countable descent delivers
 it. -/
-theorem exists_smul_one_of_simple_of_epi (hu : HasScalarUnit C)
+theorem exists_smul_one_of_simple_of_epi
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] [CategoryTheory.Linear ℂ C]
+    [MonoidalLinear ℂ C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)]
+    (hu : HasScalarUnit C)
     (hsmul : IndOfLinear C) (hlen : ∀ Z : C, ∃ N : ℕ, LengthLE Z N)
     (L : OddLine (Ind C)) {𝔸 𝔹 : Ind C} [MonObj 𝔸] [MonObj 𝔹]
     [IsCommMonObj 𝔹] (π : 𝔸 ⟶ 𝔹) [Epi π]

@@ -39,6 +39,34 @@ Recurring vocabulary of the development, for auditors.
   `(k − 2ℓ)^{circles}` free-circle convention.  The bounded form
   (`IsMixedPartitionFunctionBounded`) additionally pins `k` and
   `2ℓ` below a stated bound.
+* **Total bound** (`TotalBoundedMixedModel`,
+  `IsMixedPartitionFunctionTotalBounded`) — a representing functional
+  whose total number of colours `k + 2ℓ` is bounded. The witness has
+  named dimension, functional and evaluation fields;
+  `regts_sevenster_total` gives total bound `R` from edge-rank base `R`.
+* **Minimum colour dimension** (`minimumColourDimension`) — the
+  least total colour bound of a representing mixed model. It is
+  attained and equals the even connection-rank growth rate.
+* **Natural connection rank** (`connectionRank`) — the finrank of
+  the actual connection-map range. Under an edge-rank bound its
+  cardinal cast equals the module rank (`connectionRank_cast_eq_rank`).
+* **Prescribed colour bounds** (`PrescribedColourBounds`) — the
+  rank bound with base `k + 2ℓ` and free-circle value `k − 2ℓ`.
+  `regts_sevenster_prescribed` characterizes models of exactly those
+  parity dimensions, including the zero-dimensional case.
+* **Colour embedding** (`MixedColourEmbedding`) — embeddings of
+  even and odd colours preserving odd order, symplectic partners
+  and partner signs. `extendColours` extends a vertex functional by
+  zero; `padColours` uses the embeddings supplied by dimension
+  inequalities. Balanced padding preserves the partition function.
+* **Total space** (`Tot`, `tot`, `totIso`) — the product of the even
+  and odd components of a super vector space, its componentwise maps
+  and its induced linear equivalences. `colourTotalEquiv` identifies
+  a total tensor power with functions on all colour words.
+* **Monomial word action** (`MonomialWordAction`) — a permutation of
+  positions acting on word coordinates with nonzero scalar weights.
+  Its commutant consists of the intertwining endomorphisms; the
+  letter-pair counts give `finrank_commutant_le_word_counts`.
 * **Connection pairing / edge rank** — the closure pairing of a
   parameter at arity `t`.  `EdgeRankBounded f R` says every arity's
   pairing has rank at most `R ^ t`, rank being the dimension of the
@@ -110,10 +138,40 @@ Recurring vocabulary of the development, for auditors.
   representation of the symmetric-group algebra.
 * **The tensor power of an endomorphism** (`powHom X g n`) — `g`
   acting on every factor.
+* **Cycle-trace tower** (`CycleTraceTower`) — permutation
+  representations and tensor-power traces satisfying the cycle
+  formula. This is the common input to the categorical and strand
+  forms of the factorial obstruction.
+* **Single power trace** (`SinglePowerTrace`) — an element with
+  nonzero trace whose powers of degree at least two have zero trace.
+  A nilpotent with nonzero trace has a positive power of this form;
+  its tensor traces separate all permutations, forcing dimension
+  at least `n!` at each finite-dimensional level.
 * **Categorical trace** (`catTrace`, `catDim`, `ptr`) — close a
   strand into a loop through the pairing of an object with its dual;
   `catDim` is the trace of the identity, and `ptr` closes the last
   factor only, leaving the rest open.
+* **Karoubi underlying maps** (`karoubiHomAddHom`,
+  `karoubiHomLinearMap`) — the additive and linear maps sending a
+  corner morphism to its ambient morphism. `karoubiLinear` supplies
+  the shared complex linear structure on every Karoubi completion.
+* **Trace criterion** (`isSemisimpleRing_of_trace`,
+  `karoubiEnd_isSemisimpleRing_of_trace`) — a nondegenerate trace
+  killing nilpotents forces semisimplicity; cyclicity restricts this
+  criterion to a Karoubi corner. `isNilpotent_map_of_mul_zero` and
+  `karoubiEnd_isNilpotent` transport nilpotence into the ambient ring.
+* **Intertwining** (`intertwine_add`, `intertwine_smul`) — addition
+  and scalar multiplication preserve an intertwining equation in a
+  linear category.
+* **Central idempotent expansion** (`eq_sum_shape_e_of_mem_span`) —
+  an element in the central span has an expansion in the shape
+  idempotents. This supplies both completeness and character splitting.
+* **Pair lists** (`edgePairList`, `orientedPairList`) — the endpoint
+  pairs of the pendant edges, with membership and no-repetition facts
+  shared by the sorting-sign and regrouping arguments in
+  `Novel/Coordinates/PairList`. `Common/ListPairs` supplies generic
+  flattened-pair indexing; `Common/FinSlots` separates the two slots
+  of a finite sum. `sortSign_sq` is the common sorting-sign identity.
 * **The block splitting** (`splitPow`, `blockSum`) — the
   reassociation `X ^ ⊗ (p + q) ≅ X ^ ⊗ p ⊗ X ^ ⊗ q` and the
   permutation acting on the two blocks independently.

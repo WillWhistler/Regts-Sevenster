@@ -19,14 +19,16 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
+variable {D : Type u}
 
 /-- **The top braiding of an odd line's tensor power is `−1`**: the
 braiding of the top two factors is the line's self-braiding,
 whiskered by the factors below, and negation passes through the
 whiskering. -/
-theorem oddLine_swapTop (L : OddLine D) (n : ℕ) :
+theorem oddLine_swapTop
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D]
+    (L : OddLine D) (n : ℕ) :
     swapTop L.obj n = -𝟙 (tensorPow D L.obj (n + 2)) := by
   unfold swapTop
   rw [L.braid_neg, whiskerLeft_neg, MonoidalCategory.whiskerLeft_id,
@@ -36,7 +38,10 @@ theorem oddLine_swapTop (L : OddLine D) (n : ℕ) :
 /-- **Every adjacent transposition acts by `−1`** on a tensor power
 of an odd line: the top one is the top braiding, and the lower ones
 are whiskered copies of the same evaluation one arity down. -/
-theorem oddLine_permMor_adjSwap (L : OddLine D) :
+theorem oddLine_permMor_adjSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D]
+    (L : OddLine D) :
     ∀ (n : ℕ) (i : Fin (n + 1)),
       permMor L.obj (n + 2) (Equiv.swap i.castSucc i.succ) =
         -𝟙 (tensorPow D L.obj (n + 2)) := by
@@ -63,14 +68,15 @@ theorem oddLine_permMor_adjSwap (L : OddLine D) :
         neg_whiskerRight, MonoidalCategory.id_whiskerRight]
       rfl
 
-variable [CategoryTheory.Linear ℂ D]
-
 /-- **The permutation action on a tensor power of an odd line is the
 sign character.**  Both the action and the sign are multiplicative,
 and every adjacent transposition acts by `−1`, so generation of the
 symmetric group by the adjacent transpositions gives the general
 permutation. -/
-theorem oddLine_permMor (L : OddLine D) (n : ℕ)
+theorem oddLine_permMor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    (L : OddLine D) (n : ℕ)
     (σ : Equiv.Perm (Fin n)) :
     permMor L.obj n σ =
       ((Equiv.Perm.sign σ : ℤ) : ℂ) • 𝟙 (tensorPow D L.obj n) := by

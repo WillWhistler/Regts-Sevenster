@@ -14,25 +14,24 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
-omit [LinearOrder α] in
 /-- On an all-internal subset every repair square is localized:
 both principal flags are periodic. -/
-theorem squareLocalized_of_allInternal (hall : F.allInternal)
+theorem squareLocalized_of_allInternal {W : Fragment α} {F : EdgeSubset W}
+    (hall : F.allInternal)
     {κ : F.RelTransitionSystem} {a b c d : W.Flag} {v : W.Vertex}
     (hsq : RepairSquare κ a b c d v) :
     SquareLocalized κ a b c d :=
   Or.inl ⟨periodic_of_allInternal κ hall hsq.ha,
     periodic_of_allInternal κ hall hsq.hc⟩
 
-omit [LinearOrder α] in
 /-- On an all-internal subset every repair step preserves the
 (empty) boundary pairing. -/
-theorem matchPreservingStep_of_allInternal (hall : F.allInternal)
+theorem matchPreservingStep_of_allInternal {W : Fragment α} {F : EdgeSubset W}
+    (hall : F.allInternal)
     {κ₁ κ₂ : F.RelTransitionSystem}
     (h : IsRepairStep κ₁ κ₂) : MatchPreservingStep κ₁ κ₂ := by
   obtain ⟨a, b, c, d, v, hsq, heq⟩ := h
@@ -42,7 +41,9 @@ theorem matchPreservingStep_of_allInternal (hall : F.allInternal)
       (squareLocalized_of_allInternal hall hsq)⟩
 
 /-- The single-step value chain on an all-internal subset. -/
-private theorem allInternal_chain {k ℓ : ℕ}
+private theorem allInternal_chain
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ}
     (hall : F.allInternal) (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
@@ -77,7 +78,9 @@ private theorem allInternal_chain {k ℓ : ℕ}
 constrained summand at the open circuit count is independent of
 the transition system and orientation.  (Canonicality is vacuous
 and the path sign is trivial without boundary flags.) -/
-theorem throughSummand_independence_of_allInternal {k ℓ : ℕ}
+theorem throughSummand_independence_of_allInternal
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ}
     (hall : F.allInternal) (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)

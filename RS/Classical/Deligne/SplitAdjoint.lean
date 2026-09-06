@@ -20,24 +20,20 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [HasKernels D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable {M M' : Mod D A}
-variable (v : M.X ⟶ B) (w : M'.X ⟶ B)
+variable {D : Type u}
 
-omit [HasKernels D] in
 /-- **The split idempotents are adjoint for the base-changed
 pairing.** -/
-theorem splitIdem_adj (d : ModDualityDatum A M M')
+theorem splitIdem_adj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (v : M.X ⟶ B)
+    (w : M'.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
@@ -60,10 +56,18 @@ theorem splitIdem_adj (d : ModDualityDatum A M M')
   exact (whisker_exchange_assoc (splitEval A B φ w hw)
     (splitEval A B φ v hv) μ[B]).symm
 
-omit [HasKernels D] in
 /-- **The complementary split idempotents are adjoint for the
 base-changed pairing**, at the carrier. -/
-theorem splitComplIdem_adj (d : ModDualityDatum A M M')
+theorem splitComplIdem_adj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (v : M.X ⟶ B)
+    (w : M'.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
@@ -95,7 +99,16 @@ theorem splitComplIdem_adj (d : ModDualityDatum A M M')
 
 /-- **Adjointness of the split idempotents**, in the module form
 the dévissage step consumes. -/
-theorem splitComplMap_adj (d : ModDualityDatum A M M')
+theorem splitComplMap_adj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [HasKernels D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (v : M.X ⟶ B)
+    (w : M'.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])

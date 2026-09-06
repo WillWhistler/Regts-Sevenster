@@ -52,18 +52,21 @@ open scoped Classical
 
 section ChordParity
 
-variable {γ : Type*} [LinearOrder γ]
+variable {γ : Type*}
 
 /-- Two chords of a linear order, each recorded low-to-high,
 interleave (in either relative position). -/
-def ChordPairCross (x y u w : γ) : Prop :=
+def ChordPairCross [LinearOrder γ]
+    (x y u w : γ) : Prop :=
   (x < u ∧ u < y ∧ y < w) ∨ (u < x ∧ x < w ∧ w < y)
 
 /-- A point lies strictly inside a chord. -/
-def InsideChord (x y p : γ) : Prop := x < p ∧ p < y
+def InsideChord [LinearOrder γ]
+    (x y p : γ) : Prop := x < p ∧ p < y
 
 /-- Crossing a chord is interleaving: exactly one endpoint inside. -/
-theorem chordPairCross_iff_xor {x y u w : γ}
+theorem chordPairCross_iff_xor [LinearOrder γ]
+    {x y u w : γ}
     (huw : u < w) (hux : u ≠ x) (hwy : w ≠ y) :
     ChordPairCross x y u w ↔
       Xor (InsideChord x y u) (InsideChord x y w) := by
@@ -85,7 +88,8 @@ theorem chordPairCross_iff_xor {x y u w : γ}
 
 /-- The crossing indicator of one chord has the parity of the
 number of its endpoints inside the third chord. -/
-theorem chordPairCross_parity {x y u w : γ}
+theorem chordPairCross_parity [LinearOrder γ]
+    {x y u w : γ}
     (huw : u < w) (hux : u ≠ x) (hwy : w ≠ y) :
     (if ChordPairCross x y u w then 1 else 0) % 2 =
       ((if InsideChord x y u then 1 else 0) +
@@ -112,7 +116,8 @@ theorem chordPairCross_parity {x y u w : γ}
       · exact hw h
     rw [if_neg hnX, if_neg hu, if_neg hw]
 
-private theorem inside_sum_eq (x y u₁ w₁ u₂ w₂ : γ) :
+private theorem inside_sum_eq [LinearOrder γ]
+    (x y u₁ w₁ u₂ w₂ : γ) :
     (({u₁, w₁, u₂, w₂} : Multiset γ).map
         (fun p => if InsideChord x y p then 1 else 0)).sum =
       (if InsideChord x y u₁ then 1 else 0) +
@@ -127,7 +132,8 @@ points of a linear order into two chords in any two ways (the same
 multiset of endpoints, each chord recorded low-to-high, no endpoint
 shared with the third chord) preserves the parity of the number of
 crossings with the third chord. -/
-theorem third_chord_reparity {x y u₁ w₁ u₂ w₂ p₁ q₁ p₂ q₂ : γ}
+theorem third_chord_reparity [LinearOrder γ]
+    {x y u₁ w₁ u₂ w₂ p₁ q₁ p₂ q₂ : γ}
     (h₁ : u₁ < w₁) (h₂ : u₂ < w₂)
     (h₁' : p₁ < q₁) (h₂' : p₂ < q₂)
     (hmul : ({u₁, w₁, u₂, w₂} : Multiset γ) = {p₁, q₁, p₂, q₂})
@@ -500,8 +506,7 @@ unchanged.  Untouched chains avoid the square by rigidity
 (`chain_meet`); the two ends of `β`'s chain must then re-pair with
 each other, because the repaired path matching is a fixed-point-free
 involution and every other boundary end is already taken. -/
-theorem pathMatch_repair_of_chainLocal
-    (hsq : RepairSquare κ a b c d v)
+theorem pathMatch_repair_of_chainLocal (hsq : RepairSquare κ a b c d v)
     {β : W.Flag} (hβ : β ∈ F.boundaryFlags)
     (hloc : ∀ f, f = a ∨ f = b ∨ f = c ∨ f = d →
       κ.PeriodicFlag f ∨ OnBoundaryChain κ β f) :
@@ -611,8 +616,7 @@ variable {κ : F.RelTransitionSystem} {a b c d : W.Flag}
 
 /-- **(ii) pathMatch invariance in cases 1–3**: a localized square
 leaves every path matching unchanged. -/
-theorem pathMatch_repair_of_localized
-    (hsq : RepairSquare κ a b c d v)
+theorem pathMatch_repair_of_localized (hsq : RepairSquare κ a b c d v)
     (hloc : SquareLocalized κ a b c d) :
     ∀ δ (hδ : δ ∈ F.boundaryFlags),
       (κ.repair a b c d v hsq).pathMatch δ hδ = κ.pathMatch δ hδ := by
@@ -626,11 +630,10 @@ end Localized
 
 section ChordCongr
 
-variable [LinearOrder α] {F : EdgeSubset W}
-
 /-- The chord-interleaving relation only depends on the path
 matching. -/
-theorem chordCross_congr {κ κ' : F.RelTransitionSystem}
+theorem chordCross_congr [LinearOrder α] {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hpm : ∀ δ (hδ : δ ∈ F.boundaryFlags),
       κ'.pathMatch δ hδ = κ.pathMatch δ hδ)
     (b b' : {x : W.Flag // x ∈ F.boundaryFlags}) :
@@ -639,7 +642,8 @@ theorem chordCross_congr {κ κ' : F.RelTransitionSystem}
   rw [hpm b.val b.prop, hpm b'.val b'.prop]
 
 /-- The chord-crossing count only depends on the path matching. -/
-theorem chordCrossingCount_congr {κ κ' : F.RelTransitionSystem}
+theorem chordCrossingCount_congr [LinearOrder α] {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hpm : ∀ δ (hδ : δ ∈ F.boundaryFlags),
       κ'.pathMatch δ hδ = κ.pathMatch δ hδ) :
     chordCrossingCount κ' = chordCrossingCount κ := by
@@ -649,7 +653,8 @@ theorem chordCrossingCount_congr {κ κ' : F.RelTransitionSystem}
       (fun bb _ => chordCross_congr hpm bb.1 bb.2))
 
 /-- The path sign only depends on the path matching. -/
-theorem pathSign_congr {κ κ' : F.RelTransitionSystem}
+theorem pathSign_congr [LinearOrder α] {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hpm : ∀ δ (hδ : δ ∈ F.boundaryFlags),
       κ'.pathMatch δ hδ = κ.pathMatch δ hδ) :
     pathSign κ' = pathSign κ := by
@@ -714,12 +719,10 @@ end MatchEqPath
 
 section Classification
 
-variable [LinearOrder α] {F : EdgeSubset W} {κ : F.RelTransitionSystem}
-
-omit [LinearOrder α] in
 /-- Every internal flag is periodic or lies on the chain of some
 boundary flag. -/
-theorem periodic_or_onBoundaryChain (κ : F.RelTransitionSystem)
+theorem periodic_or_onBoundaryChain {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {f : W.Flag} (hf : f ∈ F.internalFlags) :
     κ.PeriodicFlag f ∨
       ∃ β ∈ F.boundaryFlags, OnBoundaryChain κ β f := by
@@ -754,10 +757,11 @@ theorem periodic_or_onBoundaryChain (κ : F.RelTransitionSystem)
     exact ⟨W.pairing (iterWalk κ f kf), hβ,
       k', kf, by omega, hcont', hterm', Or.inr hfeq.symm⟩
 
-omit [LinearOrder α] in
 /-- Chain membership from the far end of a chain is chain membership
 from the near end. -/
-theorem onBoundaryChain_of_reverse {β f : W.Flag}
+theorem onBoundaryChain_of_reverse
+    {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {β f : W.Flag}
     (hβ : β ∈ F.boundaryFlags) {k : ℕ}
     (hcont : ∀ j, j < k →
       W.pairing (iterWalk κ β j) ∈ F.internalFlags)
@@ -783,12 +787,12 @@ theorem onBoundaryChain_of_reverse {β f : W.Flag}
   · refine Or.inl ?_
     rw [hrev, W.pairing_invol]
 
-variable {a b c d : W.Flag} {v : W.Vertex}
-
-omit [LinearOrder α] in
 /-- **The two-path classification**: a non-localized square has its
 two re-paired edges on two genuinely distinct boundary chains. -/
-theorem twoChains_of_not_localized (hsq : RepairSquare κ a b c d v)
+theorem twoChains_of_not_localized
+    {F : EdgeSubset W} {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag}
+    {c : W.Flag} {d : W.Flag} {v : W.Vertex}
+    (hsq : RepairSquare κ a b c d v)
     (hnl : ¬ SquareLocalized κ a b c d) :
     ∃ (β₁ β₂ : W.Flag) (hβ₁ : β₁ ∈ F.boundaryFlags)
       (_hβ₂ : β₂ ∈ F.boundaryFlags),

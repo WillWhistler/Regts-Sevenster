@@ -3,31 +3,22 @@ import Mathlib
 /-!
 # The certification challenge
 
-**What is certified.**  A complex-valued parameter on closed
-multigraphs, normalized at the empty graph and invariant under
-isomorphism, has exponentially bounded edge-connection rank if and
-only if it is the partition function of a mixed edge-colouring model
-— and the model may be taken with `k` even and `ℓ` odd colours
-satisfying `k, 2ℓ ≤ ⌊2eR⌋` when the rank base is `R` — the conjecture
-of Regts and Sevenster.  The six theorems are section 9; sections 1
-to 8 define every notion they use.
+A normalised, isomorphism-invariant complex graph parameter has
+exponentially bounded edge-connection rank exactly when it is a mixed
+partition function. Rank base `R` permits `k + 2ℓ ≤ R` colours.
 
-**How to read it.**  The module imports Mathlib and nothing else, so
-what the theorems mean is fixed by this file alone.  It states them
-with `sorry`; `Solution.lean` proves each by the theorem of record of
-the same name, and [comparator](https://github.com/leanprover/comparator)
-checks at the kernel level that the two sides prove identical
-statements about identical definitions.
+Sections 1–8 define the terms; section 9 states seven theorems with
+`sorry`. This file imports only Mathlib. `Solution.lean` supplies the
+proofs; [comparator](https://github.com/leanprover/comparator) checks
+the statements, definitions and axiom set at the kernel level.
 -/
 
 namespace RS
 
 /-! ## 1. Inversions and the sorting sign
 
-The sorting sign supplies the
-antisymmetry of the odd-colour evaluation in Definition 5: reordering
-the odd colours multiplies the vertex value by the sign of the
-permutation, realized as `(−1)` to the inversion count. -/
+Reordering odd colours multiplies their evaluation by the sorting
+sign, `(−1)` to the inversion count. -/
 
 /-- The number of inversions of a list over a linear order. -/
 def inversions {α : Type} [LinearOrder α] : List α → ℕ
@@ -41,15 +32,10 @@ def sortSign {α : Type} [LinearOrder α] (l : List α) : ℤ :=
 
 /-! ## 2. The flag model of multigraph fragments
 
-A *fragment* is a finite
-multigraph in half-edge (flag) form: flags attach to internal
-vertices or to boundary labels, a fixed-point-free involution pairs
-flags into edges, each boundary label carries exactly one flag, and
-free circles are counted separately.  Gluing two boundary labels
-either closes an edge into a free circle (when the two flags bound a
-common edge) or rewires the two edges end to end.  These are the
-graphs the main theorems quantify over; `ClosedFragment` below is
-the case of no boundary labels. -/
+Flags attach to vertices or boundary labels and pair into edges.
+Each boundary label carries one flag; free circles are counted
+separately. Gluing either closes an edge into a circle or joins two
+edges. A closed fragment has no boundary labels. -/
 
 /-- A fragment over the boundary-label type `α`: a finite multigraph
 in half-edge (flag) form whose dangling flags are labelled
@@ -418,11 +404,8 @@ end Glue
 
 /-! ## 3. Isomorphism of fragments
 
-The hypothesis class
-asks parameters to be isomorphism-invariant; this is the notion of
-isomorphism.  (`RS/Novel/Skein/FragmentEquiv.lean` proves the
-equivalences form a groupoid and are congruences for the fragment
-operations.) -/
+Isomorphisms preserve attachment, pairing and circle counts; the
+parameters in the forward theorem are invariant under them. -/
 
 /-- An equivalence of fragments: a pair of type equivalences on
 flags and vertices commuting with attachment, pairing, and
@@ -445,12 +428,9 @@ end Fragment
 
 /-! ## 4. Composition of fragments
 
-An `(s + t)`-fragment
-and a `(t + u)`-fragment compose by gluing the last `t` labels of
-the first to the first `t` of the second, top pair first, through
-the single-pair gluing above; the label bookkeeping is by one-point
-removals of `Fin` indices.  Composition is what the connection
-pairing evaluates. -/
+Composition glues the last `t` labels of an `(s + t)`-fragment to
+the first `t` of a `(t + u)`-fragment, top pair first. Removing
+points from `Fin` implements the label bookkeeping. -/
 
 /-! ### Removing a point -/
 
@@ -531,17 +511,10 @@ noncomputable def Fragment.compose {s t u : ℕ}
 
 /-! ## 5. Connection pairings and the edge-rank hypothesis
 
-The connection
-pairing of a parameter at arity `t` closes two `t`-fragments
-against each other; the edge-rank hypothesis bounds, for every
-`t`, the rank of that pairing by `R ^ t`, phrased as the
-`Module.rank` of the range of the curried pairing
-(`RS/Novel/Skein/ConnectionRank.lean` proves this equivalent to
-the finite-submatrix reading of the literature; that equivalence
-is a theorem *about* the hypothesis and is not needed to state
-it).  `EdgeRankParameter` packages the hypothesis
-class of the forward direction: normalized at the empty graph,
-isomorphism-invariant, rank-bounded. -/
+The connection pairing closes two `t`-fragments against each other.
+Its row-span dimension is bounded by `R ^ t` at every arity.
+`EdgeRankParameter` also requires normalisation at the empty graph
+and invariance under isomorphism. -/
 
 /-- A closed fragment: no boundary labels. -/
 abbrev ClosedFragment : Type 1 := Fragment (Fin 0)
@@ -589,15 +562,10 @@ structure EdgeRankParameter (R : ℕ) where
 
 /-! ## 6. Eulerian edge subsets and circuit data
 
-Definition 5 sums over
-pairing-closed flag subsets in which every vertex has even degree.
-A *transition system* is the local pairing `κ` of Definition 5: a
-second fixed-point-free involution matching participating flags at
-common vertices.  Following an edge and then the matching generates
-the circuit walks; each geometric circuit of `n` edges appears as
-two walk-cycles (its two directions) when `n ≥ 2` and as two walk
-fixed points when `n = 1`, so the circuit count is half the number
-of orbits. -/
+Eulerian subsets have even degree at every vertex. A transition
+system matches participating flags at common vertices. Following an
+edge and then this matching gives two walk-orbits per circuit,
+including the two fixed points of a one-edge circuit. -/
 
 variable {α : Type}
 
@@ -695,17 +663,11 @@ end EdgeSubset
 
 /-! ## 7. The mixed partition function (Definition 5)
 
-A `(k, 2ℓ)` mixed
-vertex functional assigns a value to a multiset of even colours and
-a *set* of odd colours; the alternating evaluation on an ordered
-odd list is recovered through the sorting sign, so antisymmetry is
-a theorem of the evaluator rather than a condition on the data.
-The summand of an Eulerian subset is its circuit sign times the
-colouring sum of vertex values, odd colours contributing through
-the symplectic pairing (`oddPartner`, `oddPartnerSign`); the value
-of the subset is choice-free because the tree proves it independent
-of the transition data, and `mixedPartition` is the free-circle
-factor `(k − 2ℓ)^circles` times the sum over Eulerian subsets. -/
+A functional takes multisets of even colours and sets of odd colours;
+sorting supplies antisymmetry. Each Eulerian subset contributes its
+circuit sign times a colouring sum, using the symplectic odd pairing.
+The tree proves independence from transition data. `mixedPartition`
+sums these values and multiplies by `(k − 2ℓ)^circles`. -/
 
 /-- The data of a `(k, 2ℓ)` mixed vertex functional: a value for
 each multiset of even colours and set of odd colours. -/
@@ -935,6 +897,33 @@ def RegtsSevensterStatementQuant : Prop :=
     IsMixedPartitionFunctionBounded f.val
       ⌊2 * Real.exp 1 * (R : ℝ)⌋₊
 
+/-- A mixed model with a bound on the sum of its even and odd
+dimensions. The named fields retain the functional and its agreement
+with the graph parameter as part of the witness. -/
+structure TotalBoundedMixedModel (f : ClosedFragment → ℂ) (B : ℕ) where
+  /-- The number of even colours. -/
+  k : ℕ
+  /-- Half the number of odd colours. -/
+  ℓ : ℕ
+  /-- The vertex functional of the model. -/
+  functional : MixedFunctional k ℓ
+  /-- The total number of colours is bounded by `B`. -/
+  dimension_le : k + 2 * ℓ ≤ B
+  /-- The model evaluates to the given parameter on every fragment. -/
+  partition_eq : ∀ W : ClosedFragment, f W = mixedPartition functional W
+
+/-- A parameter admits a mixed model with at most `B` colours in
+total, counting both the even and odd components. -/
+def IsMixedPartitionFunctionTotalBounded (f : ClosedFragment → ℂ)
+    (B : ℕ) : Prop :=
+  Nonempty (TotalBoundedMixedModel f B)
+
+/-- The total-dimension Regts–Sevenster statement: an edge-rank base
+`R` bounds the total number of colours of a representing mixed model. -/
+def RegtsSevensterStatementTotal : Prop :=
+  ∀ (R : ℕ) (f : EdgeRankParameter R),
+    IsMixedPartitionFunctionTotalBounded f.val R
+
 /-- **THE CONVERSE STATEMENT**: every mixed partition function is
 an edge-rank-bounded parameter with base `max 1 (k + 2ℓ)`
 (Regts–Sevenster, arXiv:1807.04494, Theorem 6). -/
@@ -959,6 +948,11 @@ theorem regts_sevenster : RegtsSevensterStatement :=
 /-- **The quantitative forward direction**, with no hypothesis: the
 model may be taken with `k, 2ℓ ≤ ⌊2eR⌋`. -/
 theorem regts_sevenster_quant : RegtsSevensterStatementQuant :=
+  sorry
+
+/-- The total-dimension forward direction: the representing model
+has `k + 2 * ℓ ≤ R`. -/
+theorem regts_sevenster_total : RegtsSevensterStatementTotal :=
   sorry
 
 /-- **The converse**: every mixed partition function is an

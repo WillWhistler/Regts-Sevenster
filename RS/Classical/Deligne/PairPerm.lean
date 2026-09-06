@@ -99,7 +99,7 @@ theorem adjPerm_swap_castSucc_succ {m : ℕ} (i : Fin (m + 1)) :
 
 end AdjPerm
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Adjacent braidings across the head peel
 
@@ -113,15 +113,17 @@ exposed factors.
 
 section PermPeel
 
-variable [SymmetricCategory D] (X : D)
-
 /-- The top braiding word over an arbitrary base. -/
-private noncomputable def braidTopM (P : D) :
+private noncomputable def braidTopM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (P : D) :
     (P ⊗ X) ⊗ X ⟶ (P ⊗ X) ⊗ X :=
   (α_ P X X).hom ≫ (P ◁ (β_ X X).hom) ≫ (α_ P X X).inv
 
 /-- Naturality of the top braiding word in its base. -/
-private theorem braidTopM_natural {P Q : D} (f : P ⟶ Q) :
+private theorem braidTopM_natural
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {P Q : D} (f : P ⟶ Q) :
     braidTopM X P ≫ ((f ▷ X) ▷ X) =
       ((f ▷ X) ▷ X) ≫ braidTopM X Q := by
   rw [braidTopM, braidTopM, associator_naturality_left_assoc,
@@ -129,7 +131,9 @@ private theorem braidTopM_natural {P Q : D} (f : P ⟶ Q) :
   simp only [Category.assoc]
 
 /-- The top braiding word migrates below an exposed head factor. -/
-private theorem braidTop_shift (P : D) :
+private theorem braidTop_shift
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (P : D) :
     braidTopM X (X ⊗ P) ≫
       ((α_ X P X).hom ▷ X) ≫ (α_ X (P ⊗ X) X).hom =
     ((α_ X P X).hom ▷ X) ≫ (α_ X (P ⊗ X) X).hom ≫
@@ -138,7 +142,9 @@ private theorem braidTop_shift (P : D) :
   monoidal
 
 /-- The top braiding passes a peeled step, at general objects. -/
-private theorem braidTop_peel_gen {W P : D} (p : W ⟶ X ⊗ P) :
+private theorem braidTop_peel_gen
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {W P : D} (p : W ⟶ X ⊗ P) :
     braidTopM X W ≫
         (((p ▷ X) ≫ (α_ X P X).hom) ▷ X) ≫
         (α_ X (P ⊗ X) X).hom =
@@ -152,16 +158,18 @@ private theorem braidTop_peel_gen {W P : D} (p : W ⟶ X ⊗ P) :
 
 /-- **The top braiding passes the head peel**, dropping to the top
 braiding one arity down. -/
-theorem swapTop_powPeel (k : ℕ) :
+theorem swapTop_powPeel
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (k : ℕ) :
     swapTop X (k + 1) ≫ (powPeel X (k + 2)).hom =
       (powPeel X (k + 2)).hom ≫ (X ◁ swapTop X k) :=
   braidTop_peel_gen X (P := tensorPow D X k) (powPeel X k).hom
 
-omit [SymmetricCategory D] in
 /-- An endomorphism intertwined with a lower one by a peel is
 intertwined with its whisker by the peeled step; at general
 objects. -/
-private theorem peel_step_gen {W P : D} (p : W ⟶ X ⊗ P)
+private theorem peel_step_gen [Category.{v} D] [MonoidalCategory D] (X : D)
+    {W P : D} (p : W ⟶ X ⊗ P)
     (s : W ⟶ W) (t : P ⟶ P) (hst : s ≫ p = p ≫ (X ◁ t)) :
     (s ▷ X) ≫ ((p ▷ X) ≫ (α_ X P X).hom) =
       ((p ▷ X) ≫ (α_ X P X).hom) ≫ (X ◁ (t ▷ X)) := by
@@ -172,7 +180,8 @@ private theorem peel_step_gen {W P : D} (p : W ⟶ X ⊗ P)
 
 /-- **An adjacent braiding above the bottom slot passes the head
 peel**, dropping one slot. -/
-theorem powPeel_permMor_swap :
+theorem powPeel_permMor_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D) :
     ∀ (q a b : ℕ) (_ : a + 2 + b = q),
       permMor X (q + 1)
           (Equiv.swap ⟨a + 1, by omega⟩ ⟨a + 2, by omega⟩) ≫
@@ -214,11 +223,13 @@ theorem powPeel_permMor_swap :
       rfl
     rw [hswL, hswR, permMor_extPerm, permMor_extPerm]
     exact peel_step_gen X (powPeel X (a + 2 + b)).hom _ _
-      (powPeel_permMor_swap (a + 2 + b) a b rfl)
+      (powPeel_permMor_swap X (a + 2 + b) a b rfl)
 
 /-- The bottom braiding word migrates below one more exposed head
 factor, as the bottom braiding of the extended tail. -/
-private theorem braidLow_shift (P : D) :
+private theorem braidLow_shift
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (P : D) :
     ((α_ X X P).inv ▷ X) ≫ (((β_ X X).hom ▷ P) ▷ X) ≫
       ((α_ X X P).hom ▷ X) ≫ (α_ X (X ⊗ P) X).hom ≫
       (X ◁ (α_ X P X).hom) =
@@ -230,7 +241,9 @@ private theorem braidLow_shift (P : D) :
 /-- An endomorphism intertwined with the bottom braiding by a
 double peel is intertwined with the extended bottom braiding by
 the doubled peel; at general objects. -/
-private theorem peel_low_gen {W W₀ P : D} (f : W ⟶ X ⊗ W₀)
+private theorem peel_low_gen
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {W W₀ P : D} (f : W ⟶ X ⊗ W₀)
     (g : W₀ ⟶ X ⊗ P) (s : W ⟶ W)
     (hs : s ≫ f ≫ (X ◁ g) =
       f ≫ (X ◁ g) ≫ (α_ X X P).inv ≫
@@ -254,7 +267,8 @@ private theorem peel_low_gen {W W₀ P : D} (f : W ⟶ X ⊗ W₀)
 
 /-- **The bottom braiding resolves under the double peel** into
 the braiding of the two exposed head factors. -/
-theorem powPeel_permMor_low :
+theorem powPeel_permMor_low
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D) :
     ∀ n : ℕ,
       permMor X (n + 2)
           (Equiv.swap ⟨0, by omega⟩ ⟨1, by omega⟩) ≫
@@ -299,7 +313,7 @@ theorem powPeel_permMor_low :
       rfl
     rw [hsw, permMor_extPerm]
     exact peel_low_gen X (powPeel X (n + 1)).hom
-      (powPeel X n).hom _ (powPeel_permMor_low n)
+      (powPeel X n).hom _ (powPeel_permMor_low X n)
 
 end PermPeel
 
@@ -317,35 +331,42 @@ monoid enters exactly once, to exchange the two emitted scalars.
 
 section DblCore
 
-variable [SymmetricCategory D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (V' V : D)
-
 /-- The single pairing window over an opaque pairing: evaluate on
 the head pair and braid the scalar out past the tail. -/
-private noncomputable def winU (u : V' ⊗ V ⟶ A) (R : D) :
+private noncomputable def winU
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) (R : D) :
     V' ⊗ (V ⊗ R) ⟶ R ⊗ A :=
   (α_ V' V R).inv ≫ (u ▷ R) ≫ (β_ A R).hom
 
 /-- The generic step over an opaque pairing, shaped exactly as
 `pairStep` over `pairRaw`. -/
-private noncomputable def stepU (u : V' ⊗ V ⟶ A) {Q R : D}
+private noncomputable def stepU
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) {Q R : D}
     (r : Q ⊗ R ⟶ A) : (Q ⊗ V') ⊗ (V ⊗ R) ⟶ A :=
   (α_ Q V' (V ⊗ R)).hom ≫ (Q ◁ winU A V' V u R) ≫
     (α_ Q R A).inv ≫ (r ▷ A) ≫ μ[A]
 
 /-- The doubled window: both consumed pairs fire, the two scalars
 collected at the tail. -/
-private noncomputable def dblWin (u : V' ⊗ V ⟶ A) (R : D) :
+private noncomputable def dblWin
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) (R : D) :
     V' ⊗ (V' ⊗ (V ⊗ (V ⊗ R))) ⟶ R ⊗ (A ⊗ A) :=
   (V' ◁ winU A V' V u (V ⊗ R)) ≫ (α_ V' (V ⊗ R) A).inv ≫
     (winU A V' V u R ▷ A) ≫ (α_ R A A).hom
 
-omit [IsCommMonObj A] in
 /-- **The doubled step in window form**: two steps are the doubled
 window on the consumed factors, the continuation, and the fold of
 the two scalars. -/
-private theorem stepU_stepU (u : V' ⊗ V ⟶ A) {Q R : D}
+private theorem stepU_stepU
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) {Q R : D}
     (r : Q ⊗ R ⟶ A) :
     stepU A V' V u (stepU A V' V u r) =
       (α_ (Q ⊗ V') V' (V ⊗ (V ⊗ R))).hom ≫
@@ -359,10 +380,11 @@ private theorem stepU_stepU (u : V' ⊗ V ⟶ A) {Q R : D}
   rw [MonObj.mul_assoc]
   monoidal
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- The pre-braiding of the two consumed `M'`-factors migrates
 into the spine. -/
-private theorem braid_spine (Q T : D) :
+private theorem braid_spine
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (V' : D)
+    (Q T : D) :
     (((α_ Q V' V').hom ≫ (Q ◁ (β_ V' V').hom) ≫
         (α_ Q V' V').inv) ▷ T) ≫
       (α_ (Q ⊗ V') V' T).hom ≫ (α_ Q V' (V' ⊗ T)).hom =
@@ -371,9 +393,9 @@ private theorem braid_spine (Q T : D) :
         (α_ V' V' T).hom)) := by
   monoidal
 
-omit [SymmetricCategory D] [MonObj A] [IsCommMonObj A] in
 /-- A whiskering of the consumed tail migrates into the spine. -/
-private theorem whisk_spine {Q T T' : D} (f : T ⟶ T') :
+private theorem whisk_spine [Category.{v} D] [MonoidalCategory D] (V' : D)
+    {Q T T' : D} (f : T ⟶ T') :
     (((Q ⊗ V') ⊗ V') ◁ f) ≫
       (α_ (Q ⊗ V') V' T').hom ≫ (α_ Q V' (V' ⊗ T')).hom =
     (α_ (Q ⊗ V') V' T).hom ≫ (α_ Q V' (V' ⊗ T)).hom ≫
@@ -382,7 +404,10 @@ private theorem whisk_spine {Q T T' : D} (f : T ⟶ T') :
     associator_naturality_right]
 
 /-- The scalar flip is absorbed by the commutative fold. -/
-private theorem flip_absorb {Q R : D} (r : Q ⊗ R ⟶ A) :
+private theorem flip_absorb
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [IsCommMonObj A]
+    {Q R : D} (r : Q ⊗ R ⟶ A) :
     (Q ◁ (R ◁ (β_ A A).hom)) ≫ (α_ Q R (A ⊗ A)).inv ≫
       (r ▷ (A ⊗ A)) ≫ (A ◁ μ[A]) ≫ μ[A] =
     (α_ Q R (A ⊗ A)).inv ≫ (r ▷ (A ⊗ A)) ≫
@@ -392,11 +417,13 @@ private theorem flip_absorb {Q R : D} (r : Q ⊗ R ⟶ A) :
     ← MonoidalCategory.whiskerLeft_comp_assoc,
     IsCommMonObj.mul_comm]
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- **The doubled window in parallel form**: both pairs are routed
 side by side, fire in parallel, and the scalars collect at the
 tail. -/
-private theorem dblWin_par (u : V' ⊗ V ⟶ A) (R : D) :
+private theorem dblWin_par
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) (R : D) :
     dblWin A V' V u R =
       (V' ◁ (α_ V' V (V ⊗ R)).inv) ≫
         (α_ V' (V' ⊗ V) (V ⊗ R)).inv ≫
@@ -432,10 +459,12 @@ private theorem dblWin_par (u : V' ⊗ V ⟶ A) (R : D) :
   simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc]
   rw [whisker_exchange_assoc, whisker_exchange_assoc]
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- The block braiding passes the parallel firing, becoming the
 scalar braiding. -/
-private theorem fire_swap (u : V' ⊗ V ⟶ A) (R : D) :
+private theorem fire_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) (R : D) :
     ((α_ (V' ⊗ V) (V' ⊗ V) R).inv ≫
         ((β_ (V' ⊗ V) (V' ⊗ V)).hom ▷ R) ≫
         (α_ (V' ⊗ V) (V' ⊗ V) R).hom) ≫
@@ -459,10 +488,11 @@ private theorem fire_swap (u : V' ⊗ V ⟶ A) (R : D) :
     ← MonoidalCategory.comp_whiskerRight,
     ← BraidedCategory.braiding_naturality]
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- The scalar braiding passes the collecting tail, becoming the
 flip of the collected pair. -/
-private theorem tail_flip (R : D) :
+private theorem tail_flip
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (R : D) :
     (α_ A A R).inv ≫ ((β_ A A).hom ▷ R) ≫ (α_ A A R).hom ≫
       (A ◁ (β_ A R).hom) ≫ (β_ A (R ⊗ A)).hom ≫
       (α_ R A A).hom =
@@ -476,11 +506,13 @@ private theorem tail_flip (R : D) :
     SymmetricCategory.symmetry,
     MonoidalCategory.whiskerLeft_id, Category.comp_id]
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- **The first pure routing law**: the braiding of the two
 `M'`-factors before the parallel routing is the single interleave
 crossing. -/
-private theorem route_fst (R : D) :
+private theorem route_fst
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (V' : D)
+    (V : D)
+    (R : D) :
     ((α_ V' V' (V ⊗ (V ⊗ R))).inv ≫
         ((β_ V' V').hom ▷ (V ⊗ (V ⊗ R))) ≫
         (α_ V' V' (V ⊗ (V ⊗ R))).hom) ≫
@@ -517,11 +549,13 @@ private theorem route_fst (R : D) :
   simp only [Iso.inv_hom_id_assoc]
   monoidal
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- **The second pure routing law**: the braiding of the two
 `M`-factors before the parallel routing, followed by the block
 braiding, is the same single interleave crossing. -/
-private theorem route_snd (R : D) :
+private theorem route_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (V' : D)
+    (V : D)
+    (R : D) :
     (V' ◁ (V' ◁ ((α_ V V R).inv ≫ ((β_ V V).hom ▷ R) ≫
         (α_ V V R).hom))) ≫
       (V' ◁ (α_ V' V (V ⊗ R)).inv) ≫
@@ -600,11 +634,13 @@ private theorem route_snd (R : D) :
   rw [← associator_inv_naturality_middle, reassoc_of% hc3]
   monoidal
 
-omit [MonObj A] [IsCommMonObj A] in
 /-- **The window braid exchange**: braiding the two consumed
 `M'`-factors before the doubled window equals braiding the two
 consumed `M`-factors and flipping the two emitted scalars. -/
-private theorem dblWin_braid (u : V' ⊗ V ⟶ A) (R : D) :
+private theorem dblWin_braid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) (R : D) :
     ((α_ V' V' (V ⊗ (V ⊗ R))).inv ≫
         ((β_ V' V').hom ▷ (V ⊗ (V ⊗ R))) ≫
         (α_ V' V' (V ⊗ (V ⊗ R))).hom) ≫ dblWin A V' V u R =
@@ -629,7 +665,10 @@ private theorem dblWin_braid (u : V' ⊗ V ⟶ A) (R : D) :
 the two consumed `M'`-factors before the doubled step equals
 braiding the two consumed `M`-factors.  The two emitted scalars
 exchange, which the commutative fold absorbs. -/
-private theorem stepU_dbl_braid (u : V' ⊗ V ⟶ A) {Q R : D}
+private theorem stepU_dbl_braid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [IsCommMonObj A] (V' : D) (V : D)
+    (u : V' ⊗ V ⟶ A) {Q R : D}
     (r : Q ⊗ R ⟶ A) :
     (((α_ Q V' V').hom ≫ (Q ◁ (β_ V' V').hom) ≫
         (α_ Q V' V').inv) ▷ (V ⊗ (V ⊗ R))) ≫
@@ -653,15 +692,13 @@ end DblCore
 
 section Exchange
 
-variable [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-
 /-- The doubled pairing step absorbs the boundary braiding. -/
-private theorem pairStep_dbl_braid (d : ModDualityDatum A M M')
+private theorem pairStep_dbl_braid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     (((α_ Q M'.X M'.X).hom ≫ (Q ◁ (β_ M'.X M'.X).hom) ≫
         (α_ Q M'.X M'.X).inv) ▷ (M.X ⊗ (M.X ⊗ R))) ≫
@@ -674,7 +711,12 @@ private theorem pairStep_dbl_braid (d : ModDualityDatum A M M')
 /-- **The boundary of the exchange law**: the top transposition of
 the `M'`-power crosses the pairing as the bottom transposition of
 the `M`-power. -/
-private theorem rawPair_topSwap (d : ModDualityDatum A M M')
+private theorem rawPair_topSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     (permMor M'.X (n + 1 + 1) topSwap ▷
         tensorPow D M.X (n + 1 + 1)) ≫
@@ -729,7 +771,12 @@ private theorem rawPair_topSwap (d : ModDualityDatum A M M')
 braiding of `M`-slots `a, a + 1` crosses the raw pairing as the
 adjacent braiding of `M'`-slots `b, b + 1`, mirrored across the
 arity. -/
-private theorem rawPair_swap (d : ModDualityDatum A M M') :
+private theorem rawPair_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ∀ (a b m : ℕ) (_ : a + 2 + b = m),
       (permMor M'.X m
           (Equiv.swap ⟨b, by omega⟩ ⟨b + 1, by omega⟩) ▷
@@ -828,7 +875,7 @@ private theorem rawPair_swap (d : ModDualityDatum A M M') :
         hpost]
       exact congrArg (CategoryStruct.comp _)
         (congrArg (pairStep A M M' d)
-          (rawPair_swap d a b (a + 2 + b) rfl))
+          (rawPair_swap A M M' d a b (a + 2 + b) rfl))
     rw [rawPair_cast A M M' d hc]
     conv_lhs => rw [← MonoidalCategory.comp_whiskerRight_assoc,
       hL, MonoidalCategory.comp_whiskerRight, Category.assoc,
@@ -843,7 +890,11 @@ private theorem rawPair_swap (d : ModDualityDatum A M M') :
 /-- **The exchange law**: a permutation of the `M`-power slots
 crosses the raw power pairing as the order-reversing adjoint
 permutation of the `M'`-power slots. -/
-theorem rawPair_perm (d : ModDualityDatum A M M') :
+theorem rawPair_perm [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ∀ (n : ℕ) (σ : Equiv.Perm (Fin n)),
       (permMor M'.X n (adjPerm σ) ▷ tensorPow D M.X n) ≫
           rawPair A M M' d n =
@@ -916,13 +967,15 @@ theorem rawPair_perm (d : ModDualityDatum A M M') :
 
 section Descended
 
-variable [Preadditive D] [HasFiniteBiproducts D]
-  [MonoidalPreadditive D]
-
 /-- **The descended exchange law**: a permutation of the module
 power crosses the descended pairing as its order-reversing
 adjoint. -/
-theorem pairPow_perm (d : ModDualityDatum A M M') (n : ℕ)
+theorem pairPow_perm [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M') (n : ℕ)
     (σ : Equiv.Perm (Fin n)) :
     (modPowPerm (A := A) (X := M'.X) n (adjPerm σ) ▷
         modPow A M.X n) ≫ pairPow A M M' d n =
@@ -946,13 +999,18 @@ theorem pairPow_perm (d : ModDualityDatum A M M') (n : ℕ)
   rw [hππ]
   exact rawPair_perm A M M' d n σ
 
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- **Self-adjointness of the symmetriser across the pairing**:
 the symmetriser acting on either module power pairs equally.  The
 adjoint is a bijection of the group, so the average over all
 permutations is invariant under the exchange law. -/
-theorem symPowIdem_pairPow (d : ModDualityDatum A M M')
+theorem symPowIdem_pairPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     (symPowIdem A M'.X n ▷ modPow A M.X n) ≫
         pairPow A M M' d n =
@@ -984,7 +1042,14 @@ theorem symPowIdem_pairPow (d : ModDualityDatum A M M')
   exact h
 
 /-- Self-adjointness of the symmetriser, in tensor form. -/
-theorem symPowIdem_pairPow_tensor (d : ModDualityDatum A M M')
+theorem symPowIdem_pairPow_tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     (symPowIdem A M'.X n ⊗ₘ 𝟙 (modPow A M.X n)) ≫
         pairPow A M M' d n =

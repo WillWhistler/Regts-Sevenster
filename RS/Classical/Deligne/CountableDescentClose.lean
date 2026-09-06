@@ -64,25 +64,28 @@ universe w v u
 
 section Compact
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- **Compactness of an ind-object**, phrased as in
 `RS.Classical.Deligne.IndCompact`: a morphism from the object into a
 filtered colimit factors through a stage of the diagram. -/
-def IndCompactObj (Y : Ind C) : Prop :=
+def IndCompactObj [SmallCategory C]
+    (Y : Ind C) : Prop :=
   ∀ {I : Type v} [SmallCategory I] [IsFiltered I] (D : I ⥤ Ind C)
     (f : Y ⟶ colimit D),
     ∃ (i : I) (g : Y ⟶ D.obj i), g ≫ colimit.ι D i = f
 
 /-- **The embedded objects are compact.** -/
-theorem indCompactObj_indOf (Z : C) :
+theorem indCompactObj_indOf [SmallCategory C]
+    (Z : C) :
     IndCompactObj ((indOf : C ⥤ Ind C).obj Z) :=
   fun D f => exists_factor_of_hom_colimit D Z f
 
 /-- **Compactness against an arbitrary colimit cocone**: the
 factorisation of the definition does not depend on the chosen
 colimit. -/
-theorem IndCompactObj.factor_of_isColimit {Y : Ind C}
+theorem IndCompactObj.factor_of_isColimit [SmallCategory C]
+    {Y : Ind C}
     (hY : IndCompactObj Y) {I : Type v} [SmallCategory I]
     [IsFiltered I] {K : I ⥤ Ind C} (c : Cocone K) (hc : IsColimit c)
     (f : Y ⟶ c.pt) :
@@ -102,22 +105,25 @@ end Compact
 
 section PresCocone
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- The cocone of the chosen presentation of an ind-object, with the
 ind-object itself as its point. -/
 @[simps! pt]
-noncomputable def presCocone (A : Ind C) : Cocone (presDiagram A) :=
+noncomputable def presCocone [SmallCategory C]
+    (A : Ind C) : Cocone (presDiagram A) :=
   Cocone.mk A
     { app := fun i => presStage A i
       naturality := fun _ _ α =>
         (presStage_naturality A α).trans (Category.comp_id _).symm }
 
-@[simp] theorem presCocone_ι_app (A : Ind C) (i : A.presentation.I) :
+@[simp] theorem presCocone_ι_app [SmallCategory C]
+    (A : Ind C) (i : A.presentation.I) :
     (presCocone A).ι.app i = presStage A i := rfl
 
 /-- **The presentation cocone is a colimit cocone.** -/
-noncomputable def presIsColimit (A : Ind C) :
+noncomputable def presIsColimit [SmallCategory C]
+    (A : Ind C) :
     IsColimit (presCocone A) :=
   IsColimit.ofIsoColimit (colimit.isColimit (presDiagram A))
     (Cocone.ext (Ind.colimitPresentationCompYoneda A) (fun _ => rfl))
@@ -128,13 +134,15 @@ end PresCocone
 
 section TensorFactor
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- **A map from a compact object into a base change factors through
 a stage of the presentation**: tensoring preserves filtered colimits,
 so the base change of the presentation cocone is again a colimit
 cocone. -/
-theorem exists_presStage_whiskerRight_factor (A : Ind C) {Y M : Ind C}
+theorem exists_presStage_whiskerRight_factor
+    [SmallCategory C] [MonoidalCategory C]
+    (A : Ind C) {Y M : Ind C}
     (hY : IndCompactObj Y) (f : Y ⟶ A ⊗ M) :
     ∃ (i : A.presentation.I)
       (g : Y ⟶ indOf.obj (A.presentation.F.obj i) ⊗ M),
@@ -148,14 +156,16 @@ end TensorFactor
 
 section MonoDescend
 
-variable {D : Type u} [Category.{w} D] [MonoidalCategory D]
-variable {A B : D} [MonObj A] [MonObj B]
+variable {D : Type u}
 
 /-- **The product of the subalgebra, read in the algebra**: the
 left-hand free action of the subalgebra, followed by the inclusion,
 is the left-hand free action of the algebra applied to the
 transported datum. -/
-theorem whiskerLeft_freeAct_comp_whiskerRight (φ : B ⟶ A)
+theorem whiskerLeft_freeAct_comp_whiskerRight
+    [Category.{w} D] [MonoidalCategory D] {A : D} {B : D} [MonObj A]
+    [MonObj B]
+    (φ : B ⟶ A)
     (hmul : μ[B] ≫ φ = (φ ⊗ₘ φ) ≫ μ[A]) {X M : D} (v : M ⟶ B ⊗ X) :
     ((B ◁ v) ≫ (α_ B B X).inv ≫ μ[B] ▷ X) ≫ φ ▷ X =
       (φ ▷ M) ≫ (A ◁ (v ≫ φ ▷ X)) ≫ (α_ A A X).inv ≫ μ[A] ▷ X := by
@@ -183,7 +193,10 @@ theorem whiskerLeft_freeAct_comp_whiskerRight (φ : B ⟶ A)
 holds in the algebra for the transported data already holds in the
 subalgebra, because the inclusion is a monomorphism and stays one
 after tensoring. -/
-theorem roundTrip_descend (φ : B ⟶ A) (hone : η[B] ≫ φ = η[A])
+theorem roundTrip_descend
+    [Category.{w} D] [MonoidalCategory D] {A : D} {B : D} [MonObj A]
+    [MonObj B]
+    (φ : B ⟶ A) (hone : η[B] ≫ φ = η[A])
     (hmul : μ[B] ≫ φ = (φ ⊗ₘ φ) ≫ μ[A]) {X M : D}
     (u : X ⟶ B ⊗ M) (v : M ⟶ B ⊗ X) [Mono (φ ▷ X)]
     (h : (u ≫ φ ▷ M) ≫ (A ◁ (v ≫ φ ▷ X)) ≫
@@ -205,7 +218,10 @@ theorem roundTrip_descend (φ : B ⟶ A) (hone : η[B] ≫ φ = η[A])
 
 /-- **Descent of a splitting datum to a subalgebra.**  Only the unit
 is involved: the datum is a single map, not a round trip. -/
-theorem sectionDatum_descend (φ : B ⟶ A) (hone : η[B] ≫ φ = η[A])
+theorem sectionDatum_descend
+    [Category.{w} D] [MonoidalCategory D] {A : D} {B : D} [MonObj A]
+    [MonObj B]
+    (φ : B ⟶ A) (hone : η[B] ≫ φ = η[A])
     {V W : D} (g : V ⟶ W) (t : W ⟶ B ⊗ V) [Mono (φ ▷ W)]
     (h : (t ≫ φ ▷ V) ≫ (A ◁ g) = (λ_ W).inv ≫ η[A] ▷ W) :
     t ≫ (B ◁ g) = (λ_ W).inv ≫ η[B] ▷ W := by
@@ -225,12 +241,13 @@ end MonoDescend
 
 section FreeRebuild
 
-variable {D : Type u} [Category.{w} D] [MonoidalCategory D]
-variable (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- Restricting a composite out of a free module along the unit is
 postcomposition of the restriction of the first factor. -/
-theorem freeModHomEquiv_symm_comp {X M : D} (N : Mod D R)
+theorem freeModHomEquiv_symm_comp
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {X M : D} (N : Mod D R)
     (u : X ⟶ (freeMod R M).X) (k : freeMod R M ⟶ N) :
     freeModHomEquiv R X N
         ((freeModHomEquiv R X (freeMod R M)).symm u ≫ k) =
@@ -241,7 +258,9 @@ theorem freeModHomEquiv_symm_comp {X M : D} (N : Mod D R)
 
 /-- Restricting the identity of a free module along the unit is the
 unit itself. -/
-theorem freeModHomEquiv_id (X : D) :
+theorem freeModHomEquiv_id
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (X : D) :
     freeModHomEquiv R X (freeMod R X) (𝟙 (freeMod R X)) =
       (λ_ X).inv ≫ η[R] ▷ X := by
   show (λ_ X).inv ≫ (η[R] ▷ X) ≫ 𝟙 _ = _
@@ -251,7 +270,9 @@ theorem freeModHomEquiv_id (X : D) :
 maps in the ambient category satisfying the two unit identities
 extends to an isomorphism of free modules, by the free--forgetful
 adjunction. -/
-noncomputable def freeModIsoOfRoundTrip {X M : D} (u : X ⟶ R ⊗ M)
+noncomputable def freeModIsoOfRoundTrip
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {X M : D} (u : X ⟶ R ⊗ M)
     (v : M ⟶ R ⊗ X)
     (h₁ : u ≫ (R ◁ v) ≫ (α_ R R X).inv ≫ μ[R] ▷ X =
       (λ_ X).inv ≫ η[R] ▷ X)
@@ -271,7 +292,9 @@ noncomputable def freeModIsoOfRoundTrip {X M : D} (u : X ⟶ R ⊗ M)
 
 /-- Restriction along the unit turns composition in the category of
 modules into composition in the ambient category. -/
-theorem freeModHomEquiv_comp {X : D} {N P : Mod D R}
+theorem freeModHomEquiv_comp
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {X : D} {N P : Mod D R}
     (f : freeMod R X ⟶ N) (k : N ⟶ P) :
     freeModHomEquiv R X P (f ≫ k) =
       freeModHomEquiv R X N f ≫ k.hom :=
@@ -279,7 +302,9 @@ theorem freeModHomEquiv_comp {X : D} {N P : Mod D R}
 
 /-- A module map out of a free module is the extension of its
 restriction along the unit. -/
-theorem freeModHom_eq_whiskerLeft {M : D} (N : Mod D R)
+theorem freeModHom_eq_whiskerLeft
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {M : D} (N : Mod D R)
     (f : freeMod R M ⟶ N) :
     f.hom = R ◁ (freeModHomEquiv R M N f) ≫ actLeft R N.X :=
   congrArg (fun z : freeMod R M ⟶ N => z.hom)
@@ -287,7 +312,9 @@ theorem freeModHom_eq_whiskerLeft {M : D} (N : Mod D R)
 
 /-- **The round trip attached to an isomorphism of free modules**:
 the transposes of the two directions satisfy the unit identity. -/
-theorem roundTrip_of_freeModIso {X M : D}
+theorem roundTrip_of_freeModIso
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {X M : D}
     (Φ : freeMod R X ≅ freeMod R M) :
     freeModHomEquiv R X (freeMod R M) Φ.hom ≫
         (R ◁ freeModHomEquiv R M (freeMod R X) Φ.inv) ≫
@@ -300,7 +327,9 @@ theorem roundTrip_of_freeModIso {X M : D}
 
 /-- **The datum attached to a splitting**: the transpose of a section
 of the free module on a morphism satisfies the unit identity. -/
-theorem sectionDatum_of_section {V W : D} (g : V ⟶ W)
+theorem sectionDatum_of_section
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {V W : D} (g : V ⟶ W)
     (s : freeMod R W ⟶ freeMod R V)
     (hs : s ≫ freeModMap R g = 𝟙 (freeMod R W)) :
     freeModHomEquiv R W (freeMod R V) s ≫ (R ◁ g) =
@@ -311,7 +340,9 @@ theorem sectionDatum_of_section {V W : D} (g : V ⟶ W)
 
 /-- **A splitting from its datum**: a map satisfying the unit
 identity extends to a section of the free module on a morphism. -/
-theorem exists_section_of_datum {V W : D} (g : V ⟶ W)
+theorem exists_section_of_datum
+    [Category.{w} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {V W : D} (g : V ⟶ W)
     (t : W ⟶ R ⊗ V) (h : t ≫ (R ◁ g) = (λ_ W).inv ≫ η[R] ▷ W) :
     ∃ s : freeMod R W ⟶ freeMod R V,
       s ≫ freeModMap R g = 𝟙 (freeMod R W) := by
@@ -326,16 +357,19 @@ end FreeRebuild
 
 section IntoImage
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C] [Abelian C]
-variable (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+variable {C : Type v}
 
 /-- The generating stage, mapped into rung zero of the image tower and
 on into the subalgebra it generates. -/
-noncomputable def stageIntoImageSubalgebra :
+noncomputable def stageIntoImageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) :
     indOf.obj (A.presentation.F.obj i₀) ⟶ imageSubalgebra A i₀ :=
   stageToImage A i₀ ≫ imageRungι A i₀ 0
 
-theorem stageIntoImageSubalgebra_comp_hom :
+theorem stageIntoImageSubalgebra_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) :
     stageIntoImageSubalgebra A i₀ ≫ imageSubalgebraHom A i₀ =
       presStage A i₀ :=
   (Category.assoc _ _ _).trans
@@ -345,7 +379,10 @@ theorem stageIntoImageSubalgebra_comp_hom :
 /-- **A stage factorisation enters the image subalgebra**: a datum
 factoring through a stage below the generating one factors through the
 subalgebra generated there. -/
-theorem exists_imageSubalgebra_factor {Y M : Ind C}
+theorem exists_imageSubalgebra_factor
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    {Y M : Ind C}
     {i : A.presentation.I} (α : i ⟶ i₀)
     (g : Y ⟶ indOf.obj (A.presentation.F.obj i) ⊗ M) (f : Y ⟶ A ⊗ M)
     (hg : g ≫ presStage A i ▷ M = f) :
@@ -358,7 +395,10 @@ theorem exists_imageSubalgebra_factor {Y M : Ind C}
 
 /-- **Two data descend to a common image subalgebra**, generated at a
 stage that also carries the unit of the algebra. -/
-theorem exists_imageSubalgebra_pair {Y Y' M M' : Ind C}
+theorem exists_imageSubalgebra_pair
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A]
+    {Y Y' M M' : Ind C}
     (hY : IndCompactObj Y) (hY' : IndCompactObj Y') (f : Y ⟶ A ⊗ M)
     (f' : Y' ⟶ A ⊗ M') :
     ∃ (j : A.presentation.I) (_ : UnitAtStage A j)
@@ -378,7 +418,10 @@ theorem exists_imageSubalgebra_pair {Y Y' M M' : Ind C}
 
 /-- **A single datum descends to an image subalgebra**, generated at a
 stage that also carries the unit of the algebra. -/
-theorem exists_imageSubalgebra_single {Y M : Ind C}
+theorem exists_imageSubalgebra_single
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A]
+    {Y M : Ind C}
     (hY : IndCompactObj Y) (f : Y ⟶ A ⊗ M) :
     ∃ (j : A.presentation.I) (_ : UnitAtStage A j)
       (g : Y ⟶ imageSubalgebra A j ⊗ M),
@@ -394,24 +437,25 @@ end IntoImage
 
 section Close
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
-omit [SymmetricCategory C] in
 /-- **The inclusion of the image subalgebra stays a monomorphism after
 tensoring**: the tensor product of `Ind C` is exact in each
 variable. -/
-theorem mono_imageSubalgebraHom_whiskerRight (A : Ind C) [MonObj A]
+theorem mono_imageSubalgebraHom_whiskerRight
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) [MonObj A]
     (i₀ : A.presentation.I) (M : Ind C) :
     Mono (imageSubalgebraHom A i₀ ▷ M) :=
   haveI := mono_imageSubalgebraHom A i₀
   inferInstanceAs
     (Mono ((tensorRight M).map (imageSubalgebraHom A i₀)))
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **The mixed sums are compact.** -/
-theorem indCompactObj_mix (L : OddLine (Ind C)) (p q : ℕ) :
+theorem indCompactObj_mix
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (L : OddLine (Ind C)) (p q : ℕ) :
     IndCompactObj (L.mix p q) :=
   fun D f => exists_factor_of_mix_hom_colimit L p q D f
 
@@ -420,7 +464,10 @@ theorem indCompactObj_mix (L : OddLine (Ind C)) (p q : ℕ) :
 some algebra with non-vanishing unit already becomes one over a
 countably presented such algebra, provided the object is compact and
 the objects of `C` have finite length. -/
-theorem locallyMixed_countablyPresented (L : OddLine (Ind C))
+theorem locallyMixed_countablyPresented
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (L : OddLine (Ind C))
     (X : Ind C) (hX : IndCompactObj X)
     (hlen : ∀ Z : C, ∃ N, LengthLE Z N) (h : L.LocallyMixed X) :
     ∃ (p q : ℕ) (A : Ind C) (_ : MonObj A) (_ : IsCommMonObj A),
@@ -455,7 +502,10 @@ morphism of `Ind C` whose free module acquires a section over some
 algebra with non-vanishing unit already acquires one over a countably
 presented such algebra, provided the two objects are compact and the
 objects of `C` have finite length. -/
-theorem section_countablyPresented {V W : Ind C} (g : V ⟶ W)
+theorem section_countablyPresented
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    {V W : Ind C} (g : V ⟶ W)
     (_hV : IndCompactObj V) (hW : IndCompactObj W)
     (hlen : ∀ Z : C, ∃ N, LengthLE Z N)
     (h : ∃ (A : Ind C) (_ : MonObj A) (_ : IsCommMonObj A),
@@ -493,11 +543,12 @@ consumed. -/
 
 section AcceptanceTests
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
-example (L : OddLine (Ind C)) (Z : C)
+example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (L : OddLine (Ind C)) (Z : C)
     (hlen : ∀ Y : C, ∃ N, LengthLE Y N)
     (h : L.LocallyMixed ((indOf : C ⥤ Ind C).obj Z)) :
     ∃ (p q : ℕ) (A : Ind C) (_ : MonObj A) (_ : IsCommMonObj A),
@@ -506,7 +557,10 @@ example (L : OddLine (Ind C)) (Z : C)
           freeMod A (L.mix p q)) :=
   locallyMixed_countablyPresented L _ (indCompactObj_indOf Z) hlen h
 
-example {Y Z : C} (g : (indOf : C ⥤ Ind C).obj Y ⟶ indOf.obj Z)
+example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    {Y Z : C} (g : (indOf : C ⥤ Ind C).obj Y ⟶ indOf.obj Z)
     (hlen : ∀ W : C, ∃ N, LengthLE W N)
     (h : ∃ (A : Ind C) (_ : MonObj A) (_ : IsCommMonObj A),
       η[A] ≠ 0 ∧

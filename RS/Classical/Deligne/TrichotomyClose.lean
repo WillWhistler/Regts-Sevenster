@@ -36,16 +36,13 @@ theorem antisymmetriser_zero : antisymmetriser 0 = 1 := by
         Subsingleton.elim σ 1⟩]
   simp [MonoidAlgebra.one_def]
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (A : D) [MonObj A] (X : D) [ModObj A X]
+variable {D : Type u}
 
-omit [MonoidalPreadditive D] [MonoidalLinear ℂ D] in
 /-- A dead arity-one symmetric power kills the module. -/
 theorem isZero_of_isZero_symPowOne
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
     (h : IsZero (symPow A X 1)) : IsZero X := by
   have h0 : symPowIdem A X 1 = 0 :=
     (symPowIdem_eq_zero_iff A X 1).mpr h
@@ -57,9 +54,11 @@ theorem isZero_of_isZero_symPowOne
     exact h0
   exact hm.of_iso (modPowOne A X).symm
 
-omit [MonoidalPreadditive D] in
 /-- A dead arity-one alternating power kills the module. -/
 theorem isZero_of_isZero_altPow_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
     (h : IsZero (altPow A X 1)) : IsZero X := by
   have h0 : altPowIdem A X 1 = 0 :=
     (altPowIdem_eq_zero_iff A X 1).mpr h
@@ -71,24 +70,28 @@ theorem isZero_of_isZero_altPow_one
     exact h0
   exact hm.of_iso (modPowOne A X).symm
 
-omit [SymmetricCategory D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [MonObj A] [ModObj A X] in
 /-- A dead tensor unit kills every object. -/
-theorem isZero_of_isZero_unit (h : IsZero (𝟙_ D)) :
+theorem isZero_of_isZero_unit
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (X : D)
+    (h : IsZero (𝟙_ D)) :
     IsZero X :=
   (isZero_whiskerLeft X h).of_iso (ρ_ X).symm
 
-omit [MonoidalLinear ℂ D] in
 /-- A dead arity-zero symmetric power kills the module. -/
 theorem isZero_of_isZero_symPowZero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] (A : D) [MonObj A] (X : D) [ModObj A X]
     (h : IsZero (symPow A X 0)) : IsZero X :=
   isZero_of_isZero_unit X
     (h.of_iso (symPowZero A X).symm)
 
-omit [MonoidalLinear ℂ D] in
 /-- A dead arity-zero alternating power kills the module. -/
 theorem isZero_of_isZero_altPow_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] (A : D) [MonObj A] (X : D) [ModObj A X]
     (h : IsZero (altPow A X 0)) : IsZero X := by
   have h0 : altPowIdem A X 0 = 0 :=
     (altPowIdem_eq_zero_iff A X 0).mpr h
@@ -103,16 +106,17 @@ theorem isZero_of_isZero_altPow_zero
 
 section Main
 
-variable [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)]
-
 /-- **The trichotomy holds over a power descent**: classically,
 either all symmetric powers of the remainder survive, or all
 alternating powers survive, or the Schur collapse and the
 descent kill the remainder. -/
-theorem devissageTrichotomy_of_descent (P : SchurPackage.{v})
+theorem devissageTrichotomy_of_descent
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (P : SchurPackage.{v})
     (L : OddLine D) (X : D)
     (hdesc : ∀ (B : D) (_ : MonObj B) (_ : IsCommMonObj B)
       (R R' : Mod D B) (d : ModDualityDatum B R R')

@@ -11,12 +11,11 @@ namespace RS
 
 open LinearMap
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
+variable {G : Type*}
 
-omit [DecidableEq G] in
 /-- Every simple `ℂ[G]`-module is isomorphic to a simple submodule
 of the regular module. -/
-theorem exists_simple_submodule_linearEquiv
+theorem exists_simple_submodule_linearEquiv [Group G] [Fintype G]
     (M : Type*) [AddCommGroup M] [Module (MonoidAlgebra ℂ G) M]
     (hM : IsSimpleModule (MonoidAlgebra ℂ G) M) :
     ∃ S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G),

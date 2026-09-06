@@ -20,15 +20,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 section Coherence
 
 /-- Interchanging the middle factors twice is the identity: the two
 elementary crossings cancel by the symmetry axiom. -/
 @[reassoc]
-private theorem tensorMu_symm_cancel (a b c d : D) :
+private theorem tensorMu_symm_cancel
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (a b c d : D) :
     tensorμ a b c d ≫ tensorμ a c b d =
       𝟙 ((a ⊗ b) ⊗ (c ⊗ d)) := by
   calc
@@ -46,7 +47,9 @@ private theorem tensorMu_symm_cancel (a b c d : D) :
 braiding slotwise, shuffling the braided blocks, and braiding the
 block pair returns every strand to its place. -/
 @[reassoc]
-private theorem tensorMu_braid_retract (W X Y Z : D) :
+private theorem tensorMu_braid_retract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (W X Y Z : D) :
     tensorμ W X Y Z ≫ ((β_ W Y).hom ⊗ₘ (β_ X Z).hom) ≫
       tensorμ Y W Z X ≫ (β_ (Y ⊗ Z) (W ⊗ X)).hom =
     𝟙 ((W ⊗ X) ⊗ (Y ⊗ Z)) := by
@@ -56,25 +59,20 @@ private theorem tensorMu_braid_retract (W X Y Z : D) :
 
 end Coherence
 
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-
 section Fold
 
-variable {N₁ N₂ N₁' N₂' : Mod D A}
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- Evaluating the tensor-pairing word on a pure tensor of
 projections: the interchange seats each dual half against its own
 carrier, the coordinatewise pairings evaluate, and the fold
 multiplies the two scalars. -/
-private theorem tensorHom_π_pairFold (d₁ : ModDualityDatum A N₁ N₁')
+private theorem tensorHom_π_pairFold
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     ((modTensorπ A N₁' N₂' ⊗ₘ modTensorπ A N₁ N₂) :
         (N₁'.X ⊗ N₂'.X) ⊗ (N₁.X ⊗ N₂.X) ⟶ _) ≫
@@ -123,13 +121,18 @@ private theorem tensorHom_π_pairFold (d₁ : ModDualityDatum A N₁ N₁')
 
 end Fold
 
-variable (M M' : Mod D A)
-
 /-- **The pair side of the power step** (Deligne 1.15): pushing the
 primed back merge and the swapped unprimed front merge into the
 successor power pairing yields the tensor pairing of the stage
 datum with the bottom datum. -/
-theorem modPowPairing_succ_tensor (d : ModDualityDatum A M M')
+theorem modPowPairing_succ_tensor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modTensorMap A
         (powMulMod A M'.X n 0)

@@ -1,12 +1,14 @@
 import RS.Assembly.Blueprint
 import RS.Novel.Envelope.ObjectTower
+import RS.TheoremTotal
 
 /-!
 # Blueprint: the Schur package, the dimension bound, the open sector
 
 The second part of the axiom audit.  It pins the symmetric-group
-input the forward direction rests on, the sharp `⌊2eR⌋` dimension
-bound, and the open-sector Proposition 3.  Read `Blueprint.lean`
+input the forward direction rests on, the auxiliary `⌊2eR⌋` dimension
+bound, the total bound `k + 2ℓ ≤ R`, and the open-sector Proposition 3.
+Read `Blueprint.lean`
 first: it audits the forward proof itself.
 -/
 
@@ -82,7 +84,7 @@ are hook-confined.
 #guard_msgs in
 #print axioms RS.traceZeta_eq_newtonH_series
 
-/-! ### Theorem A.1 with the sharp threshold
+/-! ### Corollary A.2 with the sharp threshold
 
 The appendix's own statement: a real dimension bound `A`, every side
 `s > 2e√A`, and degrees at most `s − 1`.
@@ -104,7 +106,36 @@ The appendix's own statement: a real dimension bound `A`, every side
 #guard_msgs in
 #print axioms RS.newtonH_series_rational_of_hook_vanishing
 
-/-! ### The sharp dimension bound
+/-! ### Hook-confined sequences
+
+Lemma A.9 for arbitrary hook dimensions, with numerator degree at
+most `b` and denominator degree at most `a`.
+-/
+
+/--
+info: RS.newtonH_series_rational_of_hook_vanishing {t : ℕ → ℂ} {a b : ℕ}
+  (hvan : ∀ (μ : YoungDiagram), ¬RS.IsInHook a b μ → RS.diagramSchur μ t = 0) :
+  ∃ P Q,
+    P.coeff 0 = 1 ∧ Q.coeff 0 = 1 ∧ P.natDegree ≤ b ∧ Q.natDegree ≤ a ∧ IsCoprime P Q ∧ RS.newtonHSeries t * ↑Q = ↑P
+-/
+#guard_msgs in
+#check RS.newtonH_series_rational_of_hook_vanishing
+
+/--
+info: RS.superPowerSums_of_hook_vanishing {t : ℕ → ℂ} {a b : ℕ}
+  (hvan : ∀ (μ : YoungDiagram), ¬RS.IsInHook a b μ → RS.diagramSchur μ t = 0) :
+  ∃ α β,
+    α.card ≤ a ∧
+      β.card ≤ b ∧
+        (∀ x ∈ α, x ≠ 0) ∧
+          (∀ x ∈ β, x ≠ 0) ∧
+            (∀ x ∈ α, x ∉ β) ∧
+              ∀ (m : ℕ), 1 ≤ m → t m = (Multiset.map (fun x => x ^ m) α).sum - (Multiset.map (fun x => x ^ m) β).sum
+-/
+#guard_msgs in
+#check RS.superPowerSums_of_hook_vanishing
+
+/-! ### The separate-sector dimension bound
 
 The `⌊2eR⌋` bound: a square diagram past it is dead, its
 idempotent acts as zero, and the surviving sector is bounded.
@@ -165,6 +196,41 @@ idempotent acts as zero, and the surviving sector is bounded.
 /-- info: 'RS.regts_sevenster_quant_deligne_only' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms RS.regts_sevenster_quant_deligne_only
+
+/-! ### The total dimension bound
+
+Native blocks bound constituent dimensions; simultaneous word orbits
+bound the commutant by a polynomial. The transported colour action
+then forces `k + 2 * ℓ ≤ R` by comparison of exponential bases.
+-/
+
+/-- info: 'RS.nDim_sq_le_finrank_of_projector_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.nDim_sq_le_finrank_of_projector_ne_zero
+
+/-- info: 'RS.finrank_le_mul_commutant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.finrank_le_mul_commutant
+
+/-- info: 'RS.finrank_commutant_le_word_counts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.finrank_commutant_le_word_counts
+
+/-- info: 'RS.le_of_pow_le_pow_mul_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.le_of_pow_le_pow_mul_polynomial
+
+/-- info: 'RS.colourTotalEquiv_modelPermMap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.colourTotalEquiv_modelPermMap
+
+/-- info: 'RS.stdModel_total_dimension_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.stdModel_total_dimension_le
+
+/-- info: 'RS.regts_sevenster_total_deligne_only' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RS.regts_sevenster_total_deligne_only
 
 /-! ### The open sector: Proposition 3
 
@@ -380,7 +446,7 @@ nothing else.  Independence *across* pairings is false.
 
 /-! ### The appendix, for an object
 
-Theorem A.1 as the appendix states it: for an arbitrary object of a
+Corollary A.2 as the appendix states it: for an arbitrary object of a
 rigid symmetric ℂ-linear category whose tensor powers have
 exponentially bounded endomorphism dimensions, the trace zeta
 function of every endomorphism is rational of the stated degree.

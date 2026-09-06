@@ -16,13 +16,13 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
+variable {C : Type v}
 
-omit [MonoidalPreadditive C] in
 /-- **The tensor unit of the Ind-completion is not a zero
 object.** -/
-theorem not_isZero_unit_ind (hu : HasScalarUnit C) :
+theorem not_isZero_unit_ind [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C]
+    (hu : HasScalarUnit C) :
     ¬ IsZero (𝟙_ (Ind C)) := by
   intro h
   have h0 : IsZero ((indOf : C ⥤ Ind C).obj (𝟙_ C)) :=

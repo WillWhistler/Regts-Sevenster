@@ -17,38 +17,42 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
+variable {D : Type u}
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
 
 /-- **Base change on morphisms of modules.** -/
-noncomputable def baseChangeMapMod {P Q : Mod D A}
+noncomputable def baseChangeMapMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    {P Q : Mod D A}
     (g : P ⟶ Q) : baseChangeMod φ P ⟶ baseChangeMod φ Q :=
   Mod.Hom.mk' (modTensorMap A (𝟙 (restrictRegular φ)) g) (by
     exact baseChangeAct_modTensorMap A B φ g)
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
-@[simp] lemma baseChangeMapMod_hom {P Q : Mod D A}
+@[simp] lemma baseChangeMapMod_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    {P Q : Mod D A}
     (g : P ⟶ Q) :
     (baseChangeMapMod A B φ g).hom =
       modTensorMap A (𝟙 (restrictRegular φ)) g := rfl
 
 /-- **Base change is functorial on isomorphisms.** -/
-noncomputable def baseChangeMapIso {P Q : Mod D A} (e : P ≅ Q) :
+noncomputable def baseChangeMapIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    {P Q : Mod D A} (e : P ≅ Q) :
     baseChangeMod φ P ≅ baseChangeMod φ Q where
   hom := Mod.Hom.mk'
     (modTensorMap A (𝟙 (restrictRegular φ)) e.hom) (by
@@ -73,10 +77,11 @@ noncomputable def baseChangeMapIso {P Q : Mod D A} (e : P ≅ Q) :
 
 section Mixed
 
-variable (L : OddLine D) (r s : ℕ)
-
 /-- **The mixed free part absorbs a unit summand.** -/
-noncomputable def freeMixSuccIso :
+noncomputable def freeMixSuccIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D] (B : D)
+    [MonObj B] (L : OddLine D) (r : ℕ) (s : ℕ) :
     modBiprod B (regularMod B) (freeMod B (L.mix r s)) ≅
       freeMod B (L.mix (r + 1) s) :=
   (modBiprodMapIso B _ _ (freeModUnitIso B).symm
@@ -87,7 +92,14 @@ noncomputable def freeMixSuccIso :
 /-- **The transported decomposition**: a state decomposition,
 base-changed and recombined with a splitting of the remainder,
 gains one unit summand in the mixed free part. -/
-noncomputable def transportDecomp {X : D} {R : Mod D A}
+noncomputable def transportDecomp
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (L : OddLine D) (r : ℕ) (s : ℕ)
+    {X : D} {R : Mod D A}
     (e : freeMod A X ≅ modBiprod A (freeMod A (L.mix r s)) R)
     {R'' : Mod D B}
     (f : baseChangeMod φ R ≅

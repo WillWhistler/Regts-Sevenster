@@ -195,39 +195,9 @@ theorem classElem_eq_sum_shape_e (P : SchurPackage.{u}) {n : ℕ}
     (hc : ∀ g k : Equiv.Perm (Fin n), c (k * g * k⁻¹) = c g) :
     ∃ a : Shape n → ℂ,
       classElem c = ∑ μ : Shape n, a μ • Shape.e P μ := by
-  classical
-  set W := Submodule.span ℂ (Set.range (classSum n)) with hWdef
-  haveI : FiniteDimensional ℂ W :=
-    FiniteDimensional.span_of_finite ℂ (Set.finite_range _)
-  have hfr : Module.finrank ℂ W ≤ Fintype.card (Nat.Partition n) := by
-    refine le_trans (finrank_span_le_card (Set.range (classSum n))) ?_
-    rw [Set.toFinset_range]
-    exact le_trans Finset.card_image_le (le_of_eq Finset.card_univ)
-  have hmem : ∀ μ : Shape n, Shape.e P μ ∈ W := shape_e_mem_span P
-  set E' : Shape n → W := fun μ => ⟨Shape.e P μ, hmem μ⟩ with hE'def
-  have hli' : LinearIndependent ℂ E' :=
-    LinearIndependent.of_comp W.subtype
-      (shape_e_linearIndependent P n)
-  have hcard : Fintype.card (Shape n) = Module.finrank ℂ W :=
-    le_antisymm hli'.fintype_card_le_finrank
-      (le_trans hfr
-        (le_of_eq (Fintype.card_congr (shapeEquivPartition n)).symm))
-  have hspan : Submodule.span ℂ (Set.range E') = ⊤ :=
-    hli'.span_eq_top_of_card_eq_finrank' hcard
-  have hxW : classElem c ∈ W := classElem_mem_span_classSum c hc
-  have hsp : (⟨classElem c, hxW⟩ : W) ∈
-      Submodule.span ℂ (Set.range E') := by
-    rw [hspan]
-    exact Submodule.mem_top
-  rw [Submodule.mem_span_range_iff_exists_fun] at hsp
-  obtain ⟨a, ha⟩ := hsp
-  refine ⟨a, ?_⟩
-  have hval : W.subtype (∑ μ : Shape n, a μ • E' μ) =
-      W.subtype ⟨classElem c, hxW⟩ := congrArg _ ha
-  rw [map_sum] at hval
-  rw [Finset.sum_congr rfl fun μ _ =>
-    map_smul W.subtype (a μ) (E' μ)] at hval
-  exact hval.symm
+  obtain ⟨a, ha⟩ := eq_sum_shape_e_of_mem_span P
+    (classElem_mem_span_classSum c hc)
+  exact ⟨a, ha.symm⟩
 
 /-- **The character expansion of the completed cycle product** —
 the inverse Frobenius formula: the completed cycle product expands

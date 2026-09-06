@@ -44,12 +44,14 @@ structure Doubled (A : Type u) : Type u where
 
 namespace Doubled
 
-variable {A : Type u} [Category.{v} A]
+variable {A : Type u}
 
 /-- A morphism of super-objects: a pair of component morphisms,
 preserving the grading. -/
 @[ext]
-structure Hom (X Y : Doubled A) where
+structure Hom
+    [Category.{v} A]
+    (X Y : Doubled A) where
   /-- The even component of the morphism. -/
   even : X.even ⟶ Y.even
   /-- The odd component of the morphism. -/
@@ -57,65 +59,76 @@ structure Hom (X Y : Doubled A) where
 
 /-- Super-objects form a category with componentwise identities
 and composition. -/
-instance instCategory : Category (Doubled A) where
+instance instCategory [Category.{v} A] : Category (Doubled A) where
   Hom := Hom
   id X := ⟨𝟙 X.even, 𝟙 X.odd⟩
   comp f g := ⟨f.even ≫ g.even, f.odd ≫ g.odd⟩
 
 /-- The even component of a morphism of super-objects. -/
-def evenHom {X Y : Doubled A} (f : X ⟶ Y) : X.even ⟶ Y.even :=
+def evenHom [Category.{v} A]
+    {X Y : Doubled A} (f : X ⟶ Y) : X.even ⟶ Y.even :=
   Hom.even f
 
 /-- The odd component of a morphism of super-objects. -/
-def oddHom {X Y : Doubled A} (f : X ⟶ Y) : X.odd ⟶ Y.odd :=
+def oddHom [Category.{v} A]
+    {X Y : Doubled A} (f : X ⟶ Y) : X.odd ⟶ Y.odd :=
   Hom.odd f
 
 /-- Morphisms of super-objects agreeing in both components are
 equal. -/
 @[ext]
-theorem hom_ext {X Y : Doubled A} {f g : X ⟶ Y}
+theorem hom_ext [Category.{v} A]
+    {X Y : Doubled A} {f g : X ⟶ Y}
     (he : evenHom f = evenHom g) (ho : oddHom f = oddHom g) :
     f = g :=
   Hom.ext he ho
 
 /-- A morphism of super-objects from a pair of component
 morphisms. -/
-def homMk {X Y : Doubled A} (fe : X.even ⟶ Y.even)
+def homMk [Category.{v} A]
+    {X Y : Doubled A} (fe : X.even ⟶ Y.even)
     (fo : X.odd ⟶ Y.odd) : X ⟶ Y :=
   ⟨fe, fo⟩
 
 @[simp]
-theorem evenHom_homMk {X Y : Doubled A} (fe : X.even ⟶ Y.even)
+theorem evenHom_homMk [Category.{v} A]
+    {X Y : Doubled A} (fe : X.even ⟶ Y.even)
     (fo : X.odd ⟶ Y.odd) : evenHom (homMk fe fo) = fe :=
   rfl
 
 @[simp]
-theorem oddHom_homMk {X Y : Doubled A} (fe : X.even ⟶ Y.even)
+theorem oddHom_homMk [Category.{v} A]
+    {X Y : Doubled A} (fe : X.even ⟶ Y.even)
     (fo : X.odd ⟶ Y.odd) : oddHom (homMk fe fo) = fo :=
   rfl
 
 @[simp]
-theorem evenHom_id (X : Doubled A) : evenHom (𝟙 X) = 𝟙 X.even :=
+theorem evenHom_id [Category.{v} A]
+    (X : Doubled A) : evenHom (𝟙 X) = 𝟙 X.even :=
   rfl
 
 @[simp]
-theorem oddHom_id (X : Doubled A) : oddHom (𝟙 X) = 𝟙 X.odd :=
+theorem oddHom_id [Category.{v} A]
+    (X : Doubled A) : oddHom (𝟙 X) = 𝟙 X.odd :=
   rfl
 
 @[simp]
-theorem evenHom_comp {X Y Z : Doubled A} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem evenHom_comp [Category.{v} A]
+    {X Y Z : Doubled A} (f : X ⟶ Y) (g : Y ⟶ Z) :
     evenHom (f ≫ g) = evenHom f ≫ evenHom g :=
   rfl
 
 @[simp]
-theorem oddHom_comp {X Y Z : Doubled A} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem oddHom_comp [Category.{v} A]
+    {X Y Z : Doubled A} (f : X ⟶ Y) (g : Y ⟶ Z) :
     oddHom (f ≫ g) = oddHom f ≫ oddHom g :=
   rfl
 
 /-- An isomorphism of super-objects from a pair of component
 isomorphisms. -/
 @[simps]
-def isoMk {X Y : Doubled A} (e : X.even ≅ Y.even)
+def isoMk [Category.{v} A]
+    {X Y : Doubled A} (e : X.even ≅ Y.even)
     (o : X.odd ≅ Y.odd) : X ≅ Y where
   hom := homMk e.hom o.hom
   inv := homMk e.inv o.inv
@@ -124,22 +137,24 @@ def isoMk {X Y : Doubled A} (e : X.even ≅ Y.even)
 
 section Preadditive
 
-variable [Preadditive A]
-
 /-- The componentwise zero morphism. -/
-instance homZero (X Y : Doubled A) : Zero (X ⟶ Y) :=
+instance homZero [Category.{v} A] [Preadditive A]
+    (X Y : Doubled A) : Zero (X ⟶ Y) :=
   ⟨homMk 0 0⟩
 
 /-- Componentwise addition of morphisms. -/
-instance homAdd (X Y : Doubled A) : Add (X ⟶ Y) :=
+instance homAdd [Category.{v} A] [Preadditive A]
+    (X Y : Doubled A) : Add (X ⟶ Y) :=
   ⟨fun f g => homMk (evenHom f + evenHom g) (oddHom f + oddHom g)⟩
 
 /-- Componentwise negation of morphisms. -/
-instance homNeg (X Y : Doubled A) : Neg (X ⟶ Y) :=
+instance homNeg [Category.{v} A] [Preadditive A]
+    (X Y : Doubled A) : Neg (X ⟶ Y) :=
   ⟨fun f => homMk (-evenHom f) (-oddHom f)⟩
 
 /-- The componentwise additive group of morphisms. -/
-instance homAddCommGroup (X Y : Doubled A) : AddCommGroup (X ⟶ Y) where
+instance homAddCommGroup [Category.{v} A] [Preadditive A]
+    (X Y : Doubled A) : AddCommGroup (X ⟶ Y) where
   nsmul := nsmulRec
   zsmul := zsmulRec
   add_assoc _ _ _ := Hom.ext (add_assoc _ _ _) (add_assoc _ _ _)
@@ -150,48 +165,57 @@ instance homAddCommGroup (X Y : Doubled A) : AddCommGroup (X ⟶ Y) where
     Hom.ext (neg_add_cancel _) (neg_add_cancel _)
 
 @[simp]
-theorem evenHom_add {X Y : Doubled A} (f g : X ⟶ Y) :
+theorem evenHom_add [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} (f g : X ⟶ Y) :
     evenHom (f + g) = evenHom f + evenHom g :=
   rfl
 
 @[simp]
-theorem oddHom_add {X Y : Doubled A} (f g : X ⟶ Y) :
+theorem oddHom_add [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} (f g : X ⟶ Y) :
     oddHom (f + g) = oddHom f + oddHom g :=
   rfl
 
 @[simp]
-theorem evenHom_zero {X Y : Doubled A} :
+theorem evenHom_zero [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} :
     evenHom (0 : X ⟶ Y) = 0 :=
   rfl
 
 @[simp]
-theorem oddHom_zero {X Y : Doubled A} :
+theorem oddHom_zero [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} :
     oddHom (0 : X ⟶ Y) = 0 :=
   rfl
 
 @[simp]
-theorem evenHom_neg {X Y : Doubled A} (f : X ⟶ Y) :
+theorem evenHom_neg [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} (f : X ⟶ Y) :
     evenHom (-f) = -evenHom f :=
   rfl
 
 @[simp]
-theorem oddHom_neg {X Y : Doubled A} (f : X ⟶ Y) :
+theorem oddHom_neg [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} (f : X ⟶ Y) :
     oddHom (-f) = -oddHom f :=
   rfl
 
 @[simp]
-theorem evenHom_sub {X Y : Doubled A} (f g : X ⟶ Y) :
+theorem evenHom_sub [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} (f g : X ⟶ Y) :
     evenHom (f - g) = evenHom f - evenHom g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, evenHom_add, evenHom_neg]
 
 @[simp]
-theorem oddHom_sub {X Y : Doubled A} (f g : X ⟶ Y) :
+theorem oddHom_sub [Category.{v} A] [Preadditive A]
+    {X Y : Doubled A} (f g : X ⟶ Y) :
     oddHom (f - g) = oddHom f - oddHom g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, oddHom_add, oddHom_neg]
 
 /-- The doubling of a preadditive category is preadditive,
 componentwise. -/
-instance instPreadditive : Preadditive (Doubled A) where
+instance instPreadditive
+    [Category.{v} A] [Preadditive A] : Preadditive (Doubled A) where
   add_comp _ _ _ _ _ _ :=
     Hom.ext (Preadditive.add_comp _ _ _ _ _ _)
       (Preadditive.add_comp _ _ _ _ _ _)
@@ -199,9 +223,9 @@ instance instPreadditive : Preadditive (Doubled A) where
     Hom.ext (Preadditive.comp_add _ _ _ _ _ _)
       (Preadditive.comp_add _ _ _ _ _ _)
 
-omit [Preadditive A] in
 /-- A super-object with two zero components is a zero object. -/
-theorem isZero (X : Doubled A) (he : IsZero X.even)
+theorem isZero [Category.{v} A]
+    (X : Doubled A) (he : IsZero X.even)
     (ho : IsZero X.odd) : IsZero X where
   unique_to _ :=
     ⟨⟨⟨homMk (he.to_ _) (ho.to_ _)⟩,
@@ -213,7 +237,8 @@ theorem isZero (X : Doubled A) (he : IsZero X.even)
 open ZeroObject in
 /-- The doubling of a category with a zero object has a zero
 object, with both components zero. -/
-instance instHasZeroObject [HasZeroObject A] :
+instance instHasZeroObject [Category.{v} A]
+    [HasZeroObject A] :
     HasZeroObject (Doubled A) :=
   ⟨⟨0, 0⟩, isZero _ (isZero_zero A) (isZero_zero A)⟩
 
@@ -221,10 +246,9 @@ end Preadditive
 
 section Linear
 
-variable [Preadditive A] [CategoryTheory.Linear ℂ A]
-
 /-- The componentwise ℂ-module of morphisms. -/
-instance homModule (X Y : Doubled A) : Module ℂ (X ⟶ Y) where
+instance homModule [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A]
+    (X Y : Doubled A) : Module ℂ (X ⟶ Y) where
   smul c f := homMk (c • evenHom f) (c • oddHom f)
   one_smul _ := Hom.ext (one_smul _ _) (one_smul _ _)
   mul_smul _ _ _ := Hom.ext (mul_smul _ _ _) (mul_smul _ _ _)
@@ -234,18 +258,23 @@ instance homModule (X Y : Doubled A) : Module ℂ (X ⟶ Y) where
   zero_smul _ := Hom.ext (zero_smul _ _) (zero_smul _ _)
 
 @[simp]
-theorem evenHom_smul {X Y : Doubled A} (c : ℂ) (f : X ⟶ Y) :
+theorem evenHom_smul
+    [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A]
+    {X Y : Doubled A} (c : ℂ) (f : X ⟶ Y) :
     evenHom (c • f) = c • evenHom f :=
   rfl
 
 @[simp]
-theorem oddHom_smul {X Y : Doubled A} (c : ℂ) (f : X ⟶ Y) :
+theorem oddHom_smul [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A]
+    {X Y : Doubled A} (c : ℂ) (f : X ⟶ Y) :
     oddHom (c • f) = c • oddHom f :=
   rfl
 
 /-- The doubling of a ℂ-linear category is ℂ-linear,
 componentwise. -/
-instance instLinear : CategoryTheory.Linear ℂ (Doubled A) where
+instance instLinear
+    [Category.{v} A] [Preadditive A] [CategoryTheory.Linear ℂ A] :
+    CategoryTheory.Linear ℂ (Doubled A) where
   smul_comp _ _ _ _ _ _ :=
     Hom.ext (Linear.smul_comp _ _ _ _ _ _)
       (Linear.smul_comp _ _ _ _ _ _)
@@ -257,36 +286,45 @@ end Linear
 
 section Distributors
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A]
-
 /-- The matrix map out of a right-whiskered binary biproduct. -/
-def descRight {M N Z T : A} (f : M ⊗ Z ⟶ T) (g : N ⊗ Z ⟶ T) :
+def descRight [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T : A} (f : M ⊗ Z ⟶ T) (g : N ⊗ Z ⟶ T) :
     (M ⊞ N) ⊗ Z ⟶ T :=
   (biprodTensorIso M N Z).hom ≫ biprod.desc f g
 
 /-- The matrix map out of a left-whiskered binary biproduct. -/
-def descLeft {X M N T : A} (f : X ⊗ M ⟶ T) (g : X ⊗ N ⟶ T) :
+def descLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T : A} (f : X ⊗ M ⟶ T) (g : X ⊗ N ⟶ T) :
     X ⊗ (M ⊞ N) ⟶ T :=
   (tensorBiprodIso X M N).hom ≫ biprod.desc f g
 
 @[reassoc (attr := simp)]
-theorem inl_descRight {M N Z T : A} (f : M ⊗ Z ⟶ T)
+theorem inl_descRight [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T : A} (f : M ⊗ Z ⟶ T)
     (g : N ⊗ Z ⟶ T) : (biprod.inl ▷ Z) ≫ descRight f g = f := by
   simp [descRight]
 
 @[reassoc (attr := simp)]
-theorem inr_descRight {M N Z T : A} (f : M ⊗ Z ⟶ T)
+theorem inr_descRight [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T : A} (f : M ⊗ Z ⟶ T)
     (g : N ⊗ Z ⟶ T) : (biprod.inr ▷ Z) ≫ descRight f g = g := by
   simp [descRight]
 
 @[reassoc (attr := simp)]
-theorem inl_descLeft {X M N T : A} (f : X ⊗ M ⟶ T)
+theorem inl_descLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T : A} (f : X ⊗ M ⟶ T)
     (g : X ⊗ N ⟶ T) : (X ◁ biprod.inl) ≫ descLeft f g = f := by
   simp [descLeft]
 
 @[reassoc (attr := simp)]
-theorem inr_descLeft {X M N T : A} (f : X ⊗ M ⟶ T)
+theorem inr_descLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T : A} (f : X ⊗ M ⟶ T)
     (g : X ⊗ N ⟶ T) : (X ◁ biprod.inr) ≫ descLeft f g = g := by
   simp [descLeft]
 
@@ -294,7 +332,9 @@ theorem inr_descLeft {X M N T : A} (f : X ⊗ M ⟶ T)
 lemma: `⊗ₘ 𝟙` normalises to the whiskering, where
 `inl_descRight` already applies. -/
 @[reassoc]
-theorem inl_id_descRight {M N Z T : A} (f : M ⊗ Z ⟶ T)
+theorem inl_id_descRight [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T : A} (f : M ⊗ Z ⟶ T)
     (g : N ⊗ Z ⟶ T) :
     (biprod.inl ⊗ₘ 𝟙 Z) ≫ descRight f g = f := by
   rw [tensorHom_id, inl_descRight]
@@ -303,7 +343,9 @@ theorem inl_id_descRight {M N Z T : A} (f : M ⊗ Z ⟶ T)
 lemma: `⊗ₘ 𝟙` normalises to the whiskering, where
 `inr_descRight` already applies. -/
 @[reassoc]
-theorem inr_id_descRight {M N Z T : A} (f : M ⊗ Z ⟶ T)
+theorem inr_id_descRight [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T : A} (f : M ⊗ Z ⟶ T)
     (g : N ⊗ Z ⟶ T) :
     (biprod.inr ⊗ₘ 𝟙 Z) ≫ descRight f g = g := by
   rw [tensorHom_id, inr_descRight]
@@ -312,7 +354,9 @@ theorem inr_id_descRight {M N Z T : A} (f : M ⊗ Z ⟶ T)
 lemma: `𝟙 ⊗ₘ` normalises to the whiskering, where `inl_descLeft`
 already applies. -/
 @[reassoc]
-theorem id_inl_descLeft {X M N T : A} (f : X ⊗ M ⟶ T)
+theorem id_inl_descLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T : A} (f : X ⊗ M ⟶ T)
     (g : X ⊗ N ⟶ T) :
     (𝟙 X ⊗ₘ biprod.inl) ≫ descLeft f g = f := by
   rw [id_tensorHom, inl_descLeft]
@@ -321,73 +365,94 @@ theorem id_inl_descLeft {X M N T : A} (f : X ⊗ M ⟶ T)
 lemma: `𝟙 ⊗ₘ` normalises to the whiskering, where `inr_descLeft`
 already applies. -/
 @[reassoc]
-theorem id_inr_descLeft {X M N T : A} (f : X ⊗ M ⟶ T)
+theorem id_inr_descLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T : A} (f : X ⊗ M ⟶ T)
     (g : X ⊗ N ⟶ T) :
     (𝟙 X ⊗ₘ biprod.inr) ≫ descLeft f g = g := by
   rw [id_tensorHom, inr_descLeft]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inl_map_whiskerRight {M N M' N' Z : A} (f : M ⟶ M')
+theorem inl_map_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {M N M' N' Z : A} (f : M ⟶ M')
     (g : N ⟶ N') :
     (biprod.inl ▷ Z) ≫ (biprod.map f g ▷ Z) =
       (f ▷ Z) ≫ (biprod.inl ▷ Z) := by
   rw [← comp_whiskerRight, biprod.inl_map, comp_whiskerRight]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inr_map_whiskerRight {M N M' N' Z : A} (f : M ⟶ M')
+theorem inr_map_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {M N M' N' Z : A} (f : M ⟶ M')
     (g : N ⟶ N') :
     (biprod.inr ▷ Z) ≫ (biprod.map f g ▷ Z) =
       (g ▷ Z) ≫ (biprod.inr ▷ Z) := by
   rw [← comp_whiskerRight, biprod.inr_map, comp_whiskerRight]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inl_desc_whiskerRight {M N T Z : A} (f : M ⟶ T)
+theorem inl_desc_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {M N T Z : A} (f : M ⟶ T)
     (g : N ⟶ T) :
     (biprod.inl ▷ Z) ≫ (biprod.desc f g ▷ Z) = f ▷ Z := by
   rw [← comp_whiskerRight, biprod.inl_desc]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inr_desc_whiskerRight {M N T Z : A} (f : M ⟶ T)
+theorem inr_desc_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {M N T Z : A} (f : M ⟶ T)
     (g : N ⟶ T) :
     (biprod.inr ▷ Z) ≫ (biprod.desc f g ▷ Z) = g ▷ Z := by
   rw [← comp_whiskerRight, biprod.inr_desc]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inl_map_whiskerLeft {X M N M' N' : A} (f : M ⟶ M')
+theorem inl_map_whiskerLeft
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {X M N M' N' : A} (f : M ⟶ M')
     (g : N ⟶ N') :
     (X ◁ biprod.inl) ≫ (X ◁ biprod.map f g) =
       (X ◁ f) ≫ (X ◁ biprod.inl) := by
   rw [← whiskerLeft_comp, biprod.inl_map, whiskerLeft_comp]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inr_map_whiskerLeft {X M N M' N' : A} (f : M ⟶ M')
+theorem inr_map_whiskerLeft
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {X M N M' N' : A} (f : M ⟶ M')
     (g : N ⟶ N') :
     (X ◁ biprod.inr) ≫ (X ◁ biprod.map f g) =
       (X ◁ g) ≫ (X ◁ biprod.inr) := by
   rw [← whiskerLeft_comp, biprod.inr_map, whiskerLeft_comp]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inl_desc_whiskerLeft {X M N T : A} (f : M ⟶ T)
+theorem inl_desc_whiskerLeft
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {X M N T : A} (f : M ⟶ T)
     (g : N ⟶ T) :
     (X ◁ biprod.inl) ≫ (X ◁ biprod.desc f g) = X ◁ f := by
   rw [← whiskerLeft_comp, biprod.inl_desc]
 
-omit [MonoidalPreadditive A] in
 @[reassoc (attr := simp)]
-theorem inr_desc_whiskerLeft {X M N T : A} (f : M ⟶ T)
+theorem inr_desc_whiskerLeft
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {X M N T : A} (f : M ⟶ T)
     (g : N ⟶ T) :
     (X ◁ biprod.inr) ≫ (X ◁ biprod.desc f g) = X ◁ g := by
   rw [← whiskerLeft_comp, biprod.inr_desc]
 
 @[reassoc (attr := simp)]
-theorem whiskerLeft_lift_descLeft {X M N T U : A} (f : U ⟶ M)
+theorem whiskerLeft_lift_descLeft
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T U : A} (f : U ⟶ M)
     (g : U ⟶ N) (h : X ⊗ M ⟶ T) (k : X ⊗ N ⟶ T) :
     (X ◁ biprod.lift f g) ≫ descLeft h k =
       (X ◁ f) ≫ h + (X ◁ g) ≫ k := by
@@ -398,7 +463,10 @@ theorem whiskerLeft_lift_descLeft {X M N T U : A} (f : U ⟶ M)
   rw [biprod.lift_desc]
 
 @[reassoc (attr := simp)]
-theorem lift_whiskerRight_descRight {M N Z T U : A} (f : U ⟶ M)
+theorem lift_whiskerRight_descRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T U : A} (f : U ⟶ M)
     (g : U ⟶ N) (h : M ⊗ Z ⟶ T) (k : N ⊗ Z ⟶ T) :
     (biprod.lift f g ▷ Z) ≫ descRight h k =
       (f ▷ Z) ≫ h + (g ▷ Z) ≫ k := by
@@ -410,7 +478,9 @@ theorem lift_whiskerRight_descRight {M N Z T U : A} (f : U ⟶ M)
 
 /-- Maps out of a right-whiskered binary biproduct are determined
 by their composites with the whiskered inclusions. -/
-theorem tensorRight_ext {M N Z T : A} {f g : (M ⊞ N) ⊗ Z ⟶ T}
+theorem tensorRight_ext [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {M N Z T : A} {f g : (M ⊞ N) ⊗ Z ⟶ T}
     (h₁ : (biprod.inl ▷ Z) ≫ f = (biprod.inl ▷ Z) ≫ g)
     (h₂ : (biprod.inr ▷ Z) ≫ f = (biprod.inr ▷ Z) ≫ g) : f = g := by
   rw [← cancel_epi (biprodTensorIso M N Z).inv]
@@ -420,7 +490,9 @@ theorem tensorRight_ext {M N Z T : A} {f g : (M ⊞ N) ⊗ Z ⟶ T}
 
 /-- Maps out of a left-whiskered binary biproduct are determined
 by their composites with the whiskered inclusions. -/
-theorem tensorLeft_ext {X M N T : A} {f g : X ⊗ (M ⊞ N) ⟶ T}
+theorem tensorLeft_ext [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    {X M N T : A} {f g : X ⊗ (M ⊞ N) ⟶ T}
     (h₁ : (X ◁ biprod.inl) ≫ f = (X ◁ biprod.inl) ≫ g)
     (h₂ : (X ◁ biprod.inr) ≫ f = (X ◁ biprod.inr) ≫ g) : f = g := by
   rw [← cancel_epi (tensorBiprodIso X M N).inv]
@@ -432,43 +504,50 @@ end Distributors
 
 section GradedTensor
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A]
-
 /-- The graded tensor product of super-objects: parities add, so
 each component of the product is a biproduct of two mixed blocks. -/
-def tensorObj (X Y : Doubled A) : Doubled A where
+def tensorObj [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : Doubled A) : Doubled A where
   even := X.even ⊗ Y.even ⊞ X.odd ⊗ Y.odd
   odd := X.even ⊗ Y.odd ⊞ X.odd ⊗ Y.even
 
-omit [MonoidalPreadditive A] in
 @[simp]
-theorem tensorObj_even (X Y : Doubled A) :
+theorem tensorObj_even [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : Doubled A) :
     (tensorObj X Y).even = (X.even ⊗ Y.even ⊞ X.odd ⊗ Y.odd) :=
   rfl
 
-omit [MonoidalPreadditive A] in
 @[simp]
-theorem tensorObj_odd (X Y : Doubled A) :
+theorem tensorObj_odd [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X Y : Doubled A) :
     (tensorObj X Y).odd = (X.even ⊗ Y.odd ⊞ X.odd ⊗ Y.even) :=
   rfl
 
 /-- The graded tensor product of morphisms, blockwise. -/
-def tensorHom {X₁ Y₁ X₂ Y₂ : Doubled A} (f : X₁ ⟶ Y₁)
+def tensorHom [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {X₁ Y₁ X₂ Y₂ : Doubled A} (f : X₁ ⟶ Y₁)
     (g : X₂ ⟶ Y₂) : tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂ :=
   homMk
     (biprod.map (evenHom f ⊗ₘ evenHom g) (oddHom f ⊗ₘ oddHom g))
     (biprod.map (evenHom f ⊗ₘ oddHom g) (oddHom f ⊗ₘ evenHom g))
 
 /-- Left whiskering of super-objects, blockwise. -/
-def whiskerLeft (X : Doubled A) {Y₁ Y₂ : Doubled A} (g : Y₁ ⟶ Y₂) :
+def whiskerLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (X : Doubled A) {Y₁ Y₂ : Doubled A} (g : Y₁ ⟶ Y₂) :
     tensorObj X Y₁ ⟶ tensorObj X Y₂ :=
   homMk
     (biprod.map (X.even ◁ evenHom g) (X.odd ◁ oddHom g))
     (biprod.map (X.even ◁ oddHom g) (X.odd ◁ evenHom g))
 
 /-- Right whiskering of super-objects, blockwise. -/
-def whiskerRight {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂) (Y : Doubled A) :
+def whiskerRight [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂) (Y : Doubled A) :
     tensorObj X₁ Y ⟶ tensorObj X₂ Y :=
   homMk
     (biprod.map (evenHom f ▷ Y.even) (oddHom f ▷ Y.odd))
@@ -477,7 +556,9 @@ def whiskerRight {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂) (Y : Doubled A) :
 /-- The even component of the associator: each of the four parity
 blocks re-associates through `A`'s associator and is routed to the
 matching block of the right-nested product. -/
-def assocEven (X Y Z : Doubled A) :
+def assocEven [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    (X Y Z : Doubled A) :
     (tensorObj (tensorObj X Y) Z).even ≅
       (tensorObj X (tensorObj Y Z)).even where
   hom := biprod.desc
@@ -508,7 +589,9 @@ def assocEven (X Y Z : Doubled A) :
     apply biprod.hom_ext' <;> apply tensorLeft_ext <;> simp
 
 /-- The odd component of the associator. -/
-def assocOdd (X Y Z : Doubled A) :
+def assocOdd [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    (X Y Z : Doubled A) :
     (tensorObj (tensorObj X Y) Z).odd ≅
       (tensorObj X (tensorObj Y Z)).odd where
   hom := biprod.desc
@@ -542,29 +625,31 @@ end GradedTensor
 
 section Total
 
-variable [Preadditive A] [HasBinaryBiproducts A]
-
 /-- The summing functor `X ↦ X.even ⊞ X.odd`.  It is faithful, and
 the monoidal coherences of the doubling are induced along it. -/
-def total : Doubled A ⥤ A where
+def total [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A] :
+    Doubled A ⥤ A where
   obj X := X.even ⊞ X.odd
   map f := biprod.map (evenHom f) (oddHom f)
   map_id _ := by ext <;> simp
   map_comp _ _ := by ext <;> simp
 
 @[simp]
-theorem total_obj (X : Doubled A) :
+theorem total_obj [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : Doubled A) :
     total.obj X = (X.even ⊞ X.odd) :=
   rfl
 
 @[simp]
-theorem total_map {X Y : Doubled A} (f : X ⟶ Y) :
+theorem total_map [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {X Y : Doubled A} (f : X ⟶ Y) :
     total.map f = biprod.map (evenHom f) (oddHom f) :=
   rfl
 
 /-- The summing functor is faithful: both components are recovered
 as matrix entries. -/
-instance : (total (A := A)).Faithful where
+instance [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A] :
+    (total (A := A)).Faithful where
   map_injective {X Y f g} h := by
     ext
     · calc evenHom f
@@ -582,29 +667,30 @@ section UnitAndStruct
 
 open ZeroObject
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
-
 /-- The monoidal unit of the doubling: the unit of `A` in even
 degree, the zero object in odd degree. -/
-def unit : Doubled A :=
+def unit [Category.{v} A] [MonoidalCategory A] [HasZeroObject A] : Doubled A :=
   ⟨𝟙_ A, 0⟩
 
-omit [HasBinaryBiproducts A] in
 /-- A left tensor factor which is the zero object kills the
 product. -/
-theorem isZero_zeroTensor (M : A) : IsZero ((0 : A) ⊗ M) :=
+theorem isZero_zeroTensor [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasZeroObject A]
+    (M : A) : IsZero ((0 : A) ⊗ M) :=
   (tensorRight M).map_isZero (isZero_zero A)
 
-omit [HasBinaryBiproducts A] in
 /-- A right tensor factor which is the zero object kills the
 product. -/
-theorem isZero_tensorZero (M : A) : IsZero (M ⊗ (0 : A)) :=
+theorem isZero_tensorZero [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasZeroObject A]
+    (M : A) : IsZero (M ⊗ (0 : A)) :=
   (tensorLeft M).map_isZero (isZero_zero A)
 
 /-- Collapse of a unit block against a zero block, in the shape of
 the left unitor components. -/
-def leftUnitorComp (M M' : A) :
+def leftUnitorComp [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (M M' : A) :
     ((𝟙_ A) ⊗ M ⊞ (0 : A) ⊗ M') ≅ M where
   hom := biprod.desc (λ_ M).hom 0
   inv := (λ_ M).inv ≫ biprod.inl
@@ -616,7 +702,9 @@ def leftUnitorComp (M M' : A) :
 
 /-- Collapse of a unit block against a zero block, in the shape of
 the even right unitor component. -/
-def rightUnitorComp (M M' : A) :
+def rightUnitorComp [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (M M' : A) :
     (M ⊗ 𝟙_ A ⊞ M' ⊗ (0 : A)) ≅ M where
   hom := biprod.desc (ρ_ M).hom 0
   inv := (ρ_ M).inv ≫ biprod.inl
@@ -628,7 +716,9 @@ def rightUnitorComp (M M' : A) :
 
 /-- Collapse of a unit block against a zero block, in the shape of
 the odd right unitor component. -/
-def rightUnitorCompOdd (M M' : A) :
+def rightUnitorCompOdd [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (M M' : A) :
     (M' ⊗ (0 : A) ⊞ M ⊗ 𝟙_ A) ≅ M where
   hom := biprod.desc 0 (ρ_ M).hom
   inv := (ρ_ M).inv ≫ biprod.inr
@@ -640,7 +730,9 @@ def rightUnitorCompOdd (M M' : A) :
 
 /-- The monoidal skeleton of the doubling: graded tensor product,
 unit `(𝟙_ A, 0)`, blockwise structural isomorphisms. -/
-instance instMonoidalCategoryStruct :
+instance instMonoidalCategoryStruct
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
     MonoidalCategoryStruct (Doubled A) where
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
@@ -657,128 +749,189 @@ instance instMonoidalCategoryStruct :
 /-! ### Components of the monoidal notation -/
 
 @[simp]
-theorem unit_even : (𝟙_ (Doubled A)).even = 𝟙_ A :=
+theorem unit_even [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    (𝟙_ (Doubled A)).even = 𝟙_ A :=
   rfl
 
 @[simp]
-theorem unit_odd : (𝟙_ (Doubled A)).odd = (0 : A) :=
+theorem unit_odd [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    (𝟙_ (Doubled A)).odd = (0 : A) :=
   rfl
 
 @[simp]
-theorem tensor_even (X Y : Doubled A) :
+theorem tensor_even [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y : Doubled A) :
     (X ⊗ Y).even = (X.even ⊗ Y.even ⊞ X.odd ⊗ Y.odd) :=
   rfl
 
 @[simp]
-theorem tensor_odd (X Y : Doubled A) :
+theorem tensor_odd [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y : Doubled A) :
     (X ⊗ Y).odd = (X.even ⊗ Y.odd ⊞ X.odd ⊗ Y.even) :=
   rfl
 
 @[simp]
-theorem evenHom_tensor {X₁ Y₁ X₂ Y₂ : Doubled A} (f : X₁ ⟶ Y₁)
+theorem evenHom_tensor [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    {X₁ Y₁ X₂ Y₂ : Doubled A} (f : X₁ ⟶ Y₁)
     (g : X₂ ⟶ Y₂) :
     evenHom (f ⊗ₘ g) =
       biprod.map (evenHom f ⊗ₘ evenHom g) (oddHom f ⊗ₘ oddHom g) :=
   rfl
 
 @[simp]
-theorem oddHom_tensor {X₁ Y₁ X₂ Y₂ : Doubled A} (f : X₁ ⟶ Y₁)
+theorem oddHom_tensor [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    {X₁ Y₁ X₂ Y₂ : Doubled A} (f : X₁ ⟶ Y₁)
     (g : X₂ ⟶ Y₂) :
     oddHom (f ⊗ₘ g) =
       biprod.map (evenHom f ⊗ₘ oddHom g) (oddHom f ⊗ₘ evenHom g) :=
   rfl
 
 @[simp]
-theorem evenHom_whiskerLeft (X : Doubled A) {Y₁ Y₂ : Doubled A}
+theorem evenHom_whiskerLeft
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) {Y₁ Y₂ : Doubled A}
     (g : Y₁ ⟶ Y₂) :
     evenHom (X ◁ g) =
       biprod.map (X.even ◁ evenHom g) (X.odd ◁ oddHom g) :=
   rfl
 
 @[simp]
-theorem oddHom_whiskerLeft (X : Doubled A) {Y₁ Y₂ : Doubled A}
+theorem oddHom_whiskerLeft [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) {Y₁ Y₂ : Doubled A}
     (g : Y₁ ⟶ Y₂) :
     oddHom (X ◁ g) =
       biprod.map (X.even ◁ oddHom g) (X.odd ◁ evenHom g) :=
   rfl
 
 @[simp]
-theorem evenHom_whiskerRight {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂)
+theorem evenHom_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂)
     (Y : Doubled A) :
     evenHom (f ▷ Y) =
       biprod.map (evenHom f ▷ Y.even) (oddHom f ▷ Y.odd) :=
   rfl
 
 @[simp]
-theorem oddHom_whiskerRight {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂)
+theorem oddHom_whiskerRight
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    {X₁ X₂ : Doubled A} (f : X₁ ⟶ X₂)
     (Y : Doubled A) :
     oddHom (f ▷ Y) =
       biprod.map (evenHom f ▷ Y.odd) (oddHom f ▷ Y.even) :=
   rfl
 
 @[simp]
-theorem evenHom_associator_hom (X Y Z : Doubled A) :
+theorem evenHom_associator_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y Z : Doubled A) :
     evenHom (α_ X Y Z).hom = (assocEven X Y Z).hom :=
   rfl
 
 @[simp]
-theorem oddHom_associator_hom (X Y Z : Doubled A) :
+theorem oddHom_associator_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y Z : Doubled A) :
     oddHom (α_ X Y Z).hom = (assocOdd X Y Z).hom :=
   rfl
 
 @[simp]
-theorem evenHom_associator_inv (X Y Z : Doubled A) :
+theorem evenHom_associator_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y Z : Doubled A) :
     evenHom (α_ X Y Z).inv = (assocEven X Y Z).inv :=
   rfl
 
 @[simp]
-theorem oddHom_associator_inv (X Y Z : Doubled A) :
+theorem oddHom_associator_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y Z : Doubled A) :
     oddHom (α_ X Y Z).inv = (assocOdd X Y Z).inv :=
   rfl
 
 @[simp]
-theorem evenHom_leftUnitor_hom (X : Doubled A) :
+theorem evenHom_leftUnitor_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     evenHom (λ_ X).hom = (leftUnitorComp X.even X.odd).hom :=
   rfl
 
 @[simp]
-theorem oddHom_leftUnitor_hom (X : Doubled A) :
+theorem oddHom_leftUnitor_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     oddHom (λ_ X).hom = (leftUnitorComp X.odd X.even).hom :=
   rfl
 
 @[simp]
-theorem evenHom_leftUnitor_inv (X : Doubled A) :
+theorem evenHom_leftUnitor_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     evenHom (λ_ X).inv = (leftUnitorComp X.even X.odd).inv :=
   rfl
 
 @[simp]
-theorem oddHom_leftUnitor_inv (X : Doubled A) :
+theorem oddHom_leftUnitor_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     oddHom (λ_ X).inv = (leftUnitorComp X.odd X.even).inv :=
   rfl
 
 @[simp]
-theorem evenHom_rightUnitor_hom (X : Doubled A) :
+theorem evenHom_rightUnitor_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     evenHom (ρ_ X).hom = (rightUnitorComp X.even X.odd).hom :=
   rfl
 
 @[simp]
-theorem oddHom_rightUnitor_hom (X : Doubled A) :
+theorem oddHom_rightUnitor_hom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     oddHom (ρ_ X).hom = (rightUnitorCompOdd X.odd X.even).hom :=
   rfl
 
 @[simp]
-theorem evenHom_rightUnitor_inv (X : Doubled A) :
+theorem evenHom_rightUnitor_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     evenHom (ρ_ X).inv = (rightUnitorComp X.even X.odd).inv :=
   rfl
 
 @[simp]
-theorem oddHom_rightUnitor_inv (X : Doubled A) :
+theorem oddHom_rightUnitor_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     oddHom (ρ_ X).inv = (rightUnitorCompOdd X.odd X.even).inv :=
   rfl
 
 /-- The multiplicative comparison of the summing functor: double
 distribution followed by the parity shuffle. -/
-def muIso (X Y : Doubled A) :
+def muIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y : Doubled A) :
     total.obj X ⊗ total.obj Y ≅ total.obj (X ⊗ Y) where
   hom := descRight
     (descLeft (biprod.inl ≫ biprod.inl) (biprod.inl ≫ biprod.inr))
@@ -796,7 +949,9 @@ def muIso (X Y : Doubled A) :
       simp [tensorHom_def']
 
 /-- The unit comparison of the summing functor. -/
-def epsIso : 𝟙_ A ≅ total.obj (𝟙_ (Doubled A)) where
+def epsIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    𝟙_ A ≅ total.obj (𝟙_ (Doubled A)) where
   hom := biprod.inl
   inv := biprod.fst
   hom_inv_id := by simp
@@ -808,7 +963,10 @@ def epsIso : 𝟙_ A ≅ total.obj (𝟙_ (Doubled A)) where
 /-- The summing functor intertwines the graded tensor of morphisms
 with the ambient tensor, through the comparison `muIso`. -/
 @[reassoc]
-theorem total_tensorHom_muIso_inv {X₁ Y₁ X₂ Y₂ : Doubled A}
+theorem total_tensorHom_muIso_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    {X₁ Y₁ X₂ Y₂ : Doubled A}
     (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     total.map (f ⊗ₘ g) ≫ (muIso Y₁ Y₂).inv =
       (muIso X₁ X₂).inv ≫ (total.map f ⊗ₘ total.map g) := by
@@ -818,7 +976,10 @@ theorem total_tensorHom_muIso_inv {X₁ Y₁ X₂ Y₂ : Doubled A}
 /-- The summing functor intertwines graded left whiskering with
 ambient left whiskering, through the comparison `muIso`. -/
 @[reassoc]
-theorem total_whiskerLeft_muIso_inv (X : Doubled A)
+theorem total_whiskerLeft_muIso_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A)
     {Y₁ Y₂ : Doubled A} (g : Y₁ ⟶ Y₂) :
     total.map (X ◁ g) ≫ (muIso X Y₂).inv =
       (muIso X Y₁).inv ≫ (total.obj X ◁ total.map g) := by
@@ -828,7 +989,10 @@ theorem total_whiskerLeft_muIso_inv (X : Doubled A)
 /-- The summing functor intertwines graded right whiskering with
 ambient right whiskering, through the comparison `muIso`. -/
 @[reassoc]
-theorem total_whiskerRight_muIso_inv {X₁ X₂ : Doubled A}
+theorem total_whiskerRight_muIso_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    {X₁ X₂ : Doubled A}
     (f : X₁ ⟶ X₂) (Y : Doubled A) :
     total.map (f ▷ Y) ≫ (muIso X₂ Y).inv =
       (muIso X₁ Y).inv ≫ (total.map f ▷ total.obj Y) := by
@@ -838,7 +1002,10 @@ theorem total_whiskerRight_muIso_inv {X₁ X₂ : Doubled A}
 /-- The summing functor intertwines the graded associator with the
 ambient associator, through the comparison `muIso`. -/
 @[reassoc]
-theorem total_associator_muIso_inv (X Y Z : Doubled A) :
+theorem total_associator_muIso_inv
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y Z : Doubled A) :
     total.map (α_ X Y Z).hom ≫ (muIso X (Y ⊗ Z)).inv ≫
         (𝟙 (total.obj X) ⊗ₘ (muIso Y Z).inv) =
       (muIso (X ⊗ Y) Z).inv ≫
@@ -853,7 +1020,8 @@ theorem total_associator_muIso_inv (X Y Z : Doubled A) :
 /-- The inducing data exhibiting the graded structural morphisms
 as the images of `A`'s structural morphisms under the parity
 distributors. -/
-def totalInducingData :
+def totalInducingData [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
     Monoidal.InducingFunctorData (total (A := A)) where
   μIso := muIso
   εIso := epsIso
@@ -888,25 +1056,30 @@ def totalInducingData :
 /-- The doubling of a monoidal category is monoidal, with the
 graded tensor product: the coherences are induced along the
 faithful summing functor. -/
-instance instMonoidalCategory : MonoidalCategory (Doubled A) :=
+instance instMonoidalCategory
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    MonoidalCategory (Doubled A) :=
   Monoidal.induced total totalInducingData
 
 /-- The summing functor is monoidal. -/
-instance : (total (A := A)).Monoidal :=
+instance [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    (total (A := A)).Monoidal :=
   Monoidal.fromInducedMonoidal total totalInducingData
 
 end UnitAndStruct
 
 section MonoidalPreadditive
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
-
 /-- The doubling of a monoidal preadditive category is monoidal
 preadditive, componentwise.  Each component equation is restated
 (`show`) with its objects in literal biproduct form, so that the
 ambient simp lemmas apply. -/
-instance instMonoidalPreadditive : MonoidalPreadditive (Doubled A) where
+instance instMonoidalPreadditive
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    MonoidalPreadditive (Doubled A) where
   whiskerLeft_zero {X Y Z} := by
     ext
     · show biprod.map (X.even ◁ (0 : Y.even ⟶ Z.even))
@@ -958,7 +1131,10 @@ instance instMonoidalPreadditive : MonoidalPreadditive (Doubled A) where
 
 /-- The doubling of a monoidal ℂ-linear category is monoidal
 ℂ-linear, componentwise. -/
-instance instMonoidalLinear [CategoryTheory.Linear ℂ A]
+instance instMonoidalLinear
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [CategoryTheory.Linear ℂ A]
     [MonoidalLinear ℂ A] : MonoidalLinear ℂ (Doubled A) where
   whiskerLeft_smul X {Y Z} r f := by
     ext
@@ -985,12 +1161,12 @@ end MonoidalPreadditive
 
 section Braided
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A] [SymmetricCategory A]
-
 /-- The even component of the Koszul braiding: `A`'s braiding on
 each parity block, with the sign `-1` on the odd⊗odd block. -/
-def braidingEven (X Y : Doubled A) : (X ⊗ Y).even ≅ (Y ⊗ X).even where
+def braidingEven [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A]
+    (X Y : Doubled A) : (X ⊗ Y).even ≅ (Y ⊗ X).even where
   hom := biprod.map (β_ X.even Y.even).hom (-(β_ X.odd Y.odd).hom)
   inv := biprod.map (β_ Y.even X.even).hom (-(β_ Y.odd X.odd).hom)
   hom_inv_id := by apply biprod.hom_ext <;> simp
@@ -998,7 +1174,10 @@ def braidingEven (X Y : Doubled A) : (X ⊗ Y).even ≅ (Y ⊗ X).even where
 
 /-- The odd component of the Koszul braiding: the two mixed blocks
 swap through `A`'s braiding, with no sign. -/
-def braidingOdd (X Y : Doubled A) : (X ⊗ Y).odd ≅ (Y ⊗ X).odd where
+def braidingOdd [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A]
+    (X Y : Doubled A) : (X ⊗ Y).odd ≅ (Y ⊗ X).odd where
   hom := biprod.desc ((β_ X.even Y.odd).hom ≫ biprod.inr)
     ((β_ X.odd Y.even).hom ≫ biprod.inl)
   inv := biprod.desc ((β_ Y.even X.odd).hom ≫ biprod.inr)
@@ -1009,7 +1188,10 @@ def braidingOdd (X Y : Doubled A) : (X ⊗ Y).odd ≅ (Y ⊗ X).odd where
 set_option linter.unusedSimpArgs false in
 /-- The doubling of a symmetric category is braided, with the
 Koszul-signed braiding. -/
-instance instBraidedCategory : BraidedCategory (Doubled A) where
+instance instBraidedCategory
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A] : BraidedCategory (Doubled A) where
   braiding X Y := isoMk (braidingEven X Y) (braidingOdd X Y)
   braiding_naturality_right X {_ _} f := by
     ext <;> apply biprod.hom_ext' <;>
@@ -1104,7 +1286,10 @@ instance instBraidedCategory : BraidedCategory (Doubled A) where
 
 /-- The doubling of a symmetric category is symmetric: the Koszul
 sign squares away. -/
-instance instSymmetricCategory : SymmetricCategory (Doubled A) where
+instance instSymmetricCategory
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A] : SymmetricCategory (Doubled A) where
   symmetry X Y := by
     ext
     · show biprod.map (β_ X.even Y.even).hom
@@ -1126,12 +1311,9 @@ section EvenEmbed
 
 open ZeroObject
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
-
-omit [MonoidalCategory A] [MonoidalPreadditive A] [HasZeroObject A] in
 /-- A biproduct of two zero objects is a zero object. -/
-theorem isZero_biprod {M N : A} (hM : IsZero M) (hN : IsZero N) :
+theorem isZero_biprod [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {M N : A} (hM : IsZero M) (hN : IsZero N) :
     IsZero (M ⊞ N) where
   unique_to _ :=
     ⟨⟨⟨biprod.desc (hM.to_ _) (hN.to_ _)⟩, fun _ =>
@@ -1141,43 +1323,44 @@ theorem isZero_biprod {M N : A} (hM : IsZero M) (hN : IsZero N) :
       biprod.hom_ext _ _ (hM.eq_of_tgt _ _) (hN.eq_of_tgt _ _)⟩⟩
 
 /-- The even embedding `X ↦ (X, 0)`. -/
-def evenEmbed : A ⥤ Doubled A where
+def evenEmbed
+    [Category.{v} A] [Preadditive A] [HasZeroObject A] : A ⥤ Doubled A where
   obj X := ⟨X, 0⟩
   map f := homMk f (𝟙 (0 : A))
   map_id _ := rfl
   map_comp _ _ := by ext; simp
 
-omit [MonoidalCategory A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] in
 @[simp]
-theorem evenEmbed_obj_even (X : A) : (evenEmbed.obj X).even = X :=
+theorem evenEmbed_obj_even [Category.{v} A] [Preadditive A] [HasZeroObject A]
+    (X : A) : (evenEmbed.obj X).even = X :=
   rfl
 
-omit [MonoidalCategory A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] in
 @[simp]
-theorem evenEmbed_obj_odd (X : A) :
+theorem evenEmbed_obj_odd [Category.{v} A] [Preadditive A] [HasZeroObject A]
+    (X : A) :
     (evenEmbed.obj X).odd = (0 : A) :=
   rfl
 
-omit [MonoidalCategory A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] in
 @[simp]
-theorem evenHom_evenEmbed_map {X Y : A} (f : X ⟶ Y) :
+theorem evenHom_evenEmbed_map [Category.{v} A] [Preadditive A] [HasZeroObject A]
+    {X Y : A} (f : X ⟶ Y) :
     evenHom (evenEmbed.map f) = f :=
   rfl
 
 /-- The even embedding is faithful. -/
-instance : (evenEmbed (A := A)).Faithful where
+instance [Category.{v} A] [Preadditive A] [HasZeroObject A] :
+    (evenEmbed (A := A)).Faithful where
   map_injective h := congrArg evenHom h
 
 /-- The even embedding is full. -/
-instance : (evenEmbed (A := A)).Full where
+instance [Category.{v} A] [Preadditive A] [HasZeroObject A] :
+    (evenEmbed (A := A)).Full where
   map_surjective f :=
     ⟨evenHom f, hom_ext rfl ((isZero_zero A).eq_of_src _ _)⟩
 
 /-- The even embedding is additive. -/
-instance : (evenEmbed (A := A)).Additive where
+instance [Category.{v} A] [Preadditive A] [HasZeroObject A] :
+    (evenEmbed (A := A)).Additive where
   map_add := by
     intros
     ext
@@ -1185,7 +1368,8 @@ instance : (evenEmbed (A := A)).Additive where
     · exact (isZero_zero A).eq_of_src _ _
 
 /-- The even embedding is ℂ-linear. -/
-instance [CategoryTheory.Linear ℂ A] :
+instance [Category.{v} A] [Preadditive A] [HasZeroObject A]
+    [CategoryTheory.Linear ℂ A] :
     (evenEmbed (A := A)).Linear ℂ where
   map_smul := by
     intros
@@ -1195,7 +1379,9 @@ instance [CategoryTheory.Linear ℂ A] :
 
 /-- The even embedding is monoidal up to isomorphism: the graded
 tensor of two even objects collapses to the even tensor. -/
-def evenEmbedTensorIso (X Y : A) :
+def evenEmbedTensorIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X Y : A) :
     evenEmbed.obj X ⊗ evenEmbed.obj Y ≅ evenEmbed.obj (X ⊗ Y) :=
   isoMk (isoBiprodZero (isZero_zeroTensor _)).symm
     (((isZero_biprod (isZero_tensorZero _) (isZero_zeroTensor _)).iso
@@ -1203,7 +1389,10 @@ def evenEmbedTensorIso (X Y : A) :
 
 /-- The even embedding intertwines the braidings through
 `evenEmbedTensorIso`. -/
-theorem evenEmbedTensorIso_braided [SymmetricCategory A] (X Y : A) :
+theorem evenEmbedTensorIso_braided
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A] (X Y : A) :
     (β_ (evenEmbed.obj X) (evenEmbed.obj Y)).hom ≫
         (evenEmbedTensorIso Y X).hom =
       (evenEmbedTensorIso X Y).hom ≫ evenEmbed.map (β_ X Y).hom := by
@@ -1214,7 +1403,9 @@ theorem evenEmbedTensorIso_braided [SymmetricCategory A] (X Y : A) :
   · exact (isZero_zero A).eq_of_tgt _ _
 
 /-- The unit comparison of the even embedding: definitional. -/
-def evenEmbedUnitIso : 𝟙_ (Doubled A) ≅ evenEmbed.obj (𝟙_ A) :=
+def evenEmbedUnitIso [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    𝟙_ (Doubled A) ≅ evenEmbed.obj (𝟙_ A) :=
   Iso.refl _
 
 end EvenEmbed
@@ -1223,29 +1414,27 @@ section OddUnit
 
 open ZeroObject
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
-
 /-- The odd unit: the unit of `A` placed in odd degree.  Together
 with `oddUnitSq` and `braiding_oddUnit` this is exactly the
 invertible odd object required by Deligne 2.9. -/
-def oddUnit : Doubled A :=
+def oddUnit
+    [Category.{v} A] [MonoidalCategory A] [HasZeroObject A] : Doubled A :=
   ⟨0, 𝟙_ A⟩
 
-omit [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] in
 @[simp]
-theorem oddUnit_even : (oddUnit (A := A)).even = (0 : A) :=
+theorem oddUnit_even [Category.{v} A] [MonoidalCategory A] [HasZeroObject A] :
+    (oddUnit (A := A)).even = (0 : A) :=
   rfl
 
-omit [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] in
 @[simp]
-theorem oddUnit_odd : (oddUnit (A := A)).odd = 𝟙_ A :=
+theorem oddUnit_odd [Category.{v} A] [MonoidalCategory A] [HasZeroObject A] :
+    (oddUnit (A := A)).odd = 𝟙_ A :=
   rfl
 
 /-- The odd unit squares to the monoidal unit. -/
-def oddUnitSq : oddUnit ⊗ oddUnit ≅ 𝟙_ (Doubled A) :=
+def oddUnitSq [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A] :
+    oddUnit ⊗ oddUnit ≅ 𝟙_ (Doubled A) :=
   isoMk
     { hom := biprod.desc 0 (λ_ (𝟙_ A)).hom
       inv := (λ_ (𝟙_ A)).inv ≫ biprod.inr
@@ -1259,7 +1448,9 @@ def oddUnitSq : oddUnit ⊗ oddUnit ≅ 𝟙_ (Doubled A) :=
 
 /-- The braiding of the odd unit with itself is `-1`: the Koszul
 sign made visible on a single object. -/
-theorem braiding_oddUnit [SymmetricCategory A] :
+theorem braiding_oddUnit [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [SymmetricCategory A] :
     (β_ (oddUnit (A := A)) oddUnit).hom = -𝟙 (oddUnit ⊗ oddUnit) := by
   ext
   · show biprod.map (β_ (0 : A) (0 : A)).hom
@@ -1276,10 +1467,9 @@ end OddUnit
 
 section Biproducts
 
-variable [Preadditive A] [HasBinaryBiproducts A]
-
 /-- The componentwise binary bicone on a pair of super-objects. -/
-def binaryBicone (X Y : Doubled A) : BinaryBicone X Y where
+def binaryBicone [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X Y : Doubled A) : BinaryBicone X Y where
   pt := ⟨X.even ⊞ Y.even, X.odd ⊞ Y.odd⟩
   fst := homMk biprod.fst biprod.fst
   snd := homMk biprod.snd biprod.snd
@@ -1291,7 +1481,9 @@ def binaryBicone (X Y : Doubled A) : BinaryBicone X Y where
   inr_snd := by ext <;> simp
 
 /-- The doubling has componentwise binary biproducts. -/
-instance instHasBinaryBiproducts : HasBinaryBiproducts (Doubled A) where
+instance instHasBinaryBiproducts
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A] :
+    HasBinaryBiproducts (Doubled A) where
   has_binary_biproduct X Y :=
     hasBinaryBiproduct_of_total (binaryBicone X Y) (by
       ext
@@ -1304,7 +1496,9 @@ instance instHasBinaryBiproducts : HasBinaryBiproducts (Doubled A) where
 
 /-- The doubling has finite products: it has a zero object and
 componentwise binary biproducts. -/
-instance instHasFiniteProducts [HasZeroObject A] :
+instance instHasFiniteProducts
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    [HasZeroObject A] :
     HasFiniteProducts (Doubled A) :=
   hasFiniteProducts_of_has_binary_and_terminal
 
@@ -1314,13 +1508,12 @@ section Decomposition
 
 open ZeroObject
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
-
 /-- Every super-object is the biproduct of its even part and the
 odd-unit twist of its odd part: the decomposition through which
 Schur-vanishing transports from `A` to the doubling. -/
-def decomposition (X : Doubled A) :
+def decomposition [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (X : Doubled A) :
     X ≅ evenEmbed.obj X.even ⊞ (oddUnit ⊗ evenEmbed.obj X.odd) where
   hom := biprod.lift (homMk (𝟙 X.even) 0)
     (homMk 0 ((λ_ X.odd).inv ≫ biprod.inr))
@@ -1372,18 +1565,18 @@ end Decomposition
 
 section Kernels
 
-variable [Preadditive A] [HasKernels A]
-
 /-- The componentwise kernel fork of a morphism of
 super-objects. -/
-def kernelFork {X Y : Doubled A} (f : X ⟶ Y) : KernelFork f :=
+def kernelFork [Category.{v} A] [Preadditive A] [HasKernels A]
+    {X Y : Doubled A} (f : X ⟶ Y) : KernelFork f :=
   KernelFork.ofι
     (homMk (kernel.ι (evenHom f)) (kernel.ι (oddHom f)) :
       (⟨kernel (evenHom f), kernel (oddHom f)⟩ : Doubled A) ⟶ X)
     (by ext <;> simp)
 
 /-- The componentwise kernel fork is limiting. -/
-def kernelForkIsLimit {X Y : Doubled A} (f : X ⟶ Y) :
+def kernelForkIsLimit [Category.{v} A] [Preadditive A] [HasKernels A]
+    {X Y : Doubled A} (f : X ⟶ Y) :
     IsLimit (kernelFork f) :=
   KernelFork.IsLimit.ofι _ (by ext <;> simp)
     (fun g' eq' => homMk
@@ -1400,7 +1593,8 @@ def kernelForkIsLimit {X Y : Doubled A} (f : X ⟶ Y) :
         exact congrArg oddHom hm)
 
 /-- The doubling has componentwise kernels. -/
-instance instHasKernels : HasKernels (Doubled A) where
+instance instHasKernels [Category.{v} A] [Preadditive A] [HasKernels A] :
+    HasKernels (Doubled A) where
   has_limit f := HasLimit.mk
     { cone := kernelFork f
       isLimit := kernelForkIsLimit f }
@@ -1409,11 +1603,10 @@ end Kernels
 
 section Cokernels
 
-variable [Preadditive A] [HasCokernels A]
-
 /-- The componentwise cokernel cofork of a morphism of
 super-objects. -/
-def cokernelCofork {X Y : Doubled A} (f : X ⟶ Y) :
+def cokernelCofork [Category.{v} A] [Preadditive A] [HasCokernels A]
+    {X Y : Doubled A} (f : X ⟶ Y) :
     CokernelCofork f :=
   CokernelCofork.ofπ
     (homMk (cokernel.π (evenHom f)) (cokernel.π (oddHom f)) :
@@ -1421,7 +1614,8 @@ def cokernelCofork {X Y : Doubled A} (f : X ⟶ Y) :
     (by ext <;> simp)
 
 /-- The componentwise cokernel cofork is colimiting. -/
-def cokernelCoforkIsColimit {X Y : Doubled A} (f : X ⟶ Y) :
+def cokernelCoforkIsColimit [Category.{v} A] [Preadditive A] [HasCokernels A]
+    {X Y : Doubled A} (f : X ⟶ Y) :
     IsColimit (cokernelCofork f) :=
   CokernelCofork.IsColimit.ofπ _ (by ext <;> simp)
     (fun g' eq' => homMk
@@ -1438,7 +1632,8 @@ def cokernelCoforkIsColimit {X Y : Doubled A} (f : X ⟶ Y) :
         exact congrArg oddHom hm)
 
 /-- The doubling has componentwise cokernels. -/
-instance instHasCokernels : HasCokernels (Doubled A) where
+instance instHasCokernels [Category.{v} A] [Preadditive A] [HasCokernels A] :
+    HasCokernels (Doubled A) where
   has_colimit f := HasColimit.mk
     { cocone := cokernelCofork f
       isColimit := cokernelCoforkIsColimit f }
@@ -1447,12 +1642,10 @@ end Cokernels
 
 section IsoComponents
 
-variable [Preadditive A]
-
-omit [Preadditive A] in
 /-- A morphism of super-objects whose two components are
 isomorphisms is an isomorphism. -/
-theorem isIso_of_components {X Y : Doubled A} (f : X ⟶ Y)
+theorem isIso_of_components [Category.{v} A]
+    {X Y : Doubled A} (f : X ⟶ Y)
     [IsIso (evenHom f)] [IsIso (oddHom f)] : IsIso f :=
   ⟨homMk (inv (evenHom f)) (inv (oddHom f)),
     hom_ext (by simp) (by simp), hom_ext (by simp) (by simp)⟩
@@ -1463,14 +1656,13 @@ section Rigid
 
 open ZeroObject
 
-variable [MonoidalCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
-
 /-- Componentwise exact pairings pair the doubled objects: the
 evaluations and coevaluations act blockwise on matching parities,
 and the odd components vanish. -/
 @[reducible]
-def exactPairing (P Q : Doubled A) [ExactPairing P.even Q.even]
+def exactPairing [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    (P Q : Doubled A) [ExactPairing P.even Q.even]
     [ExactPairing P.odd Q.odd] : ExactPairing P Q where
   coevaluation' := homMk
     (biprod.lift (η_ P.even Q.even) (η_ P.odd Q.odd)) 0
@@ -1523,7 +1715,10 @@ def exactPairing (P Q : Doubled A) [ExactPairing P.even Q.even]
 
 /-- The doubling of a right rigid category is right rigid, with
 componentwise duals. -/
-instance instRightRigidCategory [RightRigidCategory A] :
+instance instRightRigidCategory
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [RightRigidCategory A] :
     RightRigidCategory (Doubled A) where
   rightDual X :=
     { rightDual := ⟨X.evenᘁ, X.oddᘁ⟩
@@ -1531,14 +1726,19 @@ instance instRightRigidCategory [RightRigidCategory A] :
 
 /-- The doubling of a left rigid category is left rigid, with
 componentwise duals. -/
-instance instLeftRigidCategory [LeftRigidCategory A] :
+instance instLeftRigidCategory
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [LeftRigidCategory A] :
     LeftRigidCategory (Doubled A) where
   leftDual X :=
     { leftDual := ⟨ᘁX.even, ᘁX.odd⟩
       exact := exactPairing ⟨ᘁX.even, ᘁX.odd⟩ X }
 
 /-- The doubling of a rigid category is rigid. -/
-instance instRigidCategory [RigidCategory A] :
+instance instRigidCategory [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A] [HasBinaryBiproducts A] [HasZeroObject A]
+    [RigidCategory A] :
     RigidCategory (Doubled A) where
 
 end Rigid

@@ -15,35 +15,11 @@ namespace EdgeSubset
 
 open Fragment
 
-section ClosedLedger
-
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-  (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
-
-local notation "Fg" =>
-  (EdgeSubset.mk s' hc' : EdgeSubset (W.gluePairClosed i j hclosed))
-
-end ClosedLedger
-
-/-! ### The closed per-subset master -/
-
-section ClosedMaster
-
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-
-end ClosedMaster
-
 /-! ### The open engine: non-participating correspondences -/
 
 section OpenEngine
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -60,25 +36,23 @@ local notation "Fl" =>
   (EdgeSubset.mk (liftSubsetOpen hopen s') hc : EdgeSubset W)
 
 include hc' hc hni in
-omit [LinearOrder α] hc in
+omit hc in
 /-- The far end of the `j`-edge is also absent. -/
 theorem hnj_of : partnerSurvJ hopen ∉ s' :=
   partnerSurvJ_notMem_of hij hopen s' hc' hni
 
 include hij hni in
-omit [LinearOrder α] in
 private theorem bfi_not_mem_lift :
     W.boundaryFlag i ∉ liftSubsetOpen hopen s' := fun hmem =>
   hni ((boundaryFlagI_mem_liftOpen_iff hij hopen s').mp hmem)
 
 include hc' hc hni in
-omit [LinearOrder α] hc in
+omit hc in
 private theorem bfj_not_mem_lift :
     W.boundaryFlag j ∉ liftSubsetOpen hopen s' := fun hmem =>
   hnj_of hij hopen s' hc' hni
     ((boundaryFlagJ_mem_liftOpen_iff hij hopen s').mp hmem)
 
-omit [LinearOrder α] in
 /-- Eulerian transport across the open lift. -/
 theorem eulerian_lift_open_iff :
     (Fl).Eulerian ↔ (Fg).Eulerian := by
@@ -89,7 +63,6 @@ theorem eulerian_lift_open_iff :
   · rw [← hdeg v]; exact hE v
   · rw [hdeg v]; exact hE v
 
-omit [LinearOrder α] in
 /-- The glued boundary-state constraint follows from the lifted
 one (open case). -/
 theorem genBoundarySubsetMatches_glued_of_liftOpen {k ℓ : ℕ}
@@ -122,7 +95,6 @@ local notation "oW" =>
 
 /-! #### In-flag lists (open) -/
 
-omit [LinearOrder α] in
 /-- The lifted in-flag list is a permutation of the projected
 glued in-flag list (open case). -/
 theorem relInFlagsAt_perm_open (v : W.Vertex) :
@@ -153,7 +125,6 @@ theorem relInFlagsAt_perm_open (v : W.Vertex) :
         (glueAttach_inl_iff f₀ v).mp hv,
         (unglueIsOut_val o'.isOut f₀).trans hout⟩
 
-omit [LinearOrder α] in
 /-- Members of the projected glued in-flag list are internal in
 the open lift. -/
 theorem mem_map_relInFlagsAt_internal_open {v : W.Vertex} :
@@ -166,7 +137,6 @@ theorem mem_map_relInFlagsAt_internal_open {v : W.Vertex} :
 
 /-! #### Pointwise core data agreement (open) -/
 
-omit [LinearOrder α] in
 /-- The core-colour entry at the matched flag agrees (open). -/
 private theorem coreOdd_match_entry_open {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -185,7 +155,6 @@ private theorem coreOdd_match_entry_open {ℓ : ℕ}
   exact (congrArg φW.val (Subtype.ext hmv)).trans
     (hφ (κ'.match_ f') hmcoreW h2)
 
-omit [LinearOrder α] in
 /-- The core odd pair function agrees (open). -/
 private theorem coreOddPairFn_lift_open {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -206,7 +175,6 @@ private theorem coreOddPairFn_lift_open {ℓ : ℕ}
       (internalFlags_subset_coreFlags _ ((κW).match_mem _ hintW))
       (internalFlags_subset_coreFlags _ (κ'.match_mem _ hint))
 
-omit [LinearOrder α] in
 /-- The core odd sign function agrees (open). -/
 private theorem coreOddSignFn_lift_open {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -226,7 +194,6 @@ private theorem coreOddSignFn_lift_open {ℓ : ℕ}
 
 /-! #### List conversions (open) -/
 
-omit [LinearOrder α] in
 private theorem flatMap_pair_map_val_open {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
     (hφ : ∀ (g : SurvivingFlag W i j)
@@ -256,7 +223,6 @@ private theorem flatMap_pair_map_val_open {ℓ : ℕ}
       (H1 f'.val (List.mem_map.mpr
         ⟨f', List.mem_cons_self, rfl⟩))
 
-omit [LinearOrder α] in
 private theorem map_sign_map_val_open {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
     (hφ : ∀ (g : SurvivingFlag W i j)
@@ -288,7 +254,6 @@ private theorem map_sign_map_val_open {ℓ : ℕ}
 
 /-! #### Vertex data transports (open) -/
 
-omit [LinearOrder α] in
 /-- The core odd sign at a vertex agrees (open). -/
 theorem coreOddSignAt_transport_open {ℓ : ℕ}
     (φW : (Fl).CoreOddColouring ℓ) (φ' : (Fg).CoreOddColouring ℓ)
@@ -310,7 +275,6 @@ theorem coreOddSignAt_transport_open {ℓ : ℕ}
     (fun _ hf => mem_internal_of_mem_relInFlagsAt hf)]
   rfl
 
-omit [LinearOrder α] in
 /-- The evaluated core odd list at a vertex agrees (open). -/
 theorem evalOdd_coreOddListAt_transport_open {k ℓ : ℕ}
     (h : MixedFunctional k ℓ)
@@ -409,7 +373,6 @@ noncomputable def evenPushOpen {k : ℕ}
             refine congrArg ψ'.val (Subtype.ext ?_)
             exact hrw.symm⟩
 
-omit [LinearOrder α] in
 /-- Pointwise agreement of the open even push at subset-avoiding
 surviving flags. -/
 theorem evenPushOpen_agrees {k : ℕ}
@@ -424,7 +387,6 @@ theorem evenPushOpen_agrees {k : ℕ}
       else ψ'.val ⟨⟨g.val, hfi, hfj⟩, _⟩) = ψ'.val ⟨g, h2⟩
   rw [dif_neg g.prop.1, dif_neg g.prop.2]
 
-omit [LinearOrder α] in
 /-- The open even push at the two glued boundary flags. -/
 theorem evenPushOpen_at_i {k : ℕ}
     (ψ' : (Fg).EvenColouring k)
@@ -433,7 +395,6 @@ theorem evenPushOpen_at_i {k : ℕ}
       ⟨W.boundaryFlag i, hP⟩ =
       ψ'.val ⟨partnerSurvI hopen, hni⟩ := dif_pos rfl
 
-omit [LinearOrder α] in
 /-- The pushed even colouring at the second glued boundary flag. -/
 theorem evenPushOpen_at_j {k : ℕ}
     (ψ' : (Fg).EvenColouring k)
@@ -448,7 +409,6 @@ theorem evenPushOpen_at_j {k : ℕ}
   rw [dif_neg (fun hEq =>
     hij (W.boundaryFlag_injective hEq).symm), dif_pos rfl]
 
-omit [LinearOrder α] in
 /-- The open even push is injective. -/
 theorem evenPushOpen_injective {k : ℕ} :
     Function.Injective
@@ -468,7 +428,6 @@ theorem evenPushOpen_injective {k : ℕ} :
   exact (congrArg ψ₁.val (Subtype.ext rfl)).symm.trans
     (hv.trans (congrArg ψ₂.val (Subtype.ext rfl)))
 
-omit [LinearOrder α] in
 /-- The glued constancy across the merged edge. -/
 theorem glued_even_merged {k : ℕ}
     (ψ' : (Fg).EvenColouring k) :
@@ -487,7 +446,7 @@ theorem glued_even_merged {k : ℕ}
 include hc' hc in
 /-- Even boundary matching transfers across an open cut: matching
 the extended state upstairs is matching the state downstairs. -/
-theorem genEvenBoundaryMatch_open_iff {k ℓ : ℕ}
+theorem genEvenBoundaryMatch_open_iff [LinearOrder α] {k ℓ : ℕ}
     (st : GenBoundaryState k ℓ (SurvivingLabel α i j))
     (a₀ : Fin k)
     (hbndW : genBoundarySubsetMatches W
@@ -542,7 +501,6 @@ theorem genEvenBoundaryMatch_open_iff {k ℓ : ℕ}
           (glueBoundaryFlag W i j ⟨a₀', hai, haj⟩) _ _).trans hval
 
 include hij hc' hc hni in
-omit [LinearOrder α] in
 /-- Every colouring satisfying the diagonal lifted match lies in
 the image of the open push. -/
 theorem evenPushOpen_covers {k ℓ : ℕ}
@@ -577,7 +535,8 @@ theorem evenPushOpen_covers {k ℓ : ℕ}
     bfi_not_mem_lift hij hopen s' hni
   have hbfjP : W.boundaryFlag j ∉ liftSubsetOpen hopen s' :=
     bfj_not_mem_lift hij hopen s' hc' hni
-  have hpI : ∀ (hP : (partnerSurvI hopen).val ∉ liftSubsetOpen hopen s'), ψW.val ⟨(partnerSurvI hopen).val, hP⟩ = a₀
+  have hpI : ∀ (hP : (partnerSurvI hopen).val ∉ liftSubsetOpen hopen s'),
+      ψW.val ⟨(partnerSurvI hopen).val, hP⟩ = a₀
       := by
     intro hP
     have hp := ψW.prop ⟨W.boundaryFlag i, hbfiP⟩
@@ -656,7 +615,6 @@ theorem evenPushOpen_covers {k ℓ : ℕ}
       · rw [dif_neg hfi, dif_neg hfj]
 
 include hij hc' hc hni in
-omit [LinearOrder α] in
 /-- The constrained lifted even sum reindexes along the open
 push. -/
 theorem sum_even_open {k ℓ : ℕ}
@@ -707,7 +665,7 @@ end OpenEngine
 
 section OpenMaster
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))

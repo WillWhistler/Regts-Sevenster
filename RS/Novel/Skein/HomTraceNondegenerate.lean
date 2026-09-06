@@ -6,8 +6,8 @@ import RS.Novel.Skein.TraceNondegenerate
 
 The accompanying paper's Lemma 3.6, categorified: a Hom-space
 class all of whose composition traces vanish is zero.  This is
-the input to the semisimplicity of the End algebras (Theorem 4.5)
-and the atom dichotomy (Lemma 4.6).
+the input to the semisimplicity of the End algebras (Theorem 4.4)
+and the atom dichotomy (Lemma 4.5).
 -/
 
 namespace RS

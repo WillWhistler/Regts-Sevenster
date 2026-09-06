@@ -20,14 +20,15 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- The retract family of a free module on a mixed object,
 transported along an isomorphism. -/
-private noncomputable def mixSec {V : D} {p q : ℕ}
+private noncomputable def mixSec
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
+    {V : D} {p q : ℕ}
     (e : freeMod R V ≅ freeMod R (L.mix p q))
     (i : Fin p ⊕ Fin q) :
     freeMod R (Sum.elim (fun _ => 𝟙_ D) (fun _ => L.obj) i) ⟶
@@ -35,7 +36,11 @@ private noncomputable def mixSec {V : D} {p q : ℕ}
   freeModMap R (biproduct.ι (fun k : Fin p ⊕ Fin q =>
       Sum.elim (fun _ => 𝟙_ D) (fun _ => L.obj) k) i) ≫ e.inv
 
-private noncomputable def mixRet {V : D} {p q : ℕ}
+private noncomputable def mixRet
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R]
+    {V : D} {p q : ℕ}
     (e : freeMod R V ≅ freeMod R (L.mix p q))
     (i : Fin p ⊕ Fin q) :
     freeMod R V ⟶
@@ -43,8 +48,11 @@ private noncomputable def mixRet {V : D} {p q : ℕ}
   e.hom ≫ freeModMap R (biproduct.π (fun k : Fin p ⊕ Fin q =>
       Sum.elim (fun _ => 𝟙_ D) (fun _ => L.obj) k) i)
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] [IsCommMonObj R] in
-private theorem mixTotal {V : D} {p q : ℕ}
+private theorem mixTotal
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (R : D) [MonObj R]
+    {V : D} {p q : ℕ}
     (e : freeMod R V ≅ freeMod R (L.mix p q)) :
     ∑ i : Fin p ⊕ Fin q,
         (mixRet L R e i).hom ≫ (mixSec L R e i).hom =
@@ -76,7 +84,12 @@ private theorem mixTotal {V : D} {p q : ℕ}
 
 /-- **A morphism killed by the fibre functor is killed by base
 change.** -/
-theorem whiskerLeft_eq_zero_of_fibre {V W : D} (fm : V ⟶ W)
+theorem whiskerLeft_eq_zero_of_fibre
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [IsCommMonObj R]
+    {V W : D} (fm : V ⟶ W)
     {p q : ℕ} (e : freeMod R V ≅ freeMod R (L.mix p q))
     (h : (fibreFun L R).map fm = 0) : R ◁ fm = 0 := by
   classical
@@ -106,13 +119,12 @@ theorem whiskerLeft_eq_zero_of_fibre {V W : D} (fm : V ⟶ W)
     exact (Eq.trans (Category.assoc _ _ _)
       (whisker_eq _ (Category.assoc _ _ _))).symm
 
-variable [∀ Z : D, (tensorRight Z).PreservesMonomorphisms]
-
-omit [SymmetricCategory D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D] [HasFiniteBiproducts D] [IsCommMonObj R] in
 /-- **Base change is faithful when the unit is a
 monomorphism.** -/
-theorem eq_zero_of_whiskerLeft (hη : Mono η[R]) {V W : D}
+theorem eq_zero_of_whiskerLeft
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D] (R : D) [MonObj R]
+    [∀ Z : D, (tensorRight Z).PreservesMonomorphisms]
+    (hη : Mono η[R]) {V W : D}
     (fm : V ⟶ W) (h : R ◁ fm = 0) : fm = 0 := by
   haveI := hη
   haveI : Mono (η[R] ▷ W) :=
@@ -129,7 +141,13 @@ theorem eq_zero_of_whiskerLeft (hη : Mono η[R]) {V W : D}
 
 /-- **The fibre functor is faithful** on the objects that become
 mixed sums. -/
-theorem fibreFun_map_eq_zero (hη : Mono η[R]) {V W : D}
+theorem fibreFun_map_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [IsCommMonObj R]
+    [∀ Z : D, (tensorRight Z).PreservesMonomorphisms]
+    (hη : Mono η[R]) {V W : D}
     (fm : V ⟶ W) {p q : ℕ}
     (e : freeMod R V ≅ freeMod R (L.mix p q))
     (h : (fibreFun L R).map fm = 0) : fm = 0 :=

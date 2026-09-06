@@ -33,7 +33,7 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## The antisymmetriser
 
@@ -123,16 +123,20 @@ end Antisymmetriser
 
 section AltPow
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D]
-
 /-- The antisymmetriser acting on the module power. -/
-noncomputable def altPowIdem (n : ℕ) : modPow A X n ⟶ modPow A X n :=
+noncomputable def altPowIdem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : modPow A X n ⟶ modPow A X n :=
   modPowAlg A X n (antisymmetriser n)
 
 /-- The antisymmetriser's action is idempotent. -/
-theorem altPowIdem_idem (n : ℕ) :
+theorem altPowIdem_idem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     altPowIdem A X n ≫ altPowIdem A X n = altPowIdem A X n := by
   have h := congrArg (modPowAlg A X n) (antisymmetriser_idem n)
   rw [map_mul] at h
@@ -145,46 +149,77 @@ the module power, with section `altPowσ`; this presentation is
 chosen because consumers build morphisms out of the alternating
 power by descent along `altPowπ` and morphisms into it through the
 section. -/
-noncomputable def altPow (n : ℕ) : D :=
+noncomputable def altPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : D :=
   coequalizer (altPowIdem A X n) (𝟙 (modPow A X n))
 
 /-- The projection onto the alternating power. -/
-noncomputable def altPowπ (n : ℕ) : modPow A X n ⟶ altPow A X n :=
+noncomputable def altPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : modPow A X n ⟶ altPow A X n :=
   coequalizer.π _ _
 
-instance (n : ℕ) : Epi (altPowπ A X n) :=
+instance [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : Epi (altPowπ A X n) :=
   inferInstanceAs (Epi (coequalizer.π _ _))
 
 /-- The antisymmetriser is absorbed by the projection. -/
 @[reassoc (attr := simp)]
-theorem altPowIdem_π (n : ℕ) :
+theorem altPowIdem_π
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     altPowIdem A X n ≫ altPowπ A X n = altPowπ A X n := by
   have h := coequalizer.condition (altPowIdem A X n)
     (𝟙 (modPow A X n))
   rwa [Category.id_comp] at h
 
 /-- The section of the alternating power, from idempotency. -/
-noncomputable def altPowσ (n : ℕ) : altPow A X n ⟶ modPow A X n :=
+noncomputable def altPowσ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : altPow A X n ⟶ modPow A X n :=
   coequalizer.desc (altPowIdem A X n)
     (by rw [Category.id_comp, altPowIdem_idem])
 
 /-- The section realises the antisymmetriser as projection followed
 by inclusion. -/
 @[reassoc (attr := simp)]
-theorem altPowπ_altPowσ (n : ℕ) :
+theorem altPowπ_altPowσ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     altPowπ A X n ≫ altPowσ A X n = altPowIdem A X n :=
   coequalizer.π_desc _ _
 
 /-- Morphisms out of the alternating power are determined by their
 composite with the projection. -/
-theorem altPow_hom_ext {n : ℕ} {W : D} {k l : altPow A X n ⟶ W}
+theorem altPow_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    {n : ℕ} {W : D} {k l : altPow A X n ⟶ W}
     (h : altPowπ A X n ≫ k = altPowπ A X n ≫ l) : k = l :=
   coequalizer.hom_ext h
 
 /-- **The alternating power is a direct summand**: the section
 followed by the projection is the identity. -/
 @[reassoc (attr := simp)]
-theorem altPowσ_altPowπ (n : ℕ) :
+theorem altPowσ_altPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     altPowσ A X n ≫ altPowπ A X n = 𝟙 (altPow A X n) := by
   apply altPow_hom_ext A X
   rw [← Category.assoc, altPowπ_altPowσ, altPowIdem_π,
@@ -192,14 +227,22 @@ theorem altPowσ_altPowπ (n : ℕ) :
 
 /-- Descend a morphism absorbed by the antisymmetriser to the
 alternating power. -/
-noncomputable def altPowDesc {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
+noncomputable def altPowDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
     (h : altPowIdem A X n ≫ k = k) : altPow A X n ⟶ W :=
   coequalizer.desc k (by rw [Category.id_comp, h])
 
 /-- The descent factors the given morphism through the
 projection. -/
 @[reassoc (attr := simp)]
-theorem altPowπ_desc {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
+theorem altPowπ_desc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
     (h : altPowIdem A X n ≫ k = k) :
     altPowπ A X n ≫ altPowDesc A X k h = k :=
   coequalizer.π_desc _ _

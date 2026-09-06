@@ -17,18 +17,17 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
-variable (B : Ind C) [MonObj B] [IsCommMonObj B]
-variable (N N' : Mod (Ind C) B)
+variable {C : Type v}
 
 /-- **The unit of the splitting-chain algebra is nonzero**: for a
 zigzag datum over the ind-category whose symmetric powers all
 survive, the unit of the algebra does not vanish. -/
-theorem chainBUnit_ne_zero (d : ModDualityDatum B N N')
+theorem chainBUnit_ne_zero
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)] (B : Ind C)
+    [MonObj B] [IsCommMonObj B] (N : Mod (Ind C) B) (N' : Mod (Ind C) B)
+    (d : ModDualityDatum B N N')
     (hz : ModZigzagDatum B d)
     (hS : ∀ n, ¬ IsZero (symPow B N.X (n + 1))) :
     chainBUnit B N N' d ≠ 0 := by

@@ -20,23 +20,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
+variable {D : Type u}
 
 attribute [local instance]
   hasBinaryBiproducts_of_finite_biproducts
 
-variable (L : OddLine D)
-
 /-- **The twist of the mixed free part**: twisting the free
 module on a mixed sum exchanges the two counts. -/
-noncomputable def freeMixTwistIso (A : D) [MonObj A] (p q : ℕ) :
+noncomputable def freeMixTwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D)
+    (A : D) [MonObj A] (p q : ℕ) :
     tensorLeftMod A L.obj (freeMod A (L.mix p q)) ≅
       freeMod A (L.mix q p) :=
   (freeTwistIso A L.obj (L.mix p q)).symm.trans
@@ -44,7 +39,14 @@ noncomputable def freeMixTwistIso (A : D) [MonObj A] (p q : ℕ) :
 
 /-- **The odd twist of a dévissage state**: the counts change
 places and the remainder gains a line factor. -/
-noncomputable def twistState {X : D}
+noncomputable def twistState
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (L : OddLine D)
+    {X : D}
     (st : DevissageState D L X) :
     DevissageState D L (L.obj ⊗ X) :=
   letI := st.monObj
@@ -70,18 +72,35 @@ noncomputable def twistState {X : D}
               (Iso.refl _))))⟩ }
 
 /-- The twist exchanges the unit count for the line count. -/
-@[simp] theorem twistState_units {X : D}
+@[simp] theorem twistState_units
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (L : OddLine D)
+    {X : D}
     (st : DevissageState D L X) :
     (twistState L st).units = st.lines := rfl
 
 /-- The twist exchanges the line count for the unit count. -/
-@[simp] theorem twistState_lines {X : D}
+@[simp] theorem twistState_lines
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (L : OddLine D)
+    {X : D}
     (st : DevissageState D L X) :
     (twistState L st).lines = st.units := rfl
 
 /-- **Twisting twice is trivial**: the square trivialisation
 undoes the double twist. -/
-noncomputable def untwistIso (X : D) :
+noncomputable def untwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    (X : D) :
     L.obj ⊗ (L.obj ⊗ X) ≅ X :=
   (α_ L.obj L.obj X).symm.trans
     ((whiskerRightIso L.sq X).trans (λ_ X))

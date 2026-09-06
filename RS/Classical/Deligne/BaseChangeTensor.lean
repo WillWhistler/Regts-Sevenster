@@ -19,37 +19,24 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable (P : Mod D B) (N : Mod D A)
+variable {D : Type u}
 
 /-- Scalar restriction of a module along the base morphism. -/
-noncomputable def restrictMod : Mod D A := (Mod.comap φ).obj P
+noncomputable def restrictMod
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (B : D)
+    [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (P : Mod D B) :
+    Mod D A := (Mod.comap φ).obj P
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [IsCommMonObj B] in
-@[simp] lemma restrictMod_X :
+@[simp] lemma restrictMod_X
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (B : D)
+    [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (P : Mod D B) :
     (restrictMod A B φ P).X = P.X := rfl
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [IsCommMonObj B] in
 /-- The restricted right action acts through the base
 morphism. -/
-lemma actRight_restrictMod :
+lemma actRight_restrictMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (P : Mod D B) :
     actRight A (restrictMod A B φ P).X =
       (P.X ◁ φ) ≫ actRight B P.X := by
   show (β_ P.X A).hom ≫ (φ ▷ P.X) ≫ actLeft B P.X =
@@ -60,18 +47,20 @@ lemma actRight_restrictMod :
 the carrier of the unrestricted module.  All statements of this
 development use this spelling, so that goals remain type-correct
 at the instances transparency level. -/
-noncomputable def restrictπ : P.X ⊗ N.X ⟶
+noncomputable def restrictπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) : P.X ⊗ N.X ⟶
     modTensor A (restrictMod A B φ P) N :=
   modTensorπ A (restrictMod A B φ P) N
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [IsCommMonObj B] in
 /-- The balance of the restricted-module tensor, in the retyped
 spelling: sliding the base through the base morphism on the
 module side is acting on the second factor. -/
-theorem restrictπ_cond :
+theorem restrictπ_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     (((P.X ◁ φ) ≫ actRight B P.X) ▷ N.X) ≫
         restrictπ A B φ P N =
       (α_ P.X A N.X).hom ≫ (P.X ◁ actLeft A N.X) ≫
@@ -83,20 +72,22 @@ theorem restrictπ_cond :
 
 /-- The cover of the collapse: act the middle base into the
 module and project. -/
-noncomputable def collapseCover : P.X ⊗ (B ⊗ N.X) ⟶
+noncomputable def collapseCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) : P.X ⊗ (B ⊗ N.X) ⟶
     modTensor A (restrictMod A B φ P) N :=
   (α_ P.X B N.X).inv ≫ (actRight B P.X ▷ N.X) ≫
     restrictπ A B φ P N
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The cover of the collapse coequalizes the whiskered balance
 of the induced module: the base slides onto the module through
 the associativity of the right action and the balance of the
 target. -/
-theorem collapseCover_cond :
+theorem collapseCover_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     (P.X ◁ modTensorLegM A (restrictRegular φ) N) ≫
         collapseCover A B φ P N =
       (P.X ◁ modTensorLegN A (restrictRegular φ) N) ≫
@@ -146,27 +137,38 @@ theorem collapseCover_cond :
     from by monoidal)]
 
 /-- The half-descended collapse, on the induced module. -/
-noncomputable def collapseMid :
+noncomputable def collapseMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     P.X ⊗ baseChange φ N ⟶
       modTensor A (restrictMod A B φ P) N :=
   modTensorWhiskerDesc A (restrictRegular φ) N P.X
     (collapseCover A B φ P N) (collapseCover_cond A B φ P N)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- Defining equation of the half-descended collapse. -/
 @[reassoc (attr := simp)]
-theorem whiskerLeft_collapseMid :
+theorem whiskerLeft_collapseMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     (P.X ◁ modTensorπ A (restrictRegular φ) N) ≫
         collapseMid A B φ P N = collapseCover A B φ P N :=
   whiskerLeft_modTensorπ_whiskerDesc A _ N P.X _ _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- The half-descended collapse coequalizes the outer balance:
 sliding the base between the module and the induced factor is
 absorbed by the associativity of the right action. -/
-theorem collapseMid_cond :
+theorem collapseMid_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     modTensorLegM B P (baseChangeMod φ N) ≫
         collapseMid A B φ P N =
       modTensorLegN B P (baseChangeMod φ N) ≫
@@ -235,34 +237,44 @@ theorem collapseMid_cond :
 /-- **The collapse**: the relative tensor over the new base with
 an induced module collapses onto the relative tensor over the old
 base of the restricted module. -/
-noncomputable def collapseHom :
+noncomputable def collapseHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     modTensor B P (baseChangeMod φ N) ⟶
       modTensor A (restrictMod A B φ P) N :=
   modTensorDesc B P (baseChangeMod φ N)
     (collapseMid A B φ P N) (collapseMid_cond A B φ P N)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- Defining equation of the collapse. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_collapseHom :
+theorem modTensorπ_collapseHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     modTensorπ B P (baseChangeMod φ N) ≫
         collapseHom A B φ P N = collapseMid A B φ P N :=
   modTensorπ_desc B P (baseChangeMod φ N) _ _
 
 /-- The unit insertion into the induced module. -/
-noncomputable def unitSlot : N.X ⟶ baseChange φ N :=
+noncomputable def unitSlot
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (N : Mod D A) : N.X ⟶ baseChange φ N :=
   (λ_ N.X).inv ≫ (η[B] ▷ N.X) ≫
     modTensorπ A (restrictRegular φ) N
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- Acting before the unit insertion is acting through the base
 morphism after it: the balance of the induced module at the
 unit. -/
-theorem actLeft_unitSlot :
+theorem actLeft_unitSlot
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ] (N : Mod D A) :
     actLeft A N.X ≫ unitSlot A B φ N =
       (φ ▷ N.X) ≫ modTensorπ A (restrictRegular φ) N := by
   have h := modTensor_condition A (restrictRegular φ) N
@@ -296,11 +308,14 @@ theorem actLeft_unitSlot :
     rfl
   exact (hi.trans hR2).symm
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- Acting on the unit insertion is the projection: the inserted
 unit is absorbed by the action. -/
-theorem whiskerLeft_unitSlot_baseChangeAct :
+theorem whiskerLeft_unitSlot_baseChangeAct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (N : Mod D A) :
     (B ◁ unitSlot A B φ N) ≫ baseChangeAct φ N =
       modTensorπ A (restrictRegular φ) N := by
   have hcoh : ((B ◁ (λ_ N.X).inv) ≫ (B ◁ (η[B] ▷ N.X))) ≫
@@ -322,15 +337,22 @@ theorem whiskerLeft_unitSlot_baseChangeAct :
 
 /-- The projection of the new-base tensor, retyped at the
 induced-module carrier. -/
-noncomputable def bcπ : P.X ⊗ baseChange φ N ⟶
+noncomputable def bcπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) : P.X ⊗ baseChange φ N ⟶
     modTensor B P (baseChangeMod φ N) :=
   modTensorπ B P (baseChangeMod φ N)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The balance of the new-base tensor, in the retyped
 spelling. -/
-theorem bcπ_cond :
+theorem bcπ_cond [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     (actRight B P.X ▷ baseChange φ N) ≫ bcπ A B φ P N =
       (α_ P.X B (baseChange φ N)).hom ≫
         (P.X ◁ baseChangeAct φ N) ≫ bcπ A B φ P N := by
@@ -340,16 +362,24 @@ theorem bcπ_cond :
 
 /-- The cover of the inverse collapse: insert the unit of the
 new base and project. -/
-noncomputable def collapseInvCover : P.X ⊗ N.X ⟶
+noncomputable def collapseInvCover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) : P.X ⊗ N.X ⟶
     modTensor B P (baseChangeMod φ N) :=
   (P.X ◁ unitSlot A B φ N) ≫ bcπ A B φ P N
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- The cover of the inverse collapse coequalizes the balance of
 the restricted-module tensor: the old base enters the induced
 factor through the unit insertion. -/
-theorem collapseInvCover_cond :
+theorem collapseInvCover_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     modTensorLegM A (restrictMod A B φ P) N ≫
         collapseInvCover A B φ P N =
       modTensorLegN A (restrictMod A B φ P) N ≫
@@ -421,27 +451,38 @@ theorem collapseInvCover_cond :
   exact Eq.refl _
 
 /-- **The inverse collapse**: descend the unit insertion. -/
-noncomputable def collapseInv :
+noncomputable def collapseInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     modTensor A (restrictMod A B φ P) N ⟶
       modTensor B P (baseChangeMod φ N) :=
   modTensorDesc A (restrictMod A B φ P) N
     (collapseInvCover A B φ P N)
     (collapseInvCover_cond A B φ P N)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- Defining equation of the inverse collapse. -/
 @[reassoc (attr := simp)]
-theorem restrictπ_collapseInv :
+theorem restrictπ_collapseInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     restrictπ A B φ P N ≫ collapseInv A B φ P N =
       collapseInvCover A B φ P N :=
   modTensorπ_desc A (restrictMod A B φ P) N _ _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- The inserted unit is absorbed by the half-descended
 collapse. -/
-theorem whiskerLeft_unitSlot_collapseMid :
+theorem whiskerLeft_unitSlot_collapseMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     (P.X ◁ unitSlot A B φ N) ≫ collapseMid A B φ P N =
       restrictπ A B φ P N := by
   have hcoh : (P.X ◁ (λ_ N.X).inv) ≫
@@ -465,11 +506,14 @@ theorem whiskerLeft_unitSlot_collapseMid :
   refine Eq.trans (eq_whisker hcoh _) ?_
   exact Category.id_comp _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- The collapse retracts the inverse collapse. -/
 @[reassoc (attr := simp)]
-theorem collapseInv_collapseHom :
+theorem collapseInv_collapseHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     collapseInv A B φ P N ≫ collapseHom A B φ P N =
       𝟙 (modTensor A (restrictMod A B φ P) N) := by
   apply modTensor_hom_ext A (restrictMod A B φ P) N
@@ -483,11 +527,14 @@ theorem collapseInv_collapseHom :
     (modTensorπ_collapseHom A B φ P N)) ?_
   exact whiskerLeft_unitSlot_collapseMid A B φ P N
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- The inverse collapse retracts the collapse. -/
 @[reassoc (attr := simp)]
-theorem collapseHom_collapseInv :
+theorem collapseHom_collapseInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     collapseHom A B φ P N ≫ collapseInv A B φ P N =
       𝟙 (modTensor B P (baseChangeMod φ N)) := by
   apply modTensor_hom_ext B P (baseChangeMod φ N)
@@ -529,7 +576,12 @@ theorem collapseHom_collapseInv :
     (whiskerLeft_unitSlot_baseChangeAct A B φ N)) _
 
 /-- **The change-of-rings collapse**, packaged. -/
-noncomputable def collapseIso :
+noncomputable def collapseIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (P : Mod D B) (N : Mod D A) :
     modTensor B P (baseChangeMod φ N) ≅
       modTensor A (restrictMod A B φ P) N where
   hom := collapseHom A B φ P N
@@ -537,11 +589,15 @@ noncomputable def collapseIso :
   hom_inv_id := collapseHom_collapseInv A B φ P N
   inv_hom_id := collapseInv_collapseHom A B φ P N
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The restricted action of a base change is the descended
 module action on the relative tensor. -/
-theorem actLeft_restrict_baseChange (M : Mod D A) :
+theorem actLeft_restrict_baseChange
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M : Mod D A) :
     (φ ▷ baseChange φ M) ≫ baseChangeAct φ M =
       modTensorAct A (restrictRegular φ) M := by
   apply modTensor_whisker_hom_ext A (restrictRegular φ) M A
@@ -571,14 +627,10 @@ theorem actLeft_restrict_baseChange (M : Mod D A) :
       ((α_ B B M.X).inv ≫ (μ[B] ▷ M.X))
       (modTensorπ A (restrictRegular φ) M))
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [IsCommMonObj B] in
 /-- Bundled modules with the same carrier and the same action
 are equal. -/
-private theorem mod_ext {X : D} (i₁ i₂ : ModObj A X)
+private theorem mod_ext [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {X : D} (i₁ i₂ : ModObj A X)
     (h : i₁.smul = i₂.smul) :
     (letI := i₁; (⟨X⟩ : Mod D A)) =
       (letI := i₂; (⟨X⟩ : Mod D A)) := by
@@ -586,11 +638,15 @@ private theorem mod_ext {X : D} (i₁ i₂ : ModObj A X)
   cases h
   rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The restricted base change is the module tensor with the
 restricted regular module.** -/
-theorem restrictMod_baseChange_eq (M : Mod D A) :
+theorem restrictMod_baseChange_eq
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M : Mod D A) :
     restrictMod A B φ (baseChangeMod φ M) =
       modTensorMod A (restrictRegular φ) M :=
   mod_ext A _ _ (actLeft_restrict_baseChange A B φ M)
@@ -598,7 +654,14 @@ theorem restrictMod_baseChange_eq (M : Mod D A) :
 /-- **The projection formula**: the relative tensor over the new
 base of two base changes is the base change of the relative
 tensor. -/
-noncomputable def projFormula (M N : Mod D A) :
+noncomputable def projFormula
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ]
+    (M N : Mod D A) :
     modTensor B (baseChangeMod φ M) (baseChangeMod φ N) ≅
       baseChange φ (modTensorMod A M N) :=
   (collapseIso A B φ (baseChangeMod φ M) N).trans
@@ -608,11 +671,16 @@ noncomputable def projFormula (M N : Mod D A) :
 
 section Datum
 
-variable {M M' : Mod D A}
-
 /-- **The base change of the pairing**: collapse, apply the
 pairing under the base, and collapse the regular module. -/
-noncomputable def baseChangePair (d : ModDualityDatum A M M') :
+noncomputable def baseChangePair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     modTensor B (baseChangeMod φ M')
       (baseChangeMod φ M) ⟶ B :=
   (projFormula A B φ M' M).hom ≫
@@ -621,6 +689,12 @@ noncomputable def baseChangePair (d : ModDualityDatum A M M') :
 
 /-- **The base change of the copairing.** -/
 noncomputable def baseChangeCopair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
     (d : ModDualityDatum A M M') :
     B ⟶ modTensor B (baseChangeMod φ M)
       (baseChangeMod φ M') :=

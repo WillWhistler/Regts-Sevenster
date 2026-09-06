@@ -19,20 +19,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable {M M' : Mod D A}
+variable {D : Type u}
 
 /-- **The sandwich retract**: over a zigzag datum the sandwich
 insertion is a section of the sandwich contraction. -/
-theorem sandwichIns_sandwichCon (d : ModDualityDatum A M M')
+theorem sandwichIns_sandwichCon
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d) :
     sandwichIns A d ≫ sandwichCon A d = 𝟙 M := by
   apply Mod.hom_ext

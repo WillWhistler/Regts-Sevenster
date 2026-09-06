@@ -16,46 +16,40 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-! ## Well-poweredness of the ind-completion -/
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **The ind-completion is well powered.**  The embedded objects
 form a separating family, hence a detecting one, and a category with
 a small detecting family is well powered. -/
-noncomputable instance wellPoweredInd : WellPowered.{v} (Ind C) :=
+noncomputable instance wellPoweredInd
+    [SmallCategory C] [Abelian C] : WellPowered.{v} (Ind C) :=
   CategoryTheory.wellPowered_of_isDetecting
     (Ind.isSeparating_range_yoneda (C := C)).isDetecting
 
 /-! ## Factoring through a subobject -/
 
-omit [SymmetricCategory C] [MonoidalCategory C] [Abelian C]
-  [RigidCategory C] [MonoidalPreadditive C] in
 /-- A commuting triangle exhibits a factorisation through a
 subobject. -/
-theorem factors_of_comm {X Y : Ind C} {P : Subobject Y} {f : X ⟶ Y}
+theorem factors_of_comm [SmallCategory C]
+    {X Y : Ind C} {P : Subobject Y} {f : X ⟶ Y}
     (g : X ⟶ (P : Ind C)) (h : g ≫ P.arrow = f) : P.Factors f :=
   h ▸ Subobject.factors_comp_arrow g
 
-omit [SymmetricCategory C] [MonoidalCategory C] [Abelian C]
-  [RigidCategory C] [MonoidalPreadditive C] in
 /-- The factorisation named by `Subobject.Factors`, read back as an
 explicit commuting triangle. -/
-theorem exists_factor {X Y : Ind C} {P : Subobject Y} {f : X ⟶ Y}
+theorem exists_factor [SmallCategory C]
+    {X Y : Ind C} {P : Subobject Y} {f : X ⟶ Y}
     (h : P.Factors f) : ∃ g : X ⟶ (P : Ind C), g ≫ P.arrow = f :=
   ⟨P.factorThru f h, P.factorThru_arrow f h⟩
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **Factoring through a subobject is being killed by its
 cokernel.**  A monomorphism of an abelian category is the kernel of
 its own cokernel, so a morphism factors through a subobject exactly
 when it dies against the cokernel of the subobject's arrow. -/
-theorem factors_iff_comp_cokernel {X Y : Ind C} (P : Subobject Y)
+theorem factors_iff_comp_cokernel [SmallCategory C] [Abelian C]
+    {X Y : Ind C} (P : Subobject Y)
     (f : X ⟶ Y) : P.Factors f ↔ f ≫ cokernel.π P.arrow = 0 := by
   constructor
   · intro hf
@@ -67,12 +61,11 @@ theorem factors_iff_comp_cokernel {X Y : Ind C} (P : Subobject Y)
         (cokernelIsCokernel P.arrow)) f h
     exact factors_of_comm l hl
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **Factoring is detected on a colimit cocone**: a morphism out of
 a colimit factors through a subobject as soon as each of its
 restrictions to the stages does. -/
-theorem factors_of_isColimit {J : Type v} [SmallCategory J]
+theorem factors_of_isColimit [SmallCategory C] [Abelian C]
+    {J : Type v} [SmallCategory J]
     {F : J ⥤ Ind C} (c : Cocone F) (hc : IsColimit c) {W : Ind C}
     (P : Subobject W) (f : c.pt ⟶ W)
     (h : ∀ j, P.Factors (c.ι.app j ≫ f)) : P.Factors f := by
@@ -86,12 +79,14 @@ theorem factors_of_isColimit {J : Type v} [SmallCategory J]
 
 /-- **An ideal of an algebra object**: a subobject that absorbs
 multiplication by the algebra. -/
-def IsIdeal (𝔸 : Ind C) [MonObj 𝔸] (I : Subobject 𝔸) : Prop :=
+def IsIdeal [SmallCategory C] [MonoidalCategory C]
+    (𝔸 : Ind C) [MonObj 𝔸] (I : Subobject 𝔸) : Prop :=
   I.Factors ((𝔸 ◁ I.arrow) ≫ μ[𝔸])
 
-omit [SymmetricCategory C] [RigidCategory C] in
 /-- **The zero subobject is an ideal.** -/
-theorem isIdeal_bot (𝔸 : Ind C) [MonObj 𝔸] : IsIdeal 𝔸 ⊥ := by
+theorem isIdeal_bot [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸] : IsIdeal 𝔸 ⊥ := by
   have hz : IsZero (Subobject.underlying.obj (⊥ : Subobject 𝔸)) :=
     IsZero.of_iso (isZero_zero (Ind C)) Subobject.botCoeIsoZero
   have h : (⊥ : Subobject 𝔸).arrow = 0 := hz.eq_zero_of_src _
@@ -103,15 +98,15 @@ theorem isIdeal_bot (𝔸 : Ind C) [MonObj 𝔸] : IsIdeal 𝔸 ⊥ := by
 
 /-- **A proper subobject**: one through which the unit of the
 algebra does not factor. -/
-def IsProper (𝔸 : Ind C) [MonObj 𝔸] (I : Subobject 𝔸) : Prop :=
+def IsProper [SmallCategory C] [MonoidalCategory C]
+    (𝔸 : Ind C) [MonObj 𝔸] (I : Subobject 𝔸) : Prop :=
   ¬ I.Factors η[𝔸]
 
-omit [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **For an ideal, properness is exactly being different from the
 whole algebra.**  If the unit factors through an ideal then the
 arrow of the ideal is a split epimorphism, hence an isomorphism. -/
-theorem isProper_iff_ne_top (𝔸 : Ind C) [MonObj 𝔸]
+theorem isProper_iff_ne_top [SmallCategory C] [MonoidalCategory C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     {I : Subobject 𝔸} (hI : IsIdeal 𝔸 I) :
     IsProper 𝔸 I ↔ I ≠ ⊤ := by
   constructor
@@ -129,10 +124,9 @@ theorem isProper_iff_ne_top (𝔸 : Ind C) [MonObj 𝔸]
     haveI : IsIso I.arrow := isIso_of_mono_of_isSplitEpi _
     exact hne (Subobject.eq_top_of_isIso_arrow I)
 
-omit [SymmetricCategory C] [RigidCategory C] [MonoidalPreadditive C]
-  in
 /-- **The zero ideal is proper as soon as the unit is nonzero.** -/
-theorem isProper_bot (𝔸 : Ind C) [MonObj 𝔸] (hne : η[𝔸] ≠ 0) :
+theorem isProper_bot [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    (𝔸 : Ind C) [MonObj 𝔸] (hne : η[𝔸] ≠ 0) :
     IsProper 𝔸 ⊥ := fun h =>
   hne ((Subobject.bot_factors_iff_zero η[𝔸]).1 h)
 
@@ -140,27 +134,26 @@ theorem isProper_bot (𝔸 : Ind C) [MonObj 𝔸] (hne : η[𝔸] ≠ 0) :
 
 /-- Arbitrary suprema of subobjects of an ind-object, from
 well-poweredness, images and coproducts. -/
-noncomputable instance completeSemilatticeSupSubobject (A : Ind C) :
+noncomputable instance completeSemilatticeSupSubobject
+    [SmallCategory C] [Abelian C]
+    (A : Ind C) :
     CompleteSemilatticeSup (Subobject A) :=
   Subobject.completeSemilatticeSup.{v}
 
 /-! ## Compactness of the unit -/
 
-omit [SymmetricCategory C] [MonoidalCategory C] [Abelian C]
-  [RigidCategory C] [MonoidalPreadditive C] in
 /-- **Compactness transports along an isomorphism.** -/
-theorem IndCompactObj.of_iso {X Y : Ind C} (e : X ≅ Y)
+theorem IndCompactObj.of_iso [SmallCategory C]
+    {X Y : Ind C} (e : X ≅ Y)
     (h : IndCompactObj X) : IndCompactObj Y := fun D f => by
   obtain ⟨i, g, hg⟩ := h D (e.hom ≫ f)
   refine ⟨i, e.inv ≫ g, ?_⟩
   rw [Category.assoc, hg, ← Category.assoc, e.inv_hom_id,
     Category.id_comp]
 
-omit [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **The unit object of the ind-completion is compact**: it is the
 embedded unit of the small category. -/
-theorem indCompactObj_tensorUnit :
+theorem indCompactObj_tensorUnit [SmallCategory C] [MonoidalCategory C] :
     IndCompactObj (𝟙_ (Ind C)) :=
   IndCompactObj.of_iso (indOfUnitIso (C := C)).symm
     (indCompactObj_indOf (𝟙_ C))
@@ -168,54 +161,54 @@ theorem indCompactObj_tensorUnit :
 /-! ## The union of a directed family of subobjects -/
 
 /-- A family of subobjects of an ind-object is `v`-small. -/
-instance small_subobject_subset {A : Ind C} (s : Set (Subobject A)) :
+instance small_subobject_subset [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A)) :
     Small.{v} ↥s :=
   small_of_injective (f := (Subtype.val : ↥s → Subobject A))
     Subtype.val_injective
 
 /-- A `v`-small copy of a family of subobjects of an ind-object,
 serving as the index of the diagram of its members. -/
-def SubIndex {A : Ind C} (s : Set (Subobject A)) : Type v :=
+def SubIndex [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A)) : Type v :=
   Shrink.{v} ↥s
 
 /-- The subobject named by an index. -/
-noncomputable def SubIndex.val {A : Ind C} {s : Set (Subobject A)}
+noncomputable def SubIndex.val [SmallCategory C] [Abelian C]
+    {A : Ind C} {s : Set (Subobject A)}
     (j : SubIndex s) : Subobject A :=
   ((equivShrink ↥s).symm j).1
 
-omit [MonoidalCategory C] [SymmetricCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- The subobject named by an index belongs to the family. -/
-theorem SubIndex.val_mem {A : Ind C} {s : Set (Subobject A)}
+theorem SubIndex.val_mem [SmallCategory C] [Abelian C]
+    {A : Ind C} {s : Set (Subobject A)}
     (j : SubIndex s) : SubIndex.val j ∈ s :=
   ((equivShrink ↥s).symm j).2
 
-omit [MonoidalCategory C] [SymmetricCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- Every member of the family is named by an index. -/
-theorem SubIndex.val_index {A : Ind C} {s : Set (Subobject A)}
+theorem SubIndex.val_index [SmallCategory C] [Abelian C]
+    {A : Ind C} {s : Set (Subobject A)}
     {I : Subobject A} (hI : I ∈ s) :
     SubIndex.val (equivShrink ↥s ⟨I, hI⟩) = I :=
   congrArg Subtype.val (Equiv.symm_apply_apply _ _)
 
 /-- The index of a family of subobjects, ordered by inclusion of the
 subobjects it names. -/
-noncomputable instance subIndexPreorder {A : Ind C}
+noncomputable instance subIndexPreorder [SmallCategory C] [Abelian C]
+    {A : Ind C}
     (s : Set (Subobject A)) : Preorder (SubIndex s) :=
   Preorder.lift SubIndex.val
 
-omit [MonoidalCategory C] [SymmetricCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- A morphism of the index category is an inclusion of the
 subobjects it names. -/
-theorem SubIndex.le_of_hom {A : Ind C} {s : Set (Subobject A)}
+theorem SubIndex.le_of_hom [SmallCategory C] [Abelian C]
+    {A : Ind C} {s : Set (Subobject A)}
     {j k : SubIndex s} (h : j ⟶ k) :
     SubIndex.val j ≤ SubIndex.val k := (leOfHom h : j ≤ k)
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **The index of a nonempty directed family is filtered.** -/
-theorem isFiltered_subIndex {A : Ind C} {s : Set (Subobject A)}
+theorem isFiltered_subIndex [SmallCategory C] [Abelian C]
+    {A : Ind C} {s : Set (Subobject A)}
     (hne : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) :
     IsFiltered (SubIndex s) := by
   obtain ⟨x, hx⟩ := hne
@@ -232,7 +225,8 @@ theorem isFiltered_subIndex {A : Ind C} {s : Set (Subobject A)}
   exact isFiltered_of_directed_le_nonempty _
 
 /-- The diagram of the members of a family of subobjects. -/
-noncomputable def subDiagram {A : Ind C} (s : Set (Subobject A)) :
+noncomputable def subDiagram [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A)) :
     SubIndex s ⥤ Ind C where
   obj j := (SubIndex.val j : Ind C)
   map {j k} h := Subobject.ofLE _ _ (SubIndex.le_of_hom h)
@@ -246,7 +240,8 @@ noncomputable def subDiagram {A : Ind C} (s : Set (Subobject A)) :
 
 /-- The tautological cocone of `RS.subDiagram` on the ambient
 ind-object, given by the arrows of the members. -/
-noncomputable def subCocone {A : Ind C} (s : Set (Subobject A)) :
+noncomputable def subCocone [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A)) :
     Cocone (subDiagram s) :=
   Cocone.mk A
     { app := fun j => (SubIndex.val j).arrow
@@ -256,36 +251,34 @@ noncomputable def subCocone {A : Ind C} (s : Set (Subobject A)) :
 
 /-- The comparison morphism from the colimit of a family of
 subobjects to the ambient ind-object. -/
-noncomputable def subUnionHom {A : Ind C} (s : Set (Subobject A)) :
+noncomputable def subUnionHom [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A)) :
     colimit (subDiagram s) ⟶ A :=
   colimit.desc _ (subCocone s)
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- The colimit injections composed with the comparison morphism are
 the arrows of the members. -/
-theorem ι_subUnionHom {A : Ind C} (s : Set (Subobject A))
+theorem ι_subUnionHom [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A))
     (j : SubIndex s) :
     colimit.ι (subDiagram s) j ≫ subUnionHom s =
       (SubIndex.val j).arrow :=
   colimit.ι_desc _ _
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **The colimit of a constant diagram over a filtered index is the
 constant value.** -/
-noncomputable def constColimitIso {J : Type v} [SmallCategory J]
+noncomputable def constColimitIso [SmallCategory C]
+    {J : Type v} [SmallCategory J]
     [IsFiltered J] (A : Ind C) :
     colimit ((Functor.const J).obj A) ≅ A :=
   haveI : IsConnected J := IsFiltered.isConnected J
   (colimit.isColimit ((Functor.const J).obj A)).coconePointUniqueUpToIso
     (isColimitConstCocone J A)
 
-omit [SymmetricCategory C] [MonoidalCategory C] [Abelian C]
-  [RigidCategory C] [MonoidalPreadditive C] in
 /-- Each injection of the constant colimit is undone by
 `RS.constColimitIso`. -/
-theorem ι_constColimitIso {J : Type v} [SmallCategory J]
+theorem ι_constColimitIso [SmallCategory C]
+    {J : Type v} [SmallCategory J]
     [IsFiltered J] (A : Ind C) (j : J) :
     colimit.ι ((Functor.const J).obj A) j ≫ (constColimitIso A).hom
       = 𝟙 A := by
@@ -293,12 +286,11 @@ theorem ι_constColimitIso {J : Type v} [SmallCategory J]
   exact Eq.trans (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _)
     rfl
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **The union of a filtered family of subobjects is a
 subobject**: filtered colimits are exact in the ind-completion, so
 the comparison morphism of `RS.subUnionHom` is a monomorphism. -/
-instance mono_subUnionHom {A : Ind C} (s : Set (Subobject A))
+instance mono_subUnionHom [SmallCategory C] [Abelian C]
+    {A : Ind C} (s : Set (Subobject A))
     [IsFiltered (SubIndex s)] : Mono (subUnionHom s) := by
   haveI : ∀ j, Mono ((subCocone s).ι.app j) := fun j =>
     inferInstanceAs (Mono (SubIndex.val j).arrow)
@@ -325,13 +317,15 @@ instance mono_subUnionHom {A : Ind C} (s : Set (Subobject A))
 
 /-! ## The chain condition -/
 
-omit [SymmetricCategory C] in
 /-- **A nonempty directed family of proper ideals is bounded above by
 a proper ideal.**  The bound is the union of the family: it is an
 ideal because tensoring preserves the colimit of the members, and it
 is proper because the unit is compact, so a factorisation of the unit
 through the union already factors through a member. -/
-theorem exists_ub_of_directed (𝔸 : Ind C) [MonObj 𝔸]
+theorem exists_ub_of_directed
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     {c : Set (Subobject 𝔸)} (hne : c.Nonempty)
     (hdir : DirectedOn (· ≤ ·) c) (hid : ∀ I ∈ c, IsIdeal 𝔸 I)
     (hpr : ∀ I ∈ c, IsProper 𝔸 I) :
@@ -395,10 +389,12 @@ theorem exists_ub_of_directed (𝔸 : Ind C) [MonObj 𝔸]
 
 /-! ## Maximal proper ideals -/
 
-omit [SymmetricCategory C] in
 /-- **Every algebra with a nonzero unit has a maximal proper
 ideal.** -/
-theorem exists_maximal_ideal (𝔸 : Ind C) [MonObj 𝔸]
+theorem exists_maximal_ideal
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     (hne : η[𝔸] ≠ 0) :
     ∃ 𝔪 : Subobject 𝔸, IsIdeal 𝔸 𝔪 ∧ IsProper 𝔸 𝔪 ∧
       ∀ J : Subobject 𝔸, IsIdeal 𝔸 J → IsProper 𝔸 J → 𝔪 ≤ J →
@@ -419,11 +415,13 @@ theorem exists_maximal_ideal (𝔸 : Ind C) [MonObj 𝔸]
 
 /-! ## Transport of an algebra structure along an epimorphism -/
 
-omit [SymmetricCategory C] in
 /-- **An epimorphism transports an algebra structure.**  If a unit
 and a multiplication on the target are compatible with those of the
 source along an epimorphism, they satisfy the algebra laws. -/
-@[reducible] noncomputable def monObjOfEpi {A B : Ind C} [MonObj A]
+@[reducible] noncomputable def monObjOfEpi
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {A B : Ind C} [MonObj A]
     (p : A ⟶ B)
     [Epi p] (o : 𝟙_ (Ind C) ⟶ B) (m : B ⊗ B ⟶ B)
     (ho : η[A] ≫ p = o) (hm : (p ⊗ₘ p) ≫ m = μ[A] ≫ p) :
@@ -472,7 +470,10 @@ source along an epimorphism, they satisfy the algebra laws. -/
     rw [hL, hR, MonObj.mul_assoc]
 
 /-- **An epimorphism transports commutativity.** -/
-theorem isCommMonObj_of_epi {A B : Ind C} [MonObj A] [IsCommMonObj A]
+theorem isCommMonObj_of_epi
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    {A B : Ind C} [MonObj A] [IsCommMonObj A]
     [MonObj B] (p : A ⟶ B) [Epi p]
     (hm : (p ⊗ₘ p) ≫ μ[B] = μ[A] ≫ p) : IsCommMonObj B where
   mul_comm := by
@@ -483,20 +484,21 @@ theorem isCommMonObj_of_epi {A B : Ind C} [MonObj A] [IsCommMonObj A]
 
 /-! ## The quotient of an algebra by an ideal -/
 
-omit [SymmetricCategory C] [RigidCategory C] [MonoidalPreadditive C]
-  in
 /-- The multiplication of the algebra against an ideal dies in the
 quotient by that ideal. -/
-theorem whiskerLeft_arrow_mul_π (𝔸 : Ind C) [MonObj 𝔸]
+theorem whiskerLeft_arrow_mul_π
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     (𝔸 ◁ 𝔪.arrow) ≫ μ[𝔸] ≫ cokernel.π 𝔪.arrow = 0 := by
   obtain ⟨b, hb⟩ := exists_factor h𝔪
   rw [← Category.assoc, ← hb, Category.assoc, cokernel.condition,
     comp_zero]
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- The same on the other side, by commutativity. -/
-theorem whiskerRight_arrow_mul_π (𝔸 : Ind C) [MonObj 𝔸]
+theorem whiskerRight_arrow_mul_π
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     [IsCommMonObj 𝔸] (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     (𝔪.arrow ▷ 𝔸) ≫ μ[𝔸] ≫ cokernel.π 𝔪.arrow = 0 := by
   have h : (𝔪.arrow ▷ 𝔸) ≫ μ[𝔸] =
@@ -507,10 +509,12 @@ theorem whiskerRight_arrow_mul_π (𝔸 : Ind C) [MonObj 𝔸]
   simp only [Category.assoc]
   rw [whiskerLeft_arrow_mul_π 𝔸 𝔪 h𝔪, comp_zero]
 
-omit [SymmetricCategory C] in
 /-- The multiplication of the algebra, descended in its second
 variable to the quotient by an ideal. -/
-noncomputable def quotMulAux (𝔸 : Ind C) [MonObj 𝔸]
+noncomputable def quotMulAux
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     𝔸 ⊗ cokernel 𝔪.arrow ⟶ cokernel 𝔪.arrow :=
   (CokernelCofork.IsColimit.desc'
@@ -518,9 +522,11 @@ noncomputable def quotMulAux (𝔸 : Ind C) [MonObj 𝔸]
     (μ[𝔸] ≫ cokernel.π 𝔪.arrow)
     (whiskerLeft_arrow_mul_π 𝔸 𝔪 h𝔪)).1
 
-omit [SymmetricCategory C] in
 /-- The defining property of `RS.quotMulAux`. -/
-theorem whiskerLeft_π_quotMulAux (𝔸 : Ind C) [MonObj 𝔸]
+theorem whiskerLeft_π_quotMulAux
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     (𝔸 ◁ cokernel.π 𝔪.arrow) ≫ quotMulAux 𝔸 𝔪 h𝔪 =
       μ[𝔸] ≫ cokernel.π 𝔪.arrow :=
@@ -531,7 +537,10 @@ theorem whiskerLeft_π_quotMulAux (𝔸 : Ind C) [MonObj 𝔸]
 
 /-- The half-descended multiplication kills the ideal in its first
 variable as well. -/
-theorem whiskerRight_quotMulAux (𝔸 : Ind C) [MonObj 𝔸]
+theorem whiskerRight_quotMulAux
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     [IsCommMonObj 𝔸] (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     (𝔪.arrow ▷ cokernel 𝔪.arrow) ≫ quotMulAux 𝔸 𝔪 h𝔪 = 0 := by
   haveI : Epi ((𝔪 : Ind C) ◁ cokernel.π 𝔪.arrow) :=
@@ -541,7 +550,10 @@ theorem whiskerRight_quotMulAux (𝔸 : Ind C) [MonObj 𝔸]
     whiskerLeft_π_quotMulAux, whiskerRight_arrow_mul_π 𝔸 𝔪 h𝔪]
 
 /-- **The multiplication of the quotient algebra.** -/
-noncomputable def quotMul (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
+noncomputable def quotMul
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     cokernel 𝔪.arrow ⊗ cokernel 𝔪.arrow ⟶ cokernel 𝔪.arrow :=
   (CokernelCofork.IsColimit.desc'
@@ -550,7 +562,10 @@ noncomputable def quotMul (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (quotMulAux 𝔸 𝔪 h𝔪) (whiskerRight_quotMulAux 𝔸 𝔪 h𝔪)).1
 
 /-- The defining property of `RS.quotMul`. -/
-theorem whiskerRight_π_quotMul (𝔸 : Ind C) [MonObj 𝔸]
+theorem whiskerRight_π_quotMul
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     [IsCommMonObj 𝔸] (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     (cokernel.π 𝔪.arrow ▷ cokernel 𝔪.arrow) ≫ quotMul 𝔸 𝔪 h𝔪 =
       quotMulAux 𝔸 𝔪 h𝔪 :=
@@ -560,7 +575,10 @@ theorem whiskerRight_π_quotMul (𝔸 : Ind C) [MonObj 𝔸]
     (quotMulAux 𝔸 𝔪 h𝔪) (whiskerRight_quotMulAux 𝔸 𝔪 h𝔪)).2
 
 /-- **The projection is multiplicative.** -/
-theorem tensorHom_π_quotMul (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
+theorem tensorHom_π_quotMul
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     (cokernel.π 𝔪.arrow ⊗ₘ cokernel.π 𝔪.arrow) ≫ quotMul 𝔸 𝔪 h𝔪 =
       μ[𝔸] ≫ cokernel.π 𝔪.arrow := by
@@ -568,7 +586,10 @@ theorem tensorHom_π_quotMul (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     whiskerLeft_π_quotMulAux]
 
 /-- **The quotient of an algebra by an ideal is an algebra.** -/
-@[reducible] noncomputable def quotMonObj (𝔸 : Ind C) [MonObj 𝔸]
+@[reducible] noncomputable def quotMonObj
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     [IsCommMonObj 𝔸] (𝔪 : Subobject 𝔸) (h𝔪 : IsIdeal 𝔸 𝔪) :
     MonObj (cokernel 𝔪.arrow) :=
   monObjOfEpi (cokernel.π 𝔪.arrow) (η[𝔸] ≫ cokernel.π 𝔪.arrow)
@@ -576,12 +597,11 @@ theorem tensorHom_π_quotMul (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
 
 /-! ## Pulling ideals back along the projection -/
 
-omit [SymmetricCategory C] [MonoidalCategory C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **Pulling a subobject back**: a morphism factors through the
 pullback of a subobject exactly when its composite factors through
 the subobject. -/
-theorem factors_pullback_iff {A B W : Ind C} (I : Subobject B)
+theorem factors_pullback_iff [SmallCategory C] [Abelian C]
+    {A B W : Ind C} (I : Subobject B)
     (p : A ⟶ B) (h : W ⟶ A) :
     (Subobject.mk (pullback.snd I.arrow p)).Factors h ↔
       I.Factors (h ≫ p) := by
@@ -612,7 +632,10 @@ nonzero unit has a simple quotient**: a quotient algebra whose only
 ideals are the zero subobject and the whole object.  The quotient is
 by a maximal proper ideal, and ideals of the quotient correspond to
 ideals of the algebra containing that maximal ideal. -/
-theorem exists_simple_quotient (𝔸 : Ind C) [MonObj 𝔸]
+theorem exists_simple_quotient
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (𝔸 : Ind C) [MonObj 𝔸]
     [IsCommMonObj 𝔸] (hne : η[𝔸] ≠ 0) :
     ∃ (𝔹 : Ind C) (_ : MonObj 𝔹) (_ : IsCommMonObj 𝔹) (π : 𝔸 ⟶ 𝔹),
       η[𝔹] ≠ 0 ∧ Epi π ∧ IsMonHom π ∧

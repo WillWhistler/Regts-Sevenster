@@ -21,14 +21,15 @@ local notation "μ[" M "]" => MonObj.mul (X := M)
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [BraidedCategory D] [Preadditive D]
-variable {ι : Type v} (B : ι → D) [∀ i, MonObj (B i)]
+variable {D : Type u}
 
 /-- **The unit of a finite fold survives**: the unit of a tensor
 product of monoid objects is the tensor of their units, so it is
 nonzero as soon as the binary statement holds. -/
-theorem listTensor_one_ne_zero (h1 : 𝟙 (𝟙_ D) ≠ 0)
+theorem listTensor_one_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] {ι : Type v} (B : ι → D) [∀ i, MonObj (B i)]
+    (h1 : 𝟙 (𝟙_ D) ≠ 0)
     (hbin : ∀ {M N : D} (u : 𝟙_ D ⟶ M) (v : 𝟙_ D ⟶ N),
       u ≠ 0 → v ≠ 0 → (u ⊗ₘ v) ≠ 0)
     (hB : ∀ i, η[B i] ≠ 0) :
@@ -40,28 +41,32 @@ theorem listTensor_one_ne_zero (h1 : 𝟙 (𝟙_ D) ≠ 0)
     rw [hstep]
     intro h0
     refine hbin η[B i] η[listTensor B l] (hB i)
-      (listTensor_one_ne_zero h1 hbin hB l) ?_
+      (listTensor_one_ne_zero B h1 hbin hB l) ?_
     have hcomp := congrArg (fun t => (λ_ (𝟙_ D)).hom ≫ t) h0
     simp only [Iso.hom_inv_id_assoc] at hcomp
     rw [hcomp]
     exact Limits.comp_zero
 
-variable [LinearOrder ι]
-
 /-- **The unit of a finite sub-tensor-product survives.** -/
-theorem finTensor_one_ne_zero (h1 : 𝟙 (𝟙_ D) ≠ 0)
+theorem finTensor_one_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] {ι : Type v} (B : ι → D) [∀ i, MonObj (B i)]
+    [LinearOrder ι]
+    (h1 : 𝟙 (𝟙_ D) ≠ 0)
     (hbin : ∀ {M N : D} (u : 𝟙_ D ⟶ M) (v : 𝟙_ D ⟶ N),
       u ≠ 0 → v ≠ 0 → (u ⊗ₘ v) ≠ 0)
     (hB : ∀ i, η[B i] ≠ 0) (s : Finset ι) :
     η[finTensor B s] ≠ 0 :=
   listTensor_one_ne_zero B h1 hbin hB (s.sort (· ≤ ·))
 
-variable [HasColimitsOfShape (Finset ι) D]
-
 /-- **The unit of the big tensor product survives**, given that
 a point of the colimit vanishes only if it already vanishes at a
 later stage. -/
-theorem bigTensorUnit_ne_zero (h1 : 𝟙 (𝟙_ D) ≠ 0)
+theorem bigTensorUnit_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] {ι : Type v} (B : ι → D) [∀ i, MonObj (B i)]
+    [LinearOrder ι] [HasColimitsOfShape (Finset ι) D]
+    (h1 : 𝟙 (𝟙_ D) ≠ 0)
     (hbin : ∀ {M N : D} (u : 𝟙_ D ⟶ M) (v : 𝟙_ D ⟶ N),
       u ≠ 0 → v ≠ 0 → (u ⊗ₘ v) ≠ 0)
     (hB : ∀ i, η[B i] ≠ 0)

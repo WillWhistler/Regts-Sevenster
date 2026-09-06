@@ -18,27 +18,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable {M M' : Mod D A}
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
+variable {D : Type u}
 
 section Eval
 
-variable (v : M.X ⟶ B)
-
-omit [HasCoequalizers D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- **The descent condition of the evaluation**: an insertion
 that is linear over the base through `φ` coequalizes the two
 legs of the base-change tensor. -/
-theorem splitEvalCond (hv : actLeft A M.X ≫ v =
+theorem splitEvalCond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] {M : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ] (v : M.X ⟶ B)
+    (hv : actLeft A M.X ≫ v =
     (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     modTensorLegM A (restrictRegular φ) M ≫
         (B ◁ v) ≫ μ[B] =
@@ -65,18 +56,23 @@ theorem splitEvalCond (hv : actLeft A M.X ≫ v =
 
 /-- **The evaluation of the insertion on the base change**: the
 `B`-linear extension of a base-linear insertion. -/
-noncomputable def splitEval (hv : actLeft A M.X ≫ v =
+noncomputable def splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ] (v : M.X ⟶ B)
+    (hv : actLeft A M.X ≫ v =
     (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     baseChange φ M ⟶ B :=
   modTensorDesc A (restrictRegular φ) M ((B ◁ v) ≫ μ[B])
     (splitEvalCond A B φ v hv)
 
-omit [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Defining equation of the evaluation. -/
 @[reassoc]
-theorem modTensorπ_splitEval (hv : actLeft A M.X ≫ v =
+theorem modTensorπ_splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ] (v : M.X ⟶ B)
+    (hv : actLeft A M.X ≫ v =
     (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     modTensorπ A (restrictRegular φ) M ≫
         splitEval A B φ v hv = (B ◁ v) ≫ μ[B] :=
@@ -86,39 +82,43 @@ end Eval
 
 section Coeval
 
-variable (w : M'.X ⟶ B)
-
 /-- A base-linear insertion, bundled as a module morphism into
 the restricted regular module. -/
-noncomputable def insHom (hw : actLeft A M'.X ≫ w =
+noncomputable def insHom
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] {M' : Mod D A}
+    (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (w : M'.X ⟶ B)
+    (hw : actLeft A M'.X ≫ w =
     (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     M' ⟶ restrictRegular φ :=
   Mod.Hom.mk' w (by exact hw)
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 @[simp]
-theorem insHom_hom (hw : actLeft A M'.X ≫ w =
+theorem insHom_hom
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] {M' : Mod D A}
+    (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (w : M'.X ⟶ B)
+    (hw : actLeft A M'.X ≫ w =
     (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     (insHom A B φ w hw).hom = w := rfl
 
 /-- **The coevaluation core**: swap the pair and push the dual
 factor into the algebra — the module tensor product lands in the
 base change. -/
-noncomputable def splitCoevalCore (hw : actLeft A M'.X ≫ w =
+noncomputable def splitCoevalCore
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (w : M'.X ⟶ B)
+    (hw : actLeft A M'.X ≫ w =
     (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     modTensor A M M' ⟶ baseChange φ M :=
   modTensorSwap A M M' ≫
     modTensorMap A (insHom A B φ w hw) (𝟙 M)
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Defining equation of the coevaluation core. -/
 @[reassoc]
 theorem modTensorπ_splitCoevalCore
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (w : M'.X ⟶ B)
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     modTensorπ A M M' ≫ splitCoevalCore A B φ w hw =
@@ -137,15 +137,14 @@ end Coeval
 
 section Retract
 
-variable (v : M.X ⟶ B) (w : M'.X ⟶ B)
-
-omit [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- **Evaluating the coevaluation core multiplies the two
 insertions**: the core composite is any descended pair
 product. -/
 theorem splitCoevalCore_splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -171,10 +170,14 @@ theorem splitCoevalCore_splitEval
       IsCommMonObj.mul_comm]
   exact h1.trans h2
 
-omit [IsCommMonObj A] in
 /-- **The evaluation is linear over the algebra.** -/
 @[reassoc]
 theorem baseChangeAct_splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     baseChangeAct φ M ≫ splitEval A B φ v hv =
@@ -207,12 +210,16 @@ theorem baseChangeAct_splitEval
     simp
   exact h1.trans (h3.trans h2.symm)
 
-variable (d : ModDualityDatum A M M')
-
 /-- **The coevaluation**: the copair element with its dual
 factor pushed into the algebra, multiplied against the
 algebra. -/
 noncomputable def splitCoeval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     B ⟶ baseChange φ M :=
@@ -224,6 +231,12 @@ noncomputable def splitCoeval
 /-- **The coevaluation is linear over the algebra.** -/
 @[reassoc]
 theorem mul_splitCoeval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     μ[B] ≫ splitCoeval A B φ w d hw =
@@ -249,6 +262,12 @@ trichotomy): over splitting data, the coevaluation followed by
 the evaluation is the identity — the algebra is a direct factor
 of the base change of the module. -/
 theorem splitCoeval_splitEval
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B) (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B])
     (hw : actLeft A M'.X ≫ w =
@@ -286,6 +305,11 @@ theorem splitCoeval_splitEval
 /-- The evaluation, as a module morphism onto the regular
 module. -/
 noncomputable def splitEvalMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {M : Mod D A} (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (v : M.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     baseChangeMod φ M ⟶ regularMod B :=
@@ -295,6 +319,12 @@ noncomputable def splitEvalMod
 /-- The coevaluation, as a module morphism from the regular
 module. -/
 noncomputable def splitCoevalMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A} (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (w : M'.X ⟶ B) (d : ModDualityDatum A M M')
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     regularMod B ⟶ baseChangeMod φ M :=

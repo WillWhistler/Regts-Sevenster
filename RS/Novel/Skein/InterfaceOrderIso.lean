@@ -33,32 +33,35 @@ namespace RS
 
 section InstanceAliases
 
-variable (α β : Type) [LinearOrder α] [LinearOrder β]
+variable (α β : Type)
 
 /-- The lexicographic preorder on a plain sum, as an explicit term
 (never registered as an instance): pin it with `@` in statements. -/
-abbrev sumLexPreorder : Preorder (α ⊕ β) :=
+abbrev sumLexPreorder [LinearOrder α] [LinearOrder β] : Preorder (α ⊕ β) :=
   (sumLexLinearOrder α β).toPartialOrder.toPreorder
 
 /-- The lexicographic `≤` on a plain sum, as an explicit term. -/
-abbrev sumLexLE : LE (α ⊕ β) :=
+abbrev sumLexLE [LinearOrder α] [LinearOrder β] : LE (α ⊕ β) :=
   (sumLexPreorder α β).toLE
 
 /-- The linear order induced on a subtype of the lexicographically
 ordered sum. -/
-abbrev sumLexSubtypeLinearOrder (p : α ⊕ β → Prop) :
+abbrev sumLexSubtypeLinearOrder [LinearOrder α] [LinearOrder β]
+    (p : α ⊕ β → Prop) :
     LinearOrder (Subtype p) :=
   @Subtype.instLinearOrder _ (sumLexLinearOrder α β) p
 
 /-- The preorder induced on a subtype of the lexicographically
 ordered sum. -/
-abbrev sumLexSubtypePreorder (p : α ⊕ β → Prop) :
+abbrev sumLexSubtypePreorder [LinearOrder α] [LinearOrder β]
+    (p : α ⊕ β → Prop) :
     Preorder (Subtype p) :=
   (sumLexSubtypeLinearOrder α β p).toPartialOrder.toPreorder
 
 /-- The `≤` induced on a subtype of the lexicographically ordered
 sum. -/
-abbrev sumLexSubtypeLE (p : α ⊕ β → Prop) : LE (Subtype p) :=
+abbrev sumLexSubtypeLE [LinearOrder α] [LinearOrder β]
+    (p : α ⊕ β → Prop) : LE (Subtype p) :=
   (sumLexSubtypePreorder α β p).toLE
 
 end InstanceAliases
@@ -67,11 +70,12 @@ end InstanceAliases
 
 section StrictMonoEquiv
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β]
+variable {α β : Type}
 
 /-- The inverse of a strictly monotone equivalence between linear
 orders is strictly monotone. -/
-theorem strictMono_equiv_symm (e : α ≃ β) (h : StrictMono e) :
+theorem strictMono_equiv_symm [LinearOrder α] [LinearOrder β]
+    (e : α ≃ β) (h : StrictMono e) :
     StrictMono e.symm := by
   intro b b' hbb
   rcases lt_trichotomy (e.symm b) (e.symm b') with h1 | h1 | h1
@@ -89,18 +93,22 @@ theorem strictMono_equiv_symm (e : α ≃ β) (h : StrictMono e) :
 /-- A strictly monotone equivalence between linear orders, as an
 order isomorphism (keeping the underlying equivalence on the
 nose). -/
-def orderIsoOfStrictMonoEquiv (e : α ≃ β) (h : StrictMono e) :
+def orderIsoOfStrictMonoEquiv [LinearOrder α] [LinearOrder β]
+    (e : α ≃ β) (h : StrictMono e) :
     α ≃o β :=
   e.toOrderIso h.monotone (strictMono_equiv_symm e h).monotone
 
 /-- The order isomorphism built from a strictly monotone equivalence
 acts as that equivalence. -/
-@[simp] theorem orderIsoOfStrictMonoEquiv_apply (e : α ≃ β)
+@[simp] theorem orderIsoOfStrictMonoEquiv_apply [LinearOrder α] [LinearOrder β]
+    (e : α ≃ β)
     (h : StrictMono e) (x : α) :
     orderIsoOfStrictMonoEquiv e h x = e x := rfl
 
 /-- And carries it as its underlying equivalence. -/
-@[simp] theorem orderIsoOfStrictMonoEquiv_toEquiv (e : α ≃ β)
+@[simp] theorem orderIsoOfStrictMonoEquiv_toEquiv
+    [LinearOrder α] [LinearOrder β]
+    (e : α ≃ β)
     (h : StrictMono e) :
     (orderIsoOfStrictMonoEquiv e h).toEquiv = e := rfl
 

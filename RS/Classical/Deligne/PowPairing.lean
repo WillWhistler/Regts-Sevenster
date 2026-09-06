@@ -22,30 +22,33 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section Braided
-
-variable [BraidedCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
 
 /-! ## The datum's pairing at the raw tensor level -/
 
 section PairRaw
 
 /-- The datum's pairing evaluated on the raw tensor product. -/
-noncomputable def pairRaw (d : ModDualityDatum A M M') :
+noncomputable def pairRaw
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     M'.X ⊗ M.X ⟶ A :=
   modTensorπ A M' M ≫ d.pair
 
 /-- Raw linearity of the pairing in the `M'`-factor: acting on the
 first factor multiplies the scalar. -/
 @[reassoc]
-theorem pairRaw_actLeft_fst (d : ModDualityDatum A M M') :
+theorem pairRaw_actLeft_fst
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ((α_ A M'.X M.X).inv ≫ actLeft A M'.X ▷ M.X) ≫
         pairRaw A M M' d =
       (A ◁ pairRaw A M M' d) ≫ μ[A] := by
@@ -59,7 +62,11 @@ theorem pairRaw_actLeft_fst (d : ModDualityDatum A M M') :
 /-- The middle slide across the raw pairing: the braided right
 action on `M'` and the left action on `M` pair equally. -/
 @[reassoc]
-theorem pairRaw_slide (d : ModDualityDatum A M M') :
+theorem pairRaw_slide [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (actRight A M'.X ▷ M.X) ≫ pairRaw A M M' d =
       ((α_ M'.X A M.X).hom ≫ M'.X ◁ actLeft A M.X) ≫
         pairRaw A M M' d := by
@@ -71,7 +78,12 @@ theorem pairRaw_slide (d : ModDualityDatum A M M') :
 right of the `M'`-factor braids the scalar out to the left and
 multiplies. -/
 @[reassoc]
-theorem pairRaw_actRight_fst (d : ModDualityDatum A M M') :
+theorem pairRaw_actRight_fst
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (actRight A M'.X ▷ M.X) ≫ pairRaw A M M' d =
       ((β_ M'.X A).hom ▷ M.X) ≫ (α_ A M'.X M.X).hom ≫
         (A ◁ pairRaw A M M' d) ≫ μ[A] := by
@@ -82,7 +94,12 @@ theorem pairRaw_actRight_fst (d : ModDualityDatum A M M') :
 /-- Raw linearity in the `M`-factor: acting on the left of the
 `M`-factor braids the scalar out to the left and multiplies. -/
 @[reassoc]
-theorem pairRaw_actLeft_snd (d : ModDualityDatum A M M') :
+theorem pairRaw_actLeft_snd
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (M'.X ◁ actLeft A M.X) ≫ pairRaw A M M' d =
       (α_ M'.X A M.X).inv ≫ ((β_ M'.X A).hom ▷ M.X) ≫
         (α_ A M'.X M.X).hom ≫ (A ◁ pairRaw A M M' d) ≫ μ[A] := by
@@ -100,7 +117,12 @@ recursion on the arity: at `n + 1`, peel the first factor of the
 `M`-power, pair it with the exposed last factor of the `M'`-power,
 braid the resulting scalar past the remaining `M`-power, and
 multiply it onto the pairing of the remaining powers. -/
-noncomputable def rawPair (d : ModDualityDatum A M M') :
+noncomputable def rawPair
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (n : ℕ) → (tensorPow D M'.X n ⊗ tensorPow D M.X n ⟶ A)
   | 0 => (λ_ (𝟙_ D)).hom ≫ η[A]
   | n + 1 =>
@@ -113,15 +135,23 @@ noncomputable def rawPair (d : ModDualityDatum A M M') :
           (pairRaw A M M' d ▷ tensorPow D M.X n)) ≫
         (tensorPow D M'.X n ◁ (β_ A (tensorPow D M.X n)).hom) ≫
         (α_ (tensorPow D M'.X n) (tensorPow D M.X n) A).inv ≫
-        (rawPair d n ▷ A) ≫ μ[A]
+        (rawPair A M M' d n ▷ A) ≫ μ[A]
 
 /-- The base case of the power pairing. -/
-theorem rawPair_zero (d : ModDualityDatum A M M') :
+theorem rawPair_zero [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     rawPair A M M' d 0 = (λ_ (𝟙_ D)).hom ≫ η[A] :=
   rfl
 
 /-- The recursion of the power pairing. -/
-theorem rawPair_succ (d : ModDualityDatum A M M') (n : ℕ) :
+theorem rawPair_succ [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (n : ℕ) :
     rawPair A M M' d (n + 1) =
       (tensorPow D M'.X (n + 1) ◁ (powPeel M.X n).hom) ≫
         (α_ (tensorPow D M'.X n) M'.X
@@ -151,7 +181,12 @@ the step.
 section PairStep
 
 /-- The generic recursion step of the power pairing. -/
-noncomputable def pairStep (d : ModDualityDatum A M M')
+noncomputable def pairStep
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     (Q ⊗ M'.X) ⊗ (M.X ⊗ R) ⟶ A :=
   (α_ Q M'.X (M.X ⊗ R)).hom ≫
@@ -161,7 +196,12 @@ noncomputable def pairStep (d : ModDualityDatum A M M')
 
 /-- The recursion of the power pairing through the generic
 step. -/
-theorem rawPair_succ_step (d : ModDualityDatum A M M') (n : ℕ) :
+theorem rawPair_succ_step
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (n : ℕ) :
     rawPair A M M' d (n + 1) =
       (tensorPow D M'.X (n + 1) ◁ (powPeel M.X n).hom) ≫
         pairStep A M M' d (rawPair A M M' d n) := by
@@ -170,7 +210,12 @@ theorem rawPair_succ_step (d : ModDualityDatum A M M') (n : ℕ) :
   rfl
 
 /-- Naturality of the step in the block variable. -/
-theorem pairStep_precomp (d : ModDualityDatum A M M')
+theorem pairStep_precomp
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q' Q R : D} (f : Q' ⟶ Q) (r : Q ⊗ R ⟶ A) :
     ((f ▷ M'.X) ▷ (M.X ⊗ R)) ≫ pairStep A M M' d r =
       pairStep A M M' d ((f ▷ R) ≫ r) := by
@@ -180,7 +225,12 @@ theorem pairStep_precomp (d : ModDualityDatum A M M')
     ← comp_whiskerRight_assoc]
 
 /-- Naturality of the step in the continuation variable. -/
-theorem pairStep_postcomp (d : ModDualityDatum A M M')
+theorem pairStep_postcomp
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R' R : D} (g : R' ⟶ R) (r : Q ⊗ R ⟶ A) :
     ((Q ⊗ M'.X) ◁ (M.X ◁ g)) ≫ pairStep A M M' d r =
       pairStep A M M' d ((Q ◁ g) ≫ r) := by
@@ -202,12 +252,11 @@ theorem pairStep_postcomp (d : ModDualityDatum A M M')
 
 end PairStep
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The mirror crossing coherence, for a strand arriving from the
 left of the pair's second factor. -/
-private theorem cross_shuffle_snd (S T R C : D) :
+private theorem cross_shuffle_snd
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (S T R C : D) :
     (S ◁ (α_ C T R).inv) ≫ (α_ S (C ⊗ T) R).inv ≫
         ((S ◁ (β_ C T).hom) ▷ R) ≫ ((α_ S T C).inv ▷ R) ≫
         (β_ ((S ⊗ T) ⊗ C) R).hom =
@@ -218,13 +267,12 @@ private theorem cross_shuffle_snd (S T R C : D) :
     BraidedCategory.braiding_tensor_right_hom]
   monoidal
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- A strand crossing a block from inside a left pair: crossing
 the adjacent factor and then the whole block as a unit equals
 first regrouping and crossing factor by factor. -/
-private theorem cross_shuffle (S T R C : D) :
+private theorem cross_shuffle
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    (S T R C : D) :
     (α_ (S ⊗ C) T R).inv ≫ ((α_ S C T).hom ▷ R) ≫
         ((S ◁ (β_ C T).hom) ▷ R) ≫ ((α_ S T C).inv ▷ R) ≫
         (β_ ((S ⊗ T) ⊗ C) R).hom =
@@ -249,13 +297,12 @@ structure's braiding is the only braiding in scope.
 
 section ConcatPeel
 
-variable (X : D)
-
 /-- **Concatenation against the head peel**: concatenating onto a
 power with an exposed head factor and peeling the head of the
 result equals peeling the first block and concatenating the
 rest under the exposed factor. -/
-theorem concat_peel_head (p : ℕ) : ∀ q : ℕ,
+theorem concat_peel_head [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p : ℕ) : ∀ q : ℕ,
     (tensorPowConcat X (p + 1) q).hom ≫
       powCast X (by omega : p + 1 + q = p + q + 1) ≫
       (powPeel X (p + q)).hom =
@@ -294,7 +341,7 @@ theorem concat_peel_head (p : ℕ) : ∀ q : ℕ,
       (X ◁ ((α_ (tensorPow D X p) (tensorPow D X q) X).inv ≫
         ((tensorPowConcat X p q).hom ▷ X)))
     rw [← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc,
-      Category.assoc, concat_peel_head p q]
+      Category.assoc, concat_peel_head X p q]
     simp only [comp_whiskerRight, Category.assoc]
     monoidal
 
@@ -302,7 +349,8 @@ theorem concat_peel_head (p : ℕ) : ∀ q : ℕ,
 non-trivial left context, followed by the head peel, is the head
 peel of the block followed by the leg at the lower context under
 the exposed factor. -/
-private theorem leg_step_snd_eq {A X : D}
+private theorem leg_step_snd_eq [Category.{v} D] [MonoidalCategory D]
+    {A X : D}
     (w : (X ⊗ A) ⊗ X ⟶ X ⊗ X) (a b : ℕ) :
     ((tensorPow D X (a + 1) ◁ w) ▷ tensorPow D X b) ≫
       modPowGlue X (a + 1) b ≫
@@ -345,11 +393,11 @@ end ConcatPeel
 
 section Symmetric
 
-variable [SymmetricCategory D]
-
 /-- A strand crossing out to the left through an evaluated pairing
 may instead cross to the right and braid past the output. -/
-theorem braid_cross_pair {S T Z : D} (C : D) (f : S ⊗ T ⟶ Z) :
+theorem braid_cross_pair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {S T Z : D} (C : D) (f : S ⊗ T ⟶ Z) :
     ((β_ S C).hom ▷ T) ≫ (α_ C S T).hom ≫ (C ◁ f) =
       (α_ S C T).hom ≫ (S ◁ (β_ C T).hom) ≫ (α_ S T C).inv ≫
         (f ▷ C) ≫ (β_ Z C).hom := by
@@ -360,17 +408,16 @@ theorem braid_cross_pair {S T Z : D} (C : D) (f : S ⊗ T ⟶ Z) :
     SymmetricCategory.symmetry]
   simp
 
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-
 /-- **Scalar extraction at the pair**: acting on the right of the
 `M'`-factor equals sliding the scalar rightwards past the
 `M`-factor, pairing, and multiplying from the right. -/
 @[reassoc]
-theorem pairRaw_actRight_out (d : ModDualityDatum A M M') :
+theorem pairRaw_actRight_out
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (actRight A M'.X ▷ M.X) ≫ pairRaw A M M' d =
       (α_ M'.X A M.X).hom ≫ (M'.X ◁ (β_ A M.X).hom) ≫
         (α_ M'.X M.X A).inv ≫ (pairRaw A M M' d ▷ A) ≫ μ[A] := by
@@ -381,7 +428,12 @@ theorem pairRaw_actRight_out (d : ModDualityDatum A M M') :
 /-- The inner extraction: acting on the right of the `M'`-factor
 before a whiskered pairing-and-braid block equals braiding the
 scalar past the block and folding it by multiplication. -/
-private theorem inner_extract (d : ModDualityDatum A M M')
+private theorem inner_extract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (R : D) :
     (actRight A M'.X ▷ (M.X ⊗ R)) ≫ (α_ M'.X M.X R).inv ≫
         (pairRaw A M M' d ▷ R) ≫ (β_ A R).hom =
@@ -410,7 +462,12 @@ private theorem inner_extract (d : ModDualityDatum A M M')
 left of the `M`-factor equals sliding the scalar rightwards past
 the `M`-factor, pairing, and multiplying from the right. -/
 @[reassoc]
-theorem pairRaw_actLeft_out (d : ModDualityDatum A M M') :
+theorem pairRaw_actLeft_out
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (M'.X ◁ actLeft A M.X) ≫ pairRaw A M M' d =
       (M'.X ◁ (β_ A M.X).hom) ≫ (α_ M'.X M.X A).inv ≫
         (pairRaw A M M' d ▷ A) ≫ μ[A] := by
@@ -424,7 +481,12 @@ right**: acting through the braided right action on the
 `M`-factor multiplies the pairing from the right, with no
 crossing at all. -/
 @[reassoc]
-theorem pairRaw_actRight_snd (d : ModDualityDatum A M M') :
+theorem pairRaw_actRight_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (M'.X ◁ actRight A M.X) ≫ pairRaw A M M' d =
       (α_ M'.X M.X A).inv ≫ (pairRaw A M M' d ▷ A) ≫ μ[A] := by
   rw [actRight, MonoidalCategory.whiskerLeft_comp, Category.assoc,
@@ -436,7 +498,12 @@ theorem pairRaw_actRight_snd (d : ModDualityDatum A M M') :
 `M`-factor before a whiskered pairing-and-braid block equals
 braiding the scalar past the block and folding by
 multiplication. -/
-private theorem inner_extract_snd (d : ModDualityDatum A M M')
+private theorem inner_extract_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (R : D) :
     (M'.X ◁ ((α_ A M.X R).inv ≫ (actLeft A M.X ▷ R))) ≫
         (α_ M'.X M.X R).inv ≫ (pairRaw A M M' d ▷ R) ≫
@@ -466,7 +533,12 @@ private theorem inner_extract_snd (d : ModDualityDatum A M M')
 right of the exposed last factor of the `M'`-power equals braiding
 the scalar past the whole `M`-power and multiplying the pairing
 from the right. -/
-theorem rawPair_actRight_last (d : ModDualityDatum A M M')
+theorem rawPair_actRight_last
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     ((tensorPow D M'.X n ◁ actRight A M'.X) ▷
         tensorPow D M.X (n + 1)) ≫ rawPair A M M' d (n + 1) =
@@ -532,7 +604,12 @@ theorem rawPair_actRight_last (d : ModDualityDatum A M M')
 acting through the braided right action on the exposed `M'`-factor
 equals braiding the scalar past the peeled block and multiplying
 the step from the right. -/
-theorem pairStep_actRight (d : ModDualityDatum A M M')
+theorem pairStep_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     ((Q ◁ actRight A M'.X) ▷ (M.X ⊗ R)) ≫
         pairStep A M M' d r =
@@ -558,7 +635,12 @@ theorem pairStep_actRight (d : ModDualityDatum A M M')
 /-- **Generic scalar extraction at the `M`-slot of the step**:
 acting on the exposed head `M`-factor equals braiding the scalar
 past the peeled block and multiplying the step from the right. -/
-theorem pairStep_actHead (d : ModDualityDatum A M M')
+theorem pairStep_actHead
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     ((Q ⊗ M'.X) ◁ ((α_ A M.X R).inv ≫
         (actLeft A M.X ▷ R))) ≫ pairStep A M M' d r =
@@ -579,19 +661,24 @@ theorem pairStep_actHead (d : ModDualityDatum A M M')
     Category.assoc]
   monoidal
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- Over a symmetric base the left action is the braided right
 action after one crossing. -/
-theorem actLeft_eq_braid_actRight (X : D) [ModObj A X] :
+theorem actLeft_eq_braid_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (X : D) [ModObj A X] :
     actLeft A X = (β_ A X).hom ≫ actRight A X := by
   rw [actRight, ← Category.assoc, SymmetricCategory.symmetry,
     Category.id_comp]
 
 /-- Generic scalar extraction at the `M'`-slot, for a scalar
 arriving from the left of the consumed factor. -/
-theorem pairStep_actLeft_pair (d : ModDualityDatum A M M')
+theorem pairStep_actLeft_pair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     ((Q ◁ actLeft A M'.X) ▷ (M.X ⊗ R)) ≫
         pairStep A M M' d r =
@@ -608,7 +695,12 @@ theorem pairStep_actLeft_pair (d : ModDualityDatum A M M')
 /-- The scalar strand crossing the whole pairing block: crossing
 factor by factor before the block equals letting the block fire
 and crossing its output. -/
-private theorem cross_block (d : ModDualityDatum A M M')
+private theorem cross_block
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (R : D) :
     ((β_ A M'.X).hom ▷ (M.X ⊗ R)) ≫
         (α_ M'.X A (M.X ⊗ R)).hom ≫
@@ -629,7 +721,12 @@ private theorem cross_block (d : ModDualityDatum A M M')
 /-- The core of the top-slot slide, after both legs have been
 opened: an identity between two routings of the scalar through
 the pairing block, valid for every continuation. -/
-private theorem slide_core (d : ModDualityDatum A M M')
+private theorem slide_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : (Q ⊗ M'.X) ⊗ R ⟶ A) :
     ((α_ Q (M'.X ⊗ A) M'.X).inv ▷ (M.X ⊗ R)) ≫
       (α_ (Q ⊗ (M'.X ⊗ A)) M'.X (M.X ⊗ R)).hom ≫
@@ -694,7 +791,12 @@ private theorem slide_core (d : ModDualityDatum A M M')
 absorbs the braided right action on its last block factor — the
 extraction property of the power pairing — the two legs of the
 top slot window agree after the generic step. -/
-theorem pairStep_slide (d : ModDualityDatum A M M') {Q R : D}
+theorem pairStep_slide
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') {Q R : D}
     (r : (Q ⊗ M'.X) ⊗ R ⟶ A)
     (hr : ((Q ◁ actRight A M'.X) ▷ R) ≫ r =
       ((α_ Q M'.X A).inv ▷ R) ≫ (α_ (Q ⊗ M'.X) A R).hom ≫
@@ -726,13 +828,13 @@ theorem pairStep_slide (d : ModDualityDatum A M M') {Q R : D}
     associator_naturality_left_assoc, ← whisker_exchange_assoc]
   exact slide_core A M M' d r
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The core of the head-slot slide: two routings of a scalar
 born between the two consumed factors, for opaque pairing and
 continuation. -/
-private theorem slide_snd_core (V' V P R : D)
+private theorem slide_snd_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [IsCommMonObj A]
+    (V' V P R : D)
     (u : V' ⊗ V ⟶ A) (t : P ⊗ (V ⊗ R) ⟶ A) :
     (α_ P V' (((V ⊗ A) ⊗ V) ⊗ R)).hom ≫
       (P ◁ (V' ◁ (α_ (V ⊗ A) V R).hom)) ≫
@@ -783,26 +885,20 @@ private theorem slide_snd_core (V' V P R : D)
     A A (V ⊗ R)]
   monoidal
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] [MonObj A]
-  [SymmetricCategory D] in
 /-- Transport of the head peel along an arity equality. -/
-private theorem powPeel_cast {X : D} {m n : ℕ} (h : m = n) :
+private theorem powPeel_cast [Category.{v} D] [MonoidalCategory D]
+    {X : D} {m n : ℕ} (h : m = n) :
     powCast X (by omega : m + 1 = n + 1) ≫ (powPeel X n).hom =
       (powPeel X m).hom ≫ (X ◁ powCast X h) := by
   subst h
   simp only [powCast_rfl, MonoidalCategory.whiskerLeft_id]
   exact (Category.id_comp _).trans (Category.comp_id _).symm
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] [MonObj A]
-  [SymmetricCategory D] in
 /-- A head slot leg followed by the double peel: the empty left
 context is absorbed and the window fires at the exposed head
 pair. -/
-private theorem leg_head_snd_eq {X : D}
+private theorem leg_head_snd_eq [Category.{v} D] [MonoidalCategory D] (A : D)
+    {X : D}
     (w : (X ⊗ A) ⊗ X ⟶ X ⊗ X) (b : ℕ) :
     ((tensorPow D X 0 ◁ w) ▷ tensorPow D X b) ≫
       modPowGlue X 0 b ≫
@@ -903,7 +999,11 @@ private theorem leg_head_snd_eq {X : D}
   monoidal
 
 /-- Transport of the power pairing along an arity equality. -/
-theorem rawPair_cast (d : ModDualityDatum A M M') {m n : ℕ}
+theorem rawPair_cast [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') {m n : ℕ}
     (h : m = n) :
     rawPair A M M' d m =
       (powCast M'.X h ▷ tensorPow D M.X m) ≫
@@ -916,7 +1016,12 @@ theorem rawPair_cast (d : ModDualityDatum A M M') {m n : ℕ}
 /-- **The head-slot slide law**: the two legs of a slot window on
 the first two `M`-factors agree after the doubled generic step.
 The statement is closed — the continuation is arbitrary. -/
-theorem pairStep_slide_snd (d : ModDualityDatum A M M')
+theorem pairStep_slide_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     (((Q ⊗ M'.X) ⊗ M'.X) ◁
         ((winLegM A M.X ▷ R) ≫ (α_ M.X M.X R).hom)) ≫
@@ -982,12 +1087,11 @@ theorem pairStep_slide_snd (d : ModDualityDatum A M M')
   exact slide_snd_core A M'.X M.X (Q ⊗ M'.X) R
     (pairRaw A M M' d) (pairStep A M M' d r)
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- A slot leg at the top decomposes as the window against the
 unitor: the empty right context is absorbed. -/
-private theorem leg_top_eq (w : (M'.X ⊗ A) ⊗ M'.X ⟶ M'.X ⊗ M'.X)
+private theorem leg_top_eq
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (M' : Mod D A)
+    (w : (M'.X ⊗ A) ⊗ M'.X ⟶ M'.X ⊗ M'.X)
     (a : ℕ) :
     ((tensorPow D M'.X a ◁ w) ▷ tensorPow D M'.X 0) ≫
         modPowGlue M'.X a 0 =
@@ -1004,7 +1108,12 @@ private theorem leg_top_eq (w : (M'.X ⊗ A) ⊗ M'.X ⟶ M'.X ⊗ M'.X)
 /-- **The top slot relation of the power pairing**: at the slot
 touching the last two factors of the `M'`-power, the two legs
 pair equally. -/
-theorem rawPair_rel_fst_top (d : ModDualityDatum A M M')
+theorem rawPair_rel_fst_top
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (a : ℕ) :
     (modPowLegM A M'.X a 0 ▷ tensorPow D M.X (a + 2)) ≫
         rawPair A M M' d (a + 2) =
@@ -1053,13 +1162,12 @@ theorem rawPair_rel_fst_top (d : ModDualityDatum A M M')
   exact pairStep_slide A M M' d (rawPair A M M' d (a + 1))
     (rawPair_actRight_last A M M' d a)
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- A slot leg with a non-empty right context peels its top
 factor: the leg at the extended context is the leg at the lower
 context whiskered by the exposed factor. -/
-private theorem leg_step_eq (w : (M'.X ⊗ A) ⊗ M'.X ⟶ M'.X ⊗ M'.X)
+private theorem leg_step_eq
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (M' : Mod D A)
+    (w : (M'.X ⊗ A) ⊗ M'.X ⟶ M'.X ⊗ M'.X)
     (a b : ℕ) :
     ((tensorPow D M'.X a ◁ w) ▷ tensorPow D M'.X (b + 1)) ≫
         modPowGlue M'.X a (b + 1) =
@@ -1082,7 +1190,12 @@ private theorem leg_step_eq (w : (M'.X ⊗ A) ⊗ M'.X ⟶ M'.X ⊗ M'.X)
 
 /-- **The first slot relations of the power pairing**: at every
 slot of the `M'`-power, the two legs pair equally. -/
-theorem rawPair_rel_fst (d : ModDualityDatum A M M') (a : ℕ) :
+theorem rawPair_rel_fst
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (a : ℕ) :
     ∀ b : ℕ,
       (modPowLegM A M'.X a b ▷ tensorPow D M.X (a + 2 + b)) ≫
           rawPair A M M' d (a + 2 + b) =
@@ -1127,11 +1240,16 @@ theorem rawPair_rel_fst (d : ModDualityDatum A M M') (a : ℕ) :
       pairStep A M M' d (rawPair A M M' d (a + 2 + b))
     rw [← whisker_exchange_assoc, ← whisker_exchange_assoc]
     rw [pairStep_precomp, pairStep_precomp,
-      rawPair_rel_fst d a b]
+      rawPair_rel_fst A M M' d a b]
 
 /-- **The second slot relations of the power pairing**: at every
 slot of the `M`-power, the two legs pair equally. -/
-theorem rawPair_rel_snd (d : ModDualityDatum A M M') (b : ℕ) :
+theorem rawPair_rel_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (b : ℕ) :
     ∀ (a m : ℕ) (h : a + 2 + b = m),
       (tensorPow D M'.X m ◁
           (modPowLegM A M.X a b ≫ powCast M.X h)) ≫
@@ -1202,7 +1320,7 @@ theorem rawPair_rel_snd (d : ModDualityDatum A M M') (b : ℕ) :
     rw [rawPair_succ_step]
     rw [whisker_exchange_assoc, whisker_exchange_assoc]
     refine congrArg (CategoryStruct.comp _) ?_
-    have hIH := rawPair_rel_snd d b a (a + 2 + b) rfl
+    have hIH := rawPair_rel_snd A M M' d b a (a + 2 + b) rfl
     rw [powCast_rfl, Category.comp_id, Category.comp_id] at hIH
     have hstep : ∀ w : (M.X ⊗ A) ⊗ M.X ⟶ M.X ⊗ M.X,
         (tensorPow D M'.X (a + 2 + b + 1) ◁
@@ -1251,7 +1369,11 @@ theorem rawPair_rel_snd (d : ModDualityDatum A M M') (b : ℕ) :
 /-- **Extraction propagates through the step**: the step over an
 extracted continuation is the extraction of the step, with the
 scalar crossing the continuation block. -/
-theorem pairStep_ext (d : ModDualityDatum A M M')
+theorem pairStep_ext [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {Q R : D} (r : Q ⊗ R ⟶ A) :
     pairStep A M M' d ((Q ◁ (β_ A R).hom) ≫
         (α_ Q R A).inv ≫ (r ▷ A) ≫ μ[A]) =
@@ -1294,13 +1416,12 @@ theorem pairStep_ext (d : ModDualityDatum A M M')
       Category.assoc]
     monoidal
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] [SymmetricCategory D] in
 /-- The tail action passes the head peel: acting on the last
 factor and peeling the head equals peeling, braiding past the
 exposed head, and acting on the tail below. -/
-private theorem powTailAct_peel [BraidedCategory D] {X : D}
+private theorem powTailAct_peel
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] {X : D}
     [ModObj A X] (n : ℕ) :
     powTailAct A X (n + 1) ≫ (powPeel X (n + 1)).hom =
       (A ◁ (powPeel X (n + 1)).hom) ≫
@@ -1323,7 +1444,12 @@ private theorem powTailAct_peel [BraidedCategory D] {X : D}
 /-- **Scalar extraction at the tail of the `M`-power**: the tail
 action on the `M`-power extracts as the scalar braiding past the
 whole power and multiplying the pairing from the right. -/
-theorem rawPair_actTail (d : ModDualityDatum A M M') :
+theorem rawPair_actTail
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ∀ n : ℕ,
     (tensorPow D M'.X (n + 1) ◁ powTailAct A M.X n) ≫
         rawPair A M M' d (n + 1) =
@@ -1394,7 +1520,7 @@ theorem rawPair_actTail (d : ModDualityDatum A M M') :
         (M.X ◁ powTailAct A M.X n)) ≫
       pairStep A M M' d (rawPair A M M' d (n + 1)) = _
     rw [pairStep_postcomp]
-    rw [rawPair_actTail d n]
+    rw [rawPair_actTail A M M' d n]
     rw [pairStep_ext]
     conv_rhs => rw [comp_whiskerRight]
     conv_rhs => simp only [Category.assoc]
@@ -1417,12 +1543,12 @@ theorem rawPair_actTail (d : ModDualityDatum A M M') :
       Category.assoc]
     monoidal
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- Braiding the scalar over the whole power and acting across to
 the tail equals the braided right action at the last slot. -/
-private theorem braid_powTailAct {X : D} [ModObj A X] (n : ℕ) :
+private theorem braid_powTailAct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    {X : D} [ModObj A X] (n : ℕ) :
     (β_ (tensorPow D X (n + 1)) A).hom ≫ powTailAct A X n =
       (α_ (tensorPow D X n) X A).hom ≫
         (tensorPow D X n ◁ actRight A X) := by
@@ -1451,14 +1577,11 @@ the second stage descends the `M`-power.
 
 section Descent
 
-variable [Preadditive D] [HasFiniteBiproducts D]
-  [MonoidalPreadditive D]
-
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] [MonoidalPreadditive D] in
 /-- The first assembled leg as a sum over the slots. -/
-private theorem legFst_eq_sum' {X : D} [ModObj A X] (n : ℕ) :
+private theorem legFst_eq_sum'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [Preadditive D] [HasFiniteBiproducts D]
+    {X : D} [ModObj A X] (n : ℕ) :
     modPowLegFst A X n = ∑ i : Fin (n - 1),
       biproduct.π (fun i : Fin (n - 1) =>
         modPowMid A X i.val (n - 2 - i.val)) i ≫
@@ -1470,12 +1593,11 @@ private theorem legFst_eq_sum' {X : D} [ModObj A X] (n : ℕ) :
   refine Finset.sum_congr rfl fun i _ => ?_
   rw [Category.assoc, modPowLegFst, biproduct.ι_desc]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] [SymmetricCategory D]
-  [MonoidalPreadditive D] in
 /-- The second assembled leg as a sum over the slots. -/
-private theorem legSnd_eq_sum' {X : D} [ModObj A X] (n : ℕ) :
+private theorem legSnd_eq_sum'
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] [Preadditive D]
+    [HasFiniteBiproducts D]
+    {X : D} [ModObj A X] (n : ℕ) :
     modPowLegSnd A X n = ∑ i : Fin (n - 1),
       biproduct.π (fun i : Fin (n - 1) =>
         modPowMid A X i.val (n - 2 - i.val)) i ≫
@@ -1487,12 +1609,13 @@ private theorem legSnd_eq_sum' {X : D} [ModObj A X] (n : ℕ) :
   refine Finset.sum_congr rfl fun i _ => ?_
   rw [Category.assoc, modPowLegSnd, biproduct.ι_desc]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- A slot-wise condition assembles over the right-whiskered
 legs. -/
-private theorem legs_whiskerRight_cond' {X : D} [ModObj A X]
+private theorem legs_whiskerRight_cond'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D]
+    {X : D} [ModObj A X]
     {m : ℕ} {W Z : D} (k : tensorPow D X m ⊗ W ⟶ Z)
     (h : ∀ a b (hab : a + 2 + b = m),
       ((modPowLegM A X a b ≫ powCast X hab) ▷ W) ≫ k =
@@ -1508,12 +1631,13 @@ private theorem legs_whiskerRight_cond' {X : D} [ModObj A X]
     Category.assoc] at hi ⊢
   rw [hi]
 
-omit [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- A slot-wise condition assembles over the left-whiskered
 legs. -/
-private theorem legs_whiskerLeft_cond' {X : D} [ModObj A X]
+private theorem legs_whiskerLeft_cond'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [Preadditive D] [HasFiniteBiproducts D]
+    [MonoidalPreadditive D]
+    {X : D} [ModObj A X]
     {n : ℕ} {W Z : D} (k : W ⊗ tensorPow D X n ⟶ Z)
     (h : ∀ a b (hab : a + 2 + b = n),
       (W ◁ (modPowLegM A X a b ≫ powCast X hab)) ≫ k =
@@ -1529,10 +1653,13 @@ private theorem legs_whiskerLeft_cond' {X : D} [ModObj A X]
     Category.assoc] at hi ⊢
   rw [hi]
 
-omit [Preadditive D] [HasFiniteBiproducts D]
-  [MonoidalPreadditive D] in
 /-- The first slot relations, in cast-carrying form. -/
-theorem rawPair_rel_fst' (d : ModDualityDatum A M M') {m : ℕ}
+theorem rawPair_rel_fst'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') {m : ℕ}
     (a b : ℕ) (hab : a + 2 + b = m) :
     ((modPowLegM A M'.X a b ≫ powCast M'.X hab) ▷
         tensorPow D M.X m) ≫ rawPair A M M' d m =
@@ -1545,7 +1672,13 @@ theorem rawPair_rel_fst' (d : ModDualityDatum A M M') {m : ℕ}
 /-- **The first stage of the pairing descent**: the raw pairing
 descends through the `M'`-power against the ambient
 `M`-power. -/
-noncomputable def pairPowStage (d : ModDualityDatum A M M')
+noncomputable def pairPowStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modPow A M'.X n ⊗ tensorPow D M.X n ⟶ A :=
   modPowWhiskerRightDesc A M'.X n (tensorPow D M.X n)
@@ -1556,6 +1689,11 @@ noncomputable def pairPowStage (d : ModDualityDatum A M M')
 /-- Defining equation of the first stage. -/
 @[reassoc (attr := simp)]
 theorem modPowπ_whiskerRight_pairPowStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
     (d : ModDualityDatum A M M') (n : ℕ) :
     (modPowπ A M'.X n ▷ tensorPow D M.X n) ≫
         pairPowStage A M M' d n = rawPair A M M' d n :=
@@ -1563,7 +1701,13 @@ theorem modPowπ_whiskerRight_pairPowStage
 
 /-- The first stage coequalizes the left-whiskered legs of the
 `M`-power. -/
-theorem pairPowStage_cond (d : ModDualityDatum A M M') (n : ℕ) :
+theorem pairPowStage_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M') (n : ℕ) :
     (modPow A M'.X n ◁ modPowLegFst A M.X n) ≫
         pairPowStage A M M' d n =
       (modPow A M'.X n ◁ modPowLegSnd A M.X n) ≫
@@ -1578,14 +1722,26 @@ theorem pairPowStage_cond (d : ModDualityDatum A M M') (n : ℕ) :
 
 /-- **The descended power pairing** on the module powers, in two
 stages. -/
-noncomputable def pairPow (d : ModDualityDatum A M M') (n : ℕ) :
+noncomputable def pairPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M') (n : ℕ) :
     modPow A M'.X n ⊗ modPow A M.X n ⟶ A :=
   modPowWhiskerLeftDesc A M.X (modPow A M'.X n) n
     (pairPowStage A M M' d n) (pairPowStage_cond A M M' d n)
 
 /-- Defining equation of the descended pairing. -/
 @[reassoc (attr := simp)]
-theorem modPowπ_tensor_pairPow (d : ModDualityDatum A M M')
+theorem modPowπ_tensor_pairPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     (modPowπ A M'.X n ⊗ₘ modPowπ A M.X n) ≫
         pairPow A M M' d n = rawPair A M M' d n := by
@@ -1595,7 +1751,13 @@ theorem modPowπ_tensor_pairPow (d : ModDualityDatum A M M')
 
 /-- **The middle relation**: the descended pairing coequalizes
 the module-tensor legs of the power bundles. -/
-theorem pairPow_middle_cond (d : ModDualityDatum A M M')
+theorem pairPow_middle_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modTensorLegM A (modPowMod A M'.X n) (modPowMod A M.X n) ≫
         pairPow A M M' d (n + 1) =
@@ -1673,7 +1835,13 @@ theorem pairPow_middle_cond (d : ModDualityDatum A M M')
 
 /-- **The Mod-internal power pairing**: the descended pairing on
 the module tensor product of the power bundles. -/
-noncomputable def modPowPairing (d : ModDualityDatum A M M')
+noncomputable def modPowPairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modTensor A (modPowMod A M'.X n) (modPowMod A M.X n) ⟶ A :=
   modTensorDesc A (modPowMod A M'.X n) (modPowMod A M.X n)
@@ -1681,7 +1849,13 @@ noncomputable def modPowPairing (d : ModDualityDatum A M M')
 
 /-- Defining equation of the Mod-internal power pairing. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_modPowPairing (d : ModDualityDatum A M M')
+theorem modTensorπ_modPowPairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modTensorπ A (modPowMod A M'.X n) (modPowMod A M.X n) ≫
         modPowPairing A M M' d n =
@@ -1690,24 +1864,43 @@ theorem modTensorπ_modPowPairing (d : ModDualityDatum A M M')
 
 section SymDescent
 
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- The section of the symmetric power, as a morphism of
 modules. -/
-noncomputable def symPowσMod {X : D} [ModObj A X] (n : ℕ) :
+noncomputable def symPowσMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [HasFiniteBiproducts D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {X : D} [ModObj A X] (n : ℕ) :
     symPowMod A X n ⟶ modPowMod A X n :=
   letI := symPowModObj A X n
   letI := modPowModObj A X n
   Mod.Hom.mk (symPowσ A X (n + 1))
     (isModHom := ⟨(symPowσ_modPowAct A X n).symm⟩)
 
-@[simp] theorem symPowσMod_hom {X : D} [ModObj A X] (n : ℕ) :
+@[simp] theorem symPowσMod_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [HasFiniteBiproducts D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {X : D} [ModObj A X] (n : ℕ) :
     (symPowσMod A (X := X) n).hom = symPowσ A X (n + 1) :=
   rfl
 
 /-- **The symmetric power pairing**: the Mod-internal pairing on
 the symmetric powers, through the sections. -/
-noncomputable def symPowPairing (d : ModDualityDatum A M M')
+noncomputable def symPowPairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modTensor A (symPowMod A M'.X n) (symPowMod A M.X n) ⟶ A :=
   modTensorMap A (symPowσMod A n) (symPowσMod A n) ≫
@@ -1715,7 +1908,14 @@ noncomputable def symPowPairing (d : ModDualityDatum A M M')
 
 /-- Defining equation of the symmetric power pairing. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_symPowPairing (d : ModDualityDatum A M M')
+theorem modTensorπ_symPowPairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [Preadditive D] [HasFiniteBiproducts D] [MonoidalPreadditive D]
+    [Linear ℂ D] [MonoidalLinear ℂ D]
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     modTensorπ A (symPowMod A M'.X n) (symPowMod A M.X n) ≫
         symPowPairing A M M' d n =

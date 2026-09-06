@@ -25,21 +25,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [BraidedCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable {M M' : Mod D A}
+variable {D : Type u}
 
 /-- If the copair element vanishes, so does the module: the zig
 composite factors through the copair element, and the zigzag law
 makes it the identity. -/
 theorem isZero_of_unit_copair_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
     (d : ModDualityDatum A M M') (hz : ModZigzagDatum A d)
     (h0 : η[A] ≫ d.copair = 0) : IsZero M.X := by
   have hci : copairImage A d.copair = 0 := by
@@ -56,6 +53,12 @@ theorem isZero_of_unit_copair_eq_zero
 datum for a nonzero module, the copair element is nonzero.  This
 is the open-diagram stage-unit detection of the Key Lemma. -/
 theorem unit_copair_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
     (d : ModDualityDatum A M M') (hz : ModZigzagDatum A d)
     (hM : ¬ IsZero M.X) : η[A] ≫ d.copair ≠ 0 :=
   fun h0 => hM (isZero_of_unit_copair_eq_zero A d hz h0)

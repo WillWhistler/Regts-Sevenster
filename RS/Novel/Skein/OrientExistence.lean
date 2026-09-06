@@ -430,13 +430,12 @@ section ProductFamily
 
 open EdgeSubset
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β]
-  {W₁ : Fragment α} {W₂ : Fragment β}
-  [instS : LinearOrder (α ⊕ β)]
+variable {α β : Type}
 
-omit [LinearOrder β] in
 /-- The left support transfer of a join subset. -/
-theorem join_support_left {s : Finset ((W₁.disjUnion W₂).Flag)}
+theorem join_support_left [LinearOrder α] {W₁ : Fragment α} {W₂ : Fragment β}
+    [instS : LinearOrder (α ⊕ β)]
+    {s : Finset ((W₁.disjUnion W₂).Flag)}
     (hc : ∀ f ∈ s, (W₁.disjUnion W₂).pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc).Eulerian)
     (hne : Nonempty (EdgeSubset.mk s hc).CanonData) :
@@ -450,9 +449,10 @@ theorem join_support_left {s : Finset ((W₁.disjUnion W₂).Flag)}
       (((nonempty_canonData_iff_system _).mp hne).map
         (fun κ => leftRel κ))
 
-omit [LinearOrder α] in
 /-- The right support transfer of a join subset. -/
-theorem join_support_right {s : Finset ((W₁.disjUnion W₂).Flag)}
+theorem join_support_right [LinearOrder β] {W₁ : Fragment α} {W₂ : Fragment β}
+    [instS : LinearOrder (α ⊕ β)]
+    {s : Finset ((W₁.disjUnion W₂).Flag)}
     (hc : ∀ f ∈ s, (W₁.disjUnion W₂).pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc).Eulerian)
     (hne : Nonempty (EdgeSubset.mk s hc).CanonData) :

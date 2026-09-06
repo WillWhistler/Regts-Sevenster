@@ -40,8 +40,7 @@ def SchurPackage.Orthogonal (P : SchurPackage.{u}) : Prop :=
   ∀ (n : ℕ) (μ ν : Shape n), μ ≠ ν →
     Shape.e P μ * Shape.e P ν = 0
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
-  [MonoidalCategory A] [SymmetricCategory A] [Linear ℂ A]
+variable {A : Type u}
 
 /-- **Moderate growth forces Schur vanishing** (Catégories
 tensorielles, 1.20), assembly form: the block-theoretic inputs —
@@ -49,6 +48,8 @@ completeness, orthogonality, the block units — and the
 nonvanishing transport up the standard embedding are hypotheses,
 discharged elsewhere. -/
 theorem exists_schurKilled_of_lengthLE
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [Linear ℂ A]
     (P : SchurPackage.{v}) (hO : P.Orthogonal)
     (hunits : ∀ μ : YoungDiagram,
       ∃ u : Fin (P.dim μ) → SymGroupAlgebra μ.card,
@@ -154,6 +155,8 @@ transport from whisker faithfulness.  Only simplicity of the unit
 and nonvanishing of `X` remain, both facts of the ambient
 category. -/
 theorem exists_schurKilled_of_moderateGrowth
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [Linear ℂ A]
     [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
     (P : SchurPackage.{v}) (hs : Simple (𝟙_ A)) {X : A}
     (hX : ¬ Limits.IsZero X) {C c : ℕ}
@@ -172,6 +175,8 @@ theorem exists_schurKilled_of_moderateGrowth
 `X`, the `k`-th tensor power is zero — the central idempotents sum
 to the identity, and each acts as zero. -/
 theorem isZero_tensorPow_of_schurKilled
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [Linear ℂ A]
     [MonoidalPreadditive A] [MonoidalLinear ℂ A]
     (P : SchurPackage.{v}) {X : A} {k : ℕ}
     (h : ∀ μ : Shape k, SchurKilled P X μ.val) :
@@ -189,6 +194,8 @@ theorem isZero_tensorPow_of_schurKilled
 `End (𝟙) = ℂ` the simplicity hypothesis discharges as well, leaving
 only nonvanishing of the generator. -/
 theorem exists_schurKilled_of_moderateGrowth'
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [Linear ℂ A]
     [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
     (P : SchurPackage.{v}) (hu : HasScalarUnit A) {X : A}
     (hX : ¬ Limits.IsZero X) {C c : ℕ}
@@ -207,7 +214,10 @@ theorem exists_lengthLE_of_moderateGrowth {C : Type*} [Category C]
 
 /-- A zero object is killed by every Schur functor of positive
 size: its positive tensor powers are zero. -/
-theorem SchurKilled.of_isZero [MonoidalPreadditive A]
+theorem SchurKilled.of_isZero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [Linear ℂ A]
+    [MonoidalPreadditive A]
     (P : SchurPackage.{v}) {X : A} (hX : Limits.IsZero X)
     {lam : YoungDiagram} (hcard : 0 < lam.card) :
     SchurKilled P X lam := by
@@ -228,7 +238,10 @@ theorem SchurKilled.of_isZero [MonoidalPreadditive A]
 /-- **Every object is Schur-killed under moderate growth** — the
 hypothesis of Deligne 2.1 in the form the pinned statement
 supplies it. -/
-theorem forall_exists_schurKilled [MonoidalPreadditive A]
+theorem forall_exists_schurKilled
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [Linear ℂ A]
+    [MonoidalPreadditive A]
     [MonoidalLinear ℂ A] [RigidCategory A] (P : SchurPackage.{v})
     (hu : HasScalarUnit A) (hg : ModerateLengthGrowth A) :
     ∀ X : A, ∃ μ : YoungDiagram, SchurKilled P X μ := by

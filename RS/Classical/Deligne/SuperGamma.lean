@@ -30,7 +30,7 @@ consequences of monoidal coherence and the naturality of the
 unitors; the eighth — the odd-odd-odd pattern — genuinely compares
 the two ways of trivializing one factor of `o ⊗ o ⊗ o` through
 `ho` and is *not* a formal consequence of the data `(ho, hβ)`.  It
-is stated honestly as the hypothesis `hα` of
+is stated as the hypothesis `hα` of
 `superGammaAlgebra`; it holds in super vector spaces (both sides
 are `x ↦ e ⊗ e ⊗ x`-type maps for a basis vector `e` of the odd
 line) and more generally whenever `ho` is a coherent
@@ -54,13 +54,11 @@ open scoped MonObj
 
 universe u u'
 
-variable {D : Type u} [Category.{u'} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Convolution along a prefix -/
 
 section ConvAlong
-
-variable (R : D) [MonObj R]
 
 /-- *Convolution along a prefix*: for a monoid object `R` and a
 chosen morphism `p : A ⟶ X ⊗ Y`, the pairing sending
@@ -68,13 +66,16 @@ chosen morphism `p : A ⟶ X ⊗ Y`, the pairing sending
 All four graded multiplication blocks of the Γ-algebra at an odd
 line are instances, at the prefixes `(λ_ (𝟙_ D)).inv`,
 `(λ_ o).inv`, `(ρ_ o).inv` and `ho.inv`. -/
-def convAlong {A X Y : D} (p : A ⟶ X ⊗ Y)
+def convAlong [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {A X Y : D} (p : A ⟶ X ⊗ Y)
     (f : X ⟶ R) (g : Y ⟶ R) : A ⟶ R :=
   p ≫ (f ⊗ₘ g) ≫ μ
 
 /-- The monoid unit is a left unit for convolution along a left
 unitor prefix. -/
-theorem convAlong_one_left {Z : D} (x : Z ⟶ R) :
+theorem convAlong_one_left
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {Z : D} (x : Z ⟶ R) :
     convAlong R (λ_ Z).inv η x = x := by
   rw [convAlong, MonObj.one_mul_hom, Iso.inv_hom_id_assoc]
 
@@ -83,7 +84,9 @@ inner and outer prefixes on each side whose two composites into
 `X ⊗ Y ⊗ Z` agree (`hpq`), the two iterated convolutions agree.
 The eight parity associativities of the Γ-algebra are the eight
 instantiations, with `hpq` a coherence residue in each case. -/
-theorem convAlong_assoc {B A A' X Y Z : D}
+theorem convAlong_assoc
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {B A A' X Y Z : D}
     (q : B ⟶ A ⊗ Z) (p : A ⟶ X ⊗ Y)
     (q' : B ⟶ X ⊗ A') (p' : A' ⟶ Y ⊗ Z)
     (hpq : q ≫ p ▷ Z ≫ (α_ X Y Z).hom = q' ≫ X ◁ p')
@@ -109,7 +112,9 @@ theorem convAlong_assoc {B A A' X Y Z : D}
 commutative monoid object: exchanging the two arguments costs
 composing the prefix with the braiding.  The Koszul signs of the
 Γ-algebra arise from evaluating the braiding on the prefixes. -/
-theorem convAlong_braid [BraidedCategory D] [IsCommMonObj R]
+theorem convAlong_braid
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [BraidedCategory D] [IsCommMonObj R]
     {A X Y : D} (p : A ⟶ X ⊗ Y) (f : X ⟶ R) (g : Y ⟶ R) :
     convAlong R p f g = convAlong R (p ≫ (β_ X Y).hom) g f := by
   simp only [convAlong, Category.assoc]
@@ -118,7 +123,9 @@ theorem convAlong_braid [BraidedCategory D] [IsCommMonObj R]
 
 /-- Even-even commutativity: at the unit prefix the braiding
 correction collapses through the unit braiding identities. -/
-theorem convAlong_ee_comm [BraidedCategory D] [IsCommMonObj R]
+theorem convAlong_ee_comm
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [BraidedCategory D] [IsCommMonObj R]
     (a b : 𝟙_ D ⟶ R) :
     convAlong R (λ_ (𝟙_ D)).inv a b =
       convAlong R (λ_ (𝟙_ D)).inv b a := by
@@ -129,7 +136,9 @@ theorem convAlong_ee_comm [BraidedCategory D] [IsCommMonObj R]
 /-- Even-odd commutativity: the braiding against the unit turns
 the left unitor prefix into the right unitor prefix, with no
 sign. -/
-theorem convAlong_eo_comm [BraidedCategory D] [IsCommMonObj R]
+theorem convAlong_eo_comm
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [BraidedCategory D] [IsCommMonObj R]
     {o : D} (a : 𝟙_ D ⟶ R) (x : o ⟶ R) :
     convAlong R (λ_ o).inv a x = convAlong R (ρ_ o).inv x a := by
   rw [convAlong_braid R (ρ_ o).inv x a, braiding_tensorUnit_right,
@@ -141,11 +150,11 @@ end ConvAlong
 
 section Bilinear
 
-variable [Preadditive D] [MonoidalPreadditive D]
-variable (R : D) [MonObj R]
-
 /-- Prefixed convolution is additive in the left argument. -/
-theorem convAlong_add_left {A X Y : D} (p : A ⟶ X ⊗ Y)
+theorem convAlong_add_left
+    [Category.{u'} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R]
+    {A X Y : D} (p : A ⟶ X ⊗ Y)
     (f f' : X ⟶ R) (g : Y ⟶ R) :
     convAlong R p (f + f') g =
       convAlong R p f g + convAlong R p f' g := by
@@ -154,7 +163,10 @@ theorem convAlong_add_left {A X Y : D} (p : A ⟶ X ⊗ Y)
     Preadditive.comp_add]
 
 /-- Prefixed convolution is additive in the right argument. -/
-theorem convAlong_add_right {A X Y : D} (p : A ⟶ X ⊗ Y)
+theorem convAlong_add_right
+    [Category.{u'} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R]
+    {A X Y : D} (p : A ⟶ X ⊗ Y)
     (f : X ⟶ R) (g g' : Y ⟶ R) :
     convAlong R p f (g + g') =
       convAlong R p f g + convAlong R p f g' := by
@@ -162,21 +174,25 @@ theorem convAlong_add_right {A X Y : D} (p : A ⟶ X ⊗ Y)
     MonoidalPreadditive.tensor_add, Preadditive.add_comp,
     Preadditive.comp_add]
 
-omit [MonoidalPreadditive D] in
 /-- **Odd-odd anticommutativity.**  At a trivialization prefix
 `ho.inv` on whose source the braiding acts by `-1`, exchanging the
 arguments of prefixed convolution costs the Koszul sign. -/
-theorem convAlong_oo_comm [BraidedCategory D] [IsCommMonObj R]
+theorem convAlong_oo_comm
+    [Category.{u'} D] [MonoidalCategory D] [Preadditive D] (R : D)
+    [MonObj R]
+    [BraidedCategory D] [IsCommMonObj R]
     {o : D} (ho : o ⊗ o ≅ 𝟙_ D)
     (hβ : (β_ o o).hom = -𝟙 (o ⊗ o)) (x y : o ⟶ R) :
     convAlong R ho.inv x y = -convAlong R ho.inv y x := by
   rw [convAlong_braid R ho.inv x y, hβ, convAlong, convAlong,
     Preadditive.comp_neg, Category.comp_id, Preadditive.neg_comp]
 
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- Prefixed convolution is ℂ-homogeneous in the left argument. -/
-theorem convAlong_smul_left {A X Y : D} (p : A ⟶ X ⊗ Y) (r : ℂ)
+theorem convAlong_smul_left
+    [Category.{u'} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {A X Y : D} (p : A ⟶ X ⊗ Y) (r : ℂ)
     (f : X ⟶ R) (g : Y ⟶ R) :
     convAlong R p (r • f) g = r • convAlong R p f g := by
   have h : (r • f) ⊗ₘ g = r • (f ⊗ₘ g) := by
@@ -186,7 +202,11 @@ theorem convAlong_smul_left {A X Y : D} (p : A ⟶ X ⊗ Y) (r : ℂ)
 
 /-- Prefixed convolution is ℂ-homogeneous in the right
 argument. -/
-theorem convAlong_smul_right {A X Y : D} (p : A ⟶ X ⊗ Y) (r : ℂ)
+theorem convAlong_smul_right
+    [Category.{u'} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {A X Y : D} (p : A ⟶ X ⊗ Y) (r : ℂ)
     (f : X ⟶ R) (g : Y ⟶ R) :
     convAlong R p f (r • g) = r • convAlong R p f g := by
   have h : f ⊗ₘ (r • g) = r • (f ⊗ₘ g) := by
@@ -196,7 +216,10 @@ theorem convAlong_smul_right {A X Y : D} (p : A ⟶ X ⊗ Y) (r : ℂ)
 
 /-- Prefixed convolution packaged as a ℂ-bilinear map on hom
 ℂ-modules. -/
-def convAlongHom {A X Y : D} (p : A ⟶ X ⊗ Y) :
+def convAlongHom [Category.{u'} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {A X Y : D} (p : A ⟶ X ⊗ Y) :
     (X ⟶ R) →ₗ[ℂ] (Y ⟶ R) →ₗ[ℂ] (A ⟶ R) :=
   LinearMap.mk₂ ℂ (convAlong R p)
     (convAlong_add_left R p)
@@ -206,7 +229,11 @@ def convAlongHom {A X Y : D} (p : A ⟶ X ⊗ Y) :
 
 /-- Application of the packaged bilinear map is prefixed
 convolution. -/
-@[simp] theorem convAlongHom_apply {A X Y : D} (p : A ⟶ X ⊗ Y)
+@[simp] theorem convAlongHom_apply
+    [Category.{u'} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] (R : D) [MonObj R] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {A X Y : D} (p : A ⟶ X ⊗ Y)
     (f : X ⟶ R) (g : Y ⟶ R) :
     convAlongHom R p f g = convAlong R p f g := rfl
 
@@ -216,12 +243,11 @@ end Bilinear
 
 section Residues
 
-variable {o : D}
-
 /-- The even-odd-odd coherence residue: trivializing `o ⊗ o` after
 inserting a unit on the left agrees with inserting the
 trivialized unit directly.  Naturality of the left unitor. -/
-private theorem residue_eoo (ho : o ⊗ o ≅ 𝟙_ D) :
+private theorem residue_eoo [Category.{u'} D] [MonoidalCategory D] {o : D}
+    (ho : o ⊗ o ≅ 𝟙_ D) :
     ho.inv ≫ (λ_ o).inv ▷ o ≫ (α_ (𝟙_ D) o o).hom =
       (λ_ (𝟙_ D)).inv ≫ 𝟙_ D ◁ ho.inv := by
   rw [← leftUnitor_tensor_inv, leftUnitor_inv_naturality]
@@ -229,7 +255,8 @@ private theorem residue_eoo (ho : o ⊗ o ≅ 𝟙_ D) :
 /-- The odd-odd-even coherence residue: trivializing `o ⊗ o`
 before inserting a unit on the right agrees with inserting the
 unit inside.  Naturality of the right unitor. -/
-private theorem residue_ooe (ho : o ⊗ o ≅ 𝟙_ D) :
+private theorem residue_ooe [Category.{u'} D] [MonoidalCategory D] {o : D}
+    (ho : o ⊗ o ≅ 𝟙_ D) :
     (λ_ (𝟙_ D)).inv ≫ ho.inv ▷ 𝟙_ D ≫ (α_ o o (𝟙_ D)).hom =
       ho.inv ≫ o ◁ (ρ_ o).inv := by
   rw [unitors_inv_equal, ← rightUnitor_inv_naturality_assoc,
@@ -239,11 +266,6 @@ private theorem residue_ooe (ho : o ⊗ o ≅ 𝟙_ D) :
 end Residues
 
 section OddLine
-
-variable [BraidedCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable (R : D) [MonObj R] [IsCommMonObj R]
 
 /-- **The four-block Γ-algebra of a commutative monoid object at
 an odd line.**  For a commutative monoid object `R` of a braided
@@ -260,7 +282,10 @@ The hypothesis `hα` is not a formal consequence of `(ho, hβ)`: it
 pins down the compatibility of the chosen trivialization with the
 associator, and holds for the standard odd line of super vector
 spaces (hence in `Ind SmallSuperVect`). -/
-def superGammaAlgebra (o : D) (ho : o ⊗ o ≅ 𝟙_ D)
+def superGammaAlgebra [Category.{u'} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] (R : D) [MonObj R] [IsCommMonObj R]
+    (o : D) (ho : o ⊗ o ≅ 𝟙_ D)
     (hβ : (β_ o o).hom = -𝟙 (o ⊗ o))
     (hα : (λ_ o).inv ≫ ho.inv ▷ o ≫ (α_ o o o).hom =
       (ρ_ o).inv ≫ o ◁ ho.inv) :

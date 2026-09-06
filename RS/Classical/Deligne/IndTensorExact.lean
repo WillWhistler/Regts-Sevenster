@@ -62,40 +62,43 @@ universe v
 
 noncomputable section
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 section Embedding
 
 /-- The embedding of `Ind C` into the Day presheaf category: the
 indization equivalence onto the full monoidal subcategory of
 ind-objects, followed by the subcategory inclusion. -/
-def indToDay : Ind C ⥤ (Cᵒᵖ ⊛⥤ Type v) :=
+def indToDay [SmallCategory C] [MonoidalCategory C] : Ind C ⥤ (Cᵒᵖ ⊛⥤ Type v) :=
   (indDayEquivalence C).functor ⋙ ObjectProperty.ι _
 
 /-- The forward functor of the indization equivalence is monoidal:
 the monoidal structure of `Ind C` is transported across it. -/
-instance : (indDayEquivalence C).functor.Monoidal :=
+instance [SmallCategory C] [MonoidalCategory C] :
+    (indDayEquivalence C).functor.Monoidal :=
   inferInstanceAs
     (Monoidal.equivalenceTransported
       ((indDayEquivalence C).symm)).inverse.Monoidal
 
 /-- The embedding into the Day presheaf category is monoidal. -/
-instance : (indToDay (C := C)).Monoidal :=
+instance
+    [SmallCategory C] [MonoidalCategory C] : (indToDay (C := C)).Monoidal :=
   inferInstanceAs
     ((indDayEquivalence C).functor ⋙ ObjectProperty.ι _).Monoidal
 
-instance : (indToDay (C := C)).Full :=
+instance [SmallCategory C] [MonoidalCategory C] : (indToDay (C := C)).Full :=
   inferInstanceAs
     ((indDayEquivalence C).functor ⋙ ObjectProperty.ι _).Full
 
-instance : (indToDay (C := C)).Faithful :=
+instance
+    [SmallCategory C] [MonoidalCategory C] : (indToDay (C := C)).Faithful :=
   inferInstanceAs
     ((indDayEquivalence C).functor ⋙ ObjectProperty.ι _).Faithful
 
 /-- The embedding of `Ind C` into the Day presheaf category is the
 inclusion into plain presheaves followed by the tautological
 equivalence with the Day synonym. -/
-def indToDayCompIso :
+def indToDayCompIso [SmallCategory C] [MonoidalCategory C] :
     indToDay (C := C) ≅
       Ind.inclusion C ⋙ (DayFunctor.equiv Cᵒᵖ (Type v)).inverse :=
   Iso.refl _
@@ -103,7 +106,9 @@ def indToDayCompIso :
 /-- The embedding into the Day presheaf category preserves small
 filtered colimits: the inclusion into plain presheaves creates them
 and the tautological Day equivalence preserves everything. -/
-instance indToDay_preservesFilteredColimits (I : Type v)
+instance indToDay_preservesFilteredColimits
+    [SmallCategory C] [MonoidalCategory C]
+    (I : Type v)
     [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape I (indToDay (C := C)) :=
   preservesColimitsOfShape_of_natIso (indToDayCompIso (C := C)).symm
@@ -118,7 +123,9 @@ into the Day presheaf category is monoidal, so it intertwines
 `tensorLeft X` with the Day-convolution `tensorLeft` of the image,
 which preserves all small colimits; the embedding preserves and
 reflects filtered colimits, so `tensorLeft X` preserves them. -/
-instance tensorLeft_ind_preservesColimitsOfShape (X : Ind C)
+instance tensorLeft_ind_preservesColimitsOfShape
+    [SmallCategory C] [MonoidalCategory C]
+    (X : Ind C)
     (I : Type v) [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape I (tensorLeft X) :=
   haveI : PreservesColimitsOfShape I (tensorLeft X ⋙ indToDay) :=
@@ -128,7 +135,9 @@ instance tensorLeft_ind_preservesColimitsOfShape (X : Ind C)
 
 /-- **Deligne 2.2, filtered half, right version**: tensoring on the
 right in `Ind C` preserves small filtered colimits. -/
-instance tensorRight_ind_preservesColimitsOfShape (X : Ind C)
+instance tensorRight_ind_preservesColimitsOfShape
+    [SmallCategory C] [MonoidalCategory C]
+    (X : Ind C)
     (I : Type v) [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape I (tensorRight X) :=
   haveI : PreservesColimitsOfShape I (tensorRight X ⋙ indToDay) :=
@@ -137,12 +146,16 @@ instance tensorRight_ind_preservesColimitsOfShape (X : Ind C)
   preservesColimitsOfShape_of_reflects_of_preserves _ indToDay
 
 /-- Filtered-colimit preservation by left tensoring, packaged. -/
-instance tensorLeft_ind_preservesFilteredColimits (X : Ind C) :
+instance tensorLeft_ind_preservesFilteredColimits
+    [SmallCategory C] [MonoidalCategory C]
+    (X : Ind C) :
     PreservesFilteredColimits (tensorLeft X) where
   preserves_filtered_colimits _ _ _ := inferInstance
 
 /-- Filtered-colimit preservation by right tensoring, packaged. -/
-instance tensorRight_ind_preservesFilteredColimits (X : Ind C) :
+instance tensorRight_ind_preservesFilteredColimits
+    [SmallCategory C] [MonoidalCategory C]
+    (X : Ind C) :
     PreservesFilteredColimits (tensorRight X) where
   preserves_filtered_colimits _ _ _ := inferInstance
 
@@ -152,7 +165,7 @@ section EmbeddingTensor
 
 /-- The embedding into the Day presheaf category, restricted along
 `indOf`, is the Day synonym of the Yoneda embedding. -/
-def indOfDayIso :
+def indOfDayIso [SmallCategory C] [MonoidalCategory C] :
     indOf ⋙ indToDay (C := C) ≅
       yoneda ⋙ (DayFunctor.equiv Cᵒᵖ (Type v)).inverse :=
   Functor.isoWhiskerLeft indOf (indToDayCompIso (C := C)) ≪≫
@@ -162,7 +175,8 @@ def indOfDayIso :
 
 /-- The embedding sends `indOf.obj z` to the Day representable at
 `z`. -/
-def indToDayIndOfIso (z : C) :
+def indToDayIndOfIso [SmallCategory C] [MonoidalCategory C]
+    (z : C) :
     (indToDay (C := C)).obj (indOf.obj z) ≅
       DayFunctor.mk (yoneda.obj z) :=
   (indOfDayIso (C := C)).app z
@@ -172,7 +186,8 @@ under `indToDay`, the tensor `indOf.obj x ⊗ indOf.obj y` is the Day
 tensor of the representables at `x` and `y`, which is the
 representable at `x ⊗ y` — that is, the image of
 `indOf.obj (x ⊗ y)`. -/
-def indToDayTensorIso (x y : C) :
+def indToDayTensorIso [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     (indToDay (C := C)).obj (indOf.obj x ⊗ indOf.obj y) ≅
       (indToDay (C := C)).obj (indOf.obj (x ⊗ y)) :=
   (Functor.Monoidal.μIso indToDay (indOf.obj x) (indOf.obj y)).symm ≪≫
@@ -181,18 +196,21 @@ def indToDayTensorIso (x y : C) :
 
 /-- The fully faithful structure of the embedding into the Day
 presheaf category. -/
-def indToDayFullyFaithful : (indToDay (C := C)).FullyFaithful :=
+def indToDayFullyFaithful [SmallCategory C] [MonoidalCategory C] :
+    (indToDay (C := C)).FullyFaithful :=
   Functor.FullyFaithful.ofFullyFaithful _
 
 /-- The tensor of two embedded objects of `Ind C` is the embedding
 of the tensor: `indOf` is monoidal up to isomorphism. -/
-def indOfTensorIso (x y : C) :
+def indOfTensorIso [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     indOf.obj x ⊗ indOf.obj y ≅ indOf.obj (x ⊗ y) :=
   indToDayFullyFaithful.preimageIso (indToDayTensorIso x y)
 
 /-- **The embedding `C ⥤ Ind C` is monoidal up to isomorphism**, in
 the orientation used downstream. -/
-def indOfTensorIsoSymm (x y : C) :
+def indOfTensorIsoSymm [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     indOf.obj (x ⊗ y) ≅ indOf.obj x ⊗ indOf.obj y :=
   (indOfTensorIso x y).symm
 
@@ -220,12 +238,11 @@ attribute [local instance] dayConv
 open scoped MonoidalCategory.ExternalProduct
 open scoped CategoryTheory.Prod
 
-variable {D : Type v} [SmallCategory D] [MonoidalCategory D]
-
 /-- The universal transformation classified by the Day tensor of two
 corepresentables: on a pair of morphisms it takes the tensor,
 `(f, g) ↦ f ⊗ₘ g`. -/
-def coyonedaTensorHom (a b : D) :
+def coyonedaTensorHom {D : Type v} [SmallCategory D] [MonoidalCategory D]
+    (a b : D) :
     coyoneda.obj (op ((a, b) : D × D)) ⟶
       tensor D ⋙ coyoneda.obj (op (a ⊗ b)) where
   app X := TypeCat.ofHom fun (fg : (a, b) ⟶ X) => fg.1 ⊗ₘ fg.2
@@ -236,7 +253,9 @@ def coyonedaTensorHom (a b : D) :
 /-- `RS.dayCoyonedaIso` classifies as the universal transformation
 `(f, g) ↦ f ⊗ₘ g`: composing the Day unit with its underlying
 natural transformation is `RS.coyonedaTensorHom`. -/
-lemma eta_comp_dayCoyonedaIso_hom (a b : D) :
+lemma eta_comp_dayCoyonedaIso_hom
+    {D : Type v} [SmallCategory D] [MonoidalCategory D]
+    (a b : D) :
     η (DayFunctor.mk (coyoneda.obj (op a)))
         (DayFunctor.mk (coyoneda.obj (op b))) ≫
       Functor.whiskerLeft (tensor D) (dayCoyonedaIso a b).hom.natTrans =
@@ -257,7 +276,9 @@ lemma eta_comp_dayCoyonedaIso_hom (a b : D) :
   simp
 
 /-- Naturality of `RS.dayCoyonedaIso` in the right variable. -/
-lemma dayCoyonedaIso_hom_natural_right (a : D) {b b' : D}
+lemma dayCoyonedaIso_hom_natural_right
+    {D : Type v} [SmallCategory D] [MonoidalCategory D]
+    (a : D) {b b' : D}
     (h : b ⟶ b') :
     (DayFunctor.mk (coyoneda.obj (op a)) ◁
         (⟨coyoneda.map h.op⟩ :
@@ -292,7 +313,9 @@ lemma dayCoyonedaIso_hom_natural_right (a : D) {b b' : D}
   rw [← id_tensorHom, tensorHom_comp_tensorHom, Category.id_comp]
 
 /-- Naturality of `RS.dayCoyonedaIso` in the left variable. -/
-lemma dayCoyonedaIso_hom_natural_left {a a' : D} (f : a ⟶ a')
+lemma dayCoyonedaIso_hom_natural_left
+    {D : Type v} [SmallCategory D] [MonoidalCategory D]
+    {a a' : D} (f : a ⟶ a')
     (b : D) :
     ((⟨coyoneda.map f.op⟩ :
         DayFunctor.mk (coyoneda.obj (op a')) ⟶
@@ -330,9 +353,9 @@ end DayNaturality
 
 section YonedaNaturality
 
-omit [MonoidalCategory C] in
 /-- Naturality of `Coyoneda.objOpOp`, inverse form. -/
-lemma yoneda_map_comp_objOpOp_inv {y y' : C} (g : y ⟶ y') :
+lemma yoneda_map_comp_objOpOp_inv [SmallCategory C]
+    {y y' : C} (g : y ⟶ y') :
     yoneda.map g ≫ (Coyoneda.objOpOp y').inv =
       (Coyoneda.objOpOp y).inv ≫ coyoneda.map (g.op.op) := by
   ext z u
@@ -340,7 +363,9 @@ lemma yoneda_map_comp_objOpOp_inv {y y' : C} (g : y ⟶ y') :
 
 /-- Naturality of `Coyoneda.objOpOp`, forward form, at a left
 whiskering of `Cᵒᵖ`. -/
-lemma coyoneda_map_whiskerLeft_comp_objOpOp_hom (x : C) {y y' : C}
+lemma coyoneda_map_whiskerLeft_comp_objOpOp_hom
+    [SmallCategory C] [MonoidalCategory C]
+    (x : C) {y y' : C}
     (g : y ⟶ y') :
     coyoneda.map ((op x ◁ g.op).op) ≫
         (Coyoneda.objOpOp (x ⊗ y')).hom =
@@ -350,7 +375,9 @@ lemma coyoneda_map_whiskerLeft_comp_objOpOp_hom (x : C) {y y' : C}
 
 /-- Naturality of `Coyoneda.objOpOp`, forward form, at a right
 whiskering of `Cᵒᵖ`. -/
-lemma coyoneda_map_whiskerRight_comp_objOpOp_hom {x x' : C}
+lemma coyoneda_map_whiskerRight_comp_objOpOp_hom
+    [SmallCategory C] [MonoidalCategory C]
+    {x x' : C}
     (f : x ⟶ x') (y : C) :
     coyoneda.map ((f.op ▷ op y).op) ≫
         (Coyoneda.objOpOp (x' ⊗ y)).hom =
@@ -359,7 +386,8 @@ lemma coyoneda_map_whiskerRight_comp_objOpOp_hom {x x' : C}
   simp [Coyoneda.objOpOp, opEquiv]
 
 /-- Naturality of `RS.dayYonedaIso` in the right variable. -/
-lemma dayYonedaIso_hom_natural_right (x : C) {y y' : C}
+lemma dayYonedaIso_hom_natural_right [SmallCategory C] [MonoidalCategory C]
+    (x : C) {y y' : C}
     (g : y ⟶ y') :
     (DayFunctor.mk (yoneda.obj x) ◁
         (⟨yoneda.map g⟩ : DayFunctor.mk (yoneda.obj y) ⟶
@@ -400,7 +428,8 @@ lemma dayYonedaIso_hom_natural_right (x : C) {y y' : C}
   simp only [Category.assoc]
 
 /-- Naturality of `RS.dayYonedaIso` in the left variable. -/
-lemma dayYonedaIso_hom_natural_left {x x' : C} (f : x ⟶ x')
+lemma dayYonedaIso_hom_natural_left [SmallCategory C] [MonoidalCategory C]
+    {x x' : C} (f : x ⟶ x')
     (y : C) :
     ((⟨yoneda.map f⟩ : DayFunctor.mk (yoneda.obj x) ⟶
         DayFunctor.mk (yoneda.obj x')) ▷
@@ -445,14 +474,17 @@ end YonedaNaturality
 section EmbeddingTensorNatural
 
 /-- Naturality of `RS.indToDayIndOfIso` in its object. -/
-lemma indToDay_map_comp_indToDayIndOfIso_hom {z z' : C} (u : z ⟶ z') :
+lemma indToDay_map_comp_indToDayIndOfIso_hom
+    [SmallCategory C] [MonoidalCategory C]
+    {z z' : C} (u : z ⟶ z') :
     (indToDay (C := C)).map (indOf.map u) ≫
         (indToDayIndOfIso z').hom =
       (indToDayIndOfIso z).hom ≫ ⟨yoneda.map u⟩ :=
   (indOfDayIso (C := C)).hom.naturality u
 
 /-- Inverse form of `RS.indToDay_map_comp_indToDayIndOfIso_hom`. -/
-lemma comp_indToDayIndOfIso_inv {z z' : C} (u : z ⟶ z') :
+lemma comp_indToDayIndOfIso_inv [SmallCategory C] [MonoidalCategory C]
+    {z z' : C} (u : z ⟶ z') :
     (⟨yoneda.map u⟩ : DayFunctor.mk (yoneda.obj z) ⟶
         DayFunctor.mk (yoneda.obj z')) ≫ (indToDayIndOfIso z').inv =
       (indToDayIndOfIso z).inv ≫ (indToDay (C := C)).map (indOf.map u) := by
@@ -462,7 +494,8 @@ lemma comp_indToDayIndOfIso_inv {z z' : C} (u : z ⟶ z') :
 /-- Naturality of `RS.indOfTensorIso` in the right variable: the
 embedding-tensor comparison intertwines whiskering by an embedded
 object with the embedded whiskering. -/
-lemma indOfTensorIso_hom_natural_right (x : C) {y y' : C}
+lemma indOfTensorIso_hom_natural_right [SmallCategory C] [MonoidalCategory C]
+    (x : C) {y y' : C}
     (g : y ⟶ y') :
     (indOf.obj x ◁ indOf.map g) ≫ (indOfTensorIso x y').hom =
       (indOfTensorIso x y).hom ≫ indOf.map (x ◁ g) := by
@@ -493,7 +526,8 @@ lemma indOfTensorIso_hom_natural_right (x : C) {y y' : C}
     comp_indToDayIndOfIso_inv]
 
 /-- Naturality of `RS.indOfTensorIso` in the left variable. -/
-lemma indOfTensorIso_hom_natural_left {x x' : C} (f : x ⟶ x')
+lemma indOfTensorIso_hom_natural_left [SmallCategory C] [MonoidalCategory C]
+    {x x' : C} (f : x ⟶ x')
     (y : C) :
     (indOf.map f ▷ indOf.obj y) ≫ (indOfTensorIso x' y).hom =
       (indOfTensorIso x y).hom ≫ indOf.map (f ▷ y) := by
@@ -527,7 +561,8 @@ lemma indOfTensorIso_hom_natural_left {x x' : C} (f : x ⟶ x')
 Day unit, identified through `RS.dayUnitIso` with the representable
 at `𝟙_ C` and pulled back through the fully faithful monoidal
 embedding `RS.indToDay`. -/
-def indOfUnitIso : (𝟙_ (Ind C)) ≅ indOf.obj (𝟙_ C) :=
+def indOfUnitIso
+    [SmallCategory C] [MonoidalCategory C] : (𝟙_ (Ind C)) ≅ indOf.obj (𝟙_ C) :=
   indToDayFullyFaithful.preimageIso
     ((Functor.Monoidal.εIso (indToDay (C := C))).symm ≪≫
       dayUnitIso Cᵒᵖ ≪≫ dayMkIso (Coyoneda.objOpOp (𝟙_ C)) ≪≫
@@ -539,33 +574,39 @@ section CoconeTools
 
 universe v₁ v₂ v₃ u₂ u₃
 
-variable {J : Type v₁} [Category.{v₁} J]
-variable {𝒜 : Type u₂} [Category.{v₂} 𝒜]
-variable {ℬ : Type u₃} [Category.{v₃} ℬ] [HasBinaryCoproducts ℬ]
-
 /-- A cocone leg, with its type stated at the cocone point. -/
-def coconeLeg {D : J ⥤ ℬ} (c : Cocone D) (j : J) : D.obj j ⟶ c.pt :=
+def coconeLeg {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    {D : J ⥤ ℬ} (c : Cocone D) (j : J) : D.obj j ⟶ c.pt :=
   c.ι.app j
 
-omit [HasBinaryCoproducts ℬ] in
-lemma coconeLeg_w {D : J ⥤ ℬ} (c : Cocone D) {j k : J} (u : j ⟶ k) :
+lemma coconeLeg_w
+    {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    {D : J ⥤ ℬ} (c : Cocone D) {j k : J} (u : j ⟶ k) :
     D.map u ≫ coconeLeg c k = coconeLeg c j :=
   c.w u
 
 /-- The pointwise binary coproduct of two diagrams of the same
 shape. -/
 @[reducible, simps]
-def coprodDiagram (D₁ D₂ : J ⥤ ℬ) : J ⥤ ℬ where
+def coprodDiagram
+    {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    (D₁ D₂ : J ⥤ ℬ) : J ⥤ ℬ where
   obj j := D₁.obj j ⨿ D₂.obj j
   map u := coprod.map (D₁.map u) (D₂.map u)
 
 /-- A leg of a cocone over a pointwise coproduct, with its type
 stated at the coproduct. -/
-def coprodLeg {D₁ D₂ : J ⥤ ℬ} (s : Cocone (coprodDiagram D₁ D₂))
+def coprodLeg {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    {D₁ D₂ : J ⥤ ℬ} (s : Cocone (coprodDiagram D₁ D₂))
     (j : J) : D₁.obj j ⨿ D₂.obj j ⟶ s.pt :=
   s.ι.app j
 
-lemma coprodLeg_w {D₁ D₂ : J ⥤ ℬ} (s : Cocone (coprodDiagram D₁ D₂))
+lemma coprodLeg_w
+    {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    {D₁ D₂ : J ⥤ ℬ} (s : Cocone (coprodDiagram D₁ D₂))
     {j k : J} (u : j ⟶ k) :
     coprod.map (D₁.map u) (D₂.map u) ≫ coprodLeg s k = coprodLeg s j :=
   s.w u
@@ -574,7 +615,9 @@ lemma coprodLeg_w {D₁ D₂ : J ⥤ ℬ} (s : Cocone (coprodDiagram D₁ D₂))
 coproduct diagram, with the coproduct of the two points as its
 point. -/
 @[reducible, simps]
-def coprodCocone {D₁ D₂ : J ⥤ ℬ} (c₁ : Cocone D₁) (c₂ : Cocone D₂) :
+def coprodCocone {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    {D₁ D₂ : J ⥤ ℬ} (c₁ : Cocone D₁) (c₂ : Cocone D₂) :
     Cocone (coprodDiagram D₁ D₂) where
   pt := c₁.pt ⨿ c₂.pt
   ι :=
@@ -589,7 +632,10 @@ def coprodCocone {D₁ D₂ : J ⥤ ℬ} (c₁ : Cocone D₁) (c₂ : Cocone D�
 /-- A cocone over the pointwise coproduct, restricted along the
 first inclusion to a cocone over the first diagram. -/
 @[reducible, simps]
-def coprodCoconeFst {D₁ D₂ : J ⥤ ℬ}
+def coprodCoconeFst
+    {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    {D₁ D₂ : J ⥤ ℬ}
     (s : Cocone (coprodDiagram D₁ D₂)) : Cocone D₁ where
   pt := s.pt
   ι :=
@@ -602,7 +648,10 @@ def coprodCoconeFst {D₁ D₂ : J ⥤ ℬ}
 /-- A cocone over the pointwise coproduct, restricted along the
 second inclusion to a cocone over the second diagram. -/
 @[reducible, simps]
-def coprodCoconeSnd {D₁ D₂ : J ⥤ ℬ}
+def coprodCoconeSnd
+    {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    {D₁ D₂ : J ⥤ ℬ}
     (s : Cocone (coprodDiagram D₁ D₂)) : Cocone D₂ where
   pt := s.pt
   ι :=
@@ -615,7 +664,10 @@ def coprodCoconeSnd {D₁ D₂ : J ⥤ ℬ}
 /-- The coproduct of two colimit cocones is a colimit cocone over
 the pointwise coproduct diagram: colimits commute with binary
 coproducts. -/
-def isColimitCoprodCocone {D₁ D₂ : J ⥤ ℬ} {c₁ : Cocone D₁}
+def isColimitCoprodCocone
+    {J : Type v₁} [Category.{v₁} J] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    {D₁ D₂ : J ⥤ ℬ} {c₁ : Cocone D₁}
     {c₂ : Cocone D₂} (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) :
     IsColimit (coprodCocone c₁ c₂) where
   desc s := coprod.desc (h₁.desc (coprodCoconeFst s))
@@ -656,11 +708,17 @@ def isColimitCoprodCocone {D₁ D₂ : J ⥤ ℬ} {c₁ : Cocone D₁}
 
 /-- The pointwise binary coproduct of two functors. -/
 @[reducible, simps]
-def coprodPairFunctor (F G : 𝒜 ⥤ ℬ) : 𝒜 ⥤ ℬ where
+def coprodPairFunctor
+    {𝒜 : Type u₂} [Category.{v₂} 𝒜] {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [HasBinaryCoproducts ℬ]
+    (F G : 𝒜 ⥤ ℬ) : 𝒜 ⥤ ℬ where
   obj A := F.obj A ⨿ G.obj A
   map u := coprod.map (F.map u) (G.map u)
 
-lemma preservesColimitsOfShape_coprodPairFunctor (F G : 𝒜 ⥤ ℬ)
+lemma preservesColimitsOfShape_coprodPairFunctor
+    {J : Type v₁} [Category.{v₁} J] {𝒜 : Type u₂} [Category.{v₂} 𝒜]
+    {ℬ : Type u₃} [Category.{v₃} ℬ] [HasBinaryCoproducts ℬ]
+    (F G : 𝒜 ⥤ ℬ)
     [PreservesColimitsOfShape J F] [PreservesColimitsOfShape J G] :
     PreservesColimitsOfShape J (coprodPairFunctor F G) where
   preservesColimit {D} :=
@@ -676,8 +734,10 @@ lemma preservesColimitsOfShape_coprodPairFunctor (F G : 𝒜 ⥤ ℬ)
         rw [Category.comp_id]
         rfl }
 
-omit [HasBinaryCoproducts ℬ] in
-lemma preservesColimitsOfShape_const_of_isConnected [IsConnected J]
+lemma preservesColimitsOfShape_const_of_isConnected
+    {J : Type v₁} [Category.{v₁} J] {𝒜 : Type u₂} [Category.{v₂} 𝒜]
+    {ℬ : Type u₃} [Category.{v₃} ℬ]
+    [IsConnected J]
     (W : ℬ) :
     PreservesColimitsOfShape J ((Functor.const 𝒜).obj W) where
   preservesColimit {D} :=
@@ -691,13 +751,13 @@ end CoconeTools
 
 section FilteredDescent
 
-omit [MonoidalCategory C] in
 /-- **Filtered descent for pointwise-invertible transformations**: a
 natural transformation between endofunctors of `Ind C` that both
 preserve filtered colimits is invertible everywhere as soon as it is
 invertible on the embedded objects, since every ind-object is a
 filtered colimit of embedded objects. -/
-lemma isIso_app_of_isIso_indOf {L R : Ind C ⥤ Ind C}
+lemma isIso_app_of_isIso_indOf [SmallCategory C]
+    {L R : Ind C ⥤ Ind C}
     [PreservesFilteredColimits L] [PreservesFilteredColimits R]
     (γ : L ⟶ R) (hbase : ∀ c : C, IsIso (γ.app (indOf.obj c)))
     (A : Ind C) : IsIso (γ.app A) := by
@@ -732,15 +792,14 @@ section CoproductPreservation
 
 open ZeroObject
 
-variable [Preadditive C] [HasFiniteColimits C] [MonoidalPreadditive C]
-
-omit [Preadditive C] [MonoidalPreadditive C] in
 /-- Abstract form of the embedded base case, left version: a
 morphism satisfying the two defining equations of the binary
 coproduct comparison for `tensorLeft (indOf.obj a)` at a pair of
 embedded objects is invertible, provided the corresponding
 comparison in `C` is. -/
-lemma isIso_of_coprod_eq_whiskerLeft_indOf (a x y : C)
+lemma isIso_of_coprod_eq_whiskerLeft_indOf
+    [SmallCategory C] [MonoidalCategory C] [HasFiniteColimits C]
+    (a x y : C)
     (w : a ⊗ x ⨿ a ⊗ y ⟶ a ⊗ (x ⨿ y)) [IsIso w]
     (hw₁ : coprod.inl ≫ w = a ◁ coprod.inl)
     (hw₂ : coprod.inr ≫ w = a ◁ coprod.inr)
@@ -771,9 +830,10 @@ lemma isIso_of_coprod_eq_whiskerLeft_indOf (a x y : C)
   rw [key]
   infer_instance
 
-omit [Preadditive C] [MonoidalPreadditive C] in
 /-- Abstract form of the embedded base case, right version. -/
-lemma isIso_of_coprod_eq_whiskerRight_indOf (a x y : C)
+lemma isIso_of_coprod_eq_whiskerRight_indOf
+    [SmallCategory C] [MonoidalCategory C] [HasFiniteColimits C]
+    (a x y : C)
     (w : x ⊗ a ⨿ y ⊗ a ⟶ (x ⨿ y) ⊗ a) [IsIso w]
     (hw₁ : coprod.inl ≫ w = coprod.inl ▷ a)
     (hw₂ : coprod.inr ≫ w = coprod.inr ▷ a)
@@ -812,7 +872,10 @@ set_option maxHeartbeats 1600000 in
 /-- The embedded base case, left version: the binary coproduct
 comparison for tensoring on the left by an embedded object is
 invertible at a pair of embedded objects. -/
-lemma isIso_coprodComparison_tensorLeft_indOf₀ (a x y : C) :
+lemma isIso_coprodComparison_tensorLeft_indOf₀
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (a x y : C) :
     IsIso (coprodComparison (tensorLeft (indOf.obj a))
       (indOf.obj x) (indOf.obj y)) := by
   haveI : HasFiniteBiproducts C :=
@@ -838,7 +901,10 @@ lemma isIso_coprodComparison_tensorLeft_indOf₀ (a x y : C) :
 -- biproduct-preservation search for `tensorRight a`.
 set_option maxHeartbeats 1600000 in
 /-- The embedded base case, right version. -/
-lemma isIso_coprodComparison_tensorRight_indOf₀ (a x y : C) :
+lemma isIso_coprodComparison_tensorRight_indOf₀
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (a x y : C) :
     IsIso (coprodComparison (tensorRight (indOf.obj a))
       (indOf.obj x) (indOf.obj y)) := by
   haveI : HasFiniteBiproducts C :=
@@ -863,7 +929,10 @@ lemma isIso_coprodComparison_tensorRight_indOf₀ (a x y : C) :
 /-- Stage two, left version: the comparison for tensoring on the
 left by an embedded object, at one embedded and one arbitrary
 argument.  Filtered descent in the second coproduct argument. -/
-lemma isIso_coprodComparison_tensorLeft_indOf₁ (a x : C)
+lemma isIso_coprodComparison_tensorLeft_indOf₁
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (a x : C)
     (Y : Ind C) :
     IsIso (coprodComparison (tensorLeft (indOf.obj a))
       (indOf.obj x) Y) := by
@@ -909,7 +978,10 @@ lemma isIso_coprodComparison_tensorLeft_indOf₁ (a x : C)
   exact h
 
 /-- Stage two, right version. -/
-lemma isIso_coprodComparison_tensorRight_indOf₁ (a x : C)
+lemma isIso_coprodComparison_tensorRight_indOf₁
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (a x : C)
     (Y : Ind C) :
     IsIso (coprodComparison (tensorRight (indOf.obj a))
       (indOf.obj x) Y) := by
@@ -956,7 +1028,10 @@ lemma isIso_coprodComparison_tensorRight_indOf₁ (a x : C)
 
 /-- Stage three, left version: descent in the first coproduct
 argument. -/
-lemma isIso_coprodComparison_tensorLeft_indOf₂ (a : C)
+lemma isIso_coprodComparison_tensorLeft_indOf₂
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (a : C)
     (X Y : Ind C) :
     IsIso (coprodComparison (tensorLeft (indOf.obj a)) X Y) := by
   haveI hL : PreservesFilteredColimits
@@ -1002,7 +1077,10 @@ lemma isIso_coprodComparison_tensorLeft_indOf₂ (a : C)
   exact h
 
 /-- Stage three, right version. -/
-lemma isIso_coprodComparison_tensorRight_indOf₂ (a : C)
+lemma isIso_coprodComparison_tensorRight_indOf₂
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (a : C)
     (X Y : Ind C) :
     IsIso (coprodComparison (tensorRight (indOf.obj a)) X Y) := by
   haveI hL : PreservesFilteredColimits
@@ -1049,7 +1127,10 @@ lemma isIso_coprodComparison_tensorRight_indOf₂ (a : C)
 
 /-- **The binary coproduct comparison for left tensoring in `Ind C`
 is invertible**: final descent in the tensoring object. -/
-lemma isIso_coprodComparison_tensorLeft (A X Y : Ind C) :
+lemma isIso_coprodComparison_tensorLeft
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A X Y : Ind C) :
     IsIso (coprodComparison (tensorLeft A) X Y) := by
   haveI hL : PreservesFilteredColimits
       (coprodPairFunctor (tensorRight X) (tensorRight Y)) :=
@@ -1072,7 +1153,10 @@ lemma isIso_coprodComparison_tensorLeft (A X Y : Ind C) :
 
 /-- **The binary coproduct comparison for right tensoring in
 `Ind C` is invertible**. -/
-lemma isIso_coprodComparison_tensorRight (A X Y : Ind C) :
+lemma isIso_coprodComparison_tensorRight
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A X Y : Ind C) :
     IsIso (coprodComparison (tensorRight A) X Y) := by
   haveI hL : PreservesFilteredColimits
       (coprodPairFunctor (tensorLeft X) (tensorLeft Y)) :=
@@ -1093,25 +1177,25 @@ lemma isIso_coprodComparison_tensorRight (A X Y : Ind C) :
     (fun c => isIso_coprodComparison_tensorRight_indOf₂ c X Y) A
   exact h
 
-omit [Preadditive C] [HasFiniteColimits C] [MonoidalPreadditive C] in
 /-- An object that is both initial and terminal is a zero object. -/
 lemma isZero_of_isInitial_isTerminal {𝒜 : Type*} [Category 𝒜]
     {X : 𝒜} (hI : IsInitial X) (hT : IsTerminal X) : IsZero X :=
   ⟨fun Y => ⟨⟨⟨hI.to Y⟩, fun f => hI.hom_ext f _⟩⟩,
     fun Y => ⟨⟨⟨hT.from Y⟩, fun f => hT.hom_ext f _⟩⟩⟩
 
-omit [MonoidalCategory C] [Preadditive C] [HasFiniteColimits C] in
 /-- The embedding `C ⥤ Ind C` carries zero objects to zero objects:
 it preserves the initial and the terminal object. -/
-lemma isZero_indOf {W : C} (hW : IsZero W) :
+lemma isZero_indOf [SmallCategory C]
+    {W : C} (hW : IsZero W) :
     IsZero (indOf.obj W) :=
   isZero_of_isInitial_isTerminal
     (IsInitial.isInitialObj indOf W hW.isInitial)
     (IsTerminal.isTerminalObj indOf W hW.isTerminal)
 
-omit [MonoidalCategory C] [MonoidalPreadditive C] in
 /-- A colimit all of whose stages vanish vanishes. -/
-lemma isZero_colimit_of_isZero {I : Type v} [SmallCategory I]
+lemma isZero_colimit_of_isZero
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    {I : Type v} [SmallCategory I]
     (K : I ⥤ Ind C) [HasColimit K] (h : ∀ i, IsZero (K.obj i)) :
     IsZero (colimit K) := by
   rw [IsZero.iff_id_eq_zero]
@@ -1128,7 +1212,10 @@ set_option maxHeartbeats 1600000 in
 /-- Tensoring a vanishing ind-object on the left kills it: descend
 along a presentation of the other factor and use that tensoring in
 `C` is additive. -/
-lemma isZero_tensor_left_ind (A : Ind C) {Z : Ind C}
+lemma isZero_tensor_left_ind
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) {Z : Ind C}
     (hZ : IsZero Z) : IsZero (A ⊗ Z) := by
   haveI : HasFiniteBiproducts C :=
     HasFiniteBiproducts.of_hasFiniteCoproducts
@@ -1157,7 +1244,10 @@ lemma isZero_tensor_left_ind (A : Ind C) {Z : Ind C}
 -- chain of three isomorphisms through the presentation colimit.
 set_option maxHeartbeats 1600000 in
 /-- Tensoring a vanishing ind-object on the right kills it. -/
-lemma isZero_tensor_right_ind (A : Ind C) {Z : Ind C}
+lemma isZero_tensor_right_ind
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) {Z : Ind C}
     (hZ : IsZero Z) : IsZero (Z ⊗ A) := by
   haveI : HasFiniteBiproducts C :=
     HasFiniteBiproducts.of_hasFiniteCoproducts
@@ -1183,19 +1273,28 @@ lemma isZero_tensor_right_ind (A : Ind C) {Z : Ind C}
     (D ⋙ tensorLeft (indOf.obj 0)) hpt) (e₁ ≪≫ e₂ ≪≫ e₃)
 
 /-- Left tensoring on `Ind C` preserves zero morphisms. -/
-lemma preservesZeroMorphisms_tensorLeft_ind (A : Ind C) :
+lemma preservesZeroMorphisms_tensorLeft_ind
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) :
     (tensorLeft A).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_map_zero_object
     ((isZero_tensor_left_ind A (isZero_zero (Ind C))).isoZero)
 
 /-- Right tensoring on `Ind C` preserves zero morphisms. -/
-lemma preservesZeroMorphisms_tensorRight_ind (A : Ind C) :
+lemma preservesZeroMorphisms_tensorRight_ind
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) :
     (tensorRight A).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_map_zero_object
     ((isZero_tensor_right_ind A (isZero_zero (Ind C))).isoZero)
 
 /-- Left tensoring on `Ind C` preserves binary coproducts. -/
-lemma preservesBinaryCoproducts_tensorLeft_ind (A : Ind C) :
+lemma preservesBinaryCoproducts_tensorLeft_ind
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesColimitsOfShape (Discrete WalkingPair)
       (tensorLeft A) where
   preservesColimit {K} := by
@@ -1207,7 +1306,10 @@ lemma preservesBinaryCoproducts_tensorLeft_ind (A : Ind C) :
     exact preservesColimit_of_iso_diagram _ (diagramIsoPair K).symm
 
 /-- Right tensoring on `Ind C` preserves binary coproducts. -/
-lemma preservesBinaryCoproducts_tensorRight_ind (A : Ind C) :
+lemma preservesBinaryCoproducts_tensorRight_ind
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesColimitsOfShape (Discrete WalkingPair)
       (tensorRight A) where
   preservesColimit {K} := by
@@ -1219,7 +1321,10 @@ lemma preservesBinaryCoproducts_tensorRight_ind (A : Ind C) :
     exact preservesColimit_of_iso_diagram _ (diagramIsoPair K).symm
 
 /-- Left tensoring on `Ind C` is additive. -/
-instance tensorLeft_ind_additive (A : Ind C) :
+instance tensorLeft_ind_additive
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) :
     (tensorLeft A).Additive := by
   haveI : HasBinaryBiproducts (Ind C) :=
     hasBinaryBiproducts_of_finite_biproducts (Ind C)
@@ -1230,7 +1335,10 @@ instance tensorLeft_ind_additive (A : Ind C) :
   exact Functor.additive_of_preservesBinaryBiproducts _
 
 /-- Right tensoring on `Ind C` is additive. -/
-instance tensorRight_ind_additive (A : Ind C) :
+instance tensorRight_ind_additive
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C]
+    (A : Ind C) :
     (tensorRight A).Additive := by
   haveI : HasBinaryBiproducts (Ind C) :=
     hasBinaryBiproducts_of_finite_biproducts (Ind C)
@@ -1243,7 +1351,9 @@ instance tensorRight_ind_additive (A : Ind C) :
 /-- **Deligne 2.2, preadditive half**: the transported monoidal
 structure on `Ind C` is preadditive — whiskering is additive in each
 variable. -/
-instance : MonoidalPreadditive (Ind C) where
+instance [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [MonoidalPreadditive C] :
+    MonoidalPreadditive (Ind C) where
   whiskerLeft_zero {X Y Z} := (tensorLeft X).map_zero Y Z
   zero_whiskerRight {X Y Z} := (tensorRight X).map_zero Y Z
   whiskerLeft_add {X _ _} _ _ := (tensorLeft X).map_add
@@ -1256,24 +1366,34 @@ section AcceptanceTests
 /- Instance synthesis is what is being tested; the data is chosen by
 colimit machinery, hence `noncomputable`. -/
 
-noncomputable example (X : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C]
+    (X : Ind C) :
     PreservesFilteredColimits (tensorLeft X) :=
   inferInstance
 
-noncomputable example (X : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C]
+    (X : Ind C) :
     PreservesFilteredColimits (tensorRight X) :=
   inferInstance
 
-noncomputable example [Preadditive C] [HasFiniteColimits C]
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C]
+    [Preadditive C] [HasFiniteColimits C]
     [MonoidalPreadditive C] : MonoidalPreadditive (Ind C) :=
   inferInstance
 
-noncomputable example [Preadditive C] [HasFiniteColimits C]
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C]
+    [Preadditive C] [HasFiniteColimits C]
     [MonoidalPreadditive C] (X : Ind C) :
     PreservesFiniteCoproducts (tensorLeft X) :=
   inferInstance
 
-noncomputable example [Preadditive C] [HasFiniteColimits C]
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C]
+    [Preadditive C] [HasFiniteColimits C]
     [MonoidalPreadditive C] (X : Ind C) :
     PreservesFiniteCoproducts (tensorRight X) :=
   inferInstance

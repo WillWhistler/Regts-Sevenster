@@ -25,28 +25,30 @@ open CategoryTheory.Limits CategoryTheory.MonoidalPreadditive
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] [MonoidalCategory C]
-  [MonoidalPreadditive C] [RightRigidCategory C]
+variable {C : Type u}
 
 /-! ### Componentwise access lemmas
 
 The `private` access lemmas in `MatBraided.lean` are not visible here,
 so we restate the ones we need.  Each is proved by `rfl`. -/
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_whiskerLeft_apply' (X : Mat_ C) {Y Z : Mat_ C} (f :
+@[simp] private theorem mat_whiskerLeft_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X : Mat_ C) {Y Z : Mat_ C} (f :
   Y ⟶ Z)
     (ix : X.ι) (iy : Y.ι) (jx : X.ι) (jz : Z.ι) :
     (X ◁ f) (ix, iy) (jx, jz) = (𝟙 (X : Mat_ C)) ix jx ⊗ₘ f iy jz := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_whiskerRight_apply' {X Y : Mat_ C} (f : X ⟶ Y) (Z :
+@[simp] private theorem mat_whiskerRight_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {X Y : Mat_ C} (f : X ⟶ Y) (Z :
   Mat_ C)
     (ix : X.ι) (iz : Z.ι) (jy : Y.ι) (jz : Z.ι) :
     (f ▷ Z) (ix, iz) (jy, jz) = f ix jy ⊗ₘ (𝟙 (Z : Mat_ C)) iz jz := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_assocHom_apply' (M N K : Mat_ C)
+@[simp] private theorem mat_assocHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C)
     (i : M.ι) (j : N.ι) (k : K.ι) (i' : M.ι) (j' : N.ι) (k' : K.ι) :
     (α_ M N K).hom ((i, j), k) (i', (j', k')) =
       if hi : i = i' then if hj : j = j' then if hk : k = k' then
@@ -54,8 +56,9 @@ omit [MonoidalPreadditive C] [RightRigidCategory C] in
           (K.X k')).hom
       else 0 else 0 else 0 := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_assocInv_apply' (M N K : Mat_ C)
+@[simp] private theorem mat_assocInv_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C)
     (i : M.ι) (j : N.ι) (k : K.ι) (i' : M.ι) (j' : N.ι) (k' : K.ι) :
     (α_ M N K).inv (i, (j, k)) ((i', j'), k') =
       if hi : i = i' then if hj : j = j' then if hk : k = k' then
@@ -63,29 +66,33 @@ omit [MonoidalPreadditive C] [RightRigidCategory C] in
           (K.X k')).inv
       else 0 else 0 else 0 := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_rightUnitorHom_apply' (M : Mat_ C) (i : M.ι) (u :
+@[simp] private theorem mat_rightUnitorHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) (i : M.ι) (u :
   PUnit) (j : M.ι) :
     (ρ_ M).hom (i, u) j =
       if h : i = j then eqToHom (by subst h; rfl) ≫ (ρ_ (M.X j)).hom else 0
         := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_rightUnitorInv_apply' (M : Mat_ C) (i : M.ι) (j :
+@[simp] private theorem mat_rightUnitorInv_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) (i : M.ι) (j :
   M.ι) (u : PUnit) :
     (ρ_ M).inv i (j, u) =
       if h : i = j then (ρ_ (M.X i)).inv ≫ eqToHom (by subst h; rfl) else 0
         := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_leftUnitorHom_apply' (M : Mat_ C) (u : PUnit) (i :
+@[simp] private theorem mat_leftUnitorHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) (u : PUnit) (i :
   M.ι) (j : M.ι) :
     (λ_ M).hom (u, i) j =
       if h : i = j then eqToHom (by subst h; rfl) ≫ (λ_ (M.X j)).hom else 0
         := rfl
 
-omit [MonoidalPreadditive C] [RightRigidCategory C] in
-@[simp] private theorem mat_leftUnitorInv_apply' (M : Mat_ C) (i : M.ι) (u :
+@[simp] private theorem mat_leftUnitorInv_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) (i : M.ι) (u :
   PUnit) (j : M.ι) :
     (λ_ M).inv i (u, j) =
       if h : i = j then (λ_ (M.X i)).inv ≫ eqToHom (by subst h; rfl) else 0
@@ -94,20 +101,26 @@ omit [MonoidalPreadditive C] [RightRigidCategory C] in
 /-! ### The dual object -/
 
 /-- The right dual of `M` in `Mat_ C`: same index set, componentwise dual. -/
-@[reducible] noncomputable def matRightDualObj (M : Mat_ C) : Mat_ C :=
+@[reducible] noncomputable def matRightDualObj
+    [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
+    (M : Mat_ C) : Mat_ C :=
   ⟨M.ι, fun i => (M.X i)ᘁ⟩
 
 /-! ### Coevaluation and evaluation -/
 
 /-- Componentwise coevaluation: diagonal matrix of cups. -/
-noncomputable def matCoev (M : Mat_ C) : 𝟙_ (Mat_ C) ⟶ M ⊗ matRightDualObj M :=
+noncomputable def matCoev [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [RightRigidCategory C]
+    (M : Mat_ C) : 𝟙_ (Mat_ C) ⟶ M ⊗ matRightDualObj M :=
   fun _ p => if h : p.1 = p.2 then
     η_ (M.X p.1) ((M.X p.1)ᘁ) ≫
       eqToHom (congr_arg (M.X p.1 ⊗ ·) (congr_arg (fun i => (M.X i)ᘁ) h))
   else 0
 
 /-- Componentwise evaluation: diagonal matrix of caps. -/
-noncomputable def matEv (M : Mat_ C) : matRightDualObj M ⊗ M ⟶ 𝟙_ (Mat_ C) :=
+noncomputable def matEv [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [RightRigidCategory C]
+    (M : Mat_ C) : matRightDualObj M ⊗ M ⟶ 𝟙_ (Mat_ C) :=
   fun p _ => if h : p.1 = p.2 then
     eqToHom (congr_arg (· ⊗ M.X p.2) (congr_arg (fun i => (M.X i)ᘁ) h)) ≫
       ε_ (M.X p.2) ((M.X p.2)ᘁ)
@@ -115,24 +128,32 @@ noncomputable def matEv (M : Mat_ C) : matRightDualObj M ⊗ M ⟶ 𝟙_ (Mat_ C
 
 /-! ### Entry lemmas for coev/ev -/
 
-omit [MonoidalPreadditive C] in
-private theorem matCoev_apply_diag (M : Mat_ C) (u : PUnit) (i : M.ι) :
+private theorem matCoev_apply_diag
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [RightRigidCategory C]
+    (M : Mat_ C) (u : PUnit) (i : M.ι) :
     matCoev M u (i, i) = η_ (M.X i) ((M.X i)ᘁ) := by
   simp [matCoev]
 
-omit [MonoidalPreadditive C] in
-private theorem matCoev_apply_off (M : Mat_ C) (u : PUnit) (i j : M.ι) (h : i ≠
+private theorem matCoev_apply_off
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [RightRigidCategory C]
+    (M : Mat_ C) (u : PUnit) (i j : M.ι) (h : i ≠
   j) :
     matCoev M u (i, j) = 0 :=
   dif_neg h
 
-omit [MonoidalPreadditive C] in
-private theorem matEv_apply_diag (M : Mat_ C) (i : M.ι) (u : PUnit) :
+private theorem matEv_apply_diag
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [RightRigidCategory C]
+    (M : Mat_ C) (i : M.ι) (u : PUnit) :
     matEv M (i, i) u = ε_ (M.X i) ((M.X i)ᘁ) := by
   simp [matEv]
 
-omit [MonoidalPreadditive C] in
-private theorem matEv_apply_off (M : Mat_ C) (i j : M.ι) (u : PUnit) (h : i ≠ j)
+private theorem matEv_apply_off
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [RightRigidCategory C]
+    (M : Mat_ C) (i j : M.ι) (u : PUnit) (h : i ≠ j)
   :
     matEv M (i, j) u = 0 :=
   dif_neg h
@@ -142,7 +163,10 @@ private theorem matEv_apply_off (M : Mat_ C) (i j : M.ι) (u : PUnit) (h : i ≠
 -- Raised budget: the snake identity is checked entrywise, and the
 -- coevaluation contributes a sum over the dual index.
 set_option maxHeartbeats 1600000 in
-private theorem mat_snake_one (M : Mat_ C) :
+private theorem mat_snake_one
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [RightRigidCategory C]
+    (M : Mat_ C) :
     (matRightDualObj M) ◁ matCoev M ≫ (α_ (matRightDualObj M) M (matRightDualObj
       M)).inv ≫
       matEv M ▷ (matRightDualObj M) =
@@ -239,7 +263,10 @@ private theorem mat_snake_one (M : Mat_ C) :
 
 -- As for the first snake identity.
 set_option maxHeartbeats 1600000 in
-private theorem mat_snake_two (M : Mat_ C) :
+private theorem mat_snake_two
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [RightRigidCategory C]
+    (M : Mat_ C) :
     matCoev M ▷ M ≫ (α_ M (matRightDualObj M) M).hom ≫
       M ◁ matEv M =
     (λ_ M).hom ≫ (ρ_ M).inv := by
@@ -341,7 +368,10 @@ private theorem mat_snake_two (M : Mat_ C) :
 
 set_option warn.classDefReducibility false in
 /-- The exact pairing between `M` and its componentwise right dual. -/
-noncomputable def matExactPairing (M : Mat_ C) :
+noncomputable def matExactPairing
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [RightRigidCategory C]
+    (M : Mat_ C) :
     ExactPairing M (matRightDualObj M) where
   coevaluation' := matCoev M
   evaluation' := matEv M
@@ -349,15 +379,24 @@ noncomputable def matExactPairing (M : Mat_ C) :
   evaluation_coevaluation' := mat_snake_two M
 
 /-- Every object in `Mat_ C` has a right dual. -/
-noncomputable instance matHasRightDual (M : Mat_ C) : HasRightDual M where
+noncomputable instance matHasRightDual
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [RightRigidCategory C]
+    (M : Mat_ C) : HasRightDual M where
   rightDual := matRightDualObj M
   exact := matExactPairing M
 
 /-- `Mat_ C` is right rigid when `C` is right rigid. -/
-noncomputable instance matRightRigid : RightRigidCategory (Mat_ C) where
+noncomputable instance matRightRigid
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [RightRigidCategory C] :
+    RightRigidCategory (Mat_ C) where
 
 /-- `Mat_ C` is rigid when `C` is right rigid and braided. -/
-noncomputable instance matRigid [BraidedCategory C] : RigidCategory (Mat_ C) :=
+noncomputable instance matRigid
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [RightRigidCategory C]
+    [BraidedCategory C] : RigidCategory (Mat_ C) :=
   BraidedCategory.rigidCategoryOfRightRigidCategory
 
 end RS

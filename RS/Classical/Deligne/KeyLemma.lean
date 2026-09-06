@@ -42,11 +42,9 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section Datum
-
-variable [BraidedCategory D]
 
 /-- A Mod-internal duality datum for a pair of modules over a
 monoid object: a descended `A`-valued pairing and a copairing
@@ -54,7 +52,9 @@ into the relative tensor, each a module map.  The zigzag
 identities live one level up, through the multi-tensor insertion
 and contraction constructors, and are packaged separately as
 `ModZigzagDatum`. -/
-structure ModDualityDatum [Limits.HasCoequalizers D] (A : D)
+structure ModDualityDatum
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Limits.HasCoequalizers D] (A : D)
     [MonObj A] [IsCommMonObj A] (M M' : Mod D A)
     [∀ Z : D, Limits.PreservesColimitsOfShape
       Limits.WalkingParallelPair (tensorLeft Z)] where
@@ -79,16 +79,14 @@ end Datum
 
 section Bundles
 
-variable [SymmetricCategory D] [Limits.HasCoequalizers D]
-variable [∀ Z : D, Limits.PreservesColimitsOfShape
-  Limits.WalkingParallelPair (tensorLeft Z)]
-variable [∀ Z : D, Limits.PreservesColimitsOfShape
-  Limits.WalkingParallelPair (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A] {M M' : Mod D A}
-
 /-- The pairing of a duality datum, as a module map into the
 regular module. -/
 noncomputable def ModDualityDatum.pairMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Limits.HasCoequalizers D]
+    [∀ Z : D, Limits.PreservesColimitsOfShape Limits.WalkingParallelPair
+      (tensorLeft Z)] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A}
     (d : ModDualityDatum A M M') :
     modTensorMod A M' M ⟶ regularMod A :=
   Mod.Hom.mk' d.pair d.pair_linear
@@ -96,6 +94,11 @@ noncomputable def ModDualityDatum.pairMod
 /-- The copairing of a duality datum, as a module map from the
 regular module. -/
 noncomputable def ModDualityDatum.copairMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Limits.HasCoequalizers D]
+    [∀ Z : D, Limits.PreservesColimitsOfShape Limits.WalkingParallelPair
+      (tensorLeft Z)] (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A}
+    {M' : Mod D A}
     (d : ModDualityDatum A M M') :
     regularMod A ⟶ modTensorMod A M M' :=
   Mod.Hom.mk' d.copair d.copair_linear
@@ -104,25 +107,23 @@ end Bundles
 
 section Zigzag
 
-variable [BraidedCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-
 /-- **The zigzag laws of a duality datum.**  Both triangle
 identities, stated through the multi-tensor insertion and
 contraction constructors: inserting the copairing and contracting
 the pairing across the original factor is the identity, on each
-side.  These are the honest, dimension-free dualizability
+side.  These are the dimension-free dualizability
 conditions: the inserted `M'` is contracted against the original
 `M` (and mirrored), never against its own partner — the latter
 composite is the categorical dimension and carries no
 information about dualizability. -/
-structure ModZigzagDatum {M M' : Mod D A}
+structure ModZigzagDatum
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    {M M' : Mod D A}
     (d : ModDualityDatum A M M') : Prop where
   /-- The zig triangle: insert on the left, contract the
   trailing cross pair, on the single-factor multi-tensor
@@ -142,7 +143,12 @@ point of `modTensor A M' M ⊗ B` on which the base-changed
 evaluation returns the unit of `B`.  Multiplication by the point
 produces a `B`-linear section of the evaluation, so the unit of
 `B` splits off the base change of `modTensor A M' M`. -/
-structure SplittingAlgebra {M M' : Mod D A}
+structure SplittingAlgebra
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    {M M' : Mod D A}
     (d : ModDualityDatum A M M') where
   /-- The underlying object of the splitting algebra. -/
   carrier : D
@@ -168,16 +174,6 @@ structure SplittingAlgebra {M M' : Mod D A}
 end Zigzag
 
 section Statement
-
-variable [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
 
 end Statement
 

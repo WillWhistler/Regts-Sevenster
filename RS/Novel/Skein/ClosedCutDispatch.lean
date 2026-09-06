@@ -20,11 +20,10 @@ open Fragment
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type} {W : Fragment α}
 
 /-! ## Generic helpers -/
 
-omit [LinearOrder α] in
 /-- Exit steps of boundary-terminated chain data agree. -/
 private theorem exit_unique_chain {F : EdgeSubset W}
     (κ : F.RelTransitionSystem) {g : W.Flag} {n n' : ℕ}
@@ -44,7 +43,6 @@ private theorem exit_unique_chain {F : EdgeSubset W}
       (Finset.disjoint_left.mp
         F.internalFlags_disjoint_boundaryFlags (hcont n' h))
 
-omit [LinearOrder α] in
 /-- `pathMatch` equals the terminal pairing of any
 boundary-terminated chain data. -/
 private theorem pathMatch_eq_of_chainData {F : EdgeSubset W}
@@ -90,7 +88,6 @@ local notation "κW" =>
 local notation "oW" =>
   unglueOrientationClosed hclosed b s' hc' hc κ' o'
 
-omit [LinearOrder α] in
 /-- **Boundary-flag correspondence (closed case)**: a surviving
 flag is glued-boundary iff its value is lifted-boundary. -/
 theorem mem_boundaryFlags_glueClosed {f' : SurvivingFlag W i j} :
@@ -119,7 +116,6 @@ theorem mem_boundaryFlags_glueClosed {f' : SurvivingFlag W i j} :
             hint))
     · exact hbd
 
-omit [LinearOrder α] in
 /-- **Unconditional walk agreement (closed case)**: the closed glue
 never rewires, so the unglued walk from a surviving flag follows
 the glued walk valuewise, with no continuation hypothesis. -/
@@ -137,7 +133,6 @@ theorem iterWalk_unglueClosed_val_all (δ' : SurvivingFlag W i j) :
       (W.pairing (iterWalk κ' δ' t).val)
       (pairing_val_surviving_closed hclosed (iterWalk κ' δ' t))
 
-omit [LinearOrder α] in
 /-- **`pathMatch` transport across the closed unglue**: chains of
 surviving boundary flags transport on the nose, for either `b`. -/
 theorem pathMatch_unglueClosed {δ' : SurvivingFlag W i j}

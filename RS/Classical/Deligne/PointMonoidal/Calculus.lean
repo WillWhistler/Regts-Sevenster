@@ -421,13 +421,14 @@ section HomSteps
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   {M N : S.Mod.{u, u, u, u}}
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
 
 /-- Base change of a morphism, in even degree, on an element. -/
-theorem superVectHom_evenMap_apply (u : M ⟶ N)
+theorem superVectHom_evenMap_apply
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    (u : M ⟶ N)
     (y : (toSuperVect P M).even) :
     (superVectHom P u).evenMap y =
       toSuperVectEvenEquiv P N
@@ -435,7 +436,12 @@ theorem superVectHom_evenMap_apply (u : M ⟶ N)
           ((toSuperVectEvenEquiv P M).symm y)) := rfl
 
 /-- Base change of a morphism, in odd degree, on an element. -/
-theorem superVectHom_oddMap_apply (u : M ⟶ N)
+theorem superVectHom_oddMap_apply
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    (u : M ⟶ N)
     (y : (toSuperVect P M).odd) :
     (superVectHom P u).oddMap y =
       toSuperVectOddEquiv P N

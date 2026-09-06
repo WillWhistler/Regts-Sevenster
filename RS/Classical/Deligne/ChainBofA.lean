@@ -19,50 +19,41 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
+variable {D : Type u}
 
 /-- The base action on a chain stage, typed at the stage.  A
 single atom carrying the wrapper type uniformly, so that the
 generic action lemmas instantiate without mixed typing. -/
-noncomputable def chainStageAct (k : ℕ) :
+noncomputable def chainStageAct
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     A ⊗ chainStage A M M' k ⟶ chainStage A M M' k :=
   modTensorAct A (symPowMod A M'.X k) (symPowMod A M.X k)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- The stage action is unital. -/
-theorem chainStageAct_one (k : ℕ) :
+theorem chainStageAct_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     (η[A] ▷ chainStage A M M' k) ≫ chainStageAct A M M' k =
       (λ_ (chainStage A M M' k)).hom :=
   modTensorAct_one A (symPowMod A M'.X k) (symPowMod A M.X k)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- The stage action is associative. -/
-theorem chainStageAct_mul (k : ℕ) :
+theorem chainStageAct_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     (μ[A] ▷ chainStage A M M' k) ≫ chainStageAct A M M' k =
       (α_ A A (chainStage A M M' k)).hom ≫
         (A ◁ chainStageAct A M M' k) ≫ chainStageAct A M M' k :=
@@ -70,31 +61,47 @@ theorem chainStageAct_mul (k : ℕ) :
 
 /-- **The structure morphism of the splitting-chain algebra**:
 act on the seed at the bottom stage and include. -/
-noncomputable def chainBofA (d : ModDualityDatum A M M') :
+noncomputable def chainBofA
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M') :
     A ⟶ chainB A M M' d :=
   (ρ_ A).inv ≫ (A ◁ chainSeed A M M' d) ≫
     chainStageAct A M M' 0 ≫
     chainColimitι (chainStage A M M') (chainDelta A M M' d) 0
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- **The structure morphism preserves the unit**: the unit of
 the base recovers the seed, which is the unit of the algebra. -/
-theorem chainBofA_unit (d : ModDualityDatum A M M') :
+theorem chainBofA_unit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M') :
     η[A] ≫ chainBofA A M M' d = chainBUnit A M M' d := by
   have h := act_on_point_unit A (chainStageAct A M M' 0)
     (chainStageAct_one A M M' 0) (chainSeed A M M' d)
   rw [chainBofA, reassoc_of% h]
   rfl
 
-omit [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- The chain multiplication is left linear over the base, at the
 stage typing. -/
-theorem chainMul_actLeft_stage (m n : ℕ) :
+theorem chainMul_actLeft_stage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (m n : ℕ) :
     (chainStageAct A M M' m ▷ chainStage A M M' n) ≫
         chainMul A M M' m n =
       (α_ A (chainStage A M M' m) (chainStage A M M' n)).hom ≫
@@ -102,36 +109,25 @@ theorem chainMul_actLeft_stage (m n : ℕ) :
         chainStageAct A M M' (m + 1 + n) :=
   chainMul_actLeft A M M' m n
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- The stage transport commutes with the action. -/
-theorem chainStageCast_actLeft {j k : ℕ} (h : j = k) :
+theorem chainStageCast_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {j k : ℕ} (h : j = k) :
     chainStageAct A M M' j ≫ chainStageCast A M M' h =
       (A ◁ chainStageCast A M M' h) ≫ chainStageAct A M M' k := by
   subst h
   simp [chainStageCast_rfl]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [MonObj A] [IsCommMonObj A]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- **Insertion maps are linear**: precomposing an action with a
 point insertion followed by a linear map is again linear.  The
 generic-carrier form; the orbit-map linearity is the case of the
 action itself. -/
-theorem act_insert_linear {X S Z : D} (actX : A ⊗ X ⟶ X)
+theorem act_insert_linear [Category.{v} D] [MonoidalCategory D] (A : D)
+    {X S Z : D} (actX : A ⊗ X ⟶ X)
     (actZ : A ⊗ Z ⟶ Z) (s : 𝟙_ D ⟶ S) (m : X ⊗ S ⟶ Z)
     (hm : (actX ▷ S) ≫ m =
       (α_ A X S).hom ≫ (A ◁ m) ≫ actZ) :
@@ -150,14 +146,17 @@ theorem act_insert_linear {X S Z : D} (actX : A ⊗ X ⟶ X)
     MonoidalCategory.whiskerLeft_comp, Category.assoc,
     Category.assoc]
 
-omit [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- **The chain transition is linear over the base**: it is the
 insertion of the seed followed by the multiplication, which is
 linear in its first slot. -/
-theorem chainDelta_actLeft (d : ModDualityDatum A M M') (k : ℕ) :
+theorem chainDelta_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (k : ℕ) :
     chainStageAct A M M' k ≫ chainDelta A M M' d k =
       (A ◁ chainDelta A M M' d k) ≫
         chainStageAct A M M' (k + 1) := by
@@ -166,14 +165,17 @@ theorem chainDelta_actLeft (d : ModDualityDatum A M M') (k : ℕ) :
     (chainMul A M M' k 0) (chainMul_actLeft_stage A M M' k 0)
   exact h
 
-omit [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- **The chain multiplication is right linear over the base**:
 by commutativity, the second-slot action braids to the front and
 the left linearity applies. -/
-theorem chainMul_actRight_stage (m n : ℕ) :
+theorem chainMul_actRight_stage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (m n : ℕ) :
     (chainStage A M M' m ◁ chainStageAct A M M' n) ≫
         chainMul A M M' m n =
       (α_ (chainStage A M M' m) A (chainStage A M M' n)).inv ≫
@@ -210,40 +212,26 @@ theorem chainMul_actRight_stage (m n : ℕ) :
     MonoidalCategory.whiskerLeft_comp, Category.assoc,
     reassoc_of% hcoh]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [MonObj A] [IsCommMonObj A]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- Point insertion on the right is natural. -/
-theorem insert_point_natural {X Y S : D} (f : X ⟶ Y)
+theorem insert_point_natural [Category.{v} D] [MonoidalCategory D]
+    {X Y S : D} (f : X ⟶ Y)
     (s : 𝟙_ D ⟶ S) :
     f ≫ (ρ_ Y).inv ≫ (Y ◁ s) =
       (ρ_ X).inv ≫ (X ◁ s) ≫ (f ▷ S) := by
   rw [← Category.assoc, rightUnitor_inv_naturality,
     Category.assoc, ← whisker_exchange]
 
-omit [HasColimitsOfShape SmallNat.{v} D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-  in
 /-- **The stage multiplication law of the structure morphism**:
 multiplying two acted seeds is acting by the product on the
 doubled seed.  The stage-level core of the algebra-map property. -/
-theorem chainBofA_mul_stage (d : ModDualityDatum A M M') :
+theorem chainBofA_mul_stage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (((ρ_ A).inv ≫ (A ◁ chainSeed A M M' d) ≫
         chainStageAct A M M' 0) ⊗ₘ
       ((ρ_ A).inv ≫ (A ◁ chainSeed A M M' d) ≫

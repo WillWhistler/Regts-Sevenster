@@ -27,16 +27,17 @@ namespace RS
 
 open Classical EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 /-- A used label whose trail is a single edge: its entry edge is
 another used label's flag. -/
-def IsThroughLabel (F : EdgeSubset W) (i : α) : Prop :=
+def IsThroughLabel {W : Fragment α}
+    (F : EdgeSubset W) (i : α) : Prop :=
   W.pairing (W.boundaryFlag i) ∈ F.boundaryFlags
 
-omit [LinearOrder α] in
 /-- Off the single-edge trails the entry edge is internal. -/
-theorem pairing_internal_of_not_through (F : EdgeSubset W) {i : α}
+theorem pairing_internal_of_not_through {W : Fragment α}
+    (F : EdgeSubset W) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (hnt : ¬ IsThroughLabel F i) :
     W.pairing (W.boundaryFlag i) ∈ F.internalFlags :=
@@ -44,7 +45,8 @@ theorem pairing_internal_of_not_through (F : EdgeSubset W) {i : α}
     (F.pairing_mem _ (mem_flags_of_boundaryFlags F hb))).resolve_right hnt
 
 /-- The single-edge trails come in pairs. -/
-theorem isThroughLabel_chordInv (F : EdgeSubset W)
+theorem isThroughLabel_chordInv [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (ht : IsThroughLabel F i) :
@@ -55,7 +57,8 @@ theorem isThroughLabel_chordInv (F : EdgeSubset W)
   exact hb
 
 /-- Comparing two distinct labels the other way negates. -/
-theorem decide_lt_flip {i j : α} (h : i ≠ j) :
+theorem decide_lt_flip [LinearOrder α]
+    {i j : α} (h : i ≠ j) :
     decide (j < i) = !decide (i < j) := by
   rcases lt_trichotomy i j with h1 | h1 | h1
   · rw [decide_eq_false (asymm h1), decide_eq_true h1]
@@ -69,7 +72,8 @@ labels** — RS21's `M(ω,κ)`.  Partners are the two ends of a trail;
 the direction is the trail's own, read from the orientation where
 the trail has an internal step and from the label order where it is
 a single edge. -/
-noncomputable def cutMatching (F : EdgeSubset W)
+noncomputable def cutMatching [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation) :
     DirMatching {i : α // W.boundaryFlag i ∈ F.boundaryFlags} where
   edge i := ⟨chordInv F κ i.val, chordInv_mem F κ i.prop⟩
@@ -121,7 +125,8 @@ The two operations below are that change of basis and its weight.
 section ChordRelabel
 
 /-- **The chord involution shifts through the relabel.** -/
-theorem chordInv_relabelUp {β : Type} [LinearOrder β] (e : α ≃o β)
+theorem chordInv_relabelUp [LinearOrder α] {W : Fragment α}
+    {β : Type} [LinearOrder β] (e : α ≃o β)
     (F : EdgeSubset W) (κ : F.RelTransitionSystem) (b : β) :
     chordInv (F.relabelUp e.toEquiv) (relabelTransUp e.toEquiv F κ) b
       = e (chordInv F κ (e.symm b)) := by
@@ -153,7 +158,8 @@ theorem chordInv_relabelUp {β : Type} [LinearOrder β] (e : α ≃o β)
     exact (e.apply_symm_apply b).symm
 
 /-- **The used labels shift through the relabel.** -/
-noncomputable def usedLabRelabelEquiv {β : Type} [LinearOrder β]
+noncomputable def usedLabRelabelEquiv [LinearOrder α] {W : Fragment α}
+    {β : Type} [LinearOrder β]
     (e : α ≃o β) (F : EdgeSubset W) :
     {b : β // (W.relabel e.toEquiv).boundaryFlag b
         ∈ (F.relabelUp e.toEquiv).boundaryFlags}
@@ -169,7 +175,8 @@ noncomputable def usedLabRelabelEquiv {β : Type} [LinearOrder β]
 
 /-- **The chord matching shifts through the relabel**, on
 pairings. -/
-theorem cutMatching_relabelUp_edge {β : Type} [LinearOrder β]
+theorem cutMatching_relabelUp_edge [LinearOrder α] {W : Fragment α}
+    {β : Type} [LinearOrder β]
     (e : α ≃o β) (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     (o' : (relabelTransUp e.toEquiv F κ).Orientation)
     (a : {a : α // W.boundaryFlag a ∈ F.boundaryFlags}) :
@@ -202,12 +209,14 @@ both are stated against a bare direction function.
 -/
 
 /-- The used labels of a subset. -/
-abbrev UsedLab (F : EdgeSubset W) : Type :=
+abbrev UsedLab {W : Fragment α}
+    (F : EdgeSubset W) : Type :=
   {i : α // W.boundaryFlag i ∈ F.boundaryFlags}
 
 open Classical in
 /-- Undo the dual basis against a given set of arc directions. -/
-noncomputable def untwistD {k ℓ : ℕ} (F : EdgeSubset W)
+noncomputable def untwistD {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (tl : UsedLab F → Bool) (x : GenBoundaryState k ℓ α) :
     GenBoundaryState k ℓ α :=
   fun i =>
@@ -222,7 +231,8 @@ noncomputable def untwistD {k ℓ : ℕ} (F : EdgeSubset W)
 open Classical in
 /-- The dual basis's weight against a given set of arc
 directions. -/
-noncomputable def dualWeightD [Fintype α] {k ℓ : ℕ}
+noncomputable def dualWeightD {W : Fragment α}
+    [Fintype α] {k ℓ : ℕ}
     (F : EdgeSubset W) (tl : UsedLab F → Bool)
     (x : GenBoundaryState k ℓ α) : ℂ :=
   ∏ i : α,
@@ -237,7 +247,8 @@ noncomputable def dualWeightD [Fintype α] {k ℓ : ℕ}
 open Classical in
 /-- Undo the dual basis: partner the colour at each leg the trail
 leaves. -/
-noncomputable def untwist {k ℓ : ℕ} (F : EdgeSubset W)
+noncomputable def untwist [LinearOrder α] {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (x : GenBoundaryState k ℓ α) : GenBoundaryState k ℓ α :=
   fun i =>
@@ -252,7 +263,8 @@ noncomputable def untwist {k ℓ : ℕ} (F : EdgeSubset W)
 open Classical in
 /-- **The dual basis's weight**: the partner signs at the legs the
 trail leaves. -/
-noncomputable def dualWeight [Fintype α] {k ℓ : ℕ}
+noncomputable def dualWeight [LinearOrder α] {W : Fragment α}
+    [Fintype α] {k ℓ : ℕ}
     (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α) : ℂ :=
   ∏ i : α,
@@ -272,10 +284,10 @@ boundary flags.  So a used label whose entry flag lies in the flip
 set is one of those two.
 -/
 
-omit [LinearOrder α] in
 /-- **Only the chain's own two labels have their entry flag in the
 flip set.** -/
-theorem label_of_pairing_mem_flipSet {F : EdgeSubset W}
+theorem label_of_pairing_mem_flipSet {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
@@ -296,26 +308,26 @@ theorem label_of_pairing_mem_flipSet {F : EdgeSubset W}
       exact Finset.disjoint_left.mp
         F.internalFlags_disjoint_boundaryFlags (h.int_of_mem _ hx) hb
 
-omit [LinearOrder α] in
 /-- The chain's near port is the entry flag of its first label. -/
-theorem pairing_boundaryFlag_eq_port {F : EdgeSubset W}
+theorem pairing_boundaryFlag_eq_port {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
     W.pairing (W.boundaryFlag i₁) = p₁ := by
   rw [← h.hσ₁, W.pairing_invol]
 
-omit [LinearOrder α] in
 /-- And of its second. -/
-theorem pairing_boundaryFlag_eq_port' {F : EdgeSubset W}
+theorem pairing_boundaryFlag_eq_port' {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
     W.pairing (W.boundaryFlag i₂) = p₂ := by
   rw [← h.hσ₂, W.pairing_invol]
 
-omit [LinearOrder α] in
 /-- A chain's own labels are not through-labels: their entry flags
 are internal. -/
-theorem not_isThroughLabel_port {F : EdgeSubset W}
+theorem not_isThroughLabel_port {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
     ¬ IsThroughLabel F i₁ := by
@@ -325,9 +337,9 @@ theorem not_isThroughLabel_port {F : EdgeSubset W}
   exact Finset.disjoint_left.mp F.internalFlags_disjoint_boundaryFlags
     (h.int_of_mem _ h.hp₁S) hx
 
-omit [LinearOrder α] in
 /-- And the second. -/
-theorem not_isThroughLabel_port' {F : EdgeSubset W}
+theorem not_isThroughLabel_port' {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ p₂ : W.Flag}
     {i₁ i₂ : α} (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) :
     ¬ IsThroughLabel F i₂ := by
@@ -347,7 +359,8 @@ those two labels are the ends of one arc.
 
 open Classical in
 /-- **A chain flip reverses exactly the chain's own arc.** -/
-theorem cutMatching_portFlip {F : EdgeSubset W}
+theorem cutMatching_portFlip [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W}
     {κ : F.RelTransitionSystem} (o : κ.Orientation)
     {S : Finset W.Flag} {p₁ p₂ : W.Flag} {i₁ i₂ : α}
     (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
@@ -404,7 +417,8 @@ open Classical in
 flip.**  This is the half of RS21's step 1 the chain orientation
 provides: the trail through the interior can be inverted, and doing
 so reverses exactly that label's arc. -/
-theorem exists_chainFlip {F : EdgeSubset W} (κ : F.RelTransitionSystem)
+theorem exists_chainFlip [LinearOrder α] {W : Fragment α}
+    {F : EdgeSubset W} (κ : F.RelTransitionSystem)
     (o : κ.Orientation) {i₁ : α}
     (hb₁ : W.boundaryFlag i₁ ∈ F.boundaryFlags)
     (hnt : ¬ IsThroughLabel F i₁) :
@@ -441,7 +455,8 @@ it does nothing.
 
 open Classical in
 /-- The change of basis at a used label. -/
-theorem untwist_apply_of_mem {k ℓ : ℕ} (F : EdgeSubset W)
+theorem untwist_apply_of_mem [LinearOrder α] {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (x : GenBoundaryState k ℓ α) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags) :
@@ -455,7 +470,8 @@ theorem untwist_apply_of_mem {k ℓ : ℕ} (F : EdgeSubset W)
 
 open Classical in
 /-- The change of basis is trivial off the used labels. -/
-theorem untwist_apply_of_not_mem {k ℓ : ℕ} (F : EdgeSubset W)
+theorem untwist_apply_of_not_mem [LinearOrder α] {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (x : GenBoundaryState k ℓ α) {i : α}
     (hb : W.boundaryFlag i ∉ F.boundaryFlags) :
@@ -484,16 +500,15 @@ theorem dualFactor_sq {k ℓ : ℕ} (v : Fin k ⊕ Fin (2 * ℓ)) :
 
 section ChainFlip
 
-variable {F : EdgeSubset W} {κ : F.RelTransitionSystem}
-  (o : κ.Orientation) {S : Finset W.Flag} {p₁ p₂ : W.Flag}
-  {i₁ i₂ : α} (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
-  (hb₁ : W.boundaryFlag i₁ ∈ F.boundaryFlags)
-  (hchord : chordInv F κ i₁ = i₂)
-
-include hb₁ hchord in
 open Classical in
 /-- The direction flips at the chain's two labels. -/
-theorem tail_portFlip_of_mem {i : α}
+theorem tail_portFlip_of_mem [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} (o : κ.Orientation) {S : Finset W.Flag}
+    {p₁ : W.Flag} {p₂ : W.Flag} {i₁ : α} {i₂ : α}
+    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+    (hb₁ : W.boundaryFlag i₁ ∈ F.boundaryFlags)
+    (hchord : chordInv F κ i₁ = i₂)
+    {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (hj : i = i₁ ∨ i = i₂) :
     (cutMatching F κ (o.portFlip h)).tail ⟨i, hb⟩
@@ -506,10 +521,16 @@ theorem tail_portFlip_of_mem {i : α}
   · exact Or.inl (Subtype.ext hx)
   · exact Or.inr (Subtype.ext (hx.trans hchord.symm))
 
-include hb₁ hchord in
 open Classical in
 /-- And nowhere else. -/
-theorem tail_portFlip_of_not_mem {i : α}
+theorem tail_portFlip_of_not_mem
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} (o : κ.Orientation) {S : Finset W.Flag}
+    {p₁ : W.Flag} {p₂ : W.Flag} {i₁ : α} {i₂ : α}
+    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+    (hb₁ : W.boundaryFlag i₁ ∈ F.boundaryFlags)
+    (hchord : chordInv F κ i₁ = i₂)
+    {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (hj : ¬ (i = i₁ ∨ i = i₂)) :
     (cutMatching F κ (o.portFlip h)).tail ⟨i, hb⟩
@@ -523,10 +544,15 @@ theorem tail_portFlip_of_not_mem {i : α}
   · refine hj (Or.inr ?_)
     exact (congrArg Subtype.val hx).trans hchord
 
-include hb₁ hchord in
 open Classical in
 /-- **A chain flip partners the two chain ends.** -/
-theorem untwist_portFlip {k ℓ : ℕ} (x : GenBoundaryState k ℓ α) :
+theorem untwist_portFlip [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} (o : κ.Orientation) {S : Finset W.Flag}
+    {p₁ : W.Flag} {p₂ : W.Flag} {i₁ : α} {i₂ : α}
+    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+    (hb₁ : W.boundaryFlag i₁ ∈ F.boundaryFlags)
+    (hchord : chordInv F κ i₁ = i₂)
+    {k ℓ : ℕ} (x : GenBoundaryState k ℓ α) :
     untwist F κ (o.portFlip h) x
       = stateOddFlip (untwist F κ o x) i₁ i₂ := by
   have hb₂ : W.boundaryFlag i₂ ∈ F.boundaryFlags := by
@@ -567,13 +593,19 @@ theorem untwist_portFlip {k ℓ : ℕ} (x : GenBoundaryState k ℓ α) :
       · rw [untwist_apply_of_not_mem F κ (o.portFlip h) x hb,
           untwist_apply_of_not_mem F κ o x hb]
 
-include hb₁ hchord in
 open Classical in
 /-- **The chain flip's weight**: the dual basis's weights before and
 after a chain flip multiply to the two chain ends' signs, since they
 differ exactly at those two labels and every factor squares to
 one. -/
-theorem dualWeight_portFlip_mul [Fintype α] {k ℓ : ℕ}
+theorem dualWeight_portFlip_mul
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} (o : κ.Orientation) {S : Finset W.Flag}
+    {p₁ : W.Flag} {p₂ : W.Flag} {i₁ : α} {i₂ : α}
+    (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
+    (hb₁ : W.boundaryFlag i₁ ∈ F.boundaryFlags)
+    (hchord : chordInv F κ i₁ = i₂)
+    [Fintype α] {k ℓ : ℕ}
     (x : GenBoundaryState k ℓ α) {c₁ c₂ : Fin (2 * ℓ)}
     (hc₁ : x i₁ = Sum.inr c₁) (hc₂ : x i₂ = Sum.inr c₂) :
     dualWeight F κ (o.portFlip h) x * dualWeight F κ o x
@@ -623,7 +655,8 @@ end ChainFlip
 
 open Classical in
 /-- The change of basis at an odd used label. -/
-theorem untwist_apply_odd {k ℓ : ℕ} (F : EdgeSubset W)
+theorem untwist_apply_odd [LinearOrder α] {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation)
     (x : GenBoundaryState k ℓ α) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags) {c : Fin (2 * ℓ)}
@@ -648,13 +681,12 @@ colours, the exchange costs a sign.
 
 section OrderFreeArc
 
-variable {α : Type} {W : Fragment α}
-
 open Classical in
 /-- **Reversing an arc exchanges the two legs' weights**, at a cost
 of one sign.  The hypothesis is the support condition: the two ends
 of an arc carry partner colours. -/
-theorem dualWeightD_reverseArc_mul [Fintype α] [DecidableEq α]
+theorem dualWeightD_reverseArc_mul {W : Fragment α}
+    [Fintype α] [DecidableEq α]
     {k ℓ : ℕ} (F : EdgeSubset W) (M : DirMatching (UsedLab F))
     (a : UsedLab F) (x : GenBoundaryState k ℓ α)
     {c : Fin (2 * ℓ)} (hta : M.tail a = true)
@@ -735,7 +767,8 @@ theorem dualWeightD_reverseArc_mul [Fintype α] [DecidableEq α]
 
 open Classical in
 /-- The change of basis at a used leg. -/
-theorem untwistD_apply_mem {k ℓ : ℕ} (F : EdgeSubset W)
+theorem untwistD_apply_mem {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (tl : UsedLab F → Bool) (x : GenBoundaryState k ℓ α) {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags) :
     untwistD F tl x i
@@ -750,14 +783,16 @@ theorem untwistD_apply_mem {k ℓ : ℕ} (F : EdgeSubset W)
 
 open Classical in
 /-- The change of basis away from the used legs. -/
-theorem untwistD_apply_not_mem {k ℓ : ℕ} (F : EdgeSubset W)
+theorem untwistD_apply_not_mem {W : Fragment α}
+    {k ℓ : ℕ} (F : EdgeSubset W)
     (tl : UsedLab F → Bool) (x : GenBoundaryState k ℓ α) {i : α}
     (hb : W.boundaryFlag i ∉ F.boundaryFlags) :
     untwistD F tl x i = x i := dif_neg hb
 
 open Classical in
 /-- **Reversing an arc partners the colour at its two legs.** -/
-theorem untwistD_reverseArc [DecidableEq α] {k ℓ : ℕ}
+theorem untwistD_reverseArc {W : Fragment α}
+    [DecidableEq α] {k ℓ : ℕ}
     (F : EdgeSubset W) (M : DirMatching (UsedLab F)) (a : UsedLab F)
     (x : GenBoundaryState k ℓ α) :
     untwistD F (M.reverseArc a).tail x
@@ -814,7 +849,8 @@ theorem untwistD_reverseArc [DecidableEq α] {k ℓ : ℕ}
 open Classical in
 /-- The dual basis's weight at given arc directions squares to
 one. -/
-theorem dualWeightD_mul_self [Fintype α] {k ℓ : ℕ}
+theorem dualWeightD_mul_self {W : Fragment α}
+    [Fintype α] {k ℓ : ℕ}
     (F : EdgeSubset W) (tl : UsedLab F → Bool)
     (x : GenBoundaryState k ℓ α) :
     dualWeightD F tl x * dualWeightD F tl x = 1 := by
@@ -834,7 +870,8 @@ theorem dualWeightD_mul_self [Fintype α] {k ℓ : ℕ}
 open Classical in
 /-- **The change of basis preserves which legs are odd**, so the
 subset-matching condition does not see the arc directions. -/
-theorem genBoundarySubsetMatches_untwistD {k ℓ : ℕ}
+theorem genBoundarySubsetMatches_untwistD {W : Fragment α}
+    {k ℓ : ℕ}
     (F : EdgeSubset W) (tl : UsedLab F → Bool)
     (x : GenBoundaryState k ℓ α) :
     genBoundarySubsetMatches W F.flags (untwistD F tl x)
@@ -863,7 +900,8 @@ end OrderFreeArc
 
 open Classical in
 /-- The dual basis's weight squares to one. -/
-theorem dualWeight_mul_self [Fintype α] {k ℓ : ℕ}
+theorem dualWeight_mul_self [LinearOrder α] {W : Fragment α}
+    [Fintype α] {k ℓ : ℕ}
     (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     (o : κ.Orientation) (x : GenBoundaryState k ℓ α) :
     dualWeight F κ o x * dualWeight F κ o x = 1 := by
@@ -887,9 +925,9 @@ there leaves every through-edge's two colours alone.
 -/
 
 open Classical in
-omit [LinearOrder α] in
 /-- A through-flag's own label is a through-label. -/
-theorem isThroughLabel_of_mem_throughFlags {F : EdgeSubset W}
+theorem isThroughLabel_of_mem_throughFlags {W : Fragment α}
+    {F : EdgeSubset W}
     {f : W.Flag} (hf : f ∈ F.throughFlags) {i : α}
     (hi : W.attach f = Sum.inr i) : IsThroughLabel F i := by
   obtain ⟨hmem, -, ⟨j, hj⟩⟩ := mem_throughFlags_iff.mp hf
@@ -899,9 +937,9 @@ theorem isThroughLabel_of_mem_throughFlags {F : EdgeSubset W}
   exact Finset.mem_filter.mpr ⟨F.pairing_mem f hmem, ⟨j, hj⟩⟩
 
 open Classical in
-omit [LinearOrder α] in
 /-- A used through-label's flag is a through-flag. -/
-theorem mem_throughFlags_of_isThroughLabel {F : EdgeSubset W} {i : α}
+theorem mem_throughFlags_of_isThroughLabel {W : Fragment α}
+    {F : EdgeSubset W} {i : α}
     (hb : W.boundaryFlag i ∈ F.boundaryFlags)
     (hit : IsThroughLabel F i) :
     W.boundaryFlag i ∈ F.throughFlags :=

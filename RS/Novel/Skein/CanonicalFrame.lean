@@ -26,8 +26,7 @@ open scoped Classical
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+variable {α : Type}
 
 /-! ## The chain-direction observable -/
 
@@ -35,19 +34,22 @@ variable {α : Type} [LinearOrder α] {W : Fragment α}
 the orientation value at the flag's entry edge (the internal partner
 of the boundary flag).  `false` means the entry edge is incoming —
 the chain leaves this end. -/
-def chainDir (o : κ.Orientation) (β : W.Flag) : Bool :=
+def chainDir {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) (β : W.Flag) : Bool :=
   o.isOut (W.pairing β)
 
-omit [LinearOrder α] in
 /-- A chain's direction is the orientation at its entry edge. -/
-theorem chainDir_eq (o : κ.Orientation) (β : W.Flag) :
+theorem chainDir_eq
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) (β : W.Flag) :
     chainDir o β = o.isOut (W.pairing β) := rfl
 
-omit [LinearOrder α] in
 /-- The entry edge of the far chain end is internal whenever the
 near one is: the chain has at least one step, and its last walk flag
 is internal. -/
-theorem pathMatch_pairing_internal {β : W.Flag}
+theorem pathMatch_pairing_internal
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {β : W.Flag}
     (hβ : β ∈ F.boundaryFlags)
     (hint : W.pairing β ∈ F.internalFlags) :
     W.pairing (κ.pathMatch β hβ) ∈ F.internalFlags := by
@@ -64,11 +66,12 @@ theorem pathMatch_pairing_internal {β : W.Flag}
   rw [hpm, W.pairing_invol]
   exact iterWalk_mem_internal κ k hk1 le_rfl hcont
 
-omit [LinearOrder α] in
 /-- **Chain-direction rigidity**: the chain is coherently directed,
 so the two ends' entry flags carry opposite orientation values — for
 *any* orientation of the system. -/
-theorem chainDir_pathMatch (o : κ.Orientation) {β : W.Flag}
+theorem chainDir_pathMatch
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) {β : W.Flag}
     (hβ : β ∈ F.boundaryFlags)
     (hint : W.pairing β ∈ F.internalFlags) :
     chainDir o (κ.pathMatch β hβ) = !chainDir o β := by
@@ -93,7 +96,10 @@ theorem chainDir_pathMatch (o : κ.Orientation) {β : W.Flag}
 orientation is path-canonical iff its chain direction vanishes at
 every participating boundary flag that is the low-labelled end of its
 chord. -/
-theorem pathCanonical_iff_chainDir (o : κ.Orientation) :
+theorem pathCanonical_iff_chainDir
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) :
     PathCanonical o ↔
       ∀ (β : W.Flag) (hβ : β ∈ F.boundaryFlags),
         W.pairing β ∈ F.internalFlags →
@@ -135,21 +141,23 @@ theorem pathCanonical_iff_chainDir (o : κ.Orientation) :
 
 section FlipDir
 
-variable {S : Finset W.Flag} {p₁ p₂ : W.Flag} {i₁ i₂ : α}
-
-omit [LinearOrder α] in
 /-- Flipping a ported set toggles the chain direction at ends whose
 entry edge lies in the set. -/
-theorem chainDir_portFlip_of_mem (o : κ.Orientation)
+theorem chainDir_portFlip_of_mem
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {S : Finset W.Flag} {p₁ : W.Flag} {p₂ : W.Flag} {i₁ : α} {i₂ : α}
+    (o : κ.Orientation)
     (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) {γ : W.Flag}
     (hγ : W.pairing γ ∈ S) :
     chainDir (o.portFlip h) γ = !chainDir o γ :=
   portFlip_isOut_of_mem o h hγ
 
-omit [LinearOrder α] in
 /-- Flipping a ported set preserves the chain direction at ends
 whose entry edge avoids the set. -/
-theorem chainDir_portFlip_of_notMem (o : κ.Orientation)
+theorem chainDir_portFlip_of_notMem
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {S : Finset W.Flag} {p₁ : W.Flag} {p₂ : W.Flag} {i₁ : α} {i₂ : α}
+    (o : κ.Orientation)
     (h : PortedFlipSet κ S p₁ p₂ i₁ i₂) {γ : W.Flag}
     (hγ : W.pairing γ ∉ S) :
     chainDir (o.portFlip h) γ = chainDir o γ :=
@@ -157,13 +165,14 @@ theorem chainDir_portFlip_of_notMem (o : κ.Orientation)
 
 end FlipDir
 
-omit [LinearOrder α] in
 /-- **The chain flip set of a participating boundary flag**: the
 boundary chain of `β` realizes a ported flip set whose ports are the
 entry edges of `β` and of its path match, labelled by the two chain
 ends, and whose flip set avoids the entry edge of every other
 boundary flag. -/
-theorem exists_chainFlipSet {β : W.Flag}
+theorem exists_chainFlipSet
+    {W : Fragment α} {F : EdgeSubset W} {κ : F.RelTransitionSystem}
+    {β : W.Flag}
     (hβ : β ∈ F.boundaryFlags)
     (hint : W.pairing β ∈ F.internalFlags) :
     ∃ S : Finset W.Flag,
@@ -231,9 +240,6 @@ theorem exists_chainFlipSet {β : W.Flag}
 
 section FlipLedger
 
-variable {S : Finset W.Flag} {p₁ p₂ : W.Flag} {i₁ i₂ : α}
-  {k ℓ : ℕ}
-
 /-- The two-sign cast squares to one. -/
 theorem signPairSq (ℓ : ℕ) (c₁ c₂ : Fin (2 * ℓ)) :
     ((oddPartnerSign ℓ c₁ * oddPartnerSign ℓ c₂ : ℤ) : ℂ) *
@@ -248,7 +254,11 @@ of the *flipped* orientation at the `∂`-relabelled state — the
 direction useful for re-canonicalization, obtained from
 `throughSummand_portFlip` by involution of the relabel and the
 sign. -/
-theorem throughSummand_portFlip_inv (hM : MixedFunctional k ℓ)
+theorem throughSummand_portFlip_inv
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {S : Finset W.Flag} {p₁ : W.Flag}
+    {p₂ : W.Flag} {i₁ : α} {i₂ : α} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (o : κ.Orientation) (h : PortedFlipSet κ S p₁ p₂ i₁ i₂)
@@ -296,15 +306,16 @@ end FlipLedger
 
 section ChainRecanon
 
-variable {k ℓ : ℕ}
-
 /-- **One-chain re-canonicalization**: for any orientation and any
 participating boundary flag `β` with internal entry partner, there
 is an orientation of the *same* system that toggles the chain
 direction at `β` and its path match, preserves the chain direction
 of every other boundary flag, and satisfies the inverted value
 ledger with the chain's two boundary labels explicit. -/
-theorem exists_chainRecanonicalize (hM : MixedFunctional k ℓ)
+theorem exists_chainRecanonicalize
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (o : κ.Orientation) {β : W.Flag}
@@ -346,7 +357,9 @@ canonical frame: participating boundary flags that are the
 low-labelled end of their chord and whose entry edge is outgoing.
 Each anti-canonical chain contributes exactly one element — its low
 end. -/
-noncomputable def antiLowSet (o : κ.Orientation) :
+noncomputable def antiLowSet [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) :
     Finset W.Flag :=
   F.boundaryFlags.filter (fun β =>
     ∃ hβ : β ∈ F.boundaryFlags,
@@ -358,7 +371,9 @@ noncomputable def antiLowSet (o : κ.Orientation) :
 /-- Membership in the anti-canonical set: the low end of a chain
 that runs the wrong way — exactly the chains re-canonicalization
 flips. -/
-theorem mem_antiLowSet {o : κ.Orientation} {β : W.Flag} :
+theorem mem_antiLowSet [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {o : κ.Orientation} {β : W.Flag} :
     β ∈ antiLowSet o ↔
       ∃ hβ : β ∈ F.boundaryFlags,
         W.pairing β ∈ F.internalFlags ∧
@@ -375,7 +390,10 @@ theorem mem_antiLowSet {o : κ.Orientation} {β : W.Flag} :
 
 /-- An orientation is path-canonical exactly when its anti-canonical
 low-end set is empty. -/
-theorem pathCanonical_iff_antiLowSet_empty (o : κ.Orientation) :
+theorem pathCanonical_iff_antiLowSet_empty
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    (o : κ.Orientation) :
     PathCanonical o ↔ antiLowSet o = ∅ := by
   rw [pathCanonical_iff_chainDir]
   constructor
@@ -393,7 +411,10 @@ theorem pathCanonical_iff_antiLowSet_empty (o : κ.Orientation) :
 
 /-- A low chain end is never the path match of a low chain end: the
 path match of a low end is the high end of the same chord. -/
-theorem low_ne_pathMatch_of_low {β γ : W.Flag}
+theorem low_ne_pathMatch_of_low
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {β γ : W.Flag}
     (hβ : β ∈ F.boundaryFlags) (hγ : γ ∈ F.boundaryFlags)
     (hlowβ : F.boundaryLabel hβ <
       F.boundaryLabel (κ.pathMatch_mem hβ))
@@ -418,7 +439,9 @@ chain**: an orientation that toggles the chain direction at an
 anti-canonical low end `β` (and possibly at `β`'s path match) and
 preserves every other chain direction has anti-canonical set
 `antiLowSet o` minus `β`. -/
-theorem antiLowSet_flip {o o₁ : κ.Orientation} {β : W.Flag}
+theorem antiLowSet_flip [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
+    {o o₁ : κ.Orientation} {β : W.Flag}
     (hβ : β ∈ F.boundaryFlags) (hβmem : β ∈ antiLowSet o)
     (hd₁ : chainDir o₁ β = !chainDir o β)
     (hpres : ∀ γ ∈ F.boundaryFlags, γ ≠ β →
@@ -448,8 +471,6 @@ theorem antiLowSet_flip {o o₁ : κ.Orientation} {β : W.Flag}
 
 section Recanonicalize
 
-variable {k ℓ : ℕ}
-
 /-- **Full re-canonicalization**: any orientation of a relative
 transition system is connected to a path-canonical orientation of
 the *same* system by a value ledger — the summand at the original
@@ -458,7 +479,10 @@ squaring to `1`) times the summand of the canonical orientation at
 an iterated `∂`-relabel of the state.  Induction on the number of
 anti-canonical chains, flipping one chain per step via
 `exists_chainRecanonicalize`. -/
-theorem exists_recanonicalize (hM : MixedFunctional k ℓ)
+theorem exists_recanonicalize
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem} {k : ℕ} {ℓ : ℕ}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (o : κ.Orientation) :

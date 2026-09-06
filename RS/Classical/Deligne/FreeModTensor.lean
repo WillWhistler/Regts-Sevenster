@@ -30,18 +30,21 @@ universe v u
 
 section Coherence
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R V W : D)
+variable {D : Type u}
 
 /-- The braided coherence morphism carrying a generator past a
 scalar: `(R ⊗ V) ⊗ R ⟶ (R ⊗ R) ⊗ V`. -/
-def freeModSlide : (R ⊗ V) ⊗ R ⟶ (R ⊗ R) ⊗ V :=
+def freeModSlide
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (V : D) : (R ⊗ V) ⊗ R ⟶ (R ⊗ R) ⊗ V :=
   (α_ R V R).hom ≫ R ◁ (β_ V R).hom ≫ (α_ R R V).inv
 
 /-- The middle-four interchange at a free pair, cut open along the
 last factor: it is the slide of the generator past the scalar,
 whiskered by that factor. -/
-theorem freeModSlide_whiskerRight :
+theorem freeModSlide_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (V : D) (W : D) :
     (α_ (R ⊗ V) R W).inv ≫ freeModSlide R V ▷ W =
       tensorμ R V R W ≫ (α_ (R ⊗ R) V W).inv := by
   simp only [freeModSlide, tensorμ, comp_whiskerRight,
@@ -52,7 +55,9 @@ theorem freeModSlide_whiskerRight :
 interchanging against a third scalar agrees with interchanging
 against the product of the last two scalars.  This is the coherence
 behind the balance relation of the relative tensor product. -/
-theorem freeModSlide_tensorμ :
+theorem freeModSlide_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (V : D) (W : D) :
     freeModSlide R V ▷ (R ⊗ W) ≫ tensorμ (R ⊗ R) V R W =
       (α_ (R ⊗ V) R (R ⊗ W)).hom ≫ (R ⊗ V) ◁ (α_ R R W).inv ≫
         tensorμ R V (R ⊗ R) W ≫ (α_ R R R).inv ▷ (V ⊗ W) := by
@@ -63,7 +68,9 @@ theorem freeModSlide_tensorμ :
 /-- **Equivariance of the shuffle**: acting on the leading scalar
 and then interchanging agrees with interchanging and then acting.
 This is the coherence behind the linearity of the comparison. -/
-theorem tensorμ_whiskerLeft_shuffle :
+theorem tensorμ_whiskerLeft_shuffle
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (V : D) (W : D) :
     (α_ R (R ⊗ V) (R ⊗ W)).inv ≫ (α_ R R V).inv ▷ (R ⊗ W) ≫
         tensorμ (R ⊗ R) V R W =
       R ◁ tensorμ R V R W ≫ (α_ R (R ⊗ R) (V ⊗ W)).inv ≫
@@ -73,7 +80,9 @@ theorem tensorμ_whiskerLeft_shuffle :
   monoidal
 
 /-- Interchanging against a unit scalar is a reassociation. -/
-theorem whiskerLeft_leftUnitor_inv_tensorμ :
+theorem whiskerLeft_leftUnitor_inv_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    (V : D) (W : D) :
     (R ⊗ V) ◁ (λ_ W).inv ≫ tensorμ R V (𝟙_ D) W ≫
         (ρ_ R).hom ▷ (V ⊗ W) = (α_ R V W).hom := by
   simp only [tensorμ, braiding_tensorUnit_right, Category.assoc]
@@ -85,32 +94,38 @@ end Coherence
 
 section Shuffle
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R] (V W : D)
+variable {D : Type u}
 
 /-- Multiplying the leading scalars moves through the
 interchange. -/
-theorem whiskerRight_mul_tensorμ :
+theorem whiskerRight_mul_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] (V : D) (W : D) :
     (μ[R] ▷ V) ▷ (R ⊗ W) ≫ tensorμ R V R W =
       tensorμ (R ⊗ R) V R W ≫ (μ[R] ▷ R) ▷ (V ⊗ W) := by
   simpa using tensorμ_natural_left (μ[R]) (𝟙 V) R W
 
 /-- Multiplying the trailing scalars moves through the
 interchange. -/
-theorem whiskerLeft_mul_tensorμ :
+theorem whiskerLeft_mul_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] (V : D) (W : D) :
     (R ⊗ V) ◁ (μ[R] ▷ W) ≫ tensorμ R V R W =
       tensorμ R V (R ⊗ R) W ≫ (R ◁ μ[R]) ▷ (V ⊗ W) := by
   simpa using tensorμ_natural_right R V (μ[R]) (𝟙 W)
 
 /-- The trailing unit moves through the interchange. -/
-theorem whiskerLeft_one_tensorμ :
+theorem whiskerLeft_one_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] (V : D) (W : D) :
     (R ⊗ V) ◁ (η[R] ▷ W) ≫ tensorμ R V R W =
       tensorμ R V (𝟙_ D) W ≫ (R ◁ η[R]) ▷ (V ⊗ W) := by
   simpa using tensorμ_natural_right R V (η[R]) (𝟙 W)
 
-omit [BraidedCategory D] in
 /-- Associativity of the algebra, whiskered by an object. -/
-theorem whiskerRight_mul_assoc (X : D) :
+theorem whiskerRight_mul_assoc
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (X : D) :
     (R ◁ μ[R]) ▷ X ≫ μ[R] ▷ X =
       (α_ R R R).inv ▷ X ≫ (μ[R] ▷ R) ▷ X ≫ μ[R] ▷ X := by
   rw [← comp_whiskerRight, MonObj.mul_assoc_flip, comp_whiskerRight,
@@ -118,7 +133,9 @@ theorem whiskerRight_mul_assoc (X : D) :
 
 /-- **The unit inverts the shuffle**: filling the second algebra
 slot with the unit turns the shuffle into a reassociation. -/
-theorem whiskerLeft_one_freeModShuffle :
+theorem whiskerLeft_one_freeModShuffle
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] (V : D) (W : D) :
     (R ⊗ V) ◁ ((λ_ W).inv ≫ η[R] ▷ W) ≫ freeModShuffle R V W =
       (α_ R V W).hom := by
   rw [freeModShuffle, MonoidalCategory.whiskerLeft_comp,
@@ -132,14 +149,14 @@ end Shuffle
 
 section Balance
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R] [IsCommMonObj R]
-variable (V W : D)
+variable {D : Type u}
 
 /-- **The braided right action on a free module is the slide
 followed by multiplication**: the generator is carried out of the
 way and the two algebra factors multiply. -/
-theorem braiding_free_mul :
+theorem braiding_free_mul
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R] (V : D) :
     (β_ (R ⊗ V) R).hom ≫ (α_ R R V).inv ≫ μ[R] ▷ V =
       freeModSlide R V ≫ μ[R] ▷ V := by
   rw [BraidedCategory.braiding_tensor_left_hom, freeModSlide]
@@ -148,7 +165,9 @@ theorem braiding_free_mul :
 
 /-- **The shuffle is balanced**, in raw form: the two legs of the
 relative tensor product of the free modules agree after it. -/
-theorem freeModShuffle_condition_raw :
+theorem freeModShuffle_condition_raw
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     (((β_ (R ⊗ V) R).hom ≫ (α_ R R V).inv ≫ μ[R] ▷ V) ▷
         (R ⊗ W)) ≫ freeModShuffle R V W =
       ((α_ (R ⊗ V) R (R ⊗ W)).hom ≫
@@ -161,10 +180,11 @@ theorem freeModShuffle_condition_raw :
     reassoc_of% whiskerLeft_mul_tensorμ, whiskerRight_mul_assoc,
     reassoc_of% freeModSlide_tensorμ]
 
-omit [IsCommMonObj R] in
 /-- **The shuffle is equivariant**, in raw form: acting on the
 leading scalar and shuffling agrees with shuffling and acting. -/
-theorem freeModShuffle_act_raw :
+theorem freeModShuffle_act_raw
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] (V : D) (W : D) :
     (α_ R (R ⊗ V) (R ⊗ W)).inv ≫
         ((α_ R R V).inv ≫ μ[R] ▷ V) ▷ (R ⊗ W) ≫
           freeModShuffle R V W =
@@ -178,7 +198,9 @@ theorem freeModShuffle_act_raw :
     whiskerRight_mul_assoc, reassoc_of% tensorμ_whiskerLeft_shuffle]
 
 /-- The shuffle absorbs the reassociation of the first leg. -/
-theorem freeModShuffle_associator_inv :
+theorem freeModShuffle_associator_inv
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     (α_ (R ⊗ V) R W).inv ≫
         ((β_ (R ⊗ V) R).hom ≫ (α_ R R V).inv ≫ μ[R] ▷ V) ▷ W =
       freeModShuffle R V W ≫ (α_ R V W).inv := by
@@ -190,7 +212,9 @@ theorem freeModShuffle_associator_inv :
 /-- **Inserting the unit is a section of the first leg**: the
 shuffle followed by the insertion is the insertion followed by the
 first leg. -/
-theorem freeModShuffle_unit_legM :
+theorem freeModShuffle_unit_legM
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     freeModShuffle R V W ≫ (α_ R V W).inv ≫
         (R ⊗ V) ◁ ((λ_ W).inv ≫ η[R] ▷ W) =
       ((α_ (R ⊗ V) R W).inv ≫
@@ -202,9 +226,9 @@ theorem freeModShuffle_unit_legM :
       μ[R] ▷ V) ((λ_ W).inv ≫ η[R] ▷ W),
     reassoc_of% freeModShuffle_associator_inv]
 
-omit [BraidedCategory D] [IsCommMonObj R] in
 /-- **Inserting the unit is a retraction of the second leg**. -/
-theorem freeModUnit_legN :
+theorem freeModUnit_legN
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R] (V : D) (W : D) :
     ((α_ (R ⊗ V) R W).inv ≫
         ((R ⊗ V) ⊗ R) ◁ ((λ_ W).inv ≫ η[R] ▷ W)) ≫
       ((α_ (R ⊗ V) R (R ⊗ W)).hom ≫
@@ -223,31 +247,26 @@ end Balance
 
 section Iso
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (R : D) [MonObj R] [IsCommMonObj R] (V W : D)
+variable {D : Type u}
 
-omit [HasCoequalizers D]
-  [∀ X : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)] in
 /-- **The shuffle is balanced**: it coequalizes the two legs of the
 relative tensor product of the two free modules. -/
-theorem freeModShuffle_condition :
+theorem freeModShuffle_condition
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     modTensorLegM R (freeMod R V) (freeMod R W) ≫
         freeModShuffle R V W =
       modTensorLegN R (freeMod R V) (freeMod R W) ≫
         freeModShuffle R V W :=
   freeModShuffle_condition_raw R V W
 
-omit [∀ X : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)] in
 /-- **The relative tensor of two free modules is free**, at the
 level of underlying objects: the shuffle descends to an
 isomorphism, inverted by filling the second algebra slot with the
 unit. -/
-noncomputable def freeModTensorCarrier :
+noncomputable def freeModTensorCarrier
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     modTensor R (freeMod R V) (freeMod R W) ≅ R ⊗ (V ⊗ W) where
   hom := modTensorDesc R (freeMod R V) (freeMod R W)
     (freeModShuffle R V W) (freeModShuffle_condition R V W)
@@ -280,7 +299,11 @@ noncomputable def freeModTensorCarrier :
       Iso.inv_hom_id]
 
 /-- The descended shuffle is `R`-linear. -/
-theorem freeModTensorCarrier_linear :
+theorem freeModTensorCarrier_linear
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     modTensorAct R (freeMod R V) (freeMod R W) ≫
         (freeModTensorCarrier R V W).hom =
       R ◁ (freeModTensorCarrier R V W).hom ≫
@@ -294,7 +317,11 @@ theorem freeModTensorCarrier_linear :
 
 /-- **The relative tensor of two free modules is the free module on
 the tensor product.** -/
-noncomputable def freeModTensorIso :
+noncomputable def freeModTensorIso
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     modTensorMod R (freeMod R V) (freeMod R W) ≅
       freeMod R (V ⊗ W) where
   hom := Mod.Hom.mk' (freeModTensorCarrier R V W).hom (by
@@ -318,7 +345,11 @@ noncomputable def freeModTensorIso :
     exact (freeModTensorCarrier R V W).inv_hom_id
 
 /-- **The isomorphism computes the projection as the shuffle.** -/
-theorem modTensorπ_freeModTensorIso :
+theorem modTensorπ_freeModTensorIso
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D) :
     modTensorπ R (freeMod R V) (freeMod R W) ≫
         (freeModTensorIso R V W).hom.hom = freeModShuffle R V W :=
   modTensorπ_desc R (freeMod R V) (freeMod R W)
@@ -328,7 +359,12 @@ theorem modTensorπ_freeModTensorIso :
 pairing `RS.gpair` of two morphisms into free modules is, after the
 identification with the free module on the tensor product, the
 tensor of the two morphisms followed by the shuffle. -/
-theorem freeModTensorIso_gpair {X Y : D} (m : X ⟶ R ⊗ V)
+theorem freeModTensorIso_gpair
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R] (V : D) (W : D)
+    {X Y : D} (m : X ⟶ R ⊗ V)
     (n : Y ⟶ R ⊗ W) :
     gpair (M := freeMod R V) (N := freeMod R W) m n ≫
         (freeModTensorIso R V W).hom.hom =

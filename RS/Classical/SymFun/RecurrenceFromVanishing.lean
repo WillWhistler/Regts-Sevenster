@@ -5,7 +5,7 @@ import RS.Classical.SymFun.PowerSums
 
 Given a power-sum sequence `t` whose determinant Schur specialisation
 vanishes on sufficiently wide single-row extensions, the
-complete-homogeneous sequence `newtonH t` satisfies a nontrivial
+complete-homogeneous sequence `newtonHZ t` satisfies a nontrivial
 linear recurrence.  This is the algebraic core of the argument that
 hook confinement forces a nilpotent trace.
 
@@ -13,11 +13,12 @@ The proof proceeds in three stages:
 
 1. **Determinant vanishing** — the vanishing hypothesis `hvan` yields
    `det = 0` for every matrix of the form
-   `(fun i j : Fin (a+1) => newtonH t (ρ i + 1 + j))` whenever the
-   row-shifts `ρ` take values `≥ b − a`.
+   `(fun i j : Fin (a+1) => newtonHZ t (ρ i + 1 + j))` whenever the
+   row-shifts `ρ` take integer values `≥ b − a`. Negative degrees
+   evaluate to zero.
 
 2. **Finite rank** — the span of the vectors
-   `v ρ := (fun k => newtonH t (ρ + 1 + k))` for `ρ ≥ b − a` has
+   `v ρ := (fun k => newtonHZ t (ρ + 1 + k))` for `ρ ≥ b − a` has
    `finrank ≤ a` (a proper subspace of `Fin (a+1) → ℂ`).
 
 3. **Annihilator extraction** — a nonzero linear functional vanishing
@@ -33,75 +34,93 @@ open Finset Matrix Submodule Module
 
 /-- For all `d`, adding `d` to the index of a `StrictAnti` function
 on `Fin n` drops the value by at least `d`. -/
-private lemma strictAnti_drop {n : ℕ} {ρ : Fin n → ℕ}
+private lemma strictAnti_drop {n : ℕ} {ρ : Fin n → ℤ}
     (hρ : StrictAnti ρ) :
     ∀ d m (hm : m < n) (hmd : m + d < n),
-    ρ ⟨m + d, hmd⟩ + d ≤ ρ ⟨m, hm⟩ := by
+    ρ ⟨m + d, hmd⟩ + (d : ℤ) ≤ ρ ⟨m, hm⟩ := by
   intro d; induction d with
   | zero => intros; simp
   | succ d ih =>
     intro m hm hmd
     have hmd' : m + d < n := by omega
     have h_ih := ih m hm hmd'
-    have h_step : ρ ⟨m + d + 1, hmd⟩ + 1 ≤ ρ ⟨m + d, hmd'⟩ :=
-      Nat.succ_le_of_lt (hρ (Fin.mk_lt_mk.mpr (by omega)))
-    show ρ ⟨m + d + 1, hmd⟩ + (d + 1) ≤ ρ ⟨m, hm⟩
+    have h_step := hρ
+      (show (⟨m + d, hmd'⟩ : Fin n) < ⟨m + d + 1, hmd⟩ by
+        exact Fin.mk_lt_mk.mpr (by omega))
+    show ρ ⟨m + d + 1, hmd⟩ + ((d + 1 : ℕ) : ℤ) ≤ ρ ⟨m, hm⟩
     omega
 
-/-- For a `StrictAnti` function `ρ` on `Fin n` valued in `ℕ`, the sum
+/-- For a `StrictAnti` function `ρ` on `Fin n` valued in `ℤ`, the sum
 `ρ j + j` is antitone: the strict decrease of `ρ` dominates the
 increase of the index. -/
-private lemma antitone_strictAnti_add_val {n : ℕ} {ρ : Fin n → ℕ}
-    (hρ : StrictAnti ρ) : Antitone (fun j : Fin n => ρ j + (j : ℕ)) := by
+private lemma antitone_strictAnti_add_val {n : ℕ} {ρ : Fin n → ℤ}
+    (hρ : StrictAnti ρ) : Antitone (fun j : Fin n => ρ j + (j : ℤ)) := by
   intro i j hij
-  show ρ j + j.val ≤ ρ i + i.val
+  show ρ j + (j.val : ℤ) ≤ ρ i + (i.val : ℤ)
   have him : i.val ≤ j.val := hij
   have hmd_lt : i.val + (j.val - i.val) < n := by omega
   have key := strictAnti_drop hρ (j.val - i.val) i.val i.isLt hmd_lt
   have h_fin_eq : (⟨i.val + (j.val - i.val), hmd_lt⟩ : Fin n) = j := by
     ext; show i.val + (j.val - i.val) = j.val; omega
-  suffices h : ρ j + (j.val - i.val) ≤ ρ i by omega
-  calc ρ j + (j.val - i.val)
-      = ρ ⟨i.val + (j.val - i.val), hmd_lt⟩ + (j.val - i.val) := by
+  suffices h : ρ j + ((j.val - i.val : ℕ) : ℤ) ≤ ρ i by omega
+  calc ρ j + ((j.val - i.val : ℕ) : ℤ)
+      = ρ ⟨i.val + (j.val - i.val), hmd_lt⟩ +
+          ((j.val - i.val : ℕ) : ℤ) := by
           rw [congr_arg ρ h_fin_eq]
     _ ≤ ρ ⟨i.val, i.isLt⟩ := key
     _ = ρ i := rfl
 
-/-- The determinant `det (fun i j => newtonH t (ρ i + 1 + j))` vanishes
-whenever `ρ : Fin (a+1) → ℕ` is `StrictAnti` with
+/-- The determinant `det (fun i j => newtonHZ t (ρ i + 1 + j))` vanishes
+whenever `ρ : Fin (a+1) → ℤ` is `StrictAnti` with
 `ρ ⟨a, _⟩ ≥ b − a` and the Schur-determinant vanishing hypothesis
 holds. -/
 private lemma det_vanishing_of_strictAnti {t : ℕ → ℂ} {a b : ℕ}
-    (hab : a ≤ b)
     (hvan : ∀ w : List ℕ, w.SortedGE → (∀ x ∈ w, 0 < x) →
       w.length = a + 1 → b + 1 ≤ w.getD a 0 → schurDet t w = 0)
-    {ρ : Fin (a + 1) → ℕ} (hρ : StrictAnti ρ)
-    (hρ_lb : b - a ≤ ρ ⟨a, Nat.lt_succ_of_le le_rfl⟩) :
+    {ρ : Fin (a + 1) → ℤ} (hρ : StrictAnti ρ)
+    (hρ_lb : (b : ℤ) - a ≤ ρ (Fin.last a)) :
     det (Matrix.of fun i j : Fin (a + 1) =>
-      newtonH t (ρ i + 1 + (j : ℕ))) = 0 := by
+      newtonHZ t (ρ i + 1 + (j : ℤ))) = 0 := by
   -- ═══════ Construct the list w ═══════
-  set f : Fin (a + 1) → ℕ := fun j => ρ j + (j : ℕ) + 1 with hf_def
+  set f : Fin (a + 1) → ℕ := fun j => (ρ j + (j : ℤ) + 1).toNat with hf_def
   set w := List.ofFn f with hw_def
   have hw_len : w.length = a + 1 := List.length_ofFn
+  have hrow (i : Fin (a + 1)) :
+      (b : ℤ) + 1 ≤ ρ i + (i : ℤ) + 1 := by
+    have hdrop := antitone_strictAnti_add_val hρ (Fin.le_last i)
+    change ρ (Fin.last a) + (a : ℤ) ≤ ρ i + (i : ℤ) at hdrop
+    omega
+  have hf_cast (i : Fin (a + 1)) :
+      (f i : ℤ) = ρ i + (i : ℤ) + 1 := by
+    exact Int.toNat_of_nonneg (by have := hrow i; omega)
   -- ═══════ Verify the hypotheses of hvan ═══════
   have hw_sorted : w.SortedGE := by
     rw [hw_def, List.sortedGE_ofFn_iff]
-    intro i j hij; show ρ j + (j : ℕ) + 1 ≤ ρ i + (i : ℕ) + 1
-    exact Nat.succ_le_succ (antitone_strictAnti_add_val hρ hij)
+    intro i j hij
+    apply Int.toNat_le_toNat
+    have hdrop := antitone_strictAnti_add_val hρ hij
+    change ρ j + (j : ℤ) ≤ ρ i + (i : ℤ) at hdrop
+    omega
   have hw_pos : ∀ x ∈ w, 0 < x := by
-    intro x hx; rw [hw_def, List.mem_ofFn] at hx
-    obtain ⟨i, rfl⟩ := hx; simp only [hf_def]; omega
+    intro x hx
+    rw [hw_def, List.mem_ofFn] at hx
+    obtain ⟨i, rfl⟩ := hx
+    have := hrow i
+    have := hf_cast i
+    omega
   have hw_last : b + 1 ≤ w.getD a 0 := by
     show b + 1 ≤ (List.ofFn f).getD a 0
     rw [List.getD_eq_getElem _ _ (by rw [List.length_ofFn]; omega),
-        List.getElem_ofFn]
-    simp only [hf_def]; omega
+      List.getElem_ofFn]
+    have := hrow (Fin.last a)
+    have := hf_cast (Fin.last a)
+    simpa only [Fin.last] using (show b + 1 ≤ f (Fin.last a) by omega)
   -- ═══════ Apply the vanishing hypothesis ═══════
   have hschur := hvan w hw_sorted hw_pos hw_len hw_last
   -- ═══════ Relate schurDet to the target determinant ═══════
   rw [schurDet] at hschur
   set target := Matrix.of fun i j : Fin (a + 1) =>
-    newtonH t (ρ i + 1 + (j : ℕ))
+    newtonHZ t (ρ i + 1 + (j : ℤ))
   set e := finCongr hw_len
   suffices h_eq : (Matrix.of fun i j : Fin w.length =>
       newtonHZ t ((w.get i : ℤ) + (j : ℤ) - (i : ℤ))) =
@@ -110,41 +129,43 @@ private lemma det_vanishing_of_strictAnti {t : ℕ → ℂ} {a b : ℕ}
   ext ⟨i, hi⟩ ⟨j, hj⟩
   simp only [Matrix.of_apply, Matrix.submatrix_apply, target, e,
     finCongr_apply, Fin.cast_mk]
-  have hw_get : (w.get ⟨i, hi⟩ : ℕ) = ρ ⟨i, by omega⟩ + i + 1 :=
+  have hw_get : (w.get ⟨i, hi⟩ : ℕ) = f ⟨i, by omega⟩ :=
     List.getElem_ofFn hi
   have h_cast : (↑(w.get ⟨i, hi⟩) + (j : ℤ) - (i : ℤ)) =
-      ((ρ ⟨i, by omega⟩ + 1 + j : ℕ) : ℤ) := by
-    rw [hw_get]; push_cast; omega
-  rw [h_cast, newtonHZ_natCast]
+      ρ ⟨i, by omega⟩ + 1 + (j : ℤ) := by
+    rw [hw_get, hf_cast]
+    change ρ ⟨i, _⟩ + (i : ℤ) + 1 + (j : ℤ) - (i : ℤ) =
+      ρ ⟨i, _⟩ + 1 + (j : ℤ)
+    ring
+  rw [h_cast]
 
 /-! ### Stage 2: linear dependence and finite-rank bound -/
 
-/-- For any function `g : Fin (a+1) → ℕ` with values `≥ b − a`, the
-matrix `(fun i j => newtonH t (g i + 1 + j))` has determinant zero. -/
+/-- For any function `g : Fin (a+1) → ℤ` with values `≥ b − a`, the
+matrix `(fun i j => newtonHZ t (g i + 1 + j))` has determinant zero. -/
 private lemma det_vanishing_of_all_ge {t : ℕ → ℂ} {a b : ℕ}
-    (hab : a ≤ b)
     (hvan : ∀ w : List ℕ, w.SortedGE → (∀ x ∈ w, 0 < x) →
       w.length = a + 1 → b + 1 ≤ w.getD a 0 → schurDet t w = 0)
-    (g : Fin (a + 1) → ℕ) (hg : ∀ i, b - a ≤ g i) :
+    (g : Fin (a + 1) → ℤ) (hg : ∀ i, (b : ℤ) - a ≤ g i) :
     det (Matrix.of fun i j : Fin (a + 1) =>
-      newtonH t (g i + 1 + (j : ℕ))) = 0 := by
+      newtonHZ t (g i + 1 + (j : ℤ))) = 0 := by
   by_cases hInj : Function.Injective g
   · -- ═══════ Injective case: sort g and apply Stage 1 ═══════
     set S := Finset.image g Finset.univ
     have hS_card : S.card = a + 1 :=
       (Finset.card_image_of_injective _ hInj).trans (Finset.card_fin _)
     set e := S.orderIsoOfFin hS_card
-    set ρ : Fin (a + 1) → ℕ := fun i => (e (Fin.rev i)).1
+    set ρ : Fin (a + 1) → ℤ := fun i => (e (Fin.rev i)).1
     have hρ_anti : StrictAnti ρ := fun i j hij =>
       Subtype.coe_lt_coe.mpr (e.strictMono (Fin.rev_lt_rev.mpr hij))
-    have hρ_lb : b - a ≤ ρ ⟨a, Nat.lt_succ_of_le le_rfl⟩ := by
-      show b - a ≤ (e (Fin.rev ⟨a, _⟩)).1
-      have hrev : Fin.rev (⟨a, Nat.lt_succ_of_le le_rfl⟩ : Fin (a + 1)) =
+    have hρ_lb : (b : ℤ) - a ≤ ρ (Fin.last a) := by
+      change (b : ℤ) - a ≤ (e (Fin.rev (Fin.last a))).1
+      have hrev : Fin.rev ((Fin.last a) : Fin (a + 1)) =
           ⟨0, by omega⟩ := Fin.ext (by simp [Fin.rev])
       rw [hrev]
       obtain ⟨k, _, hk⟩ := Finset.mem_image.mp (e ⟨0, by omega⟩).2
       rw [← hk]; exact hg k
-    have h_det_zero := det_vanishing_of_strictAnti hab hvan hρ_anti hρ_lb
+    have h_det_zero := det_vanishing_of_strictAnti hvan hρ_anti hρ_lb
     -- Build a permutation σ where g (σ_fun i) = ρ i
     have hρ_range : ∀ i, ∃ k, g k = ρ i := by
       intro i
@@ -157,12 +178,12 @@ private lemma det_vanishing_of_all_ge {t : ℕ → ℂ} {a b : ℕ}
       Equiv.ofBijective σ_fun
         ⟨hσ_inj, (Finite.injective_iff_surjective.mp hσ_inj)⟩
     have h_eq : (Matrix.of fun i j : Fin (a + 1) =>
-        newtonH t (ρ i + 1 + (j : ℕ))) =
+        newtonHZ t (ρ i + 1 + (j : ℤ))) =
       (Matrix.of fun i j : Fin (a + 1) =>
-        newtonH t (g i + 1 + (j : ℕ))).submatrix σ id := by
+        newtonHZ t (g i + 1 + (j : ℤ))).submatrix σ id := by
       ext i j; simp only [Matrix.of_apply, Matrix.submatrix_apply, id]
-      show newtonH t (ρ i + 1 + (j : ℕ)) =
-        newtonH t (g (σ_fun i) + 1 + (j : ℕ))
+      show newtonHZ t (ρ i + 1 + (j : ℤ)) =
+        newtonHZ t (g (σ_fun i) + 1 + (j : ℤ))
       rw [hσ]
     rw [h_eq, det_permute, mul_eq_zero,
       or_iff_right (by simp [Units.ne_zero])] at h_det_zero
@@ -182,16 +203,15 @@ set_option maxHeartbeats 400000 in
 the complete-homogeneous sequence to satisfy a nontrivial linear
 recurrence. -/
 theorem exists_recurrence_of_schurDet_vanishing {t : ℕ → ℂ} {a b : ℕ}
-    (hab : a ≤ b)
     (hvan : ∀ w : List ℕ, w.SortedGE → (∀ x ∈ w, 0 < x) →
       w.length = a + 1 → b + 1 ≤ w.getD a 0 → schurDet t w = 0) :
     ∃ c : Fin (a + 1) → ℂ, c ≠ 0 ∧
-      ∀ ρ : ℕ, b - a ≤ ρ →
-        ∑ k : Fin (a + 1), c k * newtonH t (ρ + 1 + (k : ℕ)) = 0 := by
+      ∀ ρ : ℤ, (b : ℤ) - a ≤ ρ →
+        ∑ k : Fin (a + 1), c k * newtonHZ t (ρ + 1 + (k : ℤ)) = 0 := by
   -- ═══════ STAGE 2: finite-rank bound ═══════
-  set v : ℕ → (Fin (a + 1) → ℂ) :=
-    fun ρ k => newtonH t (ρ + 1 + (k : ℕ)) with hv_def
-  set W := span ℂ (v '' {ρ | b - a ≤ ρ})
+  set v : ℤ → (Fin (a + 1) → ℂ) :=
+    fun ρ k => newtonHZ t (ρ + 1 + (k : ℤ)) with hv_def
+  set W := span ℂ (v '' {ρ | (b : ℤ) - a ≤ ρ})
   have h_finrank : finrank ℂ W ≤ a := by
     by_contra h_gt
     push Not at h_gt
@@ -202,7 +222,7 @@ theorem exists_recurrence_of_schurDet_vanishing {t : ℕ → ℂ} {a b : ℕ}
       rw [h_eq, finrank_fin_fun ℂ])
     -- Extract a linearly independent subset B ⊆ S spanning W
     obtain ⟨B, hBS, hspan, hLI⟩ := exists_linearIndependent ℂ
-      (v '' {ρ | b - a ≤ ρ})
+      (v '' {ρ | (b : ℤ) - a ≤ ρ})
     have hspanB : span ℂ B = ⊤ := hspan.trans h_top
     have hBfin : B.Finite := hLI.set_finite_of_isNoetherian
     haveI : Fintype B := hBfin.fintype
@@ -217,15 +237,15 @@ theorem exists_recurrence_of_schurDet_vanishing {t : ℕ → ℂ} {a b : ℕ}
     have hg_LI : LinearIndependent ℂ (Subtype.val ∘ eB) :=
       hLI.comp _ eB.injective
     -- Each basis element is v(ρ_i) for some ρ_i ≥ b-a
-    have hg_mem : ∀ i, (eB i).val ∈ v '' {ρ | b - a ≤ ρ} :=
+    have hg_mem : ∀ i, (eB i).val ∈ v '' {ρ | (b : ℤ) - a ≤ ρ} :=
       fun i => hBS (eB i).2
     choose ρ_vals hρ_ge hρ_eq using
       (fun i => (Set.mem_image _ _ _).mp (hg_mem i))
     -- The matrix M has det = 0 by Stage 2, but LI implies det ≠ 0
     set M := Matrix.of fun i j : Fin (a + 1) =>
-      newtonH t (ρ_vals i + 1 + (j : ℕ))
+      newtonHZ t (ρ_vals i + 1 + (j : ℤ))
     have h_det_zero : M.det = 0 :=
-      det_vanishing_of_all_ge hab hvan _ hρ_ge
+      det_vanishing_of_all_ge hvan _ hρ_ge
     have h_rows_eq : M.row = (Subtype.val ∘ eB) := by
       ext i j; simp only [Matrix.row_apply, M, Matrix.of_apply,
         Function.comp_apply]
@@ -262,7 +282,7 @@ theorem exists_recurrence_of_schurDet_vanishing {t : ℕ → ℂ} {a b : ℕ}
         v ρ k • Pi.single k (1 : ℂ) := by
       ext j; simp [Finset.sum_apply, Pi.single_apply]
     rw [show (∑ k, (fun k => φ (Pi.single k 1)) k *
-          newtonH t (ρ + 1 + (k : ℕ))) = φ (v ρ) from by
+          newtonHZ t (ρ + 1 + (k : ℤ))) = φ (v ρ) from by
       conv_rhs => rw [hdecomp, map_sum]
       congr 1; ext k; rw [map_smul, smul_eq_mul, mul_comm]]
     exact hφ_zero

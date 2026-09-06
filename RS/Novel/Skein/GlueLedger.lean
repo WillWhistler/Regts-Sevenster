@@ -35,9 +35,8 @@ happens to construct its system.
 
 section MatchEqTransport
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+variable {α : Type} {W : Fragment α} {F : EdgeSubset W}
 
-omit [LinearOrder α] in
 /-- **The chord matching reads only the matching.** -/
 theorem chordInv_congr_matchEq {κ₁ κ₂ : F.RelTransitionSystem}
     (h : κ₁.MatchEq κ₂) (a : α) :
@@ -50,13 +49,17 @@ theorem chordInv_congr_matchEq {κ₁ κ₂ : F.RelTransitionSystem}
     rw [dif_neg hb, dif_neg hb]
 
 /-- **The cut matching's pairing reads only the matching.** -/
-theorem cutMatching_congr_matchEq {κ₁ κ₂ : F.RelTransitionSystem}
+theorem cutMatching_congr_matchEq
+    [LinearOrder α]
+    {κ₁ κ₂ : F.RelTransitionSystem}
     (h : κ₁.MatchEq κ₂) (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation) :
     (cutMatching F κ₂ o₂).edge = (cutMatching F κ₁ o₁).edge :=
   funext (fun a => Subtype.ext (chordInv_congr_matchEq h a.val))
 
 /-- **The ledger reads only the matching.** -/
-theorem openCircuitCount_add_unionCount_congr_matchEq [Fintype α]
+theorem openCircuitCount_add_unionCount_congr_matchEq
+    [LinearOrder α]
+    [Fintype α]
     {κ₁ κ₂ : F.RelTransitionSystem} (h : κ₁.MatchEq κ₂)
     (o₁ : κ₁.Orientation) (o₂ : κ₂.Orientation)
     (N : DirMatching {a : α // W.boundaryFlag a ∈ F.boundaryFlags}) :
@@ -74,7 +77,7 @@ end MatchEqTransport
 
 section GlueOpenMiss
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -92,7 +95,6 @@ local notation "Fl" =>
   (EdgeSubset.mk (liftSubsetOpen hopen s') hc :
     EdgeSubset W)
 
-omit [LinearOrder α] in
 include hij hni in
 /-- Neither glued label is used when the interface edge is out of the
 subset. -/
@@ -101,7 +103,6 @@ theorem boundaryFlagI_not_mem_of_miss :
   hni ((boundaryFlagI_mem_liftOpen_iff hij hopen s').mp
     (mem_flags_of_boundaryFlags _ hmem))
 
-omit [LinearOrder α] in
 include hc' hc hni in
 /-- At a cut the subset misses, the second glued flag is not a
 boundary flag of the lift. -/
@@ -114,7 +115,9 @@ theorem boundaryFlagJ_not_mem_of_miss :
 include hni in
 /-- **The chord matching is unchanged** across a glue whose edge the
 subset misses: no chain reaches the cut, so no chain is rerouted. -/
-theorem chordInv_glueOpen_miss (κ : (Fl).RelTransitionSystem)
+theorem chordInv_glueOpen_miss
+    [LinearOrder α]
+    (κ : (Fl).RelTransitionSystem)
     (l : SurvivingLabel α i j)
     (hlg : (W.gluePairOpen i j hij hopen).boundaryFlag l ∈
       (Fg).boundaryFlags) :
@@ -153,7 +156,9 @@ theorem chordInv_glueOpen_miss (κ : (Fl).RelTransitionSystem)
 include hc' hc hni in
 /-- **The used labels are the same** across a glue whose edge the
 subset misses. -/
-noncomputable def usedLabelGlueMissEquiv :
+noncomputable def usedLabelGlueMissEquiv
+    [LinearOrder α]
+    :
     {l : SurvivingLabel α i j //
         (W.gluePairOpen i j hij hopen).boundaryFlag l ∈
           (Fg).boundaryFlags}
@@ -173,7 +178,9 @@ noncomputable def usedLabelGlueMissEquiv :
 include hni in
 /-- **The glued cut matching's pairing is the lifted one's** across a
 glue whose edge the subset misses. -/
-theorem cutMatching_glueOpen_miss_edge (κ : (Fl).RelTransitionSystem)
+theorem cutMatching_glueOpen_miss_edge
+    [LinearOrder α]
+    (κ : (Fl).RelTransitionSystem)
     (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueOpen hij hopen s' hc'
       hc κ).Orientation) :
@@ -191,7 +198,9 @@ include hni in
 /-- **A glue whose edge the subset misses moves nothing.**  The
 circuit count and the number of components of the union are both
 unchanged. -/
-theorem openCircuitCount_add_unionCount_glueOpen_miss [Fintype α]
+theorem openCircuitCount_add_unionCount_glueOpen_miss
+    [LinearOrder α]
+    [Fintype α]
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueOpen hij hopen s' hc'
       hc κ).Orientation)
@@ -231,7 +240,9 @@ theorem openCircuitCount_add_unionCount_glueOpen_miss [Fintype α]
 include hni in
 /-- **One stage of the interface recursion at an open cut the subset
 misses.** -/
-theorem openCircuitCount_add_unionCount_stage_miss [Fintype α]
+theorem openCircuitCount_add_unionCount_stage_miss
+    [LinearOrder α]
+    [Fintype α]
     {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
@@ -278,7 +289,7 @@ disappears; that is `GlueChord`'s closed ledger.)
 
 section GlueClosedMiss
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -292,7 +303,7 @@ local notation "FgF" =>
 local notation "FlF" =>
   (EdgeSubset.mk (liftSubsetClosed s' false) hcF : EdgeSubset W)
 
-omit [LinearOrder α] hclosed in
+omit  hclosed in
 include hij in
 /-- Neither glued label is used when the closed-off edge is left out
 of the subset. -/
@@ -302,7 +313,7 @@ theorem boundaryFlagI_not_mem_of_closed_miss :
     ((boundaryFlagI_mem_liftClosed_iff hij s' false).mp
       (mem_flags_of_boundaryFlags _ hmem))
 
-omit [LinearOrder α] hclosed in
+omit  hclosed in
 include hij in
 /-- The same at a closed cut the subset misses. -/
 theorem boundaryFlagJ_not_mem_of_closed_miss :
@@ -337,6 +348,7 @@ include hij in
 /-- **The glued cut matching's pairing is the lifted one's** across a
 closed glue whose edge the subset leaves out. -/
 theorem cutMatching_glueClosedMiss_edge
+    [LinearOrder α]
     (κ' : (FgF).RelTransitionSystem) (o' : κ'.Orientation)
     (o : (RelTransitionSystem.unglueClosed hclosed false s' hc'
       hcF κ').Orientation) :
@@ -355,7 +367,9 @@ include hij in
 /-- **A closed glue whose edge the subset leaves out moves nothing.**
 The circuit count and the number of components of the union are both
 unchanged. -/
-theorem openCircuitCount_add_unionCount_glueClosed_miss [Fintype α]
+theorem openCircuitCount_add_unionCount_glueClosed_miss
+    [LinearOrder α]
+    [Fintype α]
     (κ' : (FgF).RelTransitionSystem) (o' : κ'.Orientation)
     (o : (RelTransitionSystem.unglueClosed hclosed false s' hc'
       hcF κ').Orientation)
@@ -396,7 +410,7 @@ alone.
 
 section GlueClosedForward
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (b : Bool)
@@ -415,7 +429,9 @@ include hc' hc in
 /-- **The ledger transports to the forward glue.**  Ungluing the
 forward glue returns a system matching like the original, so the two
 carry the same ledger. -/
-theorem openCircuitCount_add_unionCount_unglue_glueClosed [Fintype α]
+theorem openCircuitCount_add_unionCount_unglue_glueClosed
+    [LinearOrder α]
+    [Fintype α]
     (κ : (Flb).RelTransitionSystem) (o : κ.Orientation)
     (o₀ : (RelTransitionSystem.unglueClosed hclosed b s' hc' hc
       (RelTransitionSystem.glueClosed hclosed b s' hc'
@@ -440,7 +456,7 @@ end GlueClosedForward
 
 section GlueClosedForwardTrue
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
   (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
@@ -456,7 +472,9 @@ local notation "FlT" =>
 include hc' hcT in
 /-- **A closed glue whose edge the subset carries drops one
 component**, stated at the forward glue. -/
-theorem openCircuitCount_add_unionCount_glueClosed_forward [Fintype α]
+theorem openCircuitCount_add_unionCount_glueClosed_forward
+    [LinearOrder α]
+    [Fintype α]
     (κ : (FlT).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueClosed hclosed true s' hc'
       hcT κ).Orientation)
@@ -493,6 +511,7 @@ include hc' hcT in
 /-- **One stage of the interface recursion at a closed cut the subset
 carries**, stated at the forward glue. -/
 theorem openCircuitCount_add_unionCount_stage_closed_forward
+    [LinearOrder α]
     [Fintype α] {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (FlT).RelTransitionSystem) (o : κ.Orientation)
@@ -536,7 +555,7 @@ end GlueClosedForwardTrue
 
 section GlueClosedForwardFalse
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -554,6 +573,7 @@ include hij hc' hcF in
 /-- **A closed glue whose edge the subset leaves out moves
 nothing**, stated at the forward glue. -/
 theorem openCircuitCount_add_unionCount_glueClosed_miss_forward
+    [LinearOrder α]
     [Fintype α] (κ : (FlF).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueClosed hclosed false s' hc'
       hcF κ).Orientation)
@@ -587,6 +607,7 @@ include hij hc' hcF in
 /-- **One stage of the interface recursion at a closed cut the subset
 leaves out**, stated at the forward glue. -/
 theorem openCircuitCount_add_unionCount_stage_closed_miss_forward
+    [LinearOrder α]
     [Fintype α] {γ : Type} [LinearOrder γ] [Fintype γ]
     (E : SurvivingLabel α i j ≃o γ)
     (κ : (FlF).RelTransitionSystem) (o : κ.Orientation)

@@ -20,22 +20,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable {N₁ N₂ N₁' N₂' : Mod D A}
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- **The tensor copair element is the interchange of the copair
 elements.** -/
-theorem tensorCopair_point (d₁ : ModDualityDatum A N₁ N₁')
+theorem tensorCopair_point
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     η[A] ≫ tensorCopair A d₁ d₂ =
       (λ_ (𝟙_ D)).inv ≫
@@ -78,15 +74,16 @@ theorem tensorCopair_point (d₁ : ModDualityDatum A N₁ N₁')
   rw [reassoc_of% hunfold, htail,
     ← MonoidalCategory.tensorHom_comp_tensorHom_assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **Paired right actions descend to the joint action**: acting
 on both carriers and projecting is multiplying the scalars and
 acting on the projected pair — the quotient relation of the
 relative tensor. -/
-theorem tensorHom_actRight_π (N₁ N₂ : Mod D A) :
+theorem tensorHom_actRight_π
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (N₁ N₂ : Mod D A) :
     (actRight A N₁.X ⊗ₘ actRight A N₂.X) ≫ modTensorπ A N₁ N₂ =
       tensorμ N₁.X A N₂.X A ≫
         ((N₁.X ⊗ N₂.X) ◁ μ[A]) ≫
@@ -159,11 +156,17 @@ theorem tensorHom_actRight_π (N₁ N₂ : Mod D A) :
     braid_prefix_coherence N₁.X A N₂.X
   rw [reassoc_of% hpre]
 
-omit [MonoidalPreadditive D] in
 /-- **The tensor contraction against the interchange is the
 tensor of the component contractions**: the crossing seats each
 dual half against its own carrier. -/
-theorem interchange_zigContract (d₁ : ModDualityDatum A N₁ N₁')
+theorem interchange_zigContract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     ((modTensor A N₁ N₁' ⊗ modTensor A N₂ N₂') ◁
         modTensorπ A N₁ N₂) ≫
@@ -473,11 +476,17 @@ theorem interchange_zigContract (d₁ : ModDualityDatum A N₁ N₁')
       (modTensorπ A N₁ N₂) A
   conv_rhs => rw [reassoc_of% hμnat₂, reassoc_of% hβl]
 
-omit [MonoidalPreadditive D] in
 /-- **The tensor contraction against the interchange is the
 tensor of the component contractions**, zag side: the crossing
 seats each dual half against its own carrier. -/
-theorem interchange_zagContract (d₁ : ModDualityDatum A N₁ N₁')
+theorem interchange_zagContract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     (modTensorπ A N₁' N₂' ▷
         (modTensor A N₁ N₁' ⊗ modTensor A N₂ N₂')) ≫
@@ -785,9 +794,15 @@ theorem interchange_zagContract (d₁ : ModDualityDatum A N₁ N₁')
       (modTensorπ A N₂' N₂ ≫ d₂.pair) (𝟙 N₂'.X)
   conv_rhs => rw [reassoc_of% hμnat₂]
 
-omit [MonoidalPreadditive D] in
 /-- **The tensor datum inherits the carrier zig identity.** -/
-theorem tensorDatum_carrier_zig (d₁ : ModDualityDatum A N₁ N₁')
+theorem tensorDatum_carrier_zig
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂')
     (hz₁ : (λ_ N₁.X).inv ≫ ((η[A] ≫ d₁.copair) ▷ N₁.X) ≫
       zigContract A d₁.pair d₁.pair_linear = 𝟙 N₁.X)
@@ -861,9 +876,15 @@ theorem tensorDatum_carrier_zig (d₁ : ModDualityDatum A N₁ N₁')
       hpt₁, hpt₂, reassoc_of% hcoh, Category.comp_id]
   exact hfinal
 
-omit [MonoidalPreadditive D] in
 /-- **The tensor datum inherits the carrier zag identity.** -/
-theorem tensorDatum_carrier_zag (d₁ : ModDualityDatum A N₁ N₁')
+theorem tensorDatum_carrier_zag
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂')
     (hz₁ : (ρ_ N₁'.X).inv ≫ (N₁'.X ◁ (η[A] ≫ d₁.copair)) ≫
       zagContract A d₁.pair d₁.pair_linear = 𝟙 N₁'.X)
@@ -941,7 +962,15 @@ theorem tensorDatum_carrier_zag (d₁ : ModDualityDatum A N₁ N₁')
 
 /-- **The tensor of zigzag data is a zigzag datum** (Deligne
 1.15, tensor part, in triangle form). -/
-theorem tensorDatum_zigzag (d₁ : ModDualityDatum A N₁ N₁')
+theorem tensorDatum_zigzag
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂')
     (hz₁ : ModZigzagDatum A d₁) (hz₂ : ModZigzagDatum A d₂) :
     ModZigzagDatum A (tensorDatum A d₁ d₂) :=

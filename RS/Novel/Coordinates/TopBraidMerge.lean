@@ -15,15 +15,17 @@ open CategoryTheory MonoidalCategory
 
 section Abstract
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
-variable [BraidedCategory C]
+variable {C : Type*}
 
 /-- The two-strand top braid over a prefix. -/
-private def topB (X V : C) : (X ⊗ V) ⊗ V ⟶ (X ⊗ V) ⊗ V :=
+private def topB [Category C] [MonoidalCategory C] [BraidedCategory C]
+    (X V : C) : (X ⊗ V) ⊗ V ⟶ (X ⊗ V) ⊗ V :=
   (α_ X V V).hom ≫ (X ◁ (β_ V V).hom) ≫ (α_ X V V).inv
 
 /-- Braiding the last two strands is natural in the prefix. -/
-private theorem topB_natural {X Y : C} (V : C) (r : X ⟶ Y) :
+private theorem topB_natural
+    [Category C] [MonoidalCategory C] [BraidedCategory C]
+    {X Y : C} (V : C) (r : X ⟶ Y) :
     ((r ▷ V) ▷ V) ≫ topB Y V = topB X V ≫ ((r ▷ V) ▷ V) := by
   unfold topB
   simp only [Category.assoc]
@@ -36,7 +38,9 @@ set_option maxHeartbeats 1000000 in
 /-- **The abstract merge-braid exchange**: whiskering the braid
 inside the last two-strand block and merging equals merging and
 braiding on top. -/
-private theorem whisker_topB_merge (A B V : C) {D : C}
+private theorem whisker_topB_merge
+    [Category C] [MonoidalCategory C] [BraidedCategory C]
+    (A B V : C) {D : C}
     (r : A ⊗ B ⟶ D) :
     (A ◁ topB B V) ≫
       (α_ A (B ⊗ V) V).inv ≫

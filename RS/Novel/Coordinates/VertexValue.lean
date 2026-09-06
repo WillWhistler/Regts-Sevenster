@@ -21,14 +21,6 @@ variable {k ℓ : ℕ}
 variable (e : stdSuperPair k ℓ ⟶ P.ω.obj (SkeinObj.mk 1))
 variable (e' : P.ω.obj (SkeinObj.mk 1) ⟶ stdSuperPair k ℓ)
 
-/-- Sorting signs square to one over ℂ. -/
-theorem sortSign_sq {α : Type} [LinearOrder α] (l : List α) :
-    (sortSign l : ℂ) * (sortSign l : ℂ) = 1 := by
-  rw [sortSign]
-  push_cast
-  rw [← pow_add, ← two_mul, pow_mul]
-  norm_num
-
 -- Raised budget: the block's star coordinate is computed through
 -- the transport and matched with the vertex factor.
 set_option maxHeartbeats 6400000 in

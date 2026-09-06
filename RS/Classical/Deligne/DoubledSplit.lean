@@ -19,10 +19,7 @@ open scoped MonObj
 
 universe v
 
-variable {A : Type v} [SmallCategory A] [MonoidalCategory A]
-  [SymmetricCategory A] [Abelian A] [RigidCategory A]
-  [MonoidalPreadditive A] [CategoryTheory.Linear ℂ A]
-  [HasFiniteBiproducts A]
+variable {A : Type v}
 
 attribute [local instance] Doubled.hasFiniteBiproducts
 
@@ -31,6 +28,9 @@ argument needs passes to `Doubled A`, so one simple algebra splits
 every embedded object of the doubling and its Γ-algebra has a
 complex point. -/
 theorem exists_splitting_simple_algebra_doubled
+    [SmallCategory A] [MonoidalCategory A] [SymmetricCategory A] [Abelian A]
+    [RigidCategory A] [MonoidalPreadditive A] [CategoryTheory.Linear ℂ A]
+    [HasFiniteBiproducts A]
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (hu : HasScalarUnit A) (X : A) (hgen : TensorGeneratedBy A X)
     (hgrow : ModerateLengthGrowth A)

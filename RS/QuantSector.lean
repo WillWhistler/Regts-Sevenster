@@ -46,7 +46,7 @@ theorem regts_sevenster_quant_of_sector
     (hDeligne : DeligneTheoremStatement.{1, 1}) :
     RegtsSevensterStatementQuant := by
   intro R f
-  obtain ⟨P⟩ := skein_delignePackage f schurPackage hDeligne
+  obtain ⟨P⟩ := skein_delignePackage f hDeligne
   obtain ⟨k, ℓ, e, e', he'e, hee', hform, hcopair⟩ :=
     skein_std_model f P
   have hs : 2 * Real.exp 1 * (R : ℝ) <

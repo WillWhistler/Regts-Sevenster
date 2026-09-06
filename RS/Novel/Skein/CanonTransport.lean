@@ -41,16 +41,16 @@ section TowerFamilyOpen
 
 open EdgeSubset Fragment
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-  (hc' : ∀ f ∈ s', (W.gluePairOpen i j hij hopen).pairing f ∈ s')
-  (hc : ∀ f ∈ liftSubsetOpen hopen s',
-    W.pairing f ∈ liftSubsetOpen hopen s')
+variable {α : Type}
 
 /-- Canonical data descend across the open unglue. -/
 theorem nonempty_canonData_unglueOpen
+    [LinearOrder α] {W : Fragment α} {i : α} {j : α} (hij : i ≠ j)
+    (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
+    (s' : Finset (SurvivingFlag W i j))
+    (hc' : ∀ f ∈ s', (W.gluePairOpen i j hij hopen).pairing f ∈ s')
+    (hc : ∀ f ∈ liftSubsetOpen hopen s', W.pairing f ∈ liftSubsetOpen hopen
+      s')
     (hne : Nonempty (EdgeSubset.mk s' hc' :
       EdgeSubset (W.gluePairOpen i j hij hopen)).CanonData) :
     Nonempty (EdgeSubset.mk (liftSubsetOpen hopen s') hc :
@@ -75,14 +75,15 @@ section ClosedStep
 
 open EdgeSubset Fragment
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-  (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
+variable {α : Type}
 
 /-- Canonical data descend across either closed unglue. -/
-theorem nonempty_canonData_unglueClosed (b : Bool)
+theorem nonempty_canonData_unglueClosed
+    [LinearOrder α] {W : Fragment α} {i : α} {j : α}
+    (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
+    (s' : Finset (SurvivingFlag W i j))
+    (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
+    (b : Bool)
     (hc : ∀ f ∈ liftSubsetClosed s' b,
       W.pairing f ∈ liftSubsetClosed s' b)
     (hne : Nonempty (EdgeSubset.mk s' hc' :
@@ -106,17 +107,16 @@ section ClosedConverse
 
 open EdgeSubset Fragment
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
-  (hij : i ≠ j)
-  (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
-  (s' : Finset (SurvivingFlag W i j))
-
-variable (hc' : ∀ f ∈ s',
-  (W.gluePairClosed i j hclosed).pairing f ∈ s')
+variable {α : Type}
 
 /-- Canonical data ascend from either closed lift to the glued
 subset. -/
-theorem nonempty_canonData_glueClosed (b : Bool)
+theorem nonempty_canonData_glueClosed
+    [LinearOrder α] {W : Fragment α} {i : α} {j : α}
+    (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
+    (s' : Finset (SurvivingFlag W i j))
+    (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
+    (b : Bool)
     (hc : ∀ f ∈ liftSubsetClosed s' b,
       W.pairing f ∈ liftSubsetClosed s' b)
     (hne : Nonempty (EdgeSubset.mk (liftSubsetClosed s' b) hc :

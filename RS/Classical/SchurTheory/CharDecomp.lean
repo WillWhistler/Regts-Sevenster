@@ -13,16 +13,14 @@ namespace RS
 
 open Finset LinearMap DirectSum
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
+variable {G : Type*}
 
 section Aux
 
-variable {V : Type*} [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
-variable (ρ : Representation ℂ G V)
-
-omit [Fintype G] [DecidableEq G] [FiniteDimensional ℂ V] in
 /-- `ρ g` preserves every `MonoidAlgebra ℂ G`-submodule of `ρ.asModule`. -/
 private theorem rho_mem_of_mem
+    [Group G] {V : Type*} [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V)
     (U : Submodule (MonoidAlgebra ℂ G) ρ.asModule) (g : G)
     {v : ρ.asModule} (hv : v ∈ U) : ρ g v ∈ U := by
   have key : (MonoidAlgebra.single g (1 : ℂ)) • v ∈ U := U.smul_mem _ hv
@@ -33,13 +31,16 @@ private theorem rho_mem_of_mem
 /-- The representation on a `MonoidAlgebra ℂ G`-submodule of `ρ.asModule`,
 using the restrictScalars carrier. -/
 private noncomputable def rhoSub
+    [Group G] {V : Type*} [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V)
     (U : Submodule (MonoidAlgebra ℂ G) ρ.asModule) :
     Representation ℂ G ↥(U.restrictScalars ℂ) :=
   Representation.ofModule' (k := ℂ) (G := G) ↥(U.restrictScalars ℂ)
 
-omit [Fintype G] [DecidableEq G] [FiniteDimensional ℂ V] in
 /-- The algebra action of `rhoSub` is scalar multiplication. -/
 private theorem rhoSub_asAlgebraHom_apply
+    [Group G] {V : Type*} [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V)
     (U : Submodule (MonoidAlgebra ℂ G) ρ.asModule)
     (y : MonoidAlgebra ℂ G) (m : ↥(U.restrictScalars ℂ)) :
     (rhoSub ρ U).asAlgebraHom y m = y • m := by
@@ -47,9 +48,11 @@ private theorem rhoSub_asAlgebraHom_apply
   rw [Equiv.apply_symm_apply]
   rfl
 
-omit [Fintype G] [DecidableEq G] [FiniteDimensional ℂ V] in
 /-- The `rhoSub` action at `g` coerces to `ρ g` on the ambient module. -/
-private theorem rhoSub_val_eq (U : Submodule (MonoidAlgebra ℂ G) ρ.asModule)
+private theorem rhoSub_val_eq
+    [Group G] {V : Type*} [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V)
+    (U : Submodule (MonoidAlgebra ℂ G) ρ.asModule)
     (g : G) (m : ↥(U.restrictScalars ℂ)) :
     (rhoSub ρ U g m : ρ.asModule) = ρ g (m : ρ.asModule) := by
   have h1 : rhoSub ρ U g m = (MonoidAlgebra.single g (1 : ℂ)) • m := by
@@ -65,10 +68,7 @@ end Aux
 
 section Main
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
-
-omit [Fintype G] [DecidableEq G] in
-private theorem character_zero_of_finrank_zero
+private theorem character_zero_of_finrank_zero {G : Type*} [Group G]
     {V : Type*} [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
     (ρ : Representation ℂ G V) (hd : Module.finrank ℂ V = 0) (g : G) :
     ρ.character g = 0 := by
@@ -78,8 +78,7 @@ private theorem character_zero_of_finrank_zero
   exact map_zero _
 
 set_option backward.isDefEq.respectTransparency false in
-omit [DecidableEq G] in
-private theorem character_eq_sum_nChar_aux :
+private theorem character_eq_sum_nChar_aux {G : Type*} [Group G] [Fintype G] :
     ∀ (n : ℕ) {V : Type*} [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]
       (ρ : Representation ℂ G V),
       Module.finrank ℂ V ≤ n →
@@ -203,10 +202,10 @@ private theorem character_eq_sum_nChar_aux :
         rw [hchar_split g, hcharT g, hS'char g, Fin.sum_univ_succ]
         simp [Fin.cons_zero, Fin.cons_succ]
 
-omit [DecidableEq G] in
 /-- **Every character decomposes** into native characters of simple
 submodules of the regular module. -/
-theorem character_eq_sum_nChar {V : Type*} [AddCommGroup V] [Module ℂ V]
+theorem character_eq_sum_nChar {G : Type*} [Group G] [Fintype G]
+    {V : Type*} [AddCommGroup V] [Module ℂ V]
     [FiniteDimensional ℂ V] (ρ : Representation ℂ G V) :
     ∃ (m : ℕ) (S : Fin m → Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)),
       (∀ i, IsSimpleModule (MonoidAlgebra ℂ G) (S i)) ∧

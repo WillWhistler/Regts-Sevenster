@@ -57,13 +57,14 @@ cancels. -/
 
 section SubObject
 
-variable {D : Type u} [Category.{w} D] [MonoidalCategory D]
-variable {S A : D} [MonObj A] (k : S ⟶ A) [Mono k]
-variable (m : S ⊗ S ⟶ S) (e : 𝟙_ D ⟶ S)
+variable {D : Type u}
 
 /-- **The unit law of a subobject closed under the operations**,
 left-hand version. -/
-theorem one_mul_of_mono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
+theorem one_mul_of_mono
+    [Category.{w} D] [MonoidalCategory D] {S : D} {A : D} [MonObj A]
+    (k : S ⟶ A) [Mono k] (m : S ⊗ S ⟶ S) (e : 𝟙_ D ⟶ S)
+    (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
     (he : e ≫ k = η[A]) : e ▷ S ≫ m = (λ_ S).hom := by
   rw [← cancel_mono k, Category.assoc, hm, ← Category.assoc,
     ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp, he,
@@ -72,7 +73,10 @@ theorem one_mul_of_mono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
 
 /-- **The unit law of a subobject closed under the operations**,
 right-hand version. -/
-theorem mul_one_of_mono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
+theorem mul_one_of_mono
+    [Category.{w} D] [MonoidalCategory D] {S : D} {A : D} [MonObj A]
+    (k : S ⟶ A) [Mono k] (m : S ⊗ S ⟶ S) (e : 𝟙_ D ⟶ S)
+    (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
     (he : e ≫ k = η[A]) : S ◁ e ≫ m = (ρ_ S).hom := by
   rw [← cancel_mono k, Category.assoc, hm, ← Category.assoc,
     ← id_tensorHom, tensorHom_comp_tensorHom, Category.id_comp, he,
@@ -81,7 +85,10 @@ theorem mul_one_of_mono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
 
 /-- **The associativity law of a subobject closed under the
 operations.** -/
-theorem mul_assoc_of_mono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A]) :
+theorem mul_assoc_of_mono
+    [Category.{w} D] [MonoidalCategory D] {S : D} {A : D} [MonObj A]
+    (k : S ⟶ A) [Mono k] (m : S ⊗ S ⟶ S)
+    (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A]) :
     m ▷ S ≫ m = (α_ S S S).hom ≫ S ◁ m ≫ m := by
   have h1 : m ▷ S ≫ (k ⊗ₘ k) = ((k ⊗ₘ k) ≫ μ[A]) ⊗ₘ k := by
     rw [← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp, hm]
@@ -102,14 +109,20 @@ theorem mul_assoc_of_mono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A]) :
 
 /-- **The commutativity law of a subobject closed under the
 operations.** -/
-theorem mul_comm_of_mono [BraidedCategory D] [IsCommMonObj A]
+theorem mul_comm_of_mono
+    [Category.{w} D] [MonoidalCategory D] {S : D} {A : D} [MonObj A]
+    (k : S ⟶ A) [Mono k] (m : S ⊗ S ⟶ S)
+    [BraidedCategory D] [IsCommMonObj A]
     (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A]) : (β_ S S).hom ≫ m = m := by
   rw [← cancel_mono k, Category.assoc, hm, ← Category.assoc,
     ← BraidedCategory.braiding_naturality, Category.assoc,
     IsCommMonObj.mul_comm]
 
 /-- **A subobject closed under the operations is an algebra.** -/
-@[reducible] def monObjOfMono (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
+@[reducible] def monObjOfMono
+    [Category.{w} D] [MonoidalCategory D] {S : D} {A : D} [MonObj A]
+    (k : S ⟶ A) [Mono k] (m : S ⊗ S ⟶ S) (e : 𝟙_ D ⟶ S)
+    (hm : m ≫ k = (k ⊗ₘ k) ≫ μ[A])
     (he : e ≫ k = η[A]) : MonObj S where
   one := e
   mul := m
@@ -127,12 +140,14 @@ abelian category is strong. -/
 
 section IndEpi
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C] [Abelian C]
-  [RigidCategory C] [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **The tensor of two epimorphisms of ind-objects is an
 epimorphism**: both whiskerings are right exact. -/
-instance epi_tensorHom_ind {X Y X' Y' : Ind C} (f : X ⟶ Y)
+instance epi_tensorHom_ind
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {X Y X' Y' : Ind C} (f : X ⟶ Y)
     (g : X' ⟶ Y') [Epi f] [Epi g] : Epi (f ⊗ₘ g) := by
   haveI : Epi (f ▷ X') := inferInstanceAs (Epi ((tensorRight X').map f))
   haveI : Epi (Y ◁ g) := inferInstanceAs (Epi ((tensorLeft Y).map g))
@@ -141,7 +156,10 @@ instance epi_tensorHom_ind {X Y X' Y' : Ind C} (f : X ⟶ Y)
 
 /-- The tensor of two epimorphisms of ind-objects is a strong
 epimorphism: `Ind C` is abelian. -/
-instance strongEpi_tensorHom_ind {X Y X' Y' : Ind C} (f : X ⟶ Y)
+instance strongEpi_tensorHom_ind
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {X Y X' Y' : Ind C} (f : X ⟶ Y)
     (g : X' ⟶ Y') [Epi f] [Epi g] : StrongEpi (f ⊗ₘ g) :=
   strongEpi_of_epi _
 
@@ -155,30 +173,35 @@ soon as the unit factors through that stage.  The chosen stage
 
 section UnitStage
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- **The unit is carried by a stage**: the unit of the algebra
 factors through the given stage of the chosen presentation. -/
-class UnitAtStage (A : Ind C) [MonObj A] (i : A.presentation.I) :
+class UnitAtStage
+    [SmallCategory C] [MonoidalCategory C]
+    (A : Ind C) [MonObj A] (i : A.presentation.I) :
     Prop where
   /-- The unit of the algebra factors through the stage. -/
   exists_point : ∃ e : 𝟙_ (Ind C) ⟶
     indOf.obj (A.presentation.F.obj i), e ≫ presStage A i = η[A]
 
 /-- The factorisation of the unit through a stage that carries it. -/
-theorem exists_unitAtStage_point (A : Ind C) [MonObj A]
+theorem exists_unitAtStage_point [SmallCategory C] [MonoidalCategory C]
+    (A : Ind C) [MonObj A]
     (i : A.presentation.I) [UnitAtStage A i] :
     ∃ e : 𝟙_ (Ind C) ⟶ indOf.obj (A.presentation.F.obj i),
       e ≫ presStage A i = η[A] :=
   UnitAtStage.exists_point
 
 /-- **The chosen unit stage carries the unit.** -/
-instance unitAtStage_unitStage (A : Ind C) [MonObj A] :
+instance unitAtStage_unitStage [SmallCategory C] [MonoidalCategory C]
+    (A : Ind C) [MonObj A] :
     UnitAtStage A (unitStage A) :=
   ⟨⟨unitStagePoint A, unitStagePoint_spec A⟩⟩
 
 /-- **Every stage above a stage carrying the unit carries it too.** -/
-theorem UnitAtStage.map {A : Ind C} [MonObj A]
+theorem UnitAtStage.map [SmallCategory C] [MonoidalCategory C]
+    {A : Ind C} [MonObj A]
     {i j : A.presentation.I} (α : i ⟶ j) [UnitAtStage A i] :
     UnitAtStage A j := by
   obtain ⟨e, he⟩ := exists_unitAtStage_point A i
@@ -196,18 +219,22 @@ multiplication, and the unit. -/
 
 section ImageTowerBasic
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C] [Abelian C]
-variable (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+variable {C : Type v}
 
 /-- The image tower, read as a diagram over the ambient-universe copy
 of the natural numbers. -/
-@[reducible] noncomputable def imageDiagram : Tower.{v} ⥤ Ind C :=
+@[reducible] noncomputable def imageDiagram
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) : Tower.{v} ⥤ Ind C :=
   AsSmall.down ⋙ imageSeq A i₀
 
 /-- **Maps into the image tower are determined by their composites
 with the inclusion into the algebra**, that inclusion being a
 monomorphism. -/
-theorem imageSubalgebra_hom_ext {X : Ind C}
+theorem imageSubalgebra_hom_ext
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    {X : Ind C}
     {f g : X ⟶ imageSubalgebra A i₀}
     (h : f ≫ imageSubalgebraHom A i₀ = g ≫ imageSubalgebraHom A i₀) :
     f = g :=
@@ -216,14 +243,20 @@ theorem imageSubalgebra_hom_ext {X : Ind C}
 
 /-- The structural maps of the colimit of the image tower, composed
 with the inclusion into the algebra. -/
-theorem imageColimitι_comp_hom (m : Tower.{v}) :
+theorem imageColimitι_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (m : Tower.{v}) :
     colimit.ι (imageDiagram A i₀) m ≫ imageSubalgebraHom A i₀ =
       stageImageι A (towerIdx A i₀ (ULift.down m)) :=
   imageRungι_comp_hom A i₀ (ULift.down m)
 
 /-- The transition maps of the image tower are compatible with the
 inclusions of the rungs into the algebra. -/
-theorem imageDiagram_map_comp_ι {m m' : Tower.{v}} (u : m ⟶ m') :
+theorem imageDiagram_map_comp_ι
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    {m m' : Tower.{v}} (u : m ⟶ m') :
     (imageDiagram A i₀).map u ≫
         stageImageι A (towerIdx A i₀ (ULift.down m')) =
       stageImageι A (towerIdx A i₀ (ULift.down m)) :=
@@ -233,26 +266,38 @@ theorem imageDiagram_map_comp_ι {m m' : Tower.{v}} (u : m ⟶ m') :
         (imageColimitι_comp_hom A i₀ m)))
 
 /-- The comparison map of two rungs of the image tower. -/
-noncomputable def imageRungLe {n k : ℕ} (h : n ≤ k) :
+noncomputable def imageRungLe
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    {n k : ℕ} (h : n ≤ k) :
     stageImage A (towerIdx A i₀ n) ⟶ stageImage A (towerIdx A i₀ k) :=
   (imageDiagram A i₀).map (X := (⟨n⟩ : Tower.{v})) (Y := ⟨k⟩)
     ⟨homOfLE h⟩
 
-theorem imageRungLe_comp_ι {n k : ℕ} (h : n ≤ k) :
+theorem imageRungLe_comp_ι
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    {n k : ℕ} (h : n ≤ k) :
     imageRungLe A i₀ h ≫ stageImageι A (towerIdx A i₀ k) =
       stageImageι A (towerIdx A i₀ n) :=
   imageDiagram_map_comp_ι A i₀ _
 
 /-- The square of a rung of the generated tower, multiplied into the
 next rung of the image tower. -/
-noncomputable def imageRungTop (n : ℕ) :
+noncomputable def imageRungTop
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     indOf.obj (towerObj A i₀ n) ⊗ indOf.obj (towerObj A i₀ n) ⟶
       stageImage A (towerIdx A i₀ (n + 1)) :=
   (indOfTensorIso (towerObj A i₀ n) (towerObj A i₀ n)).hom ≫
     indOf.map (stageMul A (towerIdx A i₀ n)) ≫
       stageToImage A (towerIdx A i₀ (n + 1))
 
-theorem imageRungTop_comp_ι (n : ℕ) :
+theorem imageRungTop_comp_ι
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     imageRungTop A i₀ n ≫ stageImageι A (towerIdx A i₀ (n + 1)) =
       (presStage A (towerIdx A i₀ n) ⊗ₘ
         presStage A (towerIdx A i₀ n)) ≫ μ[A] :=
@@ -269,7 +314,10 @@ theorem imageRungTop_comp_ι (n : ℕ) :
       ((whisker_eq _ h4).trans h3))).trans
       (indOfTensorIso_stageMulToAlg A (towerIdx A i₀ n)))
 
-theorem imageRungBot_comp (n : ℕ) :
+theorem imageRungBot_comp
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     (stageToImage A (towerIdx A i₀ n) ⊗ₘ
         stageToImage A (towerIdx A i₀ n)) ≫
       ((stageImageι A (towerIdx A i₀ n) ⊗ₘ
@@ -289,7 +337,10 @@ theorem imageRungBot_comp (n : ℕ) :
 tower with itself: the square of the stage surjects onto the square of
 its image, the next rung is a subobject of the algebra, and the
 generated tower is closed under multiplication. -/
-theorem imageRungMul_sq (n : ℕ) :
+theorem imageRungMul_sq
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     CommSq (imageRungTop A i₀ n)
       (stageToImage A (towerIdx A i₀ n) ⊗ₘ
         stageToImage A (towerIdx A i₀ n))
@@ -300,14 +351,20 @@ theorem imageRungMul_sq (n : ℕ) :
 
 /-- **The unit of the image tower**, present as soon as the generating
 stage carries the unit of the algebra. -/
-noncomputable def imageOne [UnitAtStage A i₀] :
+noncomputable def imageOne
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    [UnitAtStage A i₀] :
     𝟙_ (Ind C) ⟶ imageSubalgebra A i₀ :=
   (exists_unitAtStage_point A i₀).choose ≫
     stageToImage A i₀ ≫ imageRungι A i₀ 0
 
 /-- **The unit of the image tower lies over the unit of the
 algebra.** -/
-theorem imageOne_comp_hom [UnitAtStage A i₀] :
+theorem imageOne_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    [UnitAtStage A i₀] :
     imageOne A i₀ ≫ imageSubalgebraHom A i₀ = η[A] :=
   have h0 : imageRungι A i₀ 0 ≫ imageSubalgebraHom A i₀ =
       stageImageι A i₀ := imageRungι_comp_hom A i₀ 0
@@ -320,7 +377,10 @@ theorem imageOne_comp_hom [UnitAtStage A i₀] :
 
 /-- **The unit of the image tower does not vanish** when the unit of
 the algebra does not: it composes to the unit of the algebra. -/
-theorem imageOne_ne_zero [UnitAtStage A i₀] (h : η[A] ≠ 0) :
+theorem imageOne_ne_zero
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    [UnitAtStage A i₀] (h : η[A] ≠ 0) :
     imageOne A i₀ ≠ 0 := fun hz =>
   h ((imageOne_comp_hom A i₀).symm.trans
     ((eq_whisker hz _).trans (Limits.zero_comp)))
@@ -336,18 +396,22 @@ descents. -/
 
 section ImageMul
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C] [Abelian C]
-  [RigidCategory C] [MonoidalPreadditive C]
-variable (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+variable {C : Type v}
 
 /-- **The image tower is closed under multiplication, rung by
 rung.** -/
-noncomputable def imageRungMul (n : ℕ) :
+noncomputable def imageRungMul
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     stageImage A (towerIdx A i₀ n) ⊗ stageImage A (towerIdx A i₀ n) ⟶
       stageImage A (towerIdx A i₀ (n + 1)) :=
   (imageRungMul_sq A i₀ n).lift
 
-theorem imageRungMul_comp_ι (n : ℕ) :
+theorem imageRungMul_comp_ι
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     imageRungMul A i₀ n ≫ stageImageι A (towerIdx A i₀ (n + 1)) =
       (stageImageι A (towerIdx A i₀ n) ⊗ₘ
         stageImageι A (towerIdx A i₀ n)) ≫ μ[A] :=
@@ -355,14 +419,20 @@ theorem imageRungMul_comp_ι (n : ℕ) :
 
 /-- **The product of two rungs of the image tower**: both are pushed
 up to their common upper bound, where the tower multiplies. -/
-noncomputable def imagePairMul (n m : ℕ) :
+noncomputable def imagePairMul
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n m : ℕ) :
     stageImage A (towerIdx A i₀ n) ⊗ stageImage A (towerIdx A i₀ m) ⟶
       imageSubalgebra A i₀ :=
   (imageRungLe A i₀ (le_max_left n m) ⊗ₘ
       imageRungLe A i₀ (le_max_right n m)) ≫
     imageRungMul A i₀ (max n m) ≫ imageRungι A i₀ (max n m + 1)
 
-theorem imagePairMul_comp_hom (n m : ℕ) :
+theorem imagePairMul_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n m : ℕ) :
     imagePairMul A i₀ n m ≫ imageSubalgebraHom A i₀ =
       (stageImageι A (towerIdx A i₀ n) ⊗ₘ
         stageImageι A (towerIdx A i₀ m)) ≫ μ[A] :=
@@ -387,7 +457,10 @@ theorem imagePairMul_comp_hom (n m : ℕ) :
 
 /-- The cocone over the image tower whose leg at a rung is the product
 with a fixed rung. -/
-noncomputable def imageLeftMulCocone (n : ℕ) :
+noncomputable def imageLeftMulCocone
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     Cocone (imageDiagram A i₀ ⋙
       tensorLeft (stageImage A (towerIdx A i₀ n))) :=
   Cocone.mk (imageSubalgebra A i₀)
@@ -411,14 +484,20 @@ noncomputable def imageLeftMulCocone (n : ℕ) :
           (imagePairMul_comp_hom A i₀ n (ULift.down m)).symm }
 
 /-- The product of a rung of the image tower with the whole tower. -/
-noncomputable def imageLeftMul (n : ℕ) :
+noncomputable def imageLeftMul
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     stageImage A (towerIdx A i₀ n) ⊗ imageSubalgebra A i₀ ⟶
       imageSubalgebra A i₀ :=
   (isColimitOfPreserves (tensorLeft (stageImage A (towerIdx A i₀ n)))
     (colimit.isColimit (imageDiagram A i₀))).desc
       (imageLeftMulCocone A i₀ n)
 
-theorem imageLeftMul_fac (n : ℕ) (m : Tower.{v}) :
+theorem imageLeftMul_fac
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) (m : Tower.{v}) :
     (stageImage A (towerIdx A i₀ n) ◁
         colimit.ι (imageDiagram A i₀) m) ≫ imageLeftMul A i₀ n =
       imagePairMul A i₀ n (ULift.down m) :=
@@ -426,7 +505,10 @@ theorem imageLeftMul_fac (n : ℕ) (m : Tower.{v}) :
     (colimit.isColimit (imageDiagram A i₀))).fac
       (imageLeftMulCocone A i₀ n) m
 
-theorem imageLeftMul_comp_hom (n : ℕ) :
+theorem imageLeftMul_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     imageLeftMul A i₀ n ≫ imageSubalgebraHom A i₀ =
       (stageImageι A (towerIdx A i₀ n) ⊗ₘ
         imageSubalgebraHom A i₀) ≫ μ[A] :=
@@ -448,7 +530,9 @@ theorem imageLeftMul_comp_hom (n : ℕ) :
 
 /-- The cocone over the image tower whose leg at a rung is the product
 of that rung with the whole tower. -/
-noncomputable def imageMulCocone :
+noncomputable def imageMulCocone
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I) :
     Cocone (imageDiagram A i₀ ⋙
       tensorRight (imageSubalgebra A i₀)) :=
   Cocone.mk (imageSubalgebra A i₀)
@@ -472,13 +556,18 @@ noncomputable def imageMulCocone :
           (imageLeftMul_comp_hom A i₀ (ULift.down n)).symm }
 
 /-- **The multiplication of the image tower.** -/
-noncomputable def imageMul :
+noncomputable def imageMul
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I) :
     imageSubalgebra A i₀ ⊗ imageSubalgebra A i₀ ⟶
       imageSubalgebra A i₀ :=
   (isColimitOfPreserves (tensorRight (imageSubalgebra A i₀))
     (colimit.isColimit (imageDiagram A i₀))).desc (imageMulCocone A i₀)
 
-theorem imageMul_fac (n : Tower.{v}) :
+theorem imageMul_fac
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    (n : Tower.{v}) :
     (colimit.ι (imageDiagram A i₀) n ▷ imageSubalgebra A i₀) ≫
         imageMul A i₀ =
       imageLeftMul A i₀ (ULift.down n) :=
@@ -488,7 +577,9 @@ theorem imageMul_fac (n : Tower.{v}) :
 
 /-- **The multiplication of the image tower lies over the
 multiplication of the algebra.** -/
-theorem imageMul_comp_hom :
+theorem imageMul_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I) :
     imageMul A i₀ ≫ imageSubalgebraHom A i₀ =
       (imageSubalgebraHom A i₀ ⊗ₘ imageSubalgebraHom A i₀) ≫ μ[A] :=
   (isColimitOfPreserves (tensorRight (imageSubalgebra A i₀))
@@ -509,7 +600,10 @@ theorem imageMul_comp_hom :
 /-- **The image tower is an algebra.**  The laws are inherited from
 the algebra: each is an equation between maps into the tower, and the
 inclusion into the algebra is a monomorphism. -/
-noncomputable instance monObjImageSubalgebra [UnitAtStage A i₀] :
+noncomputable instance monObjImageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    [UnitAtStage A i₀] :
     MonObj (imageSubalgebra A i₀) :=
   haveI := mono_imageSubalgebraHom A i₀
   monObjOfMono (imageSubalgebraHom A i₀) (imageMul A i₀)
@@ -517,7 +611,10 @@ noncomputable instance monObjImageSubalgebra [UnitAtStage A i₀] :
 
 /-- The unit of the image tower, read through its algebra structure,
 does not vanish when the unit of the algebra does not. -/
-theorem one_imageSubalgebra_ne_zero [UnitAtStage A i₀] (h : η[A] ≠ 0) :
+theorem one_imageSubalgebra_ne_zero
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+    [UnitAtStage A i₀] (h : η[A] ≠ 0) :
     η[imageSubalgebra A i₀] ≠ 0 :=
   imageOne_ne_zero A i₀ h
 
@@ -530,14 +627,13 @@ because the inclusion into the algebra is a monomorphism. -/
 
 section ImageComm
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable (A : Ind C) [MonObj A] [IsCommMonObj A]
-  (i₀ : A.presentation.I) [UnitAtStage A i₀]
+variable {C : Type v}
 
 /-- **The image tower is a commutative algebra.** -/
-noncomputable instance isCommMonObj_imageSubalgebra :
+noncomputable instance isCommMonObj_imageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (A : Ind C) [MonObj A]
+    [IsCommMonObj A] (i₀ : A.presentation.I) [UnitAtStage A i₀] :
     IsCommMonObj (imageSubalgebra A i₀) where
   mul_comm :=
     haveI := mono_imageSubalgebraHom A i₀
@@ -554,19 +650,26 @@ with countably presented source and non-vanishing unit. -/
 
 section AcceptanceTests
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable (A : Ind C) [MonObj A] [IsCommMonObj A]
+variable {C : Type v}
 
-noncomputable example : MonObj (imageSubalgebra A (unitStage A)) :=
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (A : Ind C) [MonObj A] :
+    MonObj (imageSubalgebra A (unitStage A)) :=
   inferInstance
 
-noncomputable example :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (A : Ind C) [MonObj A]
+    [IsCommMonObj A] :
     IsCommMonObj (imageSubalgebra A (unitStage A)) :=
   inferInstance
 
-example (hemb : IndImageEmbedded C) (h : η[A] ≠ 0) :
+example
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (A : Ind C) [MonObj A]
+    [IsCommMonObj A]
+    (hemb : IndImageEmbedded C) (h : η[A] ≠ 0) :
     ∃ (B : Ind C) (_ : MonObj B) (_ : IsCommMonObj B) (f : B ⟶ A),
       Mono f ∧ CountablyPresented B ∧ η[B] ≠ 0 :=
   ⟨imageSubalgebra A (unitStage A), inferInstance, inferInstance,

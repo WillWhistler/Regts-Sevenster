@@ -16,18 +16,22 @@ open CategoryTheory CategoryTheory.Limits MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [Abelian A] [Linear ℂ A]
-  [MonoidalCategory A] [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [RigidCategory A]
+variable {A : Type u}
 
 /-- **A nonzero point is a monomorphism**: the unit is simple. -/
-theorem mono_of_point_ne_zero (hu : HasScalarUnit A) {X : A}
+theorem mono_of_point_ne_zero
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {X : A}
     {u : 𝟙_ A ⟶ X} (h : u ≠ 0) : Mono u := by
   haveI := simple_unit_of_hasScalarUnit hu
   exact mono_of_nonzero_from_simple h
 
 /-- **The tensor of two nonzero points is a monomorphism.** -/
-theorem mono_tensorHom_point (hu : HasScalarUnit A) {X Y : A}
+theorem mono_tensorHom_point
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {X Y : A}
     {u : 𝟙_ A ⟶ X} {v : 𝟙_ A ⟶ Y} (hu0 : u ≠ 0) (hv0 : v ≠ 0) :
     Mono (u ⊗ₘ v) := by
   haveI : Mono u := mono_of_point_ne_zero hu hu0
@@ -44,7 +48,10 @@ theorem mono_tensorHom_point (hu : HasScalarUnit A) {X Y : A}
   exact mono_comp _ _
 
 /-- **The tensor of two nonzero points is nonzero.** -/
-theorem tensorHom_point_ne_zero (hu : HasScalarUnit A) {X Y : A}
+theorem tensorHom_point_ne_zero
+    [Category.{v} A] [Abelian A] [Linear ℂ A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A] [RigidCategory A]
+    (hu : HasScalarUnit A) {X Y : A}
     {u : 𝟙_ A ⟶ X} {v : 𝟙_ A ⟶ Y} (hu0 : u ≠ 0) (hv0 : v ≠ 0) :
     (u ⊗ₘ v) ≠ 0 := by
   haveI := mono_tensorHom_point hu hu0 hv0

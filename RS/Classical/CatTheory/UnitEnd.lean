@@ -17,16 +17,18 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u}
 
 /-- The two unitors of the tensor unit agree. -/
-private theorem unitor_iso_eq : (λ_ (𝟙_ C)) = (ρ_ (𝟙_ C)) :=
+private theorem unitor_iso_eq
+    [Category.{v} C] [MonoidalCategory C] : (λ_ (𝟙_ C)) = (ρ_ (𝟙_ C)) :=
   Iso.ext unitors_equal
 
 /-- Conjugating by the right unitor recovers an endomorphism of the
 unit from its right whiskering. -/
 @[reassoc]
-private theorem whiskerRight_unit (f : 𝟙_ C ⟶ 𝟙_ C) :
+private theorem whiskerRight_unit [Category.{v} C] [MonoidalCategory C]
+    (f : 𝟙_ C ⟶ 𝟙_ C) :
     (ρ_ (𝟙_ C)).inv ≫ (f ▷ 𝟙_ C) ≫ (ρ_ (𝟙_ C)).hom = f := by
   rw [rightUnitor_naturality, ← Category.assoc, Iso.inv_hom_id,
     Category.id_comp]
@@ -34,13 +36,15 @@ private theorem whiskerRight_unit (f : 𝟙_ C ⟶ 𝟙_ C) :
 /-- Conjugating by the right unitor recovers an endomorphism of the
 unit from its left whiskering. -/
 @[reassoc]
-private theorem whiskerLeft_unit (g : 𝟙_ C ⟶ 𝟙_ C) :
+private theorem whiskerLeft_unit [Category.{v} C] [MonoidalCategory C]
+    (g : 𝟙_ C ⟶ 𝟙_ C) :
     (ρ_ (𝟙_ C)).inv ≫ (𝟙_ C ◁ g) ≫ (ρ_ (𝟙_ C)).hom = g := by
   rw [← unitor_iso_eq, leftUnitor_naturality, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
 
 /-- **Endomorphisms of the tensor unit commute.** -/
-theorem unit_comp_comm (f g : 𝟙_ C ⟶ 𝟙_ C) : f ≫ g = g ≫ f := by
+theorem unit_comp_comm [Category.{v} C] [MonoidalCategory C]
+    (f g : 𝟙_ C ⟶ 𝟙_ C) : f ≫ g = g ≫ f := by
   have h1 : (ρ_ (𝟙_ C)).inv ≫ (f ▷ 𝟙_ C) ≫ (𝟙_ C ◁ g) ≫
       (ρ_ (𝟙_ C)).hom = f ≫ g := by
     rw [← unitor_iso_eq, leftUnitor_naturality, unitor_iso_eq,
@@ -51,12 +55,14 @@ theorem unit_comp_comm (f g : 𝟙_ C ⟶ 𝟙_ C) : f ≫ g = g ≫ f := by
   rw [← h1, ← h2, ← whisker_exchange_assoc]
 
 /-- The scalars form a commutative monoid. -/
-instance endUnitCommMonoid : CommMonoid (End (𝟙_ C)) :=
+instance endUnitCommMonoid
+    [Category.{v} C] [MonoidalCategory C] : CommMonoid (End (𝟙_ C)) :=
   { (inferInstance : Monoid (End (𝟙_ C))) with
     mul_comm := fun f g => unit_comp_comm g f }
 
 /-- The unit braids trivially with itself. -/
-theorem braiding_unit_self [BraidedCategory C] :
+theorem braiding_unit_self [Category.{v} C] [MonoidalCategory C]
+    [BraidedCategory C] :
     (β_ (𝟙_ C) (𝟙_ C)).hom = 𝟙 (𝟙_ C ⊗ 𝟙_ C) := by
   have h := braiding_leftUnitor (C := C) (𝟙_ C)
   rw [unitors_equal] at h

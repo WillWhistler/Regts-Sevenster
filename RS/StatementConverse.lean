@@ -20,8 +20,7 @@ namespace RS
 
 section EmptyValue
 
-variable {α : Type} (W : Fragment α) [IsEmpty W.Flag]
-  [IsEmpty W.Vertex]
+variable {α : Type} (W : Fragment α)
 
 /-- The empty edge subset of a flagless fragment. -/
 private def flaglessEmptySubset : EdgeSubset W :=
@@ -29,7 +28,7 @@ private def flaglessEmptySubset : EdgeSubset W :=
 
 /-- The vacuous transition system on the empty subset of a
 flagless fragment. -/
-private def flaglessTransition :
+private def flaglessTransition [IsEmpty W.Flag] :
     (flaglessEmptySubset W).TransitionSystem where
   match_ := fun f => isEmptyElim f
   match_invol := fun f => isEmptyElim f
@@ -39,7 +38,7 @@ private def flaglessTransition :
   attach_internal := fun f => isEmptyElim f
 
 /-- The vacuous orientation. -/
-private def flaglessOrientation :
+private def flaglessOrientation [IsEmpty W.Flag] :
     (flaglessTransition W).Orientation where
   isOut := fun f => isEmptyElim f
   match_flip := fun f => isEmptyElim f
@@ -48,7 +47,8 @@ private def flaglessOrientation :
 open Classical in
 /-- **The Definition 5 value of a flagless fragment** is the circle
 factor alone. -/
-theorem mixedPartition_of_flagless {k ℓ : ℕ}
+theorem mixedPartition_of_flagless [IsEmpty W.Flag] [IsEmpty W.Vertex]
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) :
     mixedPartition h W = ((k : ℂ) - 2 * ℓ) ^ W.circles := by
   unfold mixedPartition
@@ -118,8 +118,7 @@ theorem mixedPartition_empty {k ℓ : ℕ} (h : MixedFunctional k ℓ) :
 
 /-- **Assembly of the converse** from the Eulerian-independence
 input and the connection-rank bound. -/
-theorem converseStatement_of_rank_bounded
-    (hInd : EulerianIndependence)
+theorem converseStatement_of_rank_bounded (hInd : EulerianIndependence)
     (Hrank : ∀ (k ℓ : ℕ) (hf : MixedFunctional k ℓ),
       EdgeRankBounded (fun W => mixedPartition hf W) (k + 2 * ℓ)) :
     RegtsSevensterConverseStatement := by

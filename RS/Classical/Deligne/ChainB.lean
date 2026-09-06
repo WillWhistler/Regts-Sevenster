@@ -17,22 +17,19 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-- **The right transition square**: inserting the seed in the
 second factor and multiplying is multiplying and then inserting
 the seed. -/
-theorem chainDelta_mul_right (d : ModDualityDatum A M M')
+theorem chainDelta_mul_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (i j : ℕ) :
     (chainStage A M M' i ◁ chainDelta A M M' d j) ≫
         chainMul A M M' i (j + 1) =
@@ -94,9 +91,15 @@ theorem chainDelta_mul_right (d : ModDualityDatum A M M')
     rw [rightUnitor_inv_naturality]
   rw [reassoc_of% h4]
 
-
 /-- Transitions transport along index casts. -/
-theorem chainStageCast_delta (d : ModDualityDatum A M M')
+theorem chainStageCast_delta
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {a b : ℕ} (h : a = b) :
     chainStageCast A M M' h ≫ chainDelta A M M' d b =
       chainDelta A M M' d a ≫
@@ -108,7 +111,14 @@ theorem chainStageCast_delta (d : ModDualityDatum A M M')
 /-- **The left transition square**: inserting the seed in the
 first factor and multiplying is multiplying and then inserting
 the seed, up to the index transport. -/
-theorem chainDelta_mul_left (d : ModDualityDatum A M M')
+theorem chainDelta_mul_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (i j : ℕ) :
     (chainDelta A M M' d i ▷ chainStage A M M' j) ≫
         chainMul A M M' (i + 1) j =
@@ -145,11 +155,16 @@ theorem chainDelta_mul_left (d : ModDualityDatum A M M')
     (by omega : i + 1 + j = j + 1 + i))]
   rw [chainStageCast_trans]
 
-
-
 /-- **The right unit law of the seed**: multiplying by the seed
 on the right is the transition. -/
-theorem chainSeed_mul_right (d : ModDualityDatum A M M')
+theorem chainSeed_mul_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (i : ℕ) :
     (chainStage A M M' i ◁ chainSeed A M M' d) ≫
         chainMul A M M' i 0 =
@@ -159,7 +174,14 @@ theorem chainSeed_mul_right (d : ModDualityDatum A M M')
 
 /-- **The left unit law of the seed**: multiplying by the seed on
 the left is the transition, through the unit braiding. -/
-theorem chainSeed_mul_left (d : ModDualityDatum A M M') (j : ℕ) :
+theorem chainSeed_mul_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (j : ℕ) :
     (chainSeed A M M' d ▷ chainStage A M M' j) ≫
         chainMul A M M' 0 j =
       (λ_ (chainStage A M M' j)).hom ≫
@@ -181,25 +203,24 @@ theorem chainSeed_mul_left (d : ModDualityDatum A M M') (j : ℕ) :
   rw [braiding_tensorUnit_left]
   simp only [Category.assoc, Iso.inv_hom_id_assoc]
 
-
-
-omit [MonoidalCategory D] [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A] in
 /-- A chain map to a transported index is the chain map followed
 by the transport. -/
-theorem chainMap_eq_cast (B : ℕ → D) (δ : ∀ n, B n ⟶ B (n + 1))
+theorem chainMap_eq_cast [Category.{v} D]
+    (B : ℕ → D) (δ : ∀ n, B n ⟶ B (n + 1))
     {m n n' : ℕ} (h : m ≤ n) (hn : n = n') (h' : m ≤ n') :
     chainMap B δ h' = chainMap B δ h ≫ chainCast B hn := by
   subst hn
   rw [chainCast_rfl, Category.comp_id]
 
 /-- The left seed law in chain-map form. -/
-theorem chainSeed_mul_left_chainMap (d : ModDualityDatum A M M')
+theorem chainSeed_mul_left_chainMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (j : ℕ) :
     (chainSeed A M M' d ▷ chainStage A M M' j) ≫
         chainMul A M M' 0 j =
@@ -215,21 +236,33 @@ theorem chainSeed_mul_left_chainMap (d : ModDualityDatum A M M')
 
 section Colimit
 
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
 /-- **The algebra of the splitting chain**: the colimit of the
 symmetric stages along the seed transitions. -/
-noncomputable def chainB (d : ModDualityDatum A M M') : D :=
+noncomputable def chainB
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M') : D :=
   chainColimit (chainStage A M M') (chainDelta A M M' d)
 
 /-- **The splitting-chain algebra is a commutative monoid**: the
 stage laws transport to the colimit. -/
 @[reducible]
-noncomputable def chainBMonObj (d : ModDualityDatum A M M') :
+noncomputable def chainBMonObj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     MonObj (chainB A M M' d) :=
   chainColimitMonObj (chainStage A M M') (chainDelta A M M' d)
     (chainMul A M M') (chainDelta_mul_left A M M' d)
@@ -245,7 +278,17 @@ noncomputable def chainBMonObj (d : ModDualityDatum A M M') :
       exact h)
 
 /-- **The splitting-chain algebra is commutative**. -/
-theorem chainB_isCommMonObj (d : ModDualityDatum A M M') :
+theorem chainB_isCommMonObj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     letI := chainBMonObj A M M' d
     IsCommMonObj (chainB A M M' d) :=
   chainColimit_isCommMonObj (chainStage A M M')
@@ -263,14 +306,20 @@ theorem chainB_isCommMonObj (d : ModDualityDatum A M M') :
       exact h)
     (fun i j => chainMul_comm A M M' i j)
 
-
 /-- **The unit of the splitting-chain algebra**: the seed at the
 bottom stage. -/
-noncomputable def chainBUnit (d : ModDualityDatum A M M') :
+noncomputable def chainBUnit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M') :
     𝟙_ D ⟶ chainB A M M' d :=
   chainColimitUnit (chainStage A M M') (chainDelta A M M' d)
     (chainSeed A M M' d)
-
 
 end Colimit
 

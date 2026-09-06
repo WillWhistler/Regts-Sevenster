@@ -18,28 +18,35 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [RigidCategory A]
+variable {A : Type u}
 
 /-- Right tensoring preserves all colimits: `− ⊗ X` is a left
 adjoint (Frobenius reciprocity, with adjoint `− ⊗ Xᘁ`). -/
-noncomputable instance tensorRight_preservesColimits (X : A) :
+noncomputable instance tensorRight_preservesColimits
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     PreservesColimitsOfSize.{v, v} (tensorRight X) :=
   (tensorRightAdjunction X (Xᘁ)).leftAdjoint_preservesColimits
 
 /-- Right tensoring preserves all limits: `− ⊗ X` is a right
 adjoint (with adjoint `− ⊗ ᘁX`). -/
-noncomputable instance tensorRight_preservesLimits (X : A) :
+noncomputable instance tensorRight_preservesLimits
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     PreservesLimitsOfSize.{v, v} (tensorRight X) :=
   (tensorRightAdjunction (ᘁX) X).rightAdjoint_preservesLimits
 
 /-- Left tensoring preserves all colimits. -/
-noncomputable instance tensorLeft_preservesColimits (X : A) :
+noncomputable instance tensorLeft_preservesColimits
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     PreservesColimitsOfSize.{v, v} (tensorLeft X) :=
   (tensorLeftAdjunction (ᘁX) X).leftAdjoint_preservesColimits
 
 /-- Left tensoring preserves all limits. -/
-noncomputable instance tensorLeft_preservesLimits (X : A) :
+noncomputable instance tensorLeft_preservesLimits
+    [Category.{v} A] [MonoidalCategory A] [RigidCategory A]
+    (X : A) :
     PreservesLimitsOfSize.{v, v} (tensorLeft X) :=
   (tensorLeftAdjunction X (Xᘁ)).rightAdjoint_preservesLimits
 

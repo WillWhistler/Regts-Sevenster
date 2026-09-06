@@ -197,23 +197,21 @@ instance tensorRightFunctor_linear (N : S.Mod.{u, u, u, u}) :
 
 end SuperCommAlgebra.Mod
 
-
 section Transport
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
 variable {M N Q : S.Mod.{u, u, u, u}}
-variable [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (Q.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (Q.tensor (pointMod P)).odd]
 
 /-- **Base change of a morphism of super modules along a ℂ-point.**
 The morphism is tensored with the residue module and the result is
 read in the coordinates that `RS.toSuperVect` installs on the two
 components. -/
-noncomputable def superVectHom (u : M ⟶ N) :
+noncomputable def superVectHom
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    (u : M ⟶ N) :
     toSuperVect P M ⟶ toSuperVect P N where
   evenMap := (toSuperVectEvenEquiv P N).toLinearMap ∘ₗ
     ((tensorRightFunctor (pointMod P)).map u).evenMap ∘ₗ
@@ -223,7 +221,8 @@ noncomputable def superVectHom (u : M ⟶ N) :
     (toSuperVectOddEquiv P M).symm.toLinearMap
 
 /-- Base change fixes the identity. -/
-theorem superVectHom_id :
+theorem superVectHom_id [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd] :
     superVectHom P (𝟙 M) = 𝟙 (toSuperVect P M) := by
   refine SuperVect.hom_ext ?_ ?_ <;> refine LinearMap.ext fun x => ?_
   · show (toSuperVectEvenEquiv P M)
@@ -239,7 +238,13 @@ theorem superVectHom_id :
 
 /-- Base change respects composition: the conjugating equivalences
 cancel. -/
-theorem superVectHom_comp (u : M ⟶ N) (v : N ⟶ Q) :
+theorem superVectHom_comp [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (Q.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (Q.tensor (pointMod P)).odd]
+    (u : M ⟶ N) (v : N ⟶ Q) :
     superVectHom P (u ≫ v) = superVectHom P u ≫ superVectHom P v := by
   refine SuperVect.hom_ext ?_ ?_ <;> refine LinearMap.ext fun x => ?_
   · show (toSuperVectEvenEquiv P Q)
@@ -266,7 +271,11 @@ theorem superVectHom_comp (u : M ⟶ N) (v : N ⟶ Q) :
     rfl
 
 /-- Base change is additive. -/
-theorem superVectHom_add (u v : M ⟶ N) :
+theorem superVectHom_add [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    (u v : M ⟶ N) :
     superVectHom P (u + v) = superVectHom P u + superVectHom P v := by
   refine SuperVect.hom_ext ?_ ?_ <;> refine LinearMap.ext fun x => ?_
   · show (toSuperVectEvenEquiv P N)
@@ -289,7 +298,11 @@ theorem superVectHom_add (u v : M ⟶ N) :
     exact map_add _ _ _
 
 /-- Base change is ℂ-linear. -/
-theorem superVectHom_smul (c : ℂ) (u : M ⟶ N) :
+theorem superVectHom_smul [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    (c : ℂ) (u : M ⟶ N) :
     superVectHom P (c • u) = c • superVectHom P u := by
   refine SuperVect.hom_ext ?_ ?_ <;> refine LinearMap.ext fun x => ?_
   · show (toSuperVectEvenEquiv P N)
@@ -313,18 +326,17 @@ end Transport
 
 section PointFunctor
 
-variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
-  {E : Type u₂} [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
-  (hE : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).even)
-  (hO : ∀ X, FiniteDimensional ℂ
-    ((G.obj X).tensor (pointMod P)).odd)
+variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S) {E : Type u₂}
 
 /-- **The base-change functor at a ℂ-point.**  Each value of `G` is
 tensored with the residue module of the point and packaged as a
 super vector space; each morphism is conjugated through the
 coordinate equivalences. -/
-noncomputable def superVectFunctor : E ⥤ SuperVect where
+noncomputable def superVectFunctor
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd) :
+    E ⥤ SuperVect where
   obj X := @toSuperVect _ P (G.obj X) (hE X) (hO X)
   map {X Y} f :=
     @superVectHom _ P _ _ (hE X) (hO X) (hE Y) (hO Y) (G.map f)
@@ -339,11 +351,19 @@ noncomputable def superVectFunctor : E ⥤ SuperVect where
     rw [CategoryTheory.Functor.map_comp]
     exact superVectHom_comp P _ _
 
-@[simp] theorem superVectFunctor_obj (X : E) :
+@[simp] theorem superVectFunctor_obj
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    (X : E) :
     (superVectFunctor P G hE hO).obj X =
       @toSuperVect _ P (G.obj X) (hE X) (hO X) := rfl
 
-@[simp] theorem superVectFunctor_map {X Y : E} (f : X ⟶ Y) :
+@[simp] theorem superVectFunctor_map
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    {X Y : E} (f : X ⟶ Y) :
     (superVectFunctor P G hE hO).map f =
       @superVectHom _ P _ _ (hE X) (hO X) (hE Y) (hO Y)
         (G.map f) := rfl
@@ -351,7 +371,11 @@ noncomputable def superVectFunctor : E ⥤ SuperVect where
 /-! ## Additivity -/
 
 /-- **The base-change functor is additive.** -/
-instance superVectFunctor_additive [Preadditive E] [G.Additive] :
+instance superVectFunctor_additive
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Preadditive E] [G.Additive] :
     (superVectFunctor P G hE hO).Additive where
   map_add {X Y f g} := by
     show @superVectHom _ P _ _ (hE X) (hO X) (hE Y) (hO Y)
@@ -360,7 +384,10 @@ instance superVectFunctor_additive [Preadditive E] [G.Additive] :
     exact superVectHom_add P _ _
 
 /-- **The base-change functor is ℂ-linear.** -/
-instance superVectFunctor_linear [Preadditive E]
+instance superVectFunctor_linear [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Preadditive E]
     [CategoryTheory.Linear ℂ E] [G.Additive] [G.Linear ℂ] :
     (superVectFunctor P G hE hO).Linear ℂ where
   map_smul {X Y} f c := by
@@ -374,14 +401,22 @@ instance superVectFunctor_linear [Preadditive E]
 /-- **The even dimension of the base change of a free value.**  If
 `G` takes `X` to a free super module of rank `(p | q)` then the
 even part of its base change has dimension `p`. -/
-theorem finrank_superVectFunctor_even (X : E) (p q : ℕ)
+theorem finrank_superVectFunctor_even
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    (X : E) (p q : ℕ)
     (e : G.obj X ≅ ⨁ fun i : Fin p ⊕ Fin q =>
       Sum.elim (fun _ => S.unitMod) (fun _ => shift S.unitMod) i) :
     Module.finrank ℂ ((superVectFunctor P G hE hO).obj X).even = p :=
   @finrank_toSuperVect_even_of_free _ P p q (G.obj X) e (hE X) (hO X)
 
 /-- **The odd dimension of the base change of a free value.** -/
-theorem finrank_superVectFunctor_odd (X : E) (p q : ℕ)
+theorem finrank_superVectFunctor_odd
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    (X : E) (p q : ℕ)
     (e : G.obj X ≅ ⨁ fun i : Fin p ⊕ Fin q =>
       Sum.elim (fun _ => S.unitMod) (fun _ => shift S.unitMod) i) :
     Module.finrank ℂ ((superVectFunctor P G hE hO).obj X).odd = q :=
@@ -391,13 +426,15 @@ theorem finrank_superVectFunctor_odd (X : E) (p q : ℕ)
 
 section Exact
 
-variable [Abelian E] [G.Additive]
-
 /-- **A splitting of the image under `G` gives a splitting after
 base change.**  All three terms are free over the Γ-algebra, so the
 sequence splits before base change, and base change carries the
 splitting across. -/
 noncomputable def superVectSplitting
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Abelian E] [G.Additive]
     (T : CategoryTheory.ShortComplex E) (σ : (T.map G).Splitting) :
     (T.map (superVectFunctor P G hE hO)).Splitting :=
   haveI : FiniteDimensional ℂ
@@ -433,6 +470,10 @@ noncomputable def superVectSplitting
 /-- **The base-change functor carries a split short exact sequence
 to a short exact sequence.** -/
 theorem superVectFunctor_shortExact
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Abelian E] [G.Additive]
     (T : CategoryTheory.ShortComplex E) (σ : (T.map G).Splitting) :
     (T.map (superVectFunctor P G hE hO)).ShortExact :=
   (superVectSplitting P G hE hO T σ).shortExact
@@ -440,6 +481,10 @@ theorem superVectFunctor_shortExact
 /-- **The base-change functor preserves finite limits** as soon as
 every short exact sequence splits after `G`. -/
 theorem superVectFunctor_preservesFiniteLimits
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Abelian E] [G.Additive]
     (hsec : ∀ T : CategoryTheory.ShortComplex E, T.ShortExact →
       Nonempty ((T.map G).Splitting)) :
     Limits.PreservesFiniteLimits (superVectFunctor P G hE hO) :=
@@ -449,6 +494,10 @@ theorem superVectFunctor_preservesFiniteLimits
 /-- **The base-change functor preserves finite colimits** under the
 same hypothesis; with the previous statement it is exact. -/
 theorem superVectFunctor_preservesFiniteColimits
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Abelian E] [G.Additive]
     (hsec : ∀ T : CategoryTheory.ShortComplex E, T.ShortExact →
       Nonempty ((T.map G).Splitting)) :
     Limits.PreservesFiniteColimits (superVectFunctor P G hE hO) :=
@@ -458,6 +507,10 @@ theorem superVectFunctor_preservesFiniteColimits
 /-- **The base-change functor preserves homology**, hence
 monomorphisms and epimorphisms. -/
 theorem superVectFunctor_preservesHomology
+    [Category.{v₂} E] (G : E ⥤ S.Mod.{u, u, u, u})
+    (hE : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).even)
+    (hO : ∀ X, FiniteDimensional ℂ ((G.obj X).tensor (pointMod P)).odd)
+    [Abelian E] [G.Additive]
     (hsec : ∀ T : CategoryTheory.ShortComplex E, T.ShortExact →
       Nonempty ((T.map G).Splitting)) :
     (superVectFunctor P G hE hO).PreservesHomology :=
@@ -477,23 +530,25 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
-variable [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
-variable (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
-  [IsCommMonObj 𝔸]
+variable {C : Type v}
 
 /-- The restricted fibre functor is additive. -/
-instance indFibre_additive :
+instance indFibre_additive
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸] :
     ((indOf : C ⥤ Ind C) ⋙ fibreFun L 𝔸).Additive :=
   haveI : (indOf (C := C)).Additive := indOf_additive
   inferInstance
 
-omit [RigidCategory C] in
 /-- **The even part of the fibre of an embedded object at a point is
 finite dimensional**, for an algebra splitting the embedding. -/
 theorem finiteDimensional_indFibre_even
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) (X : C) :
     FiniteDimensional ℂ
@@ -502,10 +557,13 @@ theorem finiteDimensional_indFibre_even
   obtain ⟨p, q, ⟨e⟩⟩ := hsp X
   exact finiteDimensional_fibre_tensor_point_even L 𝔸 P e
 
-omit [RigidCategory C] in
 /-- **The odd part of the fibre of an embedded object at a point is
 finite dimensional.** -/
 theorem finiteDimensional_indFibre_odd
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) (X : C) :
     FiniteDimensional ℂ
@@ -517,6 +575,10 @@ theorem finiteDimensional_indFibre_odd
 /-- **The fibre functor into super vector spaces**: embed, take the
 fibre over the splitting algebra, and base change to the ℂ-point. -/
 noncomputable def deligneFibre
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) : C ⥤ SuperVect :=
   superVectFunctor P ((indOf : C ⥤ Ind C) ⋙ fibreFun L 𝔸)
@@ -525,6 +587,10 @@ noncomputable def deligneFibre
 
 /-- **The fibre functor is additive.** -/
 instance deligneFibre_additive
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) :
     (deligneFibre L 𝔸 hsp P).Additive :=
@@ -536,6 +602,10 @@ instance deligneFibre_additive
 splitting of each embedded short exact sequence after the fibre
 functor. -/
 theorem indFibre_nonempty_splitting
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (hsec : ∀ T : CategoryTheory.ShortComplex C, T.ShortExact →
       ∃ s : freeMod 𝔸 ((T.map (indOf : C ⥤ Ind C)).X₃) ⟶
           freeMod 𝔸 ((T.map (indOf : C ⥤ Ind C)).X₂),
@@ -550,6 +620,10 @@ theorem indFibre_nonempty_splitting
 
 /-- **The fibre functor preserves finite limits.** -/
 theorem deligneFibre_preservesFiniteLimits
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (hsec : ∀ T : CategoryTheory.ShortComplex C, T.ShortExact →
       ∃ s : freeMod 𝔸 ((T.map (indOf : C ⥤ Ind C)).X₃) ⟶
@@ -564,6 +638,10 @@ theorem deligneFibre_preservesFiniteLimits
 /-- **The fibre functor preserves finite colimits**; with the
 previous statement it is exact. -/
 theorem deligneFibre_preservesFiniteColimits
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (hsec : ∀ T : CategoryTheory.ShortComplex C, T.ShortExact →
       ∃ s : freeMod 𝔸 ((T.map (indOf : C ⥤ Ind C)).X₃) ⟶
@@ -577,15 +655,17 @@ theorem deligneFibre_preservesFiniteColimits
 
 /-! ### Dimensions and faithfulness -/
 
-variable [∀ Z : Ind C, (tensorRight Z).PreservesMonomorphisms]
-
-omit [RigidCategory C] in
 /-- **The fibre functor detects the zero object.**  If the fibre of
 an object is a zero super vector space then both ranks of its mixed
 sum vanish, so its fibre over the algebra is already zero, and the
 unit of the algebra being a monomorphism forces the object to
 vanish. -/
-theorem id_eq_zero_of_deligneFibre_id_eq_zero (hmono : Mono η[𝔸])
+theorem id_eq_zero_of_deligneFibre_id_eq_zero
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] [CategoryTheory.Linear ℂ (Ind C)]
+    [MonoidalLinear ℂ (Ind C)] (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸]
+    [IsCommMonObj 𝔸] [∀ Z : Ind C, (tensorRight Z).PreservesMonomorphisms]
+    (hmono : Mono η[𝔸])
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (P : SuperPoint (gammaAlgebra (Ind C) L 𝔸)) (Z : C)
     (hz : 𝟙 ((deligneFibre L 𝔸 hsp P).obj Z) = 0) : 𝟙 Z = 0 := by
@@ -654,7 +734,13 @@ theorem id_eq_zero_of_deligneFibre_id_eq_zero (hmono : Mono η[𝔸])
 the image factorisation of a morphism to an image factorisation;
 a morphism killed by the functor therefore has zero image, and an
 object with zero fibre is zero. -/
-theorem deligneFibre_faithful (hmono : Mono η[𝔸])
+theorem deligneFibre_faithful
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
+    [∀ Z : Ind C, (tensorRight Z).PreservesMonomorphisms]
+    (hmono : Mono η[𝔸])
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (hsec : ∀ T : CategoryTheory.ShortComplex C, T.ShortExact →
       ∃ s : freeMod 𝔸 ((T.map (indOf : C ⥤ Ind C)).X₃) ⟶
@@ -701,7 +787,13 @@ and every embedded short exact sequence after base change, the
 composite of the embedding, the fibre functor over the algebra and
 base change along the point is an additive, exact and faithful
 functor to finite-dimensional super vector spaces. -/
-theorem exists_deligneFibre_of_point (hmono : Mono η[𝔸])
+theorem exists_deligneFibre_of_point
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)]
+    (L : OddLine (Ind C)) (𝔸 : Ind C) [MonObj 𝔸] [IsCommMonObj 𝔸]
+    [∀ Z : Ind C, (tensorRight Z).PreservesMonomorphisms]
+    (hmono : Mono η[𝔸])
     (hsp : SplitsOn L 𝔸 (indOf : C ⥤ Ind C))
     (hsec : ∀ T : CategoryTheory.ShortComplex C, T.ShortExact →
       ∃ s : freeMod 𝔸 ((T.map (indOf : C ⥤ Ind C)).X₃) ⟶

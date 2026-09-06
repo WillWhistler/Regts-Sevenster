@@ -316,8 +316,7 @@ theorem match_stepDataDown_congr_at_closed (n : ℕ)
 open Classical in
 /-- **The interface round trip, at no cuts.**  The lift and the push
 are inverse outright. -/
-theorem match_pushData_liftData_zero
-    (V : Fragment (Fin (0 + 0) ⊕ Fin (0 + 0)))
+theorem match_pushData_liftData_zero (V : Fragment (Fin (0 + 0) ⊕ Fin (0 + 0)))
     (bits : Fin 0 → Bool) (𝒟 : DataFamily V) (s : Finset V.Flag)
     (hc : ∀ f ∈ s, V.pairing f ∈ s)
     (hE : (EdgeSubset.mk s hc).Eulerian)
@@ -655,11 +654,13 @@ subset at a time.
 
 section WeightIndep
 
-variable {L : Type} [LinearOrder L] [IsEmpty L] {V : Fragment L}
+variable {L : Type}
 
 open Classical in
 /-- **The weighted summand at the composition is family-free.** -/
-theorem circuitWeight_mul_edgeTermAt_indep {k ℓ : ℕ}
+theorem circuitWeight_mul_edgeTermAt_indep
+    [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L)
     (u : Finset V.Flag) (C : ℕ) (𝒟 𝒟' : DataFamily V) :
     circuitWeight 𝒟 u * edgeTermAt h 𝒟 st u C

@@ -51,14 +51,15 @@ noncomputable section
 
 section MonoidalFunctor
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  {B : Type u'} [Category.{v'} B] [MonoidalCategory B]
-  (F : A ⥤ B) [F.Monoidal]
+variable {A : Type u}
 
 /-- **Transport of unit-endomorphism conjugates**: a strong monoidal
 functor carries the left-unitor conjugate of a unit endomorphism `u`
 to the left-unitor conjugate of the comparison transport of `u`. -/
-theorem monoidalMap_unitConj (X : A) (u : 𝟙_ A ⟶ 𝟙_ A) :
+theorem monoidalMap_unitConj
+    [Category.{v} A] [MonoidalCategory A] {B : Type u'} [Category.{v'} B]
+    [MonoidalCategory B] (F : A ⥤ B) [F.Monoidal]
+    (X : A) (u : 𝟙_ A ⟶ 𝟙_ A) :
     F.map ((λ_ X).inv ≫ (u ▷ X) ≫ (λ_ X).hom) =
       (λ_ (F.obj X)).inv ≫
         ((Functor.LaxMonoidal.ε F ≫ F.map u ≫
@@ -79,7 +80,10 @@ comparison.  Both triangle identities descend from the corresponding
 identities downstairs, whose image is expanded by the oplax
 coherences of `CategoryTheory.Functor.Monoidal`. -/
 @[implicit_reducible]
-def exactPairingMap {X Y : A} [ExactPairing X Y] :
+def exactPairingMap
+    [Category.{v} A] [MonoidalCategory A] {B : Type u'} [Category.{v'} B]
+    [MonoidalCategory B] (F : A ⥤ B) [F.Monoidal]
+    {X Y : A} [ExactPairing X Y] :
     ExactPairing (F.obj X) (F.obj Y) where
   coevaluation' :=
     Functor.LaxMonoidal.ε F ≫ F.map (η_ X Y) ≫
@@ -124,12 +128,13 @@ end MonoidalFunctor
 
 section Duals
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- **Duals transport along the embedding `C ⥤ Ind C`**: the
 embedding is strong monoidal (`RS.indOfMonoidal`), and a strong
 monoidal functor preserves exact pairings. -/
-instance exactPairingIndOf (X Y : C) [ExactPairing X Y] :
+instance exactPairingIndOf [SmallCategory C] [MonoidalCategory C]
+    (X Y : C) [ExactPairing X Y] :
     ExactPairing ((indOf : C ⥤ Ind C).obj X)
       ((indOf : C ⥤ Ind C).obj Y) :=
   exactPairingMap indOf
@@ -140,12 +145,14 @@ end Duals
 
 section Scalars
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Preadditive C] [HasFiniteColimits C]
+variable {C : Type v}
 
 /-- The scalar unit of `Ind C` is the comparison transport of the
 scalar unit of `C` along the strong monoidal embedding. -/
-theorem scalarHom_indScalarUnit (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) :
+theorem scalarHom_indScalarUnit
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) :
     scalarHom (indScalarUnit ψ) c =
       Functor.LaxMonoidal.ε (indOf (C := C)) ≫ indOf.map (ψ c) ≫
         Functor.OplaxMonoidal.η (indOf (C := C)) := by
@@ -156,7 +163,10 @@ theorem scalarHom_indScalarUnit (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) :
 the action of `c` induced by `ψ` to the action of `c` induced by
 `RS.indScalarUnit ψ`.  No compatibility with an ambient linear
 structure is asked: both actions come from the same `ψ`. -/
-theorem indOf_map_scalarSmul (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) {X Y : C}
+theorem indOf_map_scalarSmul
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) {X Y : C}
     (f : X ⟶ Y) :
     indOf.map (scalarSmul ψ c f) =
       scalarSmul (indScalarUnit ψ) c (indOf.map f) := by
@@ -181,34 +191,36 @@ end Scalars
 
 section AlgebraTransport
 
-variable {E : Type u} [Category.{v} E]
+variable {E : Type u}
 
 /-- Intertwining a fixed morphism is closed under sums.  Stated at
 general objects and applied by `exact`, so that the endomorphism-ring
 structure never enters the rewriting. -/
-private theorem sum_pass [Preadditive E] {P Q : E} {a b : P ⟶ P}
+private theorem sum_pass [Category.{v} E]
+    [Preadditive E] {P Q : E} {a b : P ⟶ P}
     {a' b' : Q ⟶ Q} {T : P ⟶ Q} (ha : a ≫ T = T ≫ a')
     (hb : b ≫ T = T ≫ b') :
     (a + b) ≫ T = T ≫ (a' + b') := by
   rw [Preadditive.add_comp, Preadditive.comp_add, ha, hb]
 
 /-- Intertwining a fixed morphism is closed under scalars. -/
-private theorem scale_pass [Preadditive E] [Linear ℂ E] {P Q : E}
+private theorem scale_pass [Category.{v} E]
+    [Preadditive E] [Linear ℂ E] {P Q : E}
     {a : P ⟶ P} {a' : Q ⟶ Q} {T : P ⟶ Q} (r : ℂ)
     (h : a ≫ T = T ≫ a') :
     (r • a) ≫ T = T ≫ (r • a') := by
   rw [Linear.smul_comp, Linear.comp_smul, h]
-
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Preadditive C] [HasFiniteColimits C]
-  [MonoidalPreadditive C]
 
 /-- **Transport of the group-algebra action**: for the ℂ-linear
 structures induced on `C` and on `Ind C` by one scalar unit `ψ`, the
 action of the symmetric-group algebra on the tensor powers of an
 embedded object is conjugate, under `RS.indOfPowIso`, to the embedded
 action. -/
-theorem permAlg_indOf_conj_scalarUnit (ψ : ℂ ≃+* End (𝟙_ C)) (X : C)
+theorem permAlg_indOf_conj_scalarUnit
+    {C : Type v} [SmallCategory C] [MonoidalCategory C]
+    [SymmetricCategory C] [Preadditive C] [HasFiniteColimits C]
+    [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (X : C)
     {n : ℕ} (x : SymGroupAlgebra n) :
     letI := linearOfScalarUnit ψ
     letI := linearOfScalarUnit (indScalarUnit ψ)
@@ -236,7 +248,10 @@ theorem permAlg_indOf_conj_scalarUnit (ψ : ℂ ≃+* End (𝟙_ C)) (X : C)
 with the ℂ-linear structures induced on `C` and on `Ind C` by one
 scalar unit `ψ`, a shape kills an embedded object exactly when it
 kills the object downstairs. -/
-theorem schurKilled_indOf (ψ : ℂ ≃+* End (𝟙_ C)) (P : SchurPackage.{v})
+theorem schurKilled_indOf {C : Type v} [SmallCategory C] [MonoidalCategory C]
+    [SymmetricCategory C] [Preadditive C] [HasFiniteColimits C]
+    [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (P : SchurPackage.{v})
     (X : C) (μ : YoungDiagram) :
     letI := linearOfScalarUnit ψ
     letI := linearOfScalarUnit (indScalarUnit ψ)
@@ -279,21 +294,27 @@ end AlgebraTransport
 
 section Acceptance
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
-example (X Y : C) [ExactPairing X Y] :
+example
+    [SmallCategory C] [MonoidalCategory C]
+    (X Y : C) [ExactPairing X Y] :
     ExactPairing ((indOf : C ⥤ Ind C).obj X)
       ((indOf : C ⥤ Ind C).obj Y) :=
   inferInstance
 
-example [RightRigidCategory C] (X : C) :
+example
+    [SmallCategory C] [MonoidalCategory C]
+    [RightRigidCategory C] (X : C) :
     ExactPairing ((indOf : C ⥤ Ind C).obj X)
       ((indOf : C ⥤ Ind C).obj (Xᘁ)) :=
   inferInstance
 
 /- The embedded object of a right rigid category has a right dual in
 `Ind C`, namely the embedded dual. -/
-example [RightRigidCategory C] (X : C) :
+example
+    [SmallCategory C] [MonoidalCategory C]
+    [RightRigidCategory C] (X : C) :
     HasRightDual ((indOf : C ⥤ Ind C).obj X) where
   rightDual := (indOf : C ⥤ Ind C).obj (Xᘁ)
 

@@ -47,12 +47,13 @@ that too. -/
 
 section Order
 
-variable {C : Type u} [Category.{w} C]
+variable {C : Type u}
 
 /-- **Finite length gives maximal members**: if the subobject order
 of `Y` carries no strictly increasing chain of `N + 2` terms, then
 every nonempty family of subobjects of `Y` has a maximal member. -/
-theorem exists_maximal_of_lengthLE {Y : C} {N : ℕ} (hY : LengthLE Y N)
+theorem exists_maximal_of_lengthLE [Category.{w} C]
+    {Y : C} {N : ℕ} (hY : LengthLE Y N)
     {S : Set (Subobject Y)} (hS : S.Nonempty) :
     ∃ P ∈ S, ∀ Q ∈ S, P ≤ Q → Q ≤ P := by
   classical
@@ -87,10 +88,11 @@ epimorphism cancels. -/
 
 section Ambient
 
-variable {C : Type u} [Category.{w} C] [Abelian C]
+variable {C : Type u}
 
 /-- Postcomposition only enlarges the kernel. -/
-theorem kernelSubobject_le_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem kernelSubobject_le_comp [Category.{w} C] [Abelian C]
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     kernelSubobject f ≤ kernelSubobject (f ≫ g) :=
   Subobject.le_of_factors
     ((kernelSubobject_factors_iff (f ≫ g)
@@ -101,7 +103,8 @@ theorem kernelSubobject_le_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 does not enlarge the kernel of `f`, then the mono half of the image
 factorisation of `f` remains a monomorphism after postcomposition
 with `g`. -/
-theorem mono_of_kernelSubobject_comp_le {X Y Z : C} (f : X ⟶ Y)
+theorem mono_of_kernelSubobject_comp_le [Category.{w} C] [Abelian C]
+    {X Y Z : C} (f : X ⟶ Y)
     (g : Y ⟶ Z) (h : kernelSubobject (f ≫ g) ≤ kernelSubobject f) :
     Mono (image.ι f ≫ g) := by
   rw [Preadditive.mono_iff_cancel_zero]
@@ -140,14 +143,14 @@ The main theorem: finite length discharges `RS.IndImageEmbedded`. -/
 
 section Embedded
 
-variable {C : Type v} [SmallCategory C] [Abelian C]
+variable {C : Type v}
 
-omit [Abelian C] in
 /-- Two maps out of an embedded object into a stage of the
 presentation of an ind-object which agree in the ind-object already
 agree at a later stage — the merging half of compactness, read at the
 structural maps of the presentation. -/
-theorem exists_stage_comp_eq_of_presStage {Z : Ind C} {W : C}
+theorem exists_stage_comp_eq_of_presStage [SmallCategory C]
+    {Z : Ind C} {W : C}
     {j : Z.presentation.I} (a b : indOf.obj W ⟶ indOf.obj
       (Z.presentation.F.obj j))
     (hab : a ≫ presStage Z j = b ≫ presStage Z j) :
@@ -172,7 +175,7 @@ theorem exists_stage_comp_eq_of_presStage {Z : Ind C} {W : C}
 has a bound on the length of the chains in its subobject order, then
 the image in `Ind C` of a map out of an embedded object is again
 embedded. -/
-theorem indImageEmbedded_of_lengthLE
+theorem indImageEmbedded_of_lengthLE [SmallCategory C] [Abelian C]
     (hlen : ∀ Z : C, ∃ N, LengthLE Z N) : IndImageEmbedded C := by
   classical
   intro Y Z f

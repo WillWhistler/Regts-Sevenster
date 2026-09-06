@@ -25,14 +25,15 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- In a symmetric category the interchange `tensorμ` makes the tensor
 product a braided functor: braiding the tensor pairs and then
 interchanging equals interchanging and then braiding slotwise. -/
 @[reassoc]
-theorem tensorμ_braiding (a b c d : D) :
+theorem tensorμ_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (a b c d : D) :
     (β_ (a ⊗ b) (c ⊗ d)).hom ≫ tensorμ c d a b =
       tensorμ a b c d ≫ ((β_ a c).hom ⊗ₘ (β_ b d).hom) := by
   calc
@@ -60,7 +61,9 @@ theorem tensorμ_braiding (a b c d : D) :
 `Q` and then capping `P` against `X` equals braiding `Q` across `X`
 and capping on the far side.  Uses the hexagon, naturality of the
 braiding against the cap, and the symmetry axiom. -/
-private lemma braiding_evaluation_slide (P Q X : D) [ExactPairing X P] :
+private lemma braiding_evaluation_slide
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (P Q X : D) [ExactPairing X P] :
     (β_ P Q).hom ▷ X ⊗≫ Q ◁ ε_ X P ⊗≫ 𝟙 Q =
       𝟙 ((P ⊗ Q) ⊗ X) ⊗≫ P ◁ (β_ Q X).hom ⊗≫ ε_ X P ▷ Q ⊗≫ 𝟙 Q := by
   calc
@@ -85,7 +88,9 @@ the braidings: crossing the two dual pairs converts the arc nesting of
 the double evaluation, inner `(Q, Y)`/outer `(P, X)` against inner
 `(P, X)`/outer `(Q, Y)`. -/
 @[reassoc]
-theorem tensor_evaluation_braiding (X Y P Q : D)
+theorem tensor_evaluation_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X Y P Q : D)
     [ExactPairing X P] [ExactPairing Y Q] :
     ε_ (Y ⊗ X) (P ⊗ Q) =
       ((β_ P Q).hom ▷ (Y ⊗ X)) ≫

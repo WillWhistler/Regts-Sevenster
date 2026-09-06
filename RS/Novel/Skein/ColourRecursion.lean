@@ -49,16 +49,19 @@ noncomputable def flagsOfEq {β : Type} (V₁ V₂ : Fragment β)
 
 section DataEq
 
-variable {β : Type} [LinearOrder β] {V₁ V₂ : Fragment β}
-  (hV : V₁ = V₂)
+variable {β : Type}
 
 /-- Transport a data family along an equality of fragments. -/
-noncomputable def dataOfEq (𝒟 : DataFamily V₂) : DataFamily V₁ := by
+noncomputable def dataOfEq
+    [LinearOrder β] {V₁ : Fragment β} {V₂ : Fragment β} (hV : V₁ = V₂)
+    (𝒟 : DataFamily V₂) : DataFamily V₁ := by
   subst hV; exact 𝒟
 
 /-- The summand reads the transported family on the transported
 subset. -/
-theorem edgeTermAt_dataOfEq {k ℓ : ℕ} (h : MixedFunctional k ℓ)
+theorem edgeTermAt_dataOfEq
+    [LinearOrder β] {V₁ : Fragment β} {V₂ : Fragment β} (hV : V₁ = V₂)
+    {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (𝒟 : DataFamily V₂) (st : GenBoundaryState k ℓ β)
     (s : Finset V₁.Flag) (C : ℕ) :
     edgeTermAt h (dataOfEq hV 𝒟) st s C
@@ -102,8 +105,7 @@ noncomputable def stepDataGlued (𝒟 : DataFamily (stepFragment n V)) :
   relabelDataDown (stepIso n) 𝒟
 
 /-- The stage's glue, at a closing cut. -/
-theorem gluePair_eq_closed
-    (hcl : V.pairing (V.boundaryFlag (cutL n))
+theorem gluePair_eq_closed (hcl : V.pairing (V.boundaryFlag (cutL n))
       = V.boundaryFlag (cutR n)) :
     V.gluePairClosed (cutL n) (cutR n) hcl
       = V.gluePair (cutL n) (cutR n) (cutL_ne_cutR n) := by
@@ -111,8 +113,7 @@ theorem gluePair_eq_closed
   rw [dif_pos hcl]
 
 /-- The stage's glue, at an open cut. -/
-theorem gluePair_eq_open
-    (hop : V.pairing (V.boundaryFlag (cutL n))
+theorem gluePair_eq_open (hop : V.pairing (V.boundaryFlag (cutL n))
       ≠ V.boundaryFlag (cutR n)) :
     V.gluePairOpen (cutL n) (cutR n) (cutL_ne_cutR n) hop
       = V.gluePair (cutL n) (cutR n) (cutL_ne_cutR n) := by

@@ -18,25 +18,19 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable {M M' : Mod D A}
+variable {D : Type u}
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- **The base-changed pairing on the cover**: it multiplies the
 two base factors and applies the pairing through the base
 morphism. -/
-theorem baseChangePair_cover (d : ModDualityDatum A M M') :
+theorem baseChangePair_cover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
+    (d : ModDualityDatum A M M') :
     (modTensorπ A (restrictRegular φ) M' ▷ (B ⊗ M.X)) ≫
         ((baseChangeMod φ M').X ◁
           modTensorπ A (restrictRegular φ) M) ≫
@@ -74,16 +68,11 @@ theorem baseChangePair_cover (d : ModDualityDatum A M M') :
   refine whisker_eq _ (whisker_eq _ ?_)
   rw [← MonoidalCategory.whiskerLeft_comp_assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsMonHom φ] in
 /-- The interchange followed by braiding the base factor to the
 right is a reassociation of the braiding. -/
-theorem tensorμ_braid (X Y Z W : D) :
+theorem tensorμ_braid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X Y Z W : D) :
     tensorμ X Y Z W ≫ (α_ X Z (Y ⊗ W)).hom ≫
         (X ◁ (β_ Z (Y ⊗ W)).hom) =
       ((X ⊗ Y) ◁ (β_ Z W).hom) ≫ (α_ (X ⊗ Y) W Z).inv ≫
@@ -104,38 +93,20 @@ theorem tensorμ_braid (X Y Z W : D) :
   simp only [MonoidalCategory.whiskerLeft_comp]
   monoidal
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsMonHom φ] in
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsMonHom φ] in
 /-- Multiplying two scalars is symmetric. -/
-theorem mulSwap {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
+theorem mulSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B] [IsCommMonObj B]
+    {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
     (f ⊗ₘ g) ≫ μ[B] =
       (β_ U V).hom ≫ (g ⊗ₘ f) ≫ μ[B] := by
   rw [← Category.assoc,
     ← BraidedCategory.braiding_naturality, Category.assoc,
     IsCommMonObj.mul_comm]
 
-omit [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsCommMonObj B] [IsMonHom φ] in
 /-- Reassociating a product with a base factor on the left. -/
-theorem mulLeftAssoc {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
+theorem mulLeftAssoc [Category.{v} D] [MonoidalCategory D] (B : D) [MonObj B]
+    {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
     ((((B ◁ f) ≫ μ[B]) ⊗ₘ g) ≫ μ[B]) =
       (α_ B U V).hom ≫ (B ◁ ((f ⊗ₘ g) ≫ μ[B])) ≫ μ[B] := by
   rw [show (((B ◁ f) ≫ μ[B]) ⊗ₘ g) =
@@ -149,16 +120,11 @@ theorem mulLeftAssoc {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
   rw [MonoidalCategory.id_tensorHom,
     ← MonoidalCategory.whiskerLeft_comp_assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [MonObj B] [IsCommMonObj B] [IsMonHom φ] in
 /-- The interchange, followed by reassociation, is the
 braiding of the outer block. -/
-theorem tensorμ_shuffle (W X Y : D) :
+theorem tensorμ_shuffle
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (W X Y : D) :
     ((W ⊗ Y) ◁ (β_ X Y).hom) ≫ tensorμ W Y Y X ≫
         (α_ W Y (Y ⊗ X)).hom =
       (α_ W Y (X ⊗ Y)).hom ≫
@@ -174,15 +140,11 @@ theorem tensorμ_shuffle (W X Y : D) :
   rw [associator_naturality_right_assoc]
   simp only [← MonoidalCategory.whiskerLeft_comp]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsMonHom φ] in
 /-- Sliding a base factor across a product of two scalars. -/
-theorem mulSlide {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
+theorem mulSlide
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B] [IsCommMonObj B]
+    {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
     ((((f ▷ B) ≫ μ[B]) ⊗ₘ g) ≫ μ[B]) =
       (α_ U B V).hom ≫ (U ◁ (β_ B V).hom) ≫
         (f ⊗ₘ ((g ▷ B) ≫ μ[B])) ≫ μ[B] := by
@@ -214,17 +176,12 @@ theorem mulSlide {U V : D} (f : U ⟶ B) (g : V ⟶ B) :
 
 section Adjoint
 
-variable (v : M.X ⟶ B)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] [IsMonHom φ] in
 /-- A base-linear insertion intertwines the braided right action
 with multiplication through the base morphism. -/
 theorem actRight_ins
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) {M : Mod D A}
+    (v : M.X ⟶ B)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     actRight A M.X ≫ v = (v ▷ A) ≫ (B ◁ φ) ≫ μ[B] := by
@@ -234,11 +191,17 @@ theorem actRight_ins
     ← BraidedCategory.braiding_naturality_right_assoc,
     IsCommMonObj.mul_comm]
 
-omit [MonoidalPreadditive D] in
 /-- **The dual coevaluation core against the base-changed
 pairing**: the pairing sees the inserted primal factor through
 the zig contraction. -/
-theorem splitCoevalCoreDual_cover (d : ModDualityDatum A M M')
+theorem splitCoevalCoreDual_cover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (v : M.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
     (splitCoevalCoreDual A B φ v hv ▷ (B ⊗ M.X)) ≫
@@ -352,7 +315,15 @@ theorem splitCoevalCoreDual_cover (d : ModDualityDatum A M M')
 /-- **The dual coevaluation point against the base-changed
 pairing**: pairing the inserted point with a vector evaluates the
 insertion on it. -/
-theorem splitCoevalDual_point_pair (d : ModDualityDatum A M M')
+theorem splitCoevalDual_point_pair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (v : M.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
@@ -420,11 +391,15 @@ theorem splitCoevalDual_point_pair (d : ModDualityDatum A M M')
     ← BraidedCategory.braiding_naturality_right_assoc,
     IsCommMonObj.mul_comm]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- The base-changed pairing is linear over the new base in its
 outer variable. -/
 theorem baseChangePair_linear_outer
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
     (d : ModDualityDatum A M M') :
     (baseChangeAct φ M' ▷ (baseChangeMod φ M).X) ≫
         modTensorπ B (baseChangeMod φ M') (baseChangeMod φ M) ≫
@@ -461,7 +436,15 @@ theorem baseChangePair_linear_outer
 /-- **The dual coevaluation against the base-changed pairing**:
 pairing the dual coevaluation with a vector evaluates the
 insertion on it. -/
-theorem splitCoevalDual_pair (d : ModDualityDatum A M M')
+theorem splitCoevalDual_pair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (v : M.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hv : actLeft A M.X ≫ v =
       (A ◁ v) ≫ (φ ▷ B) ≫ μ[B]) :
@@ -518,15 +501,11 @@ theorem splitCoevalDual_pair (d : ModDualityDatum A M M')
   rw [splitCoevalDual_point_pair A B φ v d hz hv]
   rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [MonObj A] [IsCommMonObj A]
-  [IsMonHom φ] in
 /-- The shuffle identity behind the primal cover. -/
-theorem mulShuffle (X Y : D) (w : Y ⟶ B) (p : Y ⊗ X ⟶ B) :
+theorem mulShuffle
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (B : D)
+    [MonObj B] [IsCommMonObj B]
+    (X Y : D) (w : Y ⟶ B) (p : Y ⊗ X ⟶ B) :
     ((B ⊗ Y) ◁ ((β_ X Y).hom ≫ (w ▷ X))) ≫
         tensorμ B Y B X ≫ (μ[B] ▷ (Y ⊗ X)) ≫
         (B ◁ p) ≫ μ[B] =
@@ -553,13 +532,17 @@ theorem mulShuffle (X Y : D) (w : Y ⟶ B) (p : Y ⊗ X ⟶ B) :
 
 section Primal
 
-variable (w : M'.X ⟶ B)
-
-omit [MonoidalPreadditive D] in
 /-- **The coevaluation core against the base-changed pairing**:
 the pairing sees the inserted dual factor through the zag
 contraction. -/
-theorem splitCoevalCore_cover (d : ModDualityDatum A M M')
+theorem splitCoevalCore_cover
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (w : M'.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
     ((B ⊗ M'.X) ◁ splitCoevalCore A B φ w hw) ≫
@@ -631,7 +614,15 @@ theorem splitCoevalCore_cover (d : ModDualityDatum A M M')
 
 /-- **The coevaluation point against the base-changed
 pairing**. -/
-theorem splitCoeval_point_pair (d : ModDualityDatum A M M')
+theorem splitCoeval_point_pair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (w : M'.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :
@@ -693,11 +684,15 @@ theorem splitCoeval_point_pair (d : ModDualityDatum A M M')
   refine Eq.trans hstep ?_
   rw [modTensorπ_splitEval]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] in
 /-- The base-changed pairing is linear over the new base in its
 inner variable. -/
 theorem baseChangePair_linear_inner
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A}
     (d : ModDualityDatum A M M') :
     ((baseChangeMod φ M').X ◁ baseChangeAct φ M) ≫
         modTensorπ B (baseChangeMod φ M') (baseChangeMod φ M) ≫
@@ -739,7 +734,15 @@ theorem baseChangePair_linear_inner
   rfl
 
 /-- **The coevaluation against the base-changed pairing**. -/
-theorem splitCoeval_pair (d : ModDualityDatum A M M')
+theorem splitCoeval_pair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (B : D) [MonObj B] [IsCommMonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] {M : Mod D A} {M' : Mod D A} (w : M'.X ⟶ B)
+    (d : ModDualityDatum A M M')
     (hz : ModZigzagDatum A d)
     (hw : actLeft A M'.X ≫ w =
       (A ◁ w) ≫ (φ ▷ B) ≫ μ[B]) :

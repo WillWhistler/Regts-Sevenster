@@ -17,32 +17,28 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (X Y : D) [ExactPairing X Y]
+variable {D : Type u}
 
 /-- The pairing over the trivial base: collapse and evaluate. -/
-noncomputable def unitBasePair :
+noncomputable def unitBasePair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (X : D) (Y : D) [ExactPairing X Y] :
     modTensor (𝟙_ D) (unitMod Y) (unitMod X) ⟶ 𝟙_ D :=
   (modTensorUnitBase (unitMod Y) (unitMod X)).hom ≫ ε_ X Y
 
 /-- The copairing over the trivial base: coevaluate and embed. -/
-noncomputable def unitBaseCopair :
+noncomputable def unitBaseCopair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (X : D) (Y : D) [ExactPairing X Y] :
     𝟙_ D ⟶ modTensor (𝟙_ D) (unitMod X) (unitMod Y) :=
   η_ X Y ≫ (modTensorUnitBase (unitMod X) (unitMod Y)).inv
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The pairing is linear over the trivial base. -/
-theorem unitBasePair_linear :
+theorem unitBasePair_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (X : D) (Y : D) [ExactPairing X Y] :
     (letI := modTensorModObj (𝟙_ D) (unitMod Y) (unitMod X);
     actLeft (𝟙_ D)
       (modTensor (𝟙_ D) (unitMod Y) (unitMod X))) ≫
@@ -53,12 +49,12 @@ theorem unitBasePair_linear :
   rw [show μ[𝟙_ D] = (λ_ (𝟙_ D)).hom from rfl]
   exact (leftUnitor_naturality (unitBasePair X Y)).symm
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The copairing is linear over the trivial base. -/
-theorem unitBaseCopair_linear :
+theorem unitBaseCopair_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (X : D) (Y : D) [ExactPairing X Y] :
     μ[𝟙_ D] ≫ unitBaseCopair X Y =
     ((𝟙_ D) ◁ unitBaseCopair X Y) ≫
       (letI := modTensorModObj (𝟙_ D) (unitMod X) (unitMod Y);
@@ -71,7 +67,11 @@ theorem unitBaseCopair_linear :
 
 /-- **The duality datum over the trivial base** attached to an
 exact pairing of the ambient category. -/
-noncomputable def unitBaseDatum :
+noncomputable def unitBaseDatum
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (X : D) (Y : D) [ExactPairing X Y] :
     ModDualityDatum (𝟙_ D) (unitMod X) (unitMod Y) where
   pair := unitBasePair X Y
   copair := unitBaseCopair X Y
@@ -81,7 +81,13 @@ noncomputable def unitBaseDatum :
 /-- **The trivial-base datum satisfies the zigzag laws**: through
 the collapse they are the zigzag identities of the exact
 pairing. -/
-theorem unitBaseDatum_zigzag :
+theorem unitBaseDatum_zigzag
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (X : D) (Y : D) [ExactPairing X Y] :
     ModZigzagDatum (𝟙_ D) (unitBaseDatum X Y) := by
   have h2 : modTensorπ (𝟙_ D) (unitMod Y) (unitMod X) ≫
       (unitBaseDatum X Y).pair = ε_ X Y := by

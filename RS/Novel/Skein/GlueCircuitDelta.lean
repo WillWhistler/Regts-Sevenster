@@ -36,8 +36,7 @@ section PermHelpers
 
 open Equiv
 
-variable {γ δ : Type} [Fintype γ] [DecidableEq γ] [Fintype δ]
-  [DecidableEq δ]
+variable {γ δ : Type}
 
 /-- A rotation of length `k ≥ 1` contributes exactly one orbit:
 one nontrivial cycle when `k ≥ 2`, one fixed point when `k = 1`. -/
@@ -248,8 +247,7 @@ theorem partnerSurvJ_mem_of_mem (hpi : partnerSurvI hopen ∈ s') :
 omit hc' in
 include hij in
 /-- With participation, `bf_i` is a boundary flag of the lift. -/
-theorem boundaryFlagI_mem_boundaryFlags
-    (hpi : partnerSurvI hopen ∈ s') :
+theorem boundaryFlagI_mem_boundaryFlags (hpi : partnerSurvI hopen ∈ s') :
     W.boundaryFlag i ∈ (Fl).boundaryFlags := by
   have hmem : W.boundaryFlag i ∈ liftSubsetOpen hopen s' :=
     (boundaryFlagI_mem_liftOpen_iff hij hopen s').mpr hpi
@@ -260,8 +258,7 @@ theorem boundaryFlagI_mem_boundaryFlags
   · exact hbd
 
 /-- With participation, `bf_j` is a boundary flag of the lift. -/
-theorem boundaryFlagJ_mem_boundaryFlags
-    (hpi : partnerSurvI hopen ∈ s') :
+theorem boundaryFlagJ_mem_boundaryFlags (hpi : partnerSurvI hopen ∈ s') :
     W.boundaryFlag j ∈ (Fl).boundaryFlags := by
   have hmem : W.boundaryFlag j ∈ liftSubsetOpen hopen s' :=
     (boundaryFlagJ_mem_liftOpen_iff hij hopen s').mpr
@@ -551,8 +548,7 @@ def InterfaceLinked (κ' : (Fg).RelTransitionSystem)
 
 /-- **Feed-forward form of the link condition**: it is literally
 the `pathMatch` pairing of the two interface boundary flags. -/
-theorem interfaceLinked_iff_pathMatch
-    (κ' : (Fg).RelTransitionSystem)
+theorem interfaceLinked_iff_pathMatch (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s') :
     InterfaceLinked hij hopen s' hc' hc κ' hpi ↔
       (RelTransitionSystem.unglueOpen hij hopen s' hc' hc
@@ -563,8 +559,7 @@ theorem interfaceLinked_iff_pathMatch
 
 /-- If the far end of the `i`-edge is periodic in the glued
 system, the interface is linked. -/
-theorem interfaceLinked_of_periodicI
-    (κ' : (Fg).RelTransitionSystem)
+theorem interfaceLinked_of_periodicI (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s')
     (hper : κ'.PeriodicFlag (partnerSurvI hopen)) :
     InterfaceLinked hij hopen s' hc' hc κ' hpi := by
@@ -619,8 +614,7 @@ theorem interfaceLinked_of_periodicI
 
 /-- If the far end of the `j`-edge is periodic in the glued
 system, the interface is linked. -/
-theorem interfaceLinked_of_periodicJ
-    (κ' : (Fg).RelTransitionSystem)
+theorem interfaceLinked_of_periodicJ (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s')
     (hper : κ'.PeriodicFlag (partnerSurvJ hopen)) :
     InterfaceLinked hij hopen s' hc' hc κ' hpi := by
@@ -667,8 +661,7 @@ theorem interfaceLinked_of_periodicJ
 
 /-- The periodic-flag bijection in the unlinked participating
 case. -/
-noncomputable def periodicEquivNotLinked
-    (κ' : (Fg).RelTransitionSystem)
+noncomputable def periodicEquivNotLinked (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s')
     (hnl : ¬ InterfaceLinked hij hopen s' hc' hc κ' hpi) :
     {f : W.Flag // f ∈ (RelTransitionSystem.unglueOpen hij hopen
@@ -695,8 +688,7 @@ noncomputable def periodicEquivNotLinked
 
 /-- The walk permutations agree under the bijection (unlinked
 case). -/
-theorem walkPermPeriodic_notLinked
-    (κ' : (Fg).RelTransitionSystem)
+theorem walkPermPeriodic_notLinked (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s')
     (hnl : ¬ InterfaceLinked hij hopen s' hc' hc κ' hpi) :
     (RelTransitionSystem.unglueOpen hij hopen s' hc' hc
@@ -727,8 +719,7 @@ theorem walkPermPeriodic_notLinked
     ((W.gluePairOpen i j hij hopen).pairing ⟨f, h1, h2⟩)]
 
 /-- **Count stability in the unlinked case.** -/
-theorem openCircuitCount_notLinked
-    (κ' : (Fg).RelTransitionSystem)
+theorem openCircuitCount_notLinked (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s')
     (hnl : ¬ InterfaceLinked hij hopen s' hc' hc κ' hpi) :
     (RelTransitionSystem.unglueOpen hij hopen s' hc' hc
@@ -946,8 +937,7 @@ noncomputable def spliceFlag (κ' : (Fg).RelTransitionSystem)
 exits at `bf_j`, the glued walk permutation is, up to a bijection,
 the lifted walk permutation plus two `k`-rotations (the two
 directions of the spliced circuit). -/
-theorem exists_walkPerm_linked
-    (κ' : (Fg).RelTransitionSystem)
+theorem exists_walkPerm_linked (κ' : (Fg).RelTransitionSystem)
     (hbi : W.boundaryFlag i ∈ (Fl).boundaryFlags)
     (hbj : W.boundaryFlag j ∈ (Fl).boundaryFlags)
     (k : ℕ) (hk1 : 1 ≤ k)
@@ -1280,8 +1270,7 @@ theorem exists_walkPerm_linked
 
 /-- **Count delta in the linked case**: the splice closes exactly
 one new circuit (two new walk orbits). -/
-theorem openCircuitCount_linked_chain
-    (κ' : (Fg).RelTransitionSystem)
+theorem openCircuitCount_linked_chain (κ' : (Fg).RelTransitionSystem)
     (hbi : W.boundaryFlag i ∈ (Fl).boundaryFlags)
     (hbj : W.boundaryFlag j ∈ (Fl).boundaryFlags)
     (k : ℕ) (hk1 : 1 ≤ k)
@@ -1307,8 +1296,7 @@ theorem openCircuitCount_linked_chain
 /-- **The circuit-count delta of a participating open glue**: the
 glued count exceeds the unglued count by `1` exactly when the
 interface is linked. -/
-theorem openCircuitCount_glueOpen_participating
-    (κ' : (Fg).RelTransitionSystem)
+theorem openCircuitCount_glueOpen_participating (κ' : (Fg).RelTransitionSystem)
     (hpi : partnerSurvI hopen ∈ s') :
     κ'.openCircuitCount =
       (RelTransitionSystem.unglueOpen hij hopen s' hc' hc

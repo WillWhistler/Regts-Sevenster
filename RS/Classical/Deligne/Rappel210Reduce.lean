@@ -18,30 +18,32 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 section Exactness
 
 /-- Tensoring on the left with an object with a left dual
 preserves colimits: the exact pairing makes it a left adjoint. -/
-theorem tensorLeftPreservesColimits (X : D)
+theorem tensorLeftPreservesColimits [Category.{v} D] [MonoidalCategory D]
+    (X : D)
     [HasLeftDual X] : PreservesColimitsOfSize.{0, 0}
       (tensorLeft X) :=
   (tensorLeftAdjunction (ᘁX) X).leftAdjoint_preservesColimits
 
 /-- Tensoring on the left with an object with a right dual
 preserves limits: the exact pairing makes it a right adjoint. -/
-theorem tensorLeftPreservesLimits (X : D)
+theorem tensorLeftPreservesLimits [Category.{v} D] [MonoidalCategory D]
+    (X : D)
     [HasRightDual X] : PreservesLimitsOfSize.{0, 0}
       (tensorLeft X) :=
   (tensorLeftAdjunction X (Xᘁ)).rightAdjoint_preservesLimits
 
-variable [Abelian D] [MonoidalPreadditive D]
-
 /-- **Tensoring with a two-sided dualizable object is exact**:
 a short exact sequence stays short exact after tensoring on the
 left. -/
-theorem ShortExact_tensorLeft {S : ShortComplex D}
+theorem ShortExact_tensorLeft [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D]
+    {S : ShortComplex D}
     (hS : S.ShortExact) (X : D) [HasLeftDual X]
     [HasRightDual X] :
     (S.map (tensorLeft X)).ShortExact := by
@@ -57,23 +59,25 @@ end Exactness
 
 section Reduction
 
-variable [SymmetricCategory D] [Abelian D] [MonoidalPreadditive D]
-
 /-- The name of the identity: the coevaluation, braided into the
 evaluation source. -/
-noncomputable def unitName (X : D) [HasRightDual X] :
+noncomputable def unitName
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X : D) [HasRightDual X] :
     𝟙_ D ⟶ (Xᘁ) ⊗ X :=
   η_ X (Xᘁ) ≫ (β_ X (Xᘁ)).hom
 
-variable (S : ShortComplex D) [HasRightDual S.X₃]
-
 /-- The middle object of the unit-form extension: the pullback of
 the internal-hom epimorphism along the name of the identity. -/
-noncomputable def unitFormMid : D :=
+noncomputable def unitFormMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual S.X₃] : D :=
   pullback (((S.X₃)ᘁ) ◁ S.g) (unitName S.X₃)
 
 /-- The inclusion of the unit-form extension. -/
-noncomputable def unitFormIn :
+noncomputable def unitFormIn
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual S.X₃] :
     ((S.X₃)ᘁ) ⊗ S.X₁ ⟶ unitFormMid S :=
   pullback.lift (((S.X₃)ᘁ) ◁ S.f) 0
     (by rw [← MonoidalCategory.whiskerLeft_comp, S.zero,
@@ -82,23 +86,30 @@ noncomputable def unitFormIn :
 /-- **The unit-form extension**: the given sequence, internally
 hommed and pulled back along the name of the identity, now with
 unit quotient. -/
-noncomputable def unitForm : ShortComplex D :=
+noncomputable def unitForm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual S.X₃] :
+    ShortComplex D :=
   ShortComplex.mk (unitFormIn S)
     (pullback.snd (((S.X₃)ᘁ) ◁ S.g) (unitName S.X₃))
     (pullback.lift_snd _ _ _)
 
 /-- Defining square of the inclusion. -/
-theorem unitFormIn_fst :
+theorem unitFormIn_fst
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual S.X₃] :
     unitFormIn S ≫ pullback.fst (((S.X₃)ᘁ) ◁ S.g)
         (unitName S.X₃) =
       ((S.X₃)ᘁ) ◁ S.f :=
   pullback.lift_fst _ _ _
 
-variable [HasLeftDual ((S.X₃)ᘁ : D)] [HasRightDual ((S.X₃)ᘁ : D)]
-
 /-- **The unit-form extension is short exact**: the pullback of a
 short exact sequence along a point of its quotient. -/
-theorem unitForm_shortExact (hS : S.ShortExact) :
+theorem unitForm_shortExact
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual S.X₃]
+    [HasLeftDual ((S.X₃)ᘁ : D)] [HasRightDual ((S.X₃)ᘁ : D)]
+    (hS : S.ShortExact) :
     (unitForm S).ShortExact := by
   have hT := ShortExact_tensorLeft hS ((S.X₃)ᘁ)
   haveI hmf : Mono (((S.X₃)ᘁ) ◁ S.f) := hT.mono_f
@@ -148,7 +159,8 @@ section MateDetect
 
 /-- **Epimorphisms dualise to monomorphisms**: the right adjoint
 mate of an epimorphism is monic. -/
-theorem mono_rightAdjointMate {X Y : D} [HasRightDual X]
+theorem mono_rightAdjointMate [Category.{v} D] [MonoidalCategory D]
+    {X Y : D} [HasRightDual X]
     [HasRightDual Y]
     [∀ W : D, (tensorLeft W).PreservesEpimorphisms]
     (f : X ⟶ Y) (hf : Epi f) :
@@ -178,22 +190,24 @@ end MateDetect
 
 section PointDual
 
-variable [SymmetricCategory D] [Abelian D] [MonoidalPreadditive D]
-
 /-- The dual of the unit, canonically. -/
-noncomputable def unitDualIso : (𝟙_ D : D) ≅ ((𝟙_ D : D)ᘁ) :=
+noncomputable def unitDualIso
+    [Category.{v} D] [MonoidalCategory D] : (𝟙_ D : D) ≅ ((𝟙_ D : D)ᘁ) :=
   rightDualIso exactPairingUnit inferInstance
-
-variable (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
-variable [HasRightDual (unitFormMid S : D)]
 
 /-- **The monic point of the dual**: the unit-form quotient,
 dualised into a point of the dual of the middle object. -/
-noncomputable def unitFormPoint : 𝟙_ D ⟶ ((unitFormMid S)ᘁ) :=
+noncomputable def unitFormPoint
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)] : 𝟙_ D ⟶ ((unitFormMid S)ᘁ) :=
   unitDualIso.hom ≫ ((unitForm S).g)ᘁ
 
 /-- The point is monic when the sequence is short exact. -/
 theorem mono_unitFormPoint
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
     [HasLeftDual (((S.X₃)ᘁ) : D)]
     [HasRightDual (((S.X₃)ᘁ) : D)]
     [∀ W : D, (tensorLeft W).PreservesEpimorphisms]
@@ -210,14 +224,9 @@ section Transfer
 
 open scoped MonObj
 
-variable [SymmetricCategory D] [Abelian D] [MonoidalPreadditive D]
-variable (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
-variable [HasRightDual (unitFormMid S : D)]
-
-omit [SymmetricCategory D] [Abelian D] [MonoidalPreadditive D] in
 /-- The coevaluation meets the canonical unit-dual inverse as the
 unit pairing's coevaluation. -/
-theorem coevaluation_unitDualIso_inv :
+theorem coevaluation_unitDualIso_inv [Category.{v} D] [MonoidalCategory D] :
     η_ (𝟙_ D) ((𝟙_ D)ᘁ) ≫ ((𝟙_ D) ◁ unitDualIso.inv) =
       (ρ_ (𝟙_ D)).inv := by
   have h := @coevaluation_comp_rightAdjointMate D _ _
@@ -227,7 +236,11 @@ theorem coevaluation_unitDualIso_inv :
 
 /-- **The point section**: the coevaluation, carried through a
 class of the dual of the middle object. -/
-noncomputable def pointSection (B : D)
+noncomputable def pointSection
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D)
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     𝟙_ D ⟶ unitFormMid S ⊗ B :=
   η_ (unitFormMid S) ((unitFormMid S)ᘁ) ≫
@@ -235,7 +248,10 @@ noncomputable def pointSection (B : D)
 
 /-- The coevaluation carries the quotient onto the point, through
 the canonical unit-dual identification. -/
-theorem coevaluation_unitFormPoint :
+theorem coevaluation_unitFormPoint
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)] :
     η_ (𝟙_ D) ((𝟙_ D)ᘁ) ≫
         ((𝟙_ D) ◁ (unitDualIso.inv ≫ unitFormPoint S)) =
       η_ (unitFormMid S) ((unitFormMid S)ᘁ) ≫
@@ -248,7 +264,11 @@ theorem coevaluation_unitFormPoint :
 /-- **The section property of the point section**: against the
 unit-form quotient, a class restricting on the point to the unit
 of the algebra yields the unit itself. -/
-theorem pointSection_section (B : D) [MonObj B]
+theorem pointSection_section
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B)
     (hcls : unitFormPoint S ≫ cls = η[B]) :
     pointSection S B cls ≫ ((unitForm S).g ▷ B) =
@@ -279,7 +299,11 @@ theorem pointSection_section (B : D) [MonObj B]
 
 /-- **The free section carrier**: the point section, folded into
 the free module through the multiplication. -/
-noncomputable def freeSectionHom (B : D) [MonObj B]
+noncomputable def freeSectionHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     B ⊗ 𝟙_ D ⟶ B ⊗ unitFormMid S :=
   (B ◁ pointSection S B cls) ≫
@@ -290,7 +314,11 @@ noncomputable def freeSectionHom (B : D) [MonObj B]
 /-- **The free section splits the quotient**: when the class
 restricts on the point to the unit, the free section carrier is a
 section of the whiskered quotient. -/
-theorem freeSectionHom_section (B : D) [MonObj B]
+theorem freeSectionHom_section
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B)
     (hcls : unitFormPoint S ≫ cls = η[B]) :
     freeSectionHom S B cls ≫ (B ◁ (unitForm S).g) =
@@ -358,7 +386,8 @@ theorem freeSectionHom_section (B : D) [MonObj B]
 /-- **Extend a point to the free module**: any morphism into the
 carrier of a module extends to a linear map from the free module,
 through the action. -/
-noncomputable def freeModExtend (B : D) [MonObj B] {V : D}
+noncomputable def freeModExtend [Category.{v} D] [MonoidalCategory D]
+    (B : D) [MonObj B] {V : D}
     (M : Mod D B) (q : V ⟶ M.X) : freeMod B V ⟶ M :=
   Mod.Hom.mk' ((B ◁ q) ≫ actLeft B M.X)
     (by
@@ -397,15 +426,22 @@ noncomputable def freeModExtend (B : D) [MonObj B] {V : D}
 
 /-- **The free section**: the point section, braided and extended
 to the free module. -/
-noncomputable def freeSection (B : D) [MonObj B]
+noncomputable def freeSection
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     freeMod B (𝟙_ D) ⟶ freeMod B (unitFormMid S) :=
   freeModExtend B (freeMod B (unitFormMid S))
     (pointSection S B cls ≫ (β_ (unitFormMid S) B).hom)
 
-omit [MonoidalPreadditive D] in
 /-- The free section's carrier is the folded point section. -/
-theorem freeSection_hom (B : D) [MonObj B]
+theorem freeSection_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     (freeSection S B cls).hom = freeSectionHom S B cls := by
   show (B ◁ (pointSection S B cls ≫
@@ -418,14 +454,17 @@ theorem freeSection_hom (B : D) [MonObj B]
 
 /-- **Contract the dual against the argument**: braid the payload
 out and evaluate. -/
-noncomputable def evalContract (X W : D) [HasRightDual X] :
+noncomputable def evalContract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X W : D) [HasRightDual X] :
     (((Xᘁ) : D) ⊗ W) ⊗ X ⟶ W :=
   ((β_ ((Xᘁ) : D) W).hom ▷ X) ≫ (α_ W ((Xᘁ) : D) X).hom ≫
     (W ◁ ε_ X (Xᘁ)) ≫ (ρ_ W).hom
 
-omit [Abelian D] [MonoidalPreadditive D] in
 /-- The contraction is natural in the payload. -/
-theorem evalContract_natural (X : D) [HasRightDual X]
+theorem evalContract_natural
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X : D) [HasRightDual X]
     {W W' : D} (h : W ⟶ W') :
     ((((Xᘁ) : D) ◁ h) ▷ X) ≫ evalContract X W' =
       evalContract X W ≫ h := by
@@ -470,10 +509,11 @@ theorem evalContract_natural (X : D) [HasRightDual X]
           (W ◁ ε_ X (Xᘁ)) ≫ (ρ_ W).hom) ≫ h := by
         simp only [Category.assoc]
 
-omit [Abelian D] [MonoidalPreadditive D] in
 /-- **The zigzag of the name**: the name of the identity,
 contracted against the argument, is the unitor. -/
-theorem unitName_evalContract (X : D) [HasRightDual X] :
+theorem unitName_evalContract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (X : D) [HasRightDual X] :
     ((unitName X) ▷ X) ≫ evalContract X X = (λ_ X).hom := by
   rw [unitName, evalContract, MonoidalCategory.comp_whiskerRight]
   simp only [Category.assoc]
@@ -498,7 +538,11 @@ theorem unitName_evalContract (X : D) [HasRightDual X] :
 
 /-- **The element of the free section**: the unit, pushed through
 the free section and out of the pullback. -/
-noncomputable def freeSectionPoint (B : D) [MonObj B]
+noncomputable def freeSectionPoint
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     𝟙_ D ⟶ B ⊗ (((S.X₃)ᘁ) ⊗ S.X₂) :=
   (λ_ (𝟙_ D)).inv ≫ (η[B] ▷ (𝟙_ D)) ≫
@@ -506,7 +550,11 @@ noncomputable def freeSectionPoint (B : D) [MonObj B]
     (B ◁ pullback.fst (((S.X₃)ᘁ) ◁ S.g) (unitName S.X₃))
 
 /-- The element carries the internal quotient onto the name. -/
-theorem freeSectionPoint_g (B : D) [MonObj B]
+theorem freeSectionPoint_g
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B)
     (hcls : unitFormPoint S ≫ cls = η[B]) :
     freeSectionPoint S B cls ≫ (B ◁ (((S.X₃)ᘁ) ◁ S.g)) =
@@ -531,7 +579,11 @@ theorem freeSectionPoint_g (B : D) [MonObj B]
 
 /-- **The transferred point**: the free-section element,
 contracted against the argument. -/
-noncomputable def sectionPoint (B : D) [MonObj B]
+noncomputable def sectionPoint
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     S.X₃ ⟶ B ⊗ S.X₂ :=
   (λ_ (S.X₃)).inv ≫ (freeSectionPoint S B cls ▷ S.X₃) ≫
@@ -540,7 +592,11 @@ noncomputable def sectionPoint (B : D) [MonObj B]
 
 /-- **The transferred point splits the quotient**: against the
 quotient it is the unit against the argument. -/
-theorem sectionPoint_g (B : D) [MonObj B]
+theorem sectionPoint_g
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B)
     (hcls : unitFormPoint S ≫ cls = η[B]) :
     sectionPoint S B cls ≫ (B ◁ S.g) =
@@ -628,13 +684,21 @@ theorem sectionPoint_g (B : D) [MonObj B]
 
 /-- **The section of the statement of record**: the transferred
 point, extended to the free module. -/
-noncomputable def rappel210Section (B : D) [MonObj B]
+noncomputable def rappel210Section
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B) :
     freeMod B (S.X₃) ⟶ freeMod B (S.X₂) :=
   freeModExtend B (freeMod B (S.X₂)) (sectionPoint S B cls)
 
 /-- **The section splits the base-changed epimorphism**. -/
-theorem rappel210Section_splits (B : D) [MonObj B]
+theorem rappel210Section_splits
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (B : D) [MonObj B]
     (cls : ((unitFormMid S)ᘁ) ⟶ B)
     (hcls : unitFormPoint S ≫ cls = η[B]) :
     rappel210Section S B cls ≫ freeModMap B S.g =
@@ -681,7 +745,11 @@ theorem rappel210Section_splits (B : D) [MonObj B]
 
 /-- **The local splitting statement holds given a unital class on
 the dual of the unit-form middle object**: the full reduction. -/
-theorem rappel210_of_class (hS : S.ShortExact) (B : D)
+theorem rappel210_of_class
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] (S : ShortComplex D) [HasRightDual (S.X₃ : D)]
+    [HasRightDual (unitFormMid S : D)]
+    (hS : S.ShortExact) (B : D)
     [MonObj B] [IsCommMonObj B] (hnz : η[B] ≠ 0)
     (cls : ((unitFormMid S)ᘁ) ⟶ B)
     (hcls : unitFormPoint S ≫ cls = η[B]) :

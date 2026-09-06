@@ -26,11 +26,12 @@ namespace EdgeSubset
 
 open Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 /-- **RS21's colouring sum** over the colourings of the whole
 subset. -/
-noncomputable def edgeSum (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def edgeSum {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation) : ℂ :=
@@ -45,9 +46,9 @@ noncomputable def edgeSum (F : EdgeSubset W) {k ℓ : ℕ}
         else 0
     else 0
 
-omit [LinearOrder α] in
 /-- **On an agreeing state RS21's sum is the flag model's.** -/
-theorem edgeSum_eq_vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
+theorem edgeSum_eq_vertexSum {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation)
@@ -64,9 +65,9 @@ theorem edgeSum_eq_vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
             (F.coreOddListAt o φ' v)))
   · rw [if_neg hev, if_neg hev]
 
-omit [LinearOrder α] in
 /-- **A disagreeing state is coloured by nothing.** -/
-theorem edgeSum_eq_zero_of_not_throughAgree (F : EdgeSubset W)
+theorem edgeSum_eq_zero_of_not_throughAgree {W : Fragment α}
+    (F : EdgeSubset W)
     {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)

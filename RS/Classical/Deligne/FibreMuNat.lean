@@ -17,11 +17,13 @@ universe v u
 
 section Shuffle
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- **The free-module shuffle is natural.** -/
-theorem freeModShuffle_naturality {V V' W W' : D} (f : V ⟶ V')
+theorem freeModShuffle_naturality
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (R : D)
+    [MonObj R]
+    {V V' W W' : D} (f : V ⟶ V')
     (g : W ⟶ W') :
     ((R ◁ f) ⊗ₘ (R ◁ g)) ≫ freeModShuffle R V' W' =
       freeModShuffle R V W ≫ (R ◁ (f ⊗ₘ g)) := by
@@ -37,17 +39,18 @@ end Shuffle
 
 section Fibre
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
 /-- **The monoidal comparison of the fibre functor is natural.** -/
-theorem fibreMu_naturality {V V' W W' : D} (f : V ⟶ V')
+theorem fibreMu_naturality
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {V V' W W' : D} (f : V ⟶ V')
     (g : W ⟶ W') :
     SuperCommAlgebra.Mod.tensorHom
         (gammaFunMap L R (freeModMap R f))

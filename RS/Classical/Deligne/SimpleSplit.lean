@@ -71,7 +71,7 @@ universe v uE vE jE
 
 section SplitEpi
 
-variable {E : Type uE} [Category.{vE} E] [Abelian E]
+variable {E : Type uE}
 
 /-- **The inductive step for splitting an epimorphism**: an
 epimorphism out of `X ⊞ T` with `X` simple splits as soon as every
@@ -81,7 +81,8 @@ the section comes from the hypothesis on `T`; or the simple summand
 maps isomorphically onto that cokernel, which exhibits the target as
 the cokernel together with the image of the second summand, and the
 two halves of the section are assembled by addition. -/
-theorem exists_section_biprod {X T N : E} [Simple X]
+theorem exists_section_biprod [Category.{vE} E] [Abelian E]
+    {X T N : E} [Simple X]
     (f : (X ⊞ T) ⟶ N) (hf : Epi f)
     (hT : ∀ {N' : E} (g : T ⟶ N'), Epi g →
       ∃ s : N' ⟶ T, s ≫ g = 𝟙 N') :
@@ -138,7 +139,8 @@ theorem exists_section_biprod {X T N : E} [Simple X]
 
 /-- **An epimorphism out of a finite direct sum of simple objects
 splits.** -/
-theorem exists_section_idxSum {J : Type jE} (S : J → E) :
+theorem exists_section_idxSum [Category.{vE} E] [Abelian E]
+    {J : Type jE} (S : J → E) :
     ∀ (L : List J), (∀ j ∈ L, Simple (S j)) →
       ∀ {N : E} (f : idxSum S L ⟶ N), Epi f →
         ∃ s : N ⟶ idxSum S L, s ≫ f = 𝟙 N := by
@@ -162,7 +164,8 @@ theorem exists_section_idxSum {J : Type jE} (S : J → E) :
 
 /-- **An epimorphism out of a sum of copies of two simple objects
 splits.** -/
-theorem exists_section_mixSum (X Y : E) [Simple X] [Simple Y]
+theorem exists_section_mixSum [Category.{vE} E] [Abelian E]
+    (X Y : E) [Simple X] [Simple Y]
     (p q : ℕ) {N : E} (f : mixSum X Y p q ⟶ N) (hf : Epi f) :
     ∃ s : N ⟶ mixSum X Y p q, s ≫ f = 𝟙 N :=
   exists_section_idxSum (id : E → E)
@@ -171,18 +174,16 @@ theorem exists_section_mixSum (X Y : E) [Simple X] [Simple Y]
 
 end SplitEpi
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 section Regular
 
-variable (𝔹 : Ind C) [MonObj 𝔹]
-
-omit [SymmetricCategory C] in
 /-- **A module map is an isomorphism exactly when its underlying
 morphism is.** -/
-theorem isIso_iff_hom {M N : Mod (Ind C) 𝔹} (f : M ⟶ N) :
+theorem isIso_iff_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    {M N : Mod (Ind C) 𝔹} (f : M ⟶ N) :
     IsIso f ↔ IsIso f.hom := by
   constructor
   · intro h
@@ -194,13 +195,13 @@ theorem isIso_iff_hom {M N : Mod (Ind C) 𝔹} (f : M ⟶ N) :
     haveI : Epi f := (epi_iff_hom 𝔹 f).2 inferInstance
     exact isIso_of_mono_of_epi f
 
-omit [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C] in
 /-- **A submodule of the regular module is an ideal.**  The
 intertwining law of a module map into the regular module says
 exactly that multiplication by the algebra lands in the
 subobject. -/
-theorem isIdeal_mk_hom {M : Mod (Ind C) 𝔹} (g : M ⟶ regularMod 𝔹)
+theorem isIdeal_mk_hom
+    [SmallCategory C] [MonoidalCategory C] (𝔹 : Ind C) [MonObj 𝔹]
+    {M : Mod (Ind C) 𝔹} (g : M ⟶ regularMod 𝔹)
     [Mono g.hom] : IsIdeal 𝔹 (Subobject.mk g.hom) := by
   have hlaw : actLeft 𝔹 M.X ≫ g.hom = (𝔹 ◁ g.hom) ≫ μ[𝔹] :=
     g.isModHom.smul_hom
@@ -222,10 +223,11 @@ theorem isIdeal_mk_hom {M : Mod (Ind C) 𝔹} (g : M ⟶ regularMod 𝔹)
     (MonoidalCategory.whiskerLeft_comp 𝔹 _ _).symm _) ?_
   exact congrArg (fun t => (𝔹 ◁ t) ≫ μ[𝔹]) harrow.symm
 
-omit [SymmetricCategory C] in
 /-- **The regular module over a simple algebra is simple**: its
 submodules are exactly the ideals of the algebra. -/
 theorem simple_regularMod
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) : Simple (regularMod 𝔹) := by
   constructor
@@ -255,14 +257,14 @@ end Regular
 
 section Rotation
 
-variable (L : OddLine (Ind C))
-
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **The rotation is compatible with whiskering on the left**: a
 purely structural identity, once the square of the line is moved to
 a common position on both sides. -/
 @[reassoc]
-theorem whiskerLeft_rot (A X : Ind C) :
+theorem whiskerLeft_rot
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (L : OddLine (Ind C))
+    (A X : Ind C) :
     (α_ A (X ⊗ L.obj) L.obj).inv ≫ ((α_ A X L.obj).inv ▷ L.obj) ≫
         (L.rot (A ⊗ X)).hom = A ◁ (L.rot X).hom := by
   have hu : (α_ A (X ⊗ L.obj) L.obj).inv ≫
@@ -278,10 +280,12 @@ theorem whiskerLeft_rot (A X : Ind C) :
   simp only [MonoidalCategory.whiskerLeft_comp]
   rw [← hv, associator_naturality_right_assoc, reassoc_of% hu]
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **The rotation intertwines an action with its double twist by
 the line.** -/
-theorem rot_act {A X : Ind C} (act : A ⊗ X ⟶ X) :
+theorem rot_act
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (L : OddLine (Ind C))
+    {A X : Ind C} (act : A ⊗ X ⟶ X) :
     ((α_ A (X ⊗ L.obj) L.obj).inv ≫
         (((α_ A X L.obj).inv ≫ act ▷ L.obj) ▷ L.obj)) ≫
       (L.rot X).hom = (A ◁ (L.rot X).hom) ≫ act := by
@@ -289,10 +293,12 @@ theorem rot_act {A X : Ind C} (act : A ⊗ X ⟶ X) :
   simp only [Category.assoc]
   rw [L.whiskerRight_rot act, whiskerLeft_rot_assoc]
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **Whiskering by the line carries an intertwiner to an
 intertwiner** for the twisted actions. -/
-theorem whiskerRight_act {A X Y : Ind C} (actX : A ⊗ X ⟶ X)
+theorem whiskerRight_act
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (L : OddLine (Ind C))
+    {A X Y : Ind C} (actX : A ⊗ X ⟶ X)
     (actY : A ⊗ Y ⟶ Y) (f : X ⟶ Y)
     (hf : actX ≫ f = (A ◁ f) ≫ actY) :
     ((α_ A X L.obj).inv ≫ actX ▷ L.obj) ≫ (f ▷ L.obj) =
@@ -302,9 +308,11 @@ theorem whiskerRight_act {A X Y : Ind C} (actX : A ⊗ X ⟶ X)
     MonoidalCategory.comp_whiskerRight,
     associator_inv_naturality_middle_assoc]
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **Whiskering by the line reflects isomorphisms.** -/
-theorem isIso_of_whiskerRight {X Y : Ind C} (f : X ⟶ Y)
+theorem isIso_of_whiskerRight
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (L : OddLine (Ind C))
+    {X Y : Ind C} (f : X ⟶ Y)
     (h : IsIso (f ▷ L.obj)) : IsIso f := by
   haveI := h
   haveI : IsIso ((f ▷ L.obj) ▷ L.obj) :=
@@ -320,22 +328,28 @@ end Rotation
 
 section OddLineFree
 
-variable (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
-
 /-- A module twisted on the right by the odd line. -/
-noncomputable def modLine (M : Mod (Ind C) 𝔹) : Mod (Ind C) 𝔹 :=
+noncomputable def modLine
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
+    (M : Mod (Ind C) 𝔹) : Mod (Ind C) 𝔹 :=
   letI := tensorRightModObj 𝔹 M.X L.obj
   ⟨M.X ⊗ L.obj⟩
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
-@[simp] theorem modLine_X (M : Mod (Ind C) 𝔹) :
+@[simp] theorem modLine_X
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
+    (M : Mod (Ind C) 𝔹) :
     (modLine 𝔹 L M).X = M.X ⊗ L.obj := rfl
 
 /-- **A submodule of the free module on the line becomes a
 submodule of the regular module** after twisting by the line: the
 twist of the free module on the line is the regular module, by the
 rotation. -/
-noncomputable def lineToRegular {M : Mod (Ind C) 𝔹}
+noncomputable def lineToRegular
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
+    {M : Mod (Ind C) 𝔹}
     (g : M ⟶ freeMod 𝔹 L.obj) : modLine 𝔹 L M ⟶ regularMod 𝔹 :=
   Mod.Hom.mk' ((g.hom ▷ L.obj) ≫ (L.rot 𝔹).hom) (by
     have hf : actLeft 𝔹 M.X ≫ g.hom =
@@ -355,9 +369,11 @@ noncomputable def lineToRegular {M : Mod (Ind C) 𝔹}
     exact eq_whisker
       (MonoidalCategory.whiskerLeft_comp 𝔹 _ _).symm _)
 
-omit [RigidCategory C] in
 /-- The twisted map vanishes exactly when the original does. -/
-theorem lineToRegular_eq_zero_iff {M : Mod (Ind C) 𝔹}
+theorem lineToRegular_eq_zero_iff
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
+    {M : Mod (Ind C) 𝔹}
     (g : M ⟶ freeMod 𝔹 L.obj) :
     lineToRegular 𝔹 L g = 0 ↔ g = 0 := by
   constructor
@@ -374,11 +390,13 @@ theorem lineToRegular_eq_zero_iff {M : Mod (Ind C) 𝔹}
     rw [show g.hom = 0 from congrArg Mod.Hom.hom h,
       MonoidalPreadditive.zero_whiskerRight, Limits.zero_comp]
 
-omit [RigidCategory C] in
 /-- **The free module on the odd line is nonzero** as soon as the
 unit of the algebra is: the rotation identifies its double twist
 with the algebra. -/
-theorem id_freeMod_oddLine_ne_zero (hne : η[𝔹] ≠ 0) :
+theorem id_freeMod_oddLine_ne_zero
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
+    (hne : η[𝔹] ≠ 0) :
     (𝟙 (freeMod 𝔹 L.obj) : freeMod 𝔹 L.obj ⟶ freeMod 𝔹 L.obj)
       ≠ 0 := by
   intro h
@@ -397,6 +415,9 @@ simple.**  Twisting by the line carries its submodules to
 submodules of the regular module, and whiskering by the line
 reflects both vanishing and invertibility. -/
 theorem simple_freeMod_oddLine
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) : Simple (freeMod 𝔹 L.obj) := by
   haveI := simple_regularMod 𝔹 hsimple hne
@@ -433,11 +454,10 @@ end OddLineFree
 
 section MixedFree
 
-variable (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
-
-omit [SymmetricCategory C] [RigidCategory C] in
 /-- A module whose carrier vanishes vanishes. -/
-theorem isZero_of_isZero_X {M : Mod (Ind C) 𝔹} (h : IsZero M.X) :
+theorem isZero_of_isZero_X [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    {M : Mod (Ind C) 𝔹} (h : IsZero M.X) :
     IsZero M := by
   rw [IsZero.iff_id_eq_zero]
   exact Mod.hom_ext _ _ ((IsZero.iff_id_eq_zero M.X).1 h)
@@ -446,7 +466,10 @@ theorem isZero_of_isZero_X {M : Mod (Ind C) 𝔹} (h : IsZero M.X) :
 the regular module and of the free module on the odd line.**  The
 free-module functor carries the peeling isomorphisms of the mixed
 sum to biproduct decompositions of the module. -/
-noncomputable def freeModMixIso : ∀ p q : ℕ,
+noncomputable def freeModMixIso
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C)) : ∀ p q : ℕ,
     freeMod 𝔹 (L.mix p q) ≅
       mixSum (regularMod 𝔹) (freeMod 𝔹 L.obj) p q
   | 0, 0 =>
@@ -457,13 +480,13 @@ noncomputable def freeModMixIso : ∀ p q : ℕ,
       freeModMapIso 𝔹 (L.mixLineSuccIso 0 q) ≪≫
         freeModBiprodIso 𝔹 L.obj (L.mix 0 q) ≪≫
         modBiprodMapIso 𝔹 _ _ (Iso.refl (freeMod 𝔹 L.obj))
-          (freeModMixIso 0 q) ≪≫
+          (freeModMixIso 𝔹 L 0 q) ≪≫
         biprod.uniqueUpToIso _ _ (modBinaryBiconeIsBilimit 𝔹 _ _)
   | p + 1, q =>
       freeModMapIso 𝔹 (L.mixSuccIso p q) ≪≫
         freeModBiprodIso 𝔹 (𝟙_ (Ind C)) (L.mix p q) ≪≫
         modBiprodMapIso 𝔹 _ _ (freeModUnitIso 𝔹)
-          (freeModMixIso p q) ≪≫
+          (freeModMixIso 𝔹 L p q) ≪≫
         biprod.uniqueUpToIso _ _ (modBinaryBiconeIsBilimit 𝔹 _ _)
 
 end MixedFree
@@ -472,21 +495,23 @@ end MixedFree
 
 section Payoff
 
-variable (𝔹 : Ind C) [MonObj 𝔹] (L : OddLine (Ind C))
-
-omit [SymmetricCategory C] in
 /-- **The free-module functor preserves monomorphisms**: tensoring
 in the ind-completion is exact. -/
-theorem mono_freeModMap {V W : Ind C} (f : V ⟶ W) (hf : Mono f) :
+theorem mono_freeModMap
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    {V W : Ind C} (f : V ⟶ W) (hf : Mono f) :
     Mono (freeModMap 𝔹 f) := by
   haveI := hf
   refine mono_of_mono_hom _ ?_
   show Mono (𝔹 ◁ f)
   exact inferInstanceAs (Mono ((tensorLeft 𝔹).map f))
 
-omit [SymmetricCategory C] in
 /-- **The free-module functor preserves epimorphisms.** -/
-theorem epi_freeModMap {V W : Ind C} (f : V ⟶ W) (hf : Epi f) :
+theorem epi_freeModMap
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    {V W : Ind C} (f : V ⟶ W) (hf : Epi f) :
     Epi (freeModMap 𝔹 f) := by
   haveI := hf
   refine epi_of_epi_hom _ ?_
@@ -496,6 +521,9 @@ theorem epi_freeModMap {V W : Ind C} (f : V ⟶ W) (hf : Epi f) :
 /-- **A subobject of an object with free mixed module has a free
 mixed module.** -/
 theorem exists_mix_of_mono_of_simple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) {Y W : Ind C} (f : Y ⟶ W) (hf : Mono f)
     {p q : ℕ} (e : freeMod 𝔹 W ≅ freeMod 𝔹 (L.mix p q)) :
@@ -513,6 +541,9 @@ theorem exists_mix_of_mono_of_simple
 /-- **A quotient of an object with free mixed module has a free
 mixed module.** -/
 theorem exists_mix_of_epi_of_simple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) {Y W : Ind C} (f : W ⟶ Y) (hf : Epi f)
     {p q : ℕ} (e : freeMod 𝔹 W ≅ freeMod 𝔹 (L.mix p q)) :
@@ -530,6 +561,9 @@ theorem exists_mix_of_epi_of_simple
 /-- **A subquotient of an object with free mixed module has a free
 mixed module.** -/
 theorem exists_mix_of_isSubquotient
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) {Y W : Ind C} (h : IsSubquotientOf Y W)
     {p q : ℕ} (e : freeMod 𝔹 W ≅ freeMod 𝔹 (L.mix p q)) :
@@ -545,6 +579,9 @@ a simple algebra a free mixed module is a finite direct sum of
 copies of two simple modules, and an epimorphism out of such a sum
 has a section. -/
 theorem exists_section_freeMod_mix
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) (p q : ℕ) {N : Mod (Ind C) 𝔹}
     (f : freeMod 𝔹 (L.mix p q) ⟶ N) (hf : Epi f) :
@@ -564,6 +601,9 @@ module-level section as soon as its free module is an
 epimorphism.**  This is the section datum of the local splitting
 statement, supplied by semisimplicity rather than by hand. -/
 theorem exists_section_of_simple
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C] (𝔹 : Ind C) [MonObj 𝔹]
+    (L : OddLine (Ind C))
     (hsimple : ∀ I : Subobject 𝔹, IsIdeal 𝔹 I → I = ⊥ ∨ I = ⊤)
     (hne : η[𝔹] ≠ 0) {V W : Ind C} (g : V ⟶ W)
     (hV : ∃ p q : ℕ,

@@ -17,17 +17,15 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M N : Mod D A)
+variable {D : Type u}
 
-omit [IsCommMonObj A] in
 /-- **The module tensor product of a zero module vanishes**,
 left-factor version. -/
-theorem isZero_modTensor_left (h : IsZero M.X) :
+theorem isZero_modTensor_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D] (A : D)
+    [MonObj A] (M : Mod D A) (N : Mod D A)
+    (h : IsZero M.X) :
     IsZero (modTensor A M N) := by
   rw [IsZero.iff_id_eq_zero]
   have hπ : modTensorπ A M N = 0 :=

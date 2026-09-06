@@ -17,22 +17,14 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D] [HasBinaryBiproducts D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
+variable {D : Type u}
 
-omit [SymmetricCategory D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Morphisms out of a tensored biproduct are determined by the
 two whiskered injections. -/
-private theorem whisker_biprod_ext {P X Y Z : D}
+private theorem whisker_biprod_ext
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D]
+    {P X Y Z : D}
     {f g : P ⊗ (X ⊞ Y) ⟶ Z}
     (h1 : (P ◁ biprod.inl) ≫ f = (P ◁ biprod.inl) ≫ g)
     (h2 : (P ◁ biprod.inr) ≫ f = (P ◁ biprod.inr) ≫ g) :
@@ -60,25 +52,21 @@ private theorem whisker_biprod_ext {P X Y Z : D}
     _ = 𝟙 (P ⊗ (X ⊞ Y)) ≫ g := by rw [← htot]
     _ = g := Category.id_comp g
 
-variable (M N : Mod D A)
-
-omit [SymmetricCategory D] [HasCoequalizers D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The first injection followed by the first projection is the
 identity, at the level of module morphisms. -/
-lemma modBiprodInl_fst :
+lemma modBiprodInl_fst [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] (A : D) [MonObj A]
+    (M : Mod D A) (N : Mod D A) :
     modBiprodInl A M N ≫ modBiprodFst A M N = 𝟙 M := by
   apply Mod.hom_ext
   show (biprod.inl : M.X ⟶ M.X ⊞ N.X) ≫ biprod.fst = 𝟙 M.X
   exact biprod.inl_fst
 
-omit [SymmetricCategory D] [HasCoequalizers D] [IsCommMonObj A]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The second injection followed by the second projection is the
 identity, at the level of module morphisms. -/
-lemma modBiprodInr_snd :
+lemma modBiprodInr_snd [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasBinaryBiproducts D] (A : D) [MonObj A]
+    (M : Mod D A) (N : Mod D A) :
     modBiprodInr A M N ≫ modBiprodSnd A M N = 𝟙 N := by
   apply Mod.hom_ext
   show (biprod.inr : N.X ⟶ M.X ⊞ N.X) ≫ biprod.snd = 𝟙 N.X
@@ -86,7 +74,11 @@ lemma modBiprodInr_snd :
 
 /-- **The forward map**: the base change of a biproduct projects
 componentwise onto the biproduct of the base changes. -/
-noncomputable def baseChangeBiprodFwd :
+noncomputable def baseChangeBiprodFwd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] [HasBinaryBiproducts D] (A : D)
+    [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A)
+    (N : Mod D A) :
     baseChange φ (modBiprod A M N) ⟶
       baseChange φ M ⊞ baseChange φ N :=
   biprod.lift
@@ -95,19 +87,24 @@ noncomputable def baseChangeBiprodFwd :
 
 /-- **The backward map**: the biproduct of the base changes
 injects componentwise into the base change of the biproduct. -/
-noncomputable def baseChangeBiprodBwd :
+noncomputable def baseChangeBiprodBwd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     baseChange φ M ⊞ baseChange φ N ⟶
       baseChange φ (modBiprod A M N) :=
   biprod.desc
     (modTensorMap A (𝟙 (restrictRegular φ)) (modBiprodInl A M N))
     (modTensorMap A (𝟙 (restrictRegular φ)) (modBiprodInr A M N))
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Injecting and then projecting the first component is the
 identity on the base change. -/
-private lemma map_inl_fst :
+private lemma map_inl_fst
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     modTensorMap A (𝟙 (restrictRegular φ)) (modBiprodInl A M N) ≫
       modTensorMap A (𝟙 (restrictRegular φ))
         (modBiprodFst A M N) =
@@ -116,12 +113,13 @@ private lemma map_inl_fst :
     modTensorMap_id]
   rfl
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Injecting and then projecting the second component is the
 identity on the base change. -/
-private lemma map_inr_snd :
+private lemma map_inr_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     modTensorMap A (𝟙 (restrictRegular φ)) (modBiprodInr A M N) ≫
       modTensorMap A (𝟙 (restrictRegular φ))
         (modBiprodSnd A M N) =
@@ -130,12 +128,13 @@ private lemma map_inr_snd :
     modTensorMap_id]
   rfl
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Injecting the first and projecting the second component
 vanishes. -/
-private lemma map_inl_snd :
+private lemma map_inl_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     modTensorMap A (𝟙 (restrictRegular φ)) (modBiprodInl A M N) ≫
       modTensorMap A (𝟙 (restrictRegular φ))
         (modBiprodSnd A M N) = 0 := by
@@ -150,12 +149,13 @@ private lemma map_inl_snd :
   rw [biprod.inl_snd, MonoidalPreadditive.whiskerLeft_zero,
     Limits.zero_comp, Limits.comp_zero]
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- Injecting the second and projecting the first component
 vanishes. -/
-private lemma map_inr_fst :
+private lemma map_inr_fst
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     modTensorMap A (𝟙 (restrictRegular φ)) (modBiprodInr A M N) ≫
       modTensorMap A (𝟙 (restrictRegular φ))
         (modBiprodFst A M N) = 0 := by
@@ -170,12 +170,13 @@ private lemma map_inr_fst :
   rw [biprod.inr_fst, MonoidalPreadditive.whiskerLeft_zero,
     Limits.zero_comp, Limits.comp_zero]
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The backward map followed by the forward map is the
 identity. -/
-theorem baseChangeBiprodBwd_fwd :
+theorem baseChangeBiprodBwd_fwd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     baseChangeBiprodBwd A B φ M N ≫ baseChangeBiprodFwd A B φ M N =
       𝟙 (baseChange φ M ⊞ baseChange φ N) := by
   unfold baseChangeBiprodBwd baseChangeBiprodFwd
@@ -193,12 +194,13 @@ theorem baseChangeBiprodBwd_fwd :
     · rw [Category.assoc, biprod.lift_snd, biprod.inr_snd]
       exact map_inr_snd A B φ M N
 
-omit [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] in
 /-- The forward map followed by the backward map is the
 identity. -/
-theorem baseChangeBiprodFwd_bwd :
+theorem baseChangeBiprodFwd_bwd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    (φ : A ⟶ B) [IsMonHom φ] (M : Mod D A) (N : Mod D A) :
     baseChangeBiprodFwd A B φ M N ≫ baseChangeBiprodBwd A B φ M N =
       𝟙 (baseChange φ (modBiprod A M N)) := by
   unfold baseChangeBiprodFwd baseChangeBiprodBwd
@@ -233,11 +235,14 @@ theorem baseChangeBiprodFwd_bwd :
     (modTensorπ A (restrictRegular φ) (modBiprod A M N))).trans
     (Category.id_comp _)
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasBinaryBiproducts D] [IsCommMonObj A] in
 /-- Base change of a module morphism is linear over the new
 base. -/
-lemma baseChangeAct_modTensorMap {P Q : Mod D A} (f : P ⟶ Q) :
+lemma baseChangeAct_modTensorMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    {P Q : Mod D A} (f : P ⟶ Q) :
     baseChangeAct φ P ≫ modTensorMap A (𝟙 (restrictRegular φ)) f =
       B ◁ modTensorMap A (𝟙 (restrictRegular φ)) f ≫
         baseChangeAct φ Q := by
@@ -271,9 +276,13 @@ lemma baseChangeAct_modTensorMap {P Q : Mod D A} (f : P ⟶ Q) :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (whiskerLeft_modTensorπ_baseChangeAct φ Q)
 
-omit [MonoidalPreadditive D] [IsCommMonObj A] in
 /-- The forward map intertwines the actions. -/
-theorem baseChangeAct_baseChangeBiprodFwd :
+theorem baseChangeAct_baseChangeBiprodFwd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasCoequalizers D] [HasBinaryBiproducts D] (A : D)
+    [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (M : Mod D A) (N : Mod D A) :
     baseChangeAct φ (modBiprod A M N) ≫
         baseChangeBiprodFwd A B φ M N =
       B ◁ baseChangeBiprodFwd A B φ M N ≫
@@ -308,9 +317,14 @@ theorem baseChangeAct_baseChangeBiprodFwd :
     exact
       (baseChangeAct_modTensorMap A B φ (modBiprodSnd A M N)).symm
 
-omit [IsCommMonObj A] in
 /-- The backward map intertwines the actions. -/
-theorem modBiprodAct_baseChangeBiprodBwd :
+theorem modBiprodAct_baseChangeBiprodBwd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (M : Mod D A) (N : Mod D A) :
     modBiprodAct B (baseChangeMod φ M) (baseChangeMod φ N) ≫
         baseChangeBiprodBwd A B φ M N =
       B ◁ baseChangeBiprodBwd A B φ M N ≫
@@ -348,7 +362,13 @@ theorem modBiprodAct_baseChangeBiprodBwd :
 /-- **Base change distributes over the biproduct**: the base
 change of a biproduct of modules is the biproduct of the base
 changes, as bundled modules over the new base. -/
-noncomputable def baseChangeBiprodIso :
+noncomputable def baseChangeBiprodIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
+    [HasBinaryBiproducts D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (M : Mod D A) (N : Mod D A) :
     baseChangeMod φ (modBiprod A M N) ≅
       modBiprod B (baseChangeMod φ M) (baseChangeMod φ N) where
   hom := Mod.Hom.mk' (baseChangeBiprodFwd A B φ M N)

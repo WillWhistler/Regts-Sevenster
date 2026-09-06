@@ -17,12 +17,13 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [MonoidalPreadditive A]
-  [HasBinaryBiproducts A] [HasZeroObject A]
+variable {A : Type u}
 
 /-- **The odd line of the doubling**: the unit in odd degree. -/
-noncomputable def doubledOddLine : OddLine (Doubled A) where
+noncomputable def doubledOddLine
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [MonoidalPreadditive A] [HasBinaryBiproducts A]
+    [HasZeroObject A] : OddLine (Doubled A) where
   obj := Doubled.oddUnit
   sq := Doubled.oddUnitSq
   braid_neg := Doubled.braiding_oddUnit

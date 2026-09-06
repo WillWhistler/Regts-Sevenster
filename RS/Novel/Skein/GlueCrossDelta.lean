@@ -22,11 +22,12 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 /-- `ChordPairCross` is symmetric in its two chords: the two
 disjuncts swap. -/
-theorem chordPairCross_comm {x y u w : α} :
+theorem chordPairCross_comm [LinearOrder α]
+    {x y u w : α} :
     ChordPairCross x y u w ↔ ChordPairCross u w x y :=
   or_comm
 
@@ -36,26 +37,31 @@ chords that interleave, gated so the first-starting chord is listed
 first.  On a well-formed diagram (`IsChordDiagram`) every crossing
 unordered pair of chords contributes exactly one ordered pair, so
 this is the plain crossing number. -/
-noncomputable def diagCrossCount (P : Finset (α × α)) : ℕ :=
+noncomputable def diagCrossCount [LinearOrder α]
+    (P : Finset (α × α)) : ℕ :=
   ((P ×ˢ P).filter (fun pq => pq.1.1 < pq.2.1 ∧
     ChordPairCross pq.1.1 pq.1.2 pq.2.1 pq.2.2)).card
 
 open Classical in
 /-- The gated ordered crossing indicator of two chords. -/
-private noncomputable def xInd (p q : α × α) : ℕ :=
+private noncomputable def xInd [LinearOrder α]
+    (p q : α × α) : ℕ :=
   if p.1 < q.1 ∧ ChordPairCross p.1 p.2 q.1 q.2 then 1 else 0
 
-private theorem diagCrossCount_eq_sum (P : Finset (α × α)) :
+private theorem diagCrossCount_eq_sum [LinearOrder α]
+    (P : Finset (α × α)) :
     diagCrossCount P = ∑ p ∈ P, ∑ q ∈ P, xInd p q := by
   unfold diagCrossCount xInd
   rw [Finset.card_filter, Finset.sum_product]
 
-private theorem xInd_self (p : α × α) : xInd p p = 0 :=
+private theorem xInd_self [LinearOrder α]
+    (p : α × α) : xInd p p = 0 :=
   if_neg (fun h => lt_irrefl _ h.1)
 
 /-- The two ordered indicators of a chord pair with distinct starts
 sum to the plain crossing indicator. -/
-private theorem xInd_pair {p q : α × α} (h : p.1 ≠ q.1) :
+private theorem xInd_pair [LinearOrder α]
+    {p q : α × α} (h : p.1 ≠ q.1) :
     xInd p q + xInd q p =
       if ChordPairCross p.1 p.2 q.1 q.2 then 1 else 0 := by
   rcases lt_or_gt_of_ne h with hlt | hgt
@@ -75,7 +81,8 @@ private theorem xInd_pair {p q : α × α} (h : p.1 ≠ q.1) :
 
 /-- Inserting a fresh chord adds its ordered indicators against the
 old diagram. -/
-private theorem diagCrossCount_insert {P : Finset (α × α)}
+private theorem diagCrossCount_insert [LinearOrder α]
+    {P : Finset (α × α)}
     {c : α × α} (hc : c ∉ P) :
     diagCrossCount (insert c P) = diagCrossCount P +
       ∑ p ∈ P, (xInd c p + xInd p c) := by
@@ -95,7 +102,8 @@ private theorem diagCrossCount_insert {P : Finset (α × α)}
 
 /-- A point distinct from both sorted ends is distinct from both
 raw ends. -/
-private theorem ne_ends_raw {z a b : α} (h1 : z ≠ min a b)
+private theorem ne_ends_raw [LinearOrder α]
+    {z a b : α} (h1 : z ≠ min a b)
     (h2 : z ≠ max a b) : z ≠ a ∧ z ≠ b := by
   rcases le_total a b with h | h
   · rw [min_eq_left h] at h1
@@ -107,7 +115,8 @@ private theorem ne_ends_raw {z a b : α} (h1 : z ≠ min a b)
 
 /-- The ends of any other chord of a well-formed diagram avoid the
 raw ends of a sorted chord. -/
-private theorem ends_ne {P : Finset (α × α)} (hP : IsChordDiagram P)
+private theorem ends_ne [LinearOrder α]
+    {P : Finset (α × α)} (hP : IsChordDiagram P)
     {a b : α} {q : α × α} (hab : (min a b, max a b) ∈ P)
     (hq : q ∈ P) (hne : q ≠ (min a b, max a b)) :
     (q.1 ≠ a ∧ q.1 ≠ b) ∧ (q.2 ≠ a ∧ q.2 ≠ b) := by
@@ -115,17 +124,20 @@ private theorem ends_ne {P : Finset (α × α)} (hP : IsChordDiagram P)
   exact ⟨ne_ends_raw hd.fst_ne_fst hd.fst_ne_snd,
     ne_ends_raw hd.snd_ne_fst hd.snd_ne_snd⟩
 
-private theorem min_ne_of_ne {a b z : α} (h1 : a ≠ z) (h2 : b ≠ z) :
+private theorem min_ne_of_ne [LinearOrder α]
+    {a b z : α} (h1 : a ≠ z) (h2 : b ≠ z) :
     min a b ≠ z := by
   rcases min_choice a b with h | h <;> rw [h] <;> assumption
 
-private theorem max_ne_of_ne {a b z : α} (h1 : a ≠ z) (h2 : b ≠ z) :
+private theorem max_ne_of_ne [LinearOrder α]
+    {a b z : α} (h1 : a ≠ z) (h2 : b ≠ z) :
     max a b ≠ z := by
   rcases max_choice a b with h | h <;> rw [h] <;> assumption
 
 /-- Sorting the two probed points leaves the inside-indicator sum
 unchanged. -/
-private theorem inside_sorted_sum (l r a b : α) :
+private theorem inside_sorted_sum [LinearOrder α]
+    (l r a b : α) :
     ((if InsideChord l r (min a b) then (1 : ℕ) else 0) +
       (if InsideChord l r (max a b) then 1 else 0)) =
     ((if InsideChord l r a then (1 : ℕ) else 0) +
@@ -137,7 +149,8 @@ private theorem inside_sorted_sum (l r a b : α) :
 /-- The crossing indicator of a raw chord `{a, b}` against a third
 chord `p` has the parity of the number of its raw ends inside
 `p`. -/
-private theorem cross_parity_raw {p : α × α} {a b : α}
+private theorem cross_parity_raw [LinearOrder α]
+    {p : α × α} {a b : α}
     (hab : a ≠ b) (h1a : a ≠ p.1) (h1b : b ≠ p.1)
     (h2a : a ≠ p.2) (h2b : b ≠ p.2) :
     (if ChordPairCross (min a b) (max a b) p.1 p.2 then (1 : ℕ)
@@ -156,7 +169,8 @@ private theorem cross_parity_raw {p : α × α} {a b : α}
 
 /-- The two cut-label inside-indicators against a chord avoiding
 both cut labels sum (mod 2) to the crossing-the-cut indicator. -/
-private theorem pair_cut_parity {i j : α} (hij : i < j) {p : α × α}
+private theorem pair_cut_parity [LinearOrder α]
+    {i j : α} (hij : i < j) {p : α × α}
     (hp12 : p.1 < p.2) (h1i : p.1 ≠ i) (h2j : p.2 ≠ j) :
     ((if InsideChord p.1 p.2 i then (1 : ℕ) else 0) +
       (if InsideChord p.1 p.2 j then 1 else 0)) % 2 =
@@ -182,7 +196,8 @@ private theorem pair_cut_parity {i j : α} (hij : i < j) {p : α × α}
       ((hxor.mp hc).elim (fun h => hI h.1) (fun h => hJ h.1)))]
 
 /-- An entry of a sorted pair is one of the sorted values. -/
-private theorem sorted_eq_cases {a b c d : α}
+private theorem sorted_eq_cases [LinearOrder α]
+    {a b c d : α}
     (he : (min a b, max a b) = (min c d, max c d)) :
     a = c ∨ a = d := by
   have h1 : min a b = min c d := congrArg Prod.fst he
@@ -199,8 +214,6 @@ private theorem sorted_eq_cases {a b c d : α}
 
 namespace EdgeSubset
 
-variable {W : Fragment α} {F : EdgeSubset W}
-
 end EdgeSubset
 
 /-! ## The glue delta, crossing case -/
@@ -210,7 +223,8 @@ end EdgeSubset
 `(x,y)`, non-linked: `x ≠ j`) changes the diagram crossing count,
 mod 2, by the number of surviving third chords crossing the cut
 plus the mutual-crossing indicator of the two cut chords. -/
-theorem diagCrossCount_glue_cross {P : Finset (α × α)}
+theorem diagCrossCount_glue_cross [LinearOrder α]
+    {P : Finset (α × α)}
     (hP : IsChordDiagram P) {i j x y : α} (hij : i < j)
     (hxj : x ≠ j)
     (hi : (min i x, max i x) ∈ P) (hj : (min j y, max j y) ∈ P) :

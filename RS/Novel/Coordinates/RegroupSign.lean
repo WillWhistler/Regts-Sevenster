@@ -1,4 +1,5 @@
-import RS.Novel.Coordinates.ChainLists
+import RS.Common.ListPairs
+import RS.Novel.Coordinates.PairList
 import RS.Novel.Coordinates.CircuitCount
 
 /-!
@@ -30,37 +31,6 @@ namespace RS
 open Classical Finset Equiv
 
 variable {k ℓ : ℕ}
-
-/-! ## Auxiliary helpers -/
-
-private theorem attachWith_partEdges_nodup' (W : ClosedFragment) (F : EdgeSubset
-  W) :
-    ((partEdges W F).attachWith (· ∈ edgeIndexSet W F)
-      (fun _ hi => (Finset.mem_sort _).mp hi)).Nodup :=
-  (Finset.sort_nodup _ _).pmap (fun _ _ _ _ h => Subtype.mk.inj h)
-
-/-! ## Slot helpers -/
-
-private theorem castAdd_ne_natAdd' {n : ℕ} (i : Fin n) :
-    Fin.castAdd n i ≠ Fin.natAdd n i := by
-  intro h; have := congrArg Fin.val h
-  simp only [Fin.val_castAdd, Fin.val_natAdd] at this; omega
-
-private theorem castAdd_flag_ne_natAdd_flag' (W : ClosedFragment)
-    (i : Fin (edgeCount W)) :
-    (starFlagEnum W).symm (Fin.castAdd (edgeCount W) i) ≠
-    (starFlagEnum W).symm (Fin.natAdd (edgeCount W) i) :=
-  fun heq => castAdd_ne_natAdd' i ((starFlagEnum W).symm.injective heq)
-
-private theorem castAdd_injective' {n : ℕ} :
-    Function.Injective (Fin.castAdd n : Fin n → Fin (n + n)) :=
-  fun a b h => Fin.ext (by have := congrArg Fin.val h
-                           simp only [Fin.val_castAdd] at this; exact this)
-
-private theorem natAdd_injective' {n : ℕ} :
-    Function.Injective (Fin.natAdd n : Fin n → Fin (n + n)) :=
-  fun a b h => Fin.ext (by have := congrArg Fin.val h
-                           simp only [Fin.val_natAdd] at this; omega)
 
 /-! ## Slot extraction from block membership -/
 
@@ -201,112 +171,12 @@ private theorem edge_eq_of_slot_eq {W : ClosedFragment}
           starFlagEnum W f = Fin.natAdd (edgeCount W) b) :
     a = b := by
   rcases ha with ha | ha <;> rcases hb with hb | hb
-  · exact castAdd_injective' (ha.symm.trans hb)
+  · exact Fin.castAdd_injective _ _ (ha.symm.trans hb)
   · have := congrArg Fin.val (ha.symm.trans hb)
     simp only [Fin.val_castAdd, Fin.val_natAdd] at this; omega
   · have := congrArg Fin.val (ha.symm.trans hb)
     simp only [Fin.val_castAdd, Fin.val_natAdd] at this; omega
-  · exact natAdd_injective' (ha.symm.trans hb)
-
-/-! ## Nodup: oriented pair list -/
-
--- Raised budget: the flat-map is checked block by block, each with
--- its orientation dichotomy.
-set_option maxHeartbeats 800000 in
-private theorem orientedPairList_nodup' (W : ClosedFragment) (F : EdgeSubset W)
-    {κ : F.TransitionSystem} (o : κ.Orientation) :
-    (orientedPairList W F o).Nodup := by
-  rw [orientedPairList, List.nodup_flatMap]; constructor
-  · -- Each block is nodup (2 flags from different slots)
-    intro ⟨i, hi⟩ _
-    by_cases ho : o.isOut ((starFlagEnum W).symm
-        (Fin.castAdd (edgeCount W) i)) = true
-    · rw [if_pos ho]
-      refine List.nodup_cons.mpr ⟨fun hmem => ?_, List.nodup_singleton _⟩
-      rw [List.mem_singleton] at hmem
-      have hval : (starFlagEnum W).symm (Fin.natAdd (edgeCount W) i) =
-          (starFlagEnum W).symm (Fin.castAdd (edgeCount W) i) :=
-        congrArg (fun z : {f : W.Flag // f ∈ F.flags} => z.val) hmem
-      exact castAdd_flag_ne_natAdd_flag' W i hval.symm
-    · rw [if_neg ho]
-      refine List.nodup_cons.mpr ⟨fun hmem => ?_, List.nodup_singleton _⟩
-      rw [List.mem_singleton] at hmem
-      have hval : (starFlagEnum W).symm (Fin.castAdd (edgeCount W) i) =
-          (starFlagEnum W).symm (Fin.natAdd (edgeCount W) i) :=
-        congrArg (fun z : {f : W.Flag // f ∈ F.flags} => z.val) hmem
-      exact castAdd_flag_ne_natAdd_flag' W i hval
-  · -- Cross-block disjointness
-    refine List.Pairwise.imp_of_mem (fun {a b} _ _ hab x hxa hxb => ?_)
-      (List.Pairwise.imp (fun {a b} h => h) (attachWith_partEdges_nodup' W F))
-    have hne : a.val ≠ b.val := fun h => hab (Subtype.ext h)
-    exact hne (edge_eq_of_slot_eq (slot_of_orientedBlock' a x hxa)
-                                   (slot_of_orientedBlock' b x hxb))
-
-/-! ## Membership: oriented pair list -/
-
--- Raised budget: membership is traced back through the star
--- enumeration on both halves of the slot range.
-set_option maxHeartbeats 800000 in
-private theorem mem_orientedPairList' (W : ClosedFragment) (F : EdgeSubset W)
-    {κ : F.TransitionSystem} (o : κ.Orientation)
-    (x : {f : W.Flag // f ∈ F.flags}) :
-    x ∈ orientedPairList W F o := by
-  rw [orientedPairList, List.mem_flatMap]
-  set q := starFlagEnum W x.val with hq_def
-  by_cases hlow : q.val < edgeCount W
-  · -- x is the representative (castAdd half)
-    set i : Fin (edgeCount W) := ⟨q.val, hlow⟩ with hi_def
-    have hslot : Fin.castAdd (edgeCount W) i = q := Fin.ext rfl
-    have hmem : (starFlagEnum W).symm (Fin.castAdd (edgeCount W) i) =
-        x.val := by
-      rw [hslot, hq_def, _root_.Equiv.symm_apply_apply]
-    have hei : i ∈ edgeIndexSet W F := by
-      rw [edgeIndexSet, Finset.mem_filter]
-      exact ⟨Finset.mem_univ _, hmem ▸ x.prop⟩
-    have hsort : i ∈ (partEdges W F) :=
-      (Finset.mem_sort _).mpr hei
-    refine ⟨⟨i, hei⟩, ?_, ?_⟩
-    · rw [show (partEdges W F).attachWith (· ∈ edgeIndexSet W F)
-          (fun _ hi => (Finset.mem_sort _).mp hi) =
-        (partEdges W F).pmap Subtype.mk
-          (fun _ hi => (Finset.mem_sort _).mp hi) from rfl]
-      exact List.mem_pmap.mpr ⟨i, hsort, Subtype.ext rfl⟩
-    · by_cases ho : o.isOut ((starFlagEnum W).symm
-          (Fin.castAdd (edgeCount W) i)) = true
-      · rw [if_pos ho]
-        exact List.mem_cons.mpr (Or.inr (List.mem_singleton.mpr (Subtype.ext
-          hmem.symm)))
-      · rw [if_neg ho]
-        exact List.mem_cons.mpr (Or.inl (Subtype.ext hmem.symm))
-  · -- x is the partner (natAdd half)
-    have hge : q.val ≥ edgeCount W := Nat.le_of_not_lt hlow
-    have hlt : q.val - edgeCount W < edgeCount W := by have := q.isLt; omega
-    set i : Fin (edgeCount W) := ⟨q.val - edgeCount W, hlt⟩ with hi_def
-    have hslot : Fin.natAdd (edgeCount W) i = q :=
-      Fin.ext (by show edgeCount W + (q.val - edgeCount W) = q.val; omega)
-    have hmem : (starFlagEnum W).symm (Fin.natAdd (edgeCount W) i) = x.val := by
-      rw [hslot, hq_def, _root_.Equiv.symm_apply_apply]
-    have hpair : (starFlagEnum W).symm (Fin.castAdd (edgeCount W) i) =
-        W.pairing x.val := by
-      rw [← hmem, ← pairing_starFlagEnum_symm W i, W.pairing_invol]
-    have hei : i ∈ edgeIndexSet W F := by
-      rw [edgeIndexSet, Finset.mem_filter]
-      exact ⟨Finset.mem_univ _, hpair ▸ F.pairing_mem _ x.prop⟩
-    have hsort : i ∈ (partEdges W F) :=
-      (Finset.mem_sort _).mpr hei
-    refine ⟨⟨i, hei⟩, ?_, ?_⟩
-    · rw [show (partEdges W F).attachWith (· ∈ edgeIndexSet W F)
-          (fun _ hi => (Finset.mem_sort _).mp hi) =
-        (partEdges W F).pmap Subtype.mk
-          (fun _ hi => (Finset.mem_sort _).mp hi) from rfl]
-      exact List.mem_pmap.mpr ⟨i, hsort, Subtype.ext rfl⟩
-    · by_cases ho : o.isOut ((starFlagEnum W).symm
-          (Fin.castAdd (edgeCount W) i)) = true
-      · rw [if_pos ho]
-        exact List.mem_cons.mpr (Or.inl (Subtype.ext hmem.symm))
-      · rw [if_neg ho]
-        exact List.mem_cons.mpr (Or.inr (List.mem_singleton.mpr (Subtype.ext
-          hmem.symm)))
+  · exact Fin.natAdd_injective _ _ (ha.symm.trans hb)
 
 /-! ## Nodup: matched pair list -/
 
@@ -335,7 +205,7 @@ theorem matchedPairList_nodup' (W : ClosedFragment) (F : EdgeSubset W)
       exact κ.match_ne _ (repMem_of_partEdge hi) hval.symm
   · -- Cross-block disjointness
     refine List.Pairwise.imp_of_mem (fun {a b} _ _ hab x hxa hxb => ?_)
-      (List.Pairwise.imp (fun {a b} h => h) (attachWith_partEdges_nodup' W F))
+      (List.Pairwise.imp (fun {a b} h => h) (attachWith_partEdges_nodup W F))
     have hne : a.val ≠ b.val := fun h => hab (Subtype.ext h)
     obtain ⟨ha_in, ha_slot⟩ | ⟨ha_out, inA, hmemA, hxA, hslotA⟩ :=
       matchedBlock_classify a x hxa
@@ -528,9 +398,9 @@ private theorem len_oriented_eq_matched (W : ClosedFragment) (F : EdgeSubset W)
     {κ : F.TransitionSystem} (o : κ.Orientation) :
     (orientedPairList W F o).length = (matchedPairList W F o).length :=
   length_eq_of_nodup_mem _ _
-    (orientedPairList_nodup' W F o) (matchedPairList_nodup' W F o)
+    (orientedPairList_nodup W F o) (matchedPairList_nodup' W F o)
     (fun x => ⟨fun _ => mem_matchedPairList' W F o x,
-               fun _ => mem_orientedPairList' W F o x⟩)
+               fun _ => mem_orientedPairList W F o x⟩)
 
 private theorem len_matched_eq_global (W : ClosedFragment) (F : EdgeSubset W)
     {κ : F.TransitionSystem} (o : κ.Orientation) :
@@ -539,89 +409,6 @@ private theorem len_matched_eq_global (W : ClosedFragment) (F : EdgeSubset W)
     (matchedPairList_nodup' W F o) (globalPairList_nodup' W F o)
     (fun x => ⟨fun _ => mem_globalPairList' W F o x,
                fun _ => mem_matchedPairList' W F o x⟩)
-
-/-! ## FlatMap pair infrastructure -/
-
-private theorem len_flatMap_pair {α β : Type*} (L : List α) (f g : α → β) :
-    (L.flatMap (fun x => [f x, g x])).length = 2 * L.length := by
-  induction L with
-  | nil => simp
-  | cons a t ih => simp [List.flatMap_cons, ih]; omega
-
--- Raised budget: the index arithmetic under the flat-map is
--- carried through a list induction.
-set_option maxHeartbeats 400000 in
-private theorem getElem?_flatMap_pair_even {α β : Type*}
-    (L : List α) (f g : α → β) (j : ℕ) :
-    (L.flatMap (fun x => [f x, g x]))[2 * j]? = L[j]?.map f := by
-  induction L generalizing j with
-  | nil => simp
-  | cons a t ih =>
-    rw [List.flatMap_cons]; cases j with
-    | zero => simp
-    | succ j =>
-      rw [show 2 * (j + 1) = 2 + 2 * j from by omega,
-          List.getElem?_append_right
-            (show ([f a, g a] : List _).length ≤ 2 + 2 * j from by simp)]
-      simp only [show ([f a, g a] : List _).length = 2 from rfl,
-                  show 2 + 2 * j - 2 = 2 * j from by omega,
-                  List.getElem?_cons_succ]
-      exact ih j
-
--- As for the even positions.
-set_option maxHeartbeats 400000 in
-private theorem getElem?_flatMap_pair_odd {α β : Type*}
-    (L : List α) (f g : α → β) (j : ℕ) :
-    (L.flatMap (fun x => [f x, g x]))[2 * j + 1]? = L[j]?.map g := by
-  induction L generalizing j with
-  | nil => simp
-  | cons a t ih =>
-    rw [List.flatMap_cons]; cases j with
-    | zero => simp
-    | succ j =>
-      rw [show 2 * (j + 1) + 1 = 2 + (2 * j + 1) from by omega,
-          List.getElem?_append_right
-            (show ([f a, g a] : List _).length ≤ 2 + (2 * j + 1) from by simp)]
-      simp only [show ([f a, g a] : List _).length = 2 from rfl,
-                  show 2 + (2 * j + 1) - 2 = 2 * j + 1 from by omega,
-                  List.getElem?_cons_succ]
-      exact ih j
-
-/-- In a flatMap of [x, h x] blocks, element 2j+1 is h applied to element 2j. -/
-private theorem getElem?_self_paired {α : Type*}
-    (L : List α) (h : α → α) (j : ℕ) :
-    (L.flatMap (fun x => [x, h x]))[2 * j + 1]? =
-    (L.flatMap (fun x => [x, h x]))[2 * j]?.map h := by
-  have key : (fun x => ([x, h x] : List α)) = (fun x => [id x, h x]) := by
-    ext; simp
-  rw [key, getElem?_flatMap_pair_even L id h j,
-      getElem?_flatMap_pair_odd L id h j, Option.map_map]
-  simp
-
-private theorem getElem_flatMap_pair_even {α β : Type*}
-    (L : List α) (f g : α → β) (j : ℕ) (hj : j < L.length) :
-    (L.flatMap (fun x => [f x, g x]))[2 * j]'(by
-      rw [len_flatMap_pair]; omega) = f L[j] := by
-  have h := getElem?_flatMap_pair_even L f g j
-  rw [List.getElem?_eq_getElem (by rw [len_flatMap_pair]; omega),
-      List.getElem?_eq_getElem hj] at h
-  exact Option.some.inj h
-
-private theorem getElem_flatMap_pair_odd {α β : Type*}
-    (L : List α) (f g : α → β) (j : ℕ) (hj : j < L.length) :
-    (L.flatMap (fun x => [f x, g x]))[2 * j + 1]'(by
-      rw [len_flatMap_pair]; omega) = g L[j] := by
-  have h := getElem?_flatMap_pair_odd L f g j
-  rw [List.getElem?_eq_getElem (by rw [len_flatMap_pair]; omega),
-      List.getElem?_eq_getElem hj] at h
-  exact Option.some.inj h
-
-private theorem flatMap_comp_map {α β γ : Type*}
-    (L : List α) (f : α → β) (g : β → List γ) :
-    L.flatMap (fun x => g (f x)) = (L.map f).flatMap g := by
-  induction L with
-  | nil => simp
-  | cons a t ih => simp [List.flatMap_cons, ih]
 
 /-! ## Match subtype and base lists -/
 
@@ -669,7 +456,7 @@ private theorem matchedPairList_eq_flatMap (W : ClosedFragment) (F : EdgeSubset
     {κ : F.TransitionSystem} (o : κ.Orientation) :
     matchedPairList W F o =
     (matchedBase W F o).flatMap (fun f => [f, matchSub κ f]) := by
-  rw [matchedPairList, matchedBase, ← flatMap_comp_map]
+  rw [matchedPairList, matchedBase, List.flatMap_map]
   congr 1; ext ⟨e, he⟩
   unfold matchedInFlag matchSub
   by_cases ho : o.isOut ((starFlagEnum W).symm
@@ -824,7 +611,7 @@ private theorem orientedPairList_eq_flatMap (W : ClosedFragment) (F : EdgeSubset
     {κ : F.TransitionSystem} (o : κ.Orientation) :
     orientedPairList W F o =
     (matchedBase W F o).flatMap (fun f => [f, pairingSub f]) := by
-  rw [orientedPairList, matchedBase, ← flatMap_comp_map]
+  rw [orientedPairList, matchedBase, List.flatMap_map]
   congr 1
   funext ⟨e, he⟩
   unfold matchedInFlag
@@ -851,7 +638,7 @@ private theorem matchedBase_nodup (W : ClosedFragment) (F : EdgeSubset W)
     {κ : F.TransitionSystem} (o : κ.Orientation) :
     (matchedBase W F o).Nodup := by
   rw [matchedBase]
-  apply List.Nodup.map _ (attachWith_partEdges_nodup' W F)
+  apply List.Nodup.map _ (attachWith_partEdges_nodup W F)
   intro ⟨e₁, he₁⟩ ⟨e₂, he₂⟩ h
   apply Subtype.ext
   have hv : (matchedInFlag o ⟨e₁, he₁⟩).val = (matchedInFlag o ⟨e₂, he₂⟩).val :=
@@ -862,7 +649,7 @@ private theorem matchedBase_nodup (W : ClosedFragment) (F : EdgeSubset W)
   by_cases ho₂ : o.isOut ((starFlagEnum W).symm
       (Fin.castAdd (edgeCount W) e₂)) = true
   · rw [if_pos ho₁, if_pos ho₂] at hv
-    exact natAdd_injective' ((starFlagEnum W).symm.injective hv)
+    exact Fin.natAdd_injective _ _ ((starFlagEnum W).symm.injective hv)
   · rw [if_pos ho₁, if_neg ho₂] at hv
     exact absurd (congrArg Fin.val ((starFlagEnum W).symm.injective hv))
       (by simp [Fin.val_castAdd]; omega)
@@ -870,7 +657,7 @@ private theorem matchedBase_nodup (W : ClosedFragment) (F : EdgeSubset W)
     exact absurd (congrArg Fin.val ((starFlagEnum W).symm.injective hv))
       (by simp [Fin.val_castAdd]; omega)
   · rw [if_neg ho₁, if_neg ho₂] at hv
-    exact castAdd_injective' ((starFlagEnum W).symm.injective hv)
+    exact Fin.castAdd_injective _ _ ((starFlagEnum W).symm.injective hv)
 
 /-- Two getElem calls at the same index are equal regardless of bound proof. -/
 private theorem getElem_val_irrel {α : Type*} (l : List α) {a b : Nat}
@@ -890,9 +677,9 @@ theorem sign_listIndexPerm_oriented_matched (W : ClosedFragment) (F : EdgeSubset
   W)
     {κ : F.TransitionSystem} (o : κ.Orientation) :
     Perm.sign (listIndexPerm (orientedPairList W F o) (matchedPairList W F o)
-      (orientedPairList_nodup' W F o) (matchedPairList_nodup' W F o)
+      (orientedPairList_nodup W F o) (matchedPairList_nodup' W F o)
       (fun x => ⟨fun _ => mem_matchedPairList' W F o x,
-                  fun _ => mem_orientedPairList' W F o x⟩)
+                  fun _ => mem_orientedPairList W F o x⟩)
       (len_oriented_eq_matched W F o)) =
     Perm.sign (κ.outPerm o) := by
   -- ═══════ SETUP: BOTH LISTS AS FLAT-MAPPED PAIR BLOCKS ═══════
@@ -901,10 +688,10 @@ theorem sign_listIndexPerm_oriented_matched (W : ClosedFragment) (F : EdgeSubset
   -- and known entries at even and odd positions.
   set O := orientedPairList W F o
   set M := matchedPairList W F o
-  set τ := listIndexPerm O M (orientedPairList_nodup' W F o)
+  set τ := listIndexPerm O M (orientedPairList_nodup W F o)
     (matchedPairList_nodup' W F o)
     (fun x => ⟨fun _ => mem_matchedPairList' W F o x,
-                fun _ => mem_orientedPairList' W F o x⟩)
+                fun _ => mem_orientedPairList W F o x⟩)
     (len_oriented_eq_matched W F o)
   set mB := matchedBase W F o
   have hO_eq : O = mB.flatMap (fun f => [f, pairingSub f]) :=
@@ -1076,7 +863,7 @@ theorem sign_listIndexPerm_oriented_matched (W : ClosedFragment) (F : EdgeSubset
     exact Fin.ext ((matchedBase_nodup W F o).getElem_inj_iff.mp hps)
   have e_surj : Function.Surjective e_fn := by
     intro ⟨f, hf_out⟩
-    have hf_mem : f ∈ O := mem_orientedPairList' W F o f
+    have hf_mem : f ∈ O := mem_orientedPairList W F o f
     rw [hO_eq] at hf_mem
     simp only [List.mem_flatMap, List.mem_cons,
       List.mem_nil_iff, or_false] at hf_mem

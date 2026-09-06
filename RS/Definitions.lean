@@ -3,46 +3,40 @@ import RS.Common.MathlibDeps
 /-!
 # The statement surface, defined
 
-Every definition the theorems of record are phrased in, in one
-self-contained module: the flag model of multigraph fragments with
-its gluing, fragment isomorphism, composition, the connection
-pairing and the edge-rank hypothesis, Eulerian edge subsets, the
-mixed partition function (Regts–Sevenster's Definition 5), the
-three named statements, the symmetric monoidal category of super
-vector spaces, the vocabulary of Deligne's hypotheses, and
-Deligne's theorem, which `RS/Classical/Deligne/` proves.
+Every definition the theorems of record are phrased in, in one self-contained
+module: the flag model of multigraph fragments with its gluing, fragment
+isomorphism, composition, the connection pairing and the edge-rank hypothesis,
+Eulerian edge subsets, the mixed partition function (Regts–Sevenster's
+Definition 5), the three named statements, the symmetric monoidal category of
+super vector spaces, the vocabulary of Deligne's hypotheses, and Deligne's
+theorem, which `RS/Classical/Deligne/` proves.
 
-This module imports only the Mathlib funnel
-(`RS/Common/MathlibDeps.lean`, an import list with no content), so
-its meaning is determined by this file against Mathlib alone.  It
-is the trusted surface of the comparator certification:
-`Challenge.lean` carries a copy of the sections below, against
-Mathlib alone, and states the theorems of record with `sorry`;
-`Solution.lean` proves each by the theorem of record of the same
-name, against the definitions here.  Comparator confirms at the kernel-export level that the two
-sides prove identical statements about identical definitions — the
-definitions below.  The rest of the tree imports them from here
-rather than restating them, so this file is the single source of
-what the theorems mean.
+This module imports only the Mathlib funnel (`RS/Common/MathlibDeps.lean`, an
+import list with no content), so its meaning is determined by this file
+against Mathlib alone. It is the trusted surface of the comparator
+certification: `Challenge.lean` carries a copy of the sections below, against
+Mathlib alone, and states the theorems of record with `sorry`; `Solution.lean`
+proves each by the theorem of record of the same name, against the definitions
+here. Comparator confirms at the kernel-export level that the two sides prove
+identical statements about identical definitions — the definitions below. The
+rest of the tree imports them from here rather than restating them, so this
+file is the single source of what the theorems mean.
 
-**How to read it.**  Each section names the theory it carries; the
-rest of the repository builds on these declarations by import, so
-what is written here is, verbatim, what the theorems of record are
-about.  The order is: the sorting sign; fragments and gluing;
-fragment isomorphism; composition; connection pairings and the
-edge-rank hypothesis; Eulerian edge subsets; the mixed partition
-function; the named statements; super vector spaces; the vocabulary
-of Deligne's hypotheses; and Deligne's theorem.
--/
+**How to read it.** Each section names the theory it carries; the rest of the
+repository builds on these declarations by import, so what is written here is,
+verbatim, what the theorems of record are about. The order is: the sorting
+sign; fragments and gluing; fragment isomorphism; composition; connection
+pairings and the edge-rank hypothesis; Eulerian edge subsets; the mixed
+partition function; the named statements; super vector spaces; the vocabulary
+of Deligne's hypotheses; and Deligne's theorem. -/
 
 namespace RS
 
 /-! ## 1. Inversions and the sorting sign
 
-The sorting sign supplies the
-antisymmetry of the odd-colour evaluation in Definition 5: reordering
-the odd colours multiplies the vertex value by the sign of the
-permutation, realized as `(−1)` to the inversion count. -/
+The sorting sign supplies the antisymmetry of the odd-colour evaluation in
+Definition 5: reordering the odd colours multiplies the vertex value by the
+sign of the permutation, realized as `(−1)` to the inversion count. -/
 
 /-- The number of inversions of a list over a linear order. -/
 def inversions {α : Type} [LinearOrder α] : List α → ℕ
@@ -56,15 +50,13 @@ def sortSign {α : Type} [LinearOrder α] (l : List α) : ℤ :=
 
 /-! ## 2. The flag model of multigraph fragments
 
-A *fragment* is a finite
-multigraph in half-edge (flag) form: flags attach to internal
-vertices or to boundary labels, a fixed-point-free involution pairs
-flags into edges, each boundary label carries exactly one flag, and
-free circles are counted separately.  Gluing two boundary labels
-either closes an edge into a free circle (when the two flags bound a
-common edge) or rewires the two edges end to end.  These are the
-graphs the main theorems quantify over; `ClosedFragment` below is
-the case of no boundary labels. -/
+A *fragment* is a finite multigraph in half-edge (flag) form: flags attach to
+internal vertices or to boundary labels, a fixed-point-free involution pairs
+flags into edges, each boundary label carries exactly one flag, and free
+circles are counted separately. Gluing two boundary labels either closes an
+edge into a free circle (when the two flags bound a common edge) or rewires
+the two edges end to end. These are the graphs the main theorems quantify
+over; `ClosedFragment` below is the case of no boundary labels. -/
 
 /-- A fragment over the boundary-label type `α`: a finite multigraph
 in half-edge (flag) form whose dangling flags are labelled
@@ -236,8 +228,7 @@ def glueAttach (W : Fragment α) (i j : α) (f : SurvivingFlag W i j) :
 /-- `glueAttachOn` returns, under the label inclusion, exactly the
 value of `attach` it was handed. -/
 theorem glueAttachOn_spec (W : Fragment α) (i j : α)
-    (f : SurvivingFlag W i j) (s : W.Vertex ⊕ α)
-    (h : W.attach f.val = s) :
+    (f : SurvivingFlag W i j) (s : W.Vertex ⊕ α) (h : W.attach f.val = s) :
     (glueAttachOn W i j f s h).map id Subtype.val = s := by
   cases s <;> rfl
 
@@ -471,11 +462,10 @@ end Glue
 
 /-! ## 3. Isomorphism of fragments
 
-The hypothesis class
-asks parameters to be isomorphism-invariant; this is the notion of
-isomorphism.  (`RS/Novel/Skein/FragmentEquiv.lean` proves the
-equivalences form a groupoid and are congruences for the fragment
-operations.) -/
+The hypothesis class asks parameters to be isomorphism-invariant; this is the
+notion of isomorphism. (`RS/Novel/Skein/FragmentEquiv.lean` proves the
+equivalences form a groupoid and are congruences for the fragment operations.)
+-/
 
 /-- An equivalence of fragments: a pair of type equivalences on
 flags and vertices commuting with attachment, pairing, and
@@ -498,12 +488,10 @@ end Fragment
 
 /-! ## 4. Composition of fragments
 
-An `(s + t)`-fragment
-and a `(t + u)`-fragment compose by gluing the last `t` labels of
-the first to the first `t` of the second, top pair first, through
-the single-pair gluing above; the label bookkeeping is by one-point
-removals of `Fin` indices.  Composition is what the connection
-pairing evaluates. -/
+An `(s + t)`-fragment and a `(t + u)`-fragment compose by gluing the last `t`
+labels of the first to the first `t` of the second, top pair first, through
+the single-pair gluing above; the label bookkeeping is by one-point removals
+of `Fin` indices. Composition is what the connection pairing evaluates. -/
 
 /-! ### Removing a point -/
 
@@ -584,17 +572,14 @@ noncomputable def Fragment.compose {s t u : ℕ}
 
 /-! ## 5. Connection pairings and the edge-rank hypothesis
 
-The connection
-pairing of a parameter at arity `t` closes two `t`-fragments
-against each other; the edge-rank hypothesis bounds, for every
-`t`, the rank of that pairing by `R ^ t`, phrased as the
-`Module.rank` of the range of the curried pairing
-(`RS/Novel/Skein/ConnectionRank.lean` proves this equivalent to
-the finite-submatrix reading of the literature; that equivalence
-is a theorem *about* the hypothesis and is not needed to state
-it).  `EdgeRankParameter` packages the hypothesis
-class of the forward direction: normalized at the empty graph,
-isomorphism-invariant, rank-bounded. -/
+The connection pairing of a parameter at arity `t` closes two `t`-fragments
+against each other; the edge-rank hypothesis bounds, for every `t`, the rank
+of that pairing by `R ^ t`, phrased as the `Module.rank` of the range of the
+curried pairing (`RS/Novel/Skein/ConnectionRank.lean` proves this equivalent
+to the finite-submatrix reading of the literature; that equivalence is a
+theorem *about* the hypothesis and is not needed to state it).
+`EdgeRankParameter` packages the hypothesis class of the forward direction:
+normalized at the empty graph, isomorphism-invariant, rank-bounded. -/
 
 /-- A closed fragment: no boundary labels. -/
 abbrev ClosedFragment : Type 1 := Fragment (Fin 0)
@@ -642,15 +627,13 @@ structure EdgeRankParameter (R : ℕ) where
 
 /-! ## 6. Eulerian edge subsets and circuit data
 
-Definition 5 sums over
-pairing-closed flag subsets in which every vertex has even degree.
-A *transition system* is the local pairing `κ` of Definition 5: a
-second fixed-point-free involution matching participating flags at
-common vertices.  Following an edge and then the matching generates
-the circuit walks; each geometric circuit of `n` edges appears as
-two walk-cycles (its two directions) when `n ≥ 2` and as two walk
-fixed points when `n = 1`, so the circuit count is half the number
-of orbits. -/
+Definition 5 sums over pairing-closed flag subsets in which every vertex has
+even degree. A *transition system* is the local pairing `κ` of Definition 5: a
+second fixed-point-free involution matching participating flags at common
+vertices. Following an edge and then the matching generates the circuit walks;
+each geometric circuit of `n` edges appears as two walk-cycles (its two
+directions) when `n ≥ 2` and as two walk fixed points when `n = 1`, so the
+circuit count is half the number of orbits. -/
 
 variable {α : Type}
 
@@ -748,17 +731,15 @@ end EdgeSubset
 
 /-! ## 7. The mixed partition function (Definition 5)
 
-A `(k, 2ℓ)` mixed
-vertex functional assigns a value to a multiset of even colours and
-a *set* of odd colours; the alternating evaluation on an ordered
-odd list is recovered through the sorting sign, so antisymmetry is
-a theorem of the evaluator rather than a condition on the data.
-The summand of an Eulerian subset is its circuit sign times the
-colouring sum of vertex values, odd colours contributing through
-the symplectic pairing (`oddPartner`, `oddPartnerSign`); the value
-of the subset is choice-free because the tree proves it independent
-of the transition data, and `mixedPartition` is the free-circle
-factor `(k − 2ℓ)^circles` times the sum over Eulerian subsets. -/
+A `(k, 2ℓ)` mixed vertex functional assigns a value to a multiset of even
+colours and a *set* of odd colours; the alternating evaluation on an ordered
+odd list is recovered through the sorting sign, so antisymmetry is a theorem
+of the evaluator rather than a condition on the data. The summand of an
+Eulerian subset is its circuit sign times the colouring sum of vertex values,
+odd colours contributing through the symplectic pairing (`oddPartner`,
+`oddPartnerSign`); the value of the subset is choice-free because the tree
+proves it independent of the transition data, and `mixedPartition` is the
+free-circle factor `(k − 2ℓ)^circles` times the sum over Eulerian subsets. -/
 
 /-- The data of a `(k, 2ℓ)` mixed vertex functional: a value for
 each multiset of even colours and set of odd colours. -/
@@ -789,8 +770,7 @@ designation of the participating flags, flipped both by the vertex
 matching and by the edge pairing (so circuits are traversed
 consistently). -/
 structure EdgeSubset.TransitionSystem.Orientation {α : Type}
-    {W : Fragment α} {F : EdgeSubset W}
-    (κ : F.TransitionSystem) where
+    {W : Fragment α} {F : EdgeSubset W} (κ : F.TransitionSystem) where
   /-- Whether a flag is an outgoing end. -/
   isOut : W.Flag → Bool
   /-- The vertex matching pairs incoming with outgoing flags. -/
@@ -960,9 +940,8 @@ def IsMixedPartitionFunction (f : ClosedFragment → ℂ) : Prop :=
 
 /-! ## 8. The named statements
 
-The forward direction, its quantitative form with the paper's
-dimension bound `⌊2eR⌋`, and the converse with its explicit
-base. -/
+The forward direction, the separate parity bound `⌊2eR⌋`, the sharp total
+colour bound `R`, and the converse with its explicit base. -/
 
 /-- **THE REGTS–SEVENSTER CONJECTURE.**  Every graph parameter with
 exponentially bounded edge-connection rank is a mixed partition
@@ -988,6 +967,33 @@ def RegtsSevensterStatementQuant : Prop :=
     IsMixedPartitionFunctionBounded f.val
       ⌊2 * Real.exp 1 * (R : ℝ)⌋₊
 
+/-- A mixed model with a bound on the sum of its even and odd
+dimensions. The named fields retain the functional and its agreement
+with the graph parameter as part of the witness. -/
+structure TotalBoundedMixedModel (f : ClosedFragment → ℂ) (B : ℕ) where
+  /-- The number of even colours. -/
+  k : ℕ
+  /-- Half the number of odd colours. -/
+  ℓ : ℕ
+  /-- The vertex functional of the model. -/
+  functional : MixedFunctional k ℓ
+  /-- The total number of colours is bounded by `B`. -/
+  dimension_le : k + 2 * ℓ ≤ B
+  /-- The model evaluates to the given parameter on every fragment. -/
+  partition_eq : ∀ W : ClosedFragment, f W = mixedPartition functional W
+
+/-- A parameter admits a mixed model with at most `B` colours in
+total, counting both the even and odd components. -/
+def IsMixedPartitionFunctionTotalBounded (f : ClosedFragment → ℂ)
+    (B : ℕ) : Prop :=
+  Nonempty (TotalBoundedMixedModel f B)
+
+/-- The total-dimension Regts–Sevenster statement: an edge-rank base
+`R` bounds the total number of colours of a representing mixed model. -/
+def RegtsSevensterStatementTotal : Prop :=
+  ∀ (R : ℕ) (f : EdgeRankParameter R),
+    IsMixedPartitionFunctionTotalBounded f.val R
+
 /-- **THE CONVERSE STATEMENT**: every mixed partition function is
 an edge-rank-bounded parameter with base `max 1 (k + 2ℓ)`
 (Regts–Sevenster, arXiv:1807.04494, Theorem 6). -/
@@ -998,18 +1004,16 @@ def RegtsSevensterConverseStatement : Prop :=
 
 /-! ## 9. The symmetric monoidal category of super vector spaces
 
-The codomain of the
-fibre functor in Deligne's conclusion: finite-dimensional
-ℤ/2-graded complex vector spaces with grading-preserving maps, the
-graded tensor product, and the braiding that carries the *Koszul
-sign* — the odd⊗odd block acquires a factor of −1 under the swap
-(`koszulEvenAux`, second component).  This is the longest section;
-its content is one structure, its category structure, and the
-monoidal, braided, symmetric, additive and ℂ-linear instances,
-together with the computation lemmas their coherence proofs run on.
-An auditor checking what the assumed theorem *says* should read the
-objects, `tensorObj`, `tensorUnit` and the two Koszul blocks; the
-rest is coherence. -/
+The codomain of the fibre functor in Deligne's conclusion: finite-dimensional
+ℤ/2-graded complex vector spaces with grading-preserving maps, the graded
+tensor product, and the braiding that carries the *Koszul sign* — the odd⊗odd
+block acquires a factor of −1 under the swap (`koszulEvenAux`, second
+component). This is the longest section; its content is one structure, its
+category structure, and the monoidal, braided, symmetric, additive and
+ℂ-linear instances, together with the computation lemmas their coherence
+proofs run on. An auditor checking what Deligne's theorem *says* should read
+the objects, `tensorObj`, `tensorUnit` and the two Koszul blocks; the rest is
+coherence. -/
 
 noncomputable section
 
@@ -1431,10 +1435,8 @@ lemma prod4Perm_apply {A B C D : Type*}
 /-- The inverse product-distribution on a first-summand pure
 tensor. -/
 lemma prodRight_symm_tmul_fst {M₁ M₂ M₃ : Type*}
-    [AddCommGroup M₁] [Module ℂ M₁]
-    [AddCommGroup M₂] [Module ℂ M₂]
-    [AddCommGroup M₃] [Module ℂ M₃]
-    (m₁ : M₁) (m₂ : M₂) :
+    [AddCommGroup M₁] [Module ℂ M₁] [AddCommGroup M₂] [Module ℂ M₂]
+    [AddCommGroup M₃] [Module ℂ M₃] (m₁ : M₁) (m₂ : M₂) :
     (TensorProduct.prodRight ℂ ℂ M₁ M₂ M₃).symm (m₁ ⊗ₜ m₂, 0) =
       m₁ ⊗ₜ[ℂ] ((m₂, 0) : M₂ × M₃) := by
   apply (TensorProduct.prodRight ℂ ℂ M₁ M₂ M₃).injective
@@ -1443,10 +1445,8 @@ lemma prodRight_symm_tmul_fst {M₁ M₂ M₃ : Type*}
 /-- The inverse product-distribution on a second-summand pure
 tensor. -/
 lemma prodRight_symm_tmul_snd {M₁ M₂ M₃ : Type*}
-    [AddCommGroup M₁] [Module ℂ M₁]
-    [AddCommGroup M₂] [Module ℂ M₂]
-    [AddCommGroup M₃] [Module ℂ M₃]
-    (m₁ : M₁) (m₃ : M₃) :
+    [AddCommGroup M₁] [Module ℂ M₁] [AddCommGroup M₂] [Module ℂ M₂]
+    [AddCommGroup M₃] [Module ℂ M₃] (m₁ : M₁) (m₃ : M₃) :
     (TensorProduct.prodRight ℂ ℂ M₁ M₂ M₃).symm (0, m₁ ⊗ₜ m₃) =
       m₁ ⊗ₜ[ℂ] ((0, m₃) : M₂ × M₃) := by
   apply (TensorProduct.prodRight ℂ ℂ M₁ M₂ M₃).injective
@@ -1689,8 +1689,7 @@ lemma prod_mk_neg_right {A B : Type*}
 /-- The triangle coherence of the module-level associator block
 against the unit slots `ℂ` (even) and `PUnit` (odd).  Both graded
 components of the SuperVect triangle are instantiations. -/
-theorem assocAux_triangle
-    (A₁ A₂ B₁ B₂ : Type*)
+theorem assocAux_triangle (A₁ A₂ B₁ B₂ : Type*)
     [AddCommGroup A₁] [Module ℂ A₁] [AddCommGroup A₂] [Module ℂ A₂]
     [AddCommGroup B₁] [Module ℂ B₁] [AddCommGroup B₂] [Module ℂ B₂] :
     LinearMap.prodMap
@@ -1714,8 +1713,7 @@ theorem assocAux_triangle
 /-- The forward hexagon for the even graded component, at the
 module level: braiding past a tensor product in two steps agrees
 with braiding past its factors. -/
-theorem koszulAux_hexagon_fwd_even
-    (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
+theorem koszulAux_hexagon_fwd_even (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
     [AddCommGroup A₁] [Module ℂ A₁] [AddCommGroup A₂] [Module ℂ A₂]
     [AddCommGroup B₁] [Module ℂ B₁] [AddCommGroup B₂] [Module ℂ B₂]
     [AddCommGroup C₁] [Module ℂ C₁] [AddCommGroup C₂] [Module ℂ C₂] :
@@ -1735,8 +1733,7 @@ theorem koszulAux_hexagon_fwd_even
     TensorProduct.tmul_neg, prod_mk_neg_left, prod_mk_neg_right]
 
 /-- The forward hexagon for the odd graded component. -/
-theorem koszulAux_hexagon_fwd_odd
-    (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
+theorem koszulAux_hexagon_fwd_odd (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
     [AddCommGroup A₁] [Module ℂ A₁] [AddCommGroup A₂] [Module ℂ A₂]
     [AddCommGroup B₁] [Module ℂ B₁] [AddCommGroup B₂] [Module ℂ B₂]
     [AddCommGroup C₁] [Module ℂ C₁] [AddCommGroup C₂] [Module ℂ C₂] :
@@ -1757,8 +1754,7 @@ theorem koszulAux_hexagon_fwd_odd
 
 /-- The reverse hexagon for the even graded component, phrased
 through the inverse associator blocks. -/
-theorem koszulAux_hexagon_rev_even
-    (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
+theorem koszulAux_hexagon_rev_even (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
     [AddCommGroup A₁] [Module ℂ A₁] [AddCommGroup A₂] [Module ℂ A₂]
     [AddCommGroup B₁] [Module ℂ B₁] [AddCommGroup B₂] [Module ℂ B₂]
     [AddCommGroup C₁] [Module ℂ C₁] [AddCommGroup C₂] [Module ℂ C₂] :
@@ -1778,8 +1774,7 @@ theorem koszulAux_hexagon_rev_even
     TensorProduct.tmul_neg, prod_mk_neg_left, prod_mk_neg_right]
 
 /-- The reverse hexagon for the odd graded component. -/
-theorem koszulAux_hexagon_rev_odd
-    (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
+theorem koszulAux_hexagon_rev_odd (A₁ A₂ B₁ B₂ C₁ C₂ : Type*)
     [AddCommGroup A₁] [Module ℂ A₁] [AddCommGroup A₂] [Module ℂ A₂]
     [AddCommGroup B₁] [Module ℂ B₁] [AddCommGroup B₂] [Module ℂ B₂]
     [AddCommGroup C₁] [Module ℂ C₁] [AddCommGroup C₂] [Module ℂ C₂] :
@@ -1802,8 +1797,7 @@ theorem koszulAux_hexagon_rev_odd
 both routes from a four-fold graded product to its right-nested
 form agree.  Both graded components of the SuperVect pentagon are
 instantiations. -/
-theorem assocAux_pentagon
-    (A₁ A₂ B₁ B₂ C₁ C₂ D₁ D₂ : Type*)
+theorem assocAux_pentagon (A₁ A₂ B₁ B₂ C₁ C₂ D₁ D₂ : Type*)
     [AddCommGroup A₁] [Module ℂ A₁] [AddCommGroup A₂] [Module ℂ A₂]
     [AddCommGroup B₁] [Module ℂ B₁] [AddCommGroup B₂] [Module ℂ B₂]
     [AddCommGroup C₁] [Module ℂ C₁] [AddCommGroup C₂] [Module ℂ C₂]
@@ -1961,8 +1955,7 @@ theorem tensorHom_id_id (X₁ X₂ : SuperVect) :
 
 /-- Composition distributes over tensor product of morphisms. -/
 theorem tensorHom_comp (X₁ Y₁ Z₁ X₂ Y₂ Z₂ : SuperVect)
-    (f₁ : Hom X₁ Y₁) (f₂ : Hom X₂ Y₂)
-    (g₁ : Hom Y₁ Z₁) (g₂ : Hom Y₂ Z₂) :
+    (f₁ : Hom X₁ Y₁) (f₂ : Hom X₂ Y₂) (g₁ : Hom Y₁ Z₁) (g₂ : Hom Y₂ Z₂) :
     Hom.comp (SuperVect.tensorHom g₁ g₂) (SuperVect.tensorHom f₁ f₂) =
     SuperVect.tensorHom (Hom.comp g₁ f₁) (Hom.comp g₂ f₂) := by
   apply Hom.ext <;> {
@@ -2346,11 +2339,10 @@ end
 
 /-! ## 10. The vocabulary of Deligne's hypotheses
 
-Subquotients and bounded composition length, scalar unit
-endomorphisms, iterated and mixed tensor powers, finite
-⊗-generation, and moderate growth: exactly the predicates in which
-the hypothesis list of Théorème 0.6 is phrased.  (Their theory
-continues in `RS/Classical/CatTheory/`.) -/
+Subquotients and bounded composition length, scalar unit endomorphisms,
+iterated and mixed tensor powers, finite ⊗-generation, and moderate growth:
+exactly the predicates in which the hypothesis list of Théorème 0.6 is
+phrased. (Their theory continues in `RS/Classical/CatTheory/`.) -/
 
 section
 
@@ -2360,40 +2352,40 @@ universe v u
 
 section
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u}
 
-omit [Abelian C] in
 /-- **`Y` is a subquotient of `Z`**: a quotient of a subobject of
 `Z`.  This is the relation Deligne's tensor-generation hypothesis is
 stated with. -/
-def IsSubquotientOf (Y Z : C) : Prop :=
+def IsSubquotientOf [Category.{v} C]
+    (Y Z : C) : Prop :=
   ∃ (S : C) (i : S ⟶ Z) (p : S ⟶ Y), Mono i ∧ Epi p
 
-omit [Abelian C] in
 /-- A retract is in particular a subquotient: a splitting makes the
 inclusion a mono, and the object is a quotient of itself. -/
-theorem isSubquotientOf_of_retract {Y Z : C} (i : Y ⟶ Z) (r : Z ⟶ Y)
+theorem isSubquotientOf_of_retract [Category.{v} C]
+    {Y Z : C} (i : Y ⟶ Z) (r : Z ⟶ Y)
     (h : i ≫ r = 𝟙 Y) : IsSubquotientOf Y Z := by
   haveI : IsSplitMono i := ⟨⟨r, h⟩⟩
   exact ⟨Y, i, 𝟙 Y, inferInstance, inferInstance⟩
 
-omit [Abelian C] in
 /-- `LengthLE Y k` states that the subobject order of `Y` contains
 no strictly increasing chain of `k + 2` subobjects; equivalently,
 every chain `0 = Y₀ < ⋯ < Y_ℓ = Y` has `ℓ ≤ k`, so the composition
 length of `Y` is at most `k`. -/
-def LengthLE (Y : C) (k : ℕ) : Prop :=
+def LengthLE [Category.{v} C]
+    (Y : C) (k : ℕ) : Prop :=
   ∀ f : Fin (k + 2) → Subobject Y, ¬ StrictMono f
 
 end
 
 section
 
-variable (A : Type u) [Category.{v} A]
+variable (A : Type u)
 
 /-- The unit's endomorphisms are the scalars. -/
-def HasScalarUnit [Preadditive A] [Linear ℂ A]
-    [MonoidalCategory A] : Prop :=
+def HasScalarUnit [Category.{v} A]
+    [Preadditive A] [Linear ℂ A] [MonoidalCategory A] : Prop :=
   Function.Bijective
     (fun c : ℂ => (c • 𝟙 (𝟙_ A) : 𝟙_ A ⟶ 𝟙_ A))
 
@@ -2401,29 +2393,31 @@ end
 
 section
 
-variable (A : Type u) [Category.{v} A] [MonoidalCategory A]
+variable (A : Type u)
 
 /-- Iterated tensor power of an object. -/
-def tensorPow (X : A) : ℕ → A
+def tensorPow [Category.{v} A] [MonoidalCategory A]
+    (X : A) : ℕ → A
   | 0 => 𝟙_ A
   | n + 1 => tensorObj (tensorPow X n) X
 
 /-- A mixed tensor power of `X`: `X ^ ⊗ a ⊗ (Xᘁ) ^ ⊗ b`. -/
-def mixedPow [RigidCategory A] (X : A) (a b : ℕ) : A :=
+def mixedPow [Category.{v} A] [MonoidalCategory A]
+    [RigidCategory A] (X : A) (a b : ℕ) : A :=
   tensorPow A X a ⊗ tensorPow A (Xᘁ) b
 
 /-- **Finite tensor generation**, in the sense of Deligne's
 hypothesis: every object is a subquotient of a finite biproduct of
 mixed tensor powers of `X` — a quotient of a subobject of such a
 biproduct. -/
-def TensorGeneratedBy [Preadditive A] [HasFiniteBiproducts A]
-    [RigidCategory A] (X : A) : Prop :=
+def TensorGeneratedBy [Category.{v} A] [MonoidalCategory A]
+    [Preadditive A] [HasFiniteBiproducts A] [RigidCategory A] (X : A) : Prop :=
   ∀ Y : A, ∃ (k : ℕ) (ab : Fin k → ℕ × ℕ),
     IsSubquotientOf Y (⨁ fun t => mixedPow A X (ab t).1 (ab t).2)
 
 /-- Every object has moderate tensor-power growth, measured by
 composition length. -/
-def ModerateLengthGrowth : Prop :=
+def ModerateLengthGrowth [Category.{v} A] [MonoidalCategory A] : Prop :=
   ∀ Y : A, ∃ C c : ℕ, ∀ N : ℕ, LengthLE (tensorPow A Y N) (C * c ^ N)
 
 end
@@ -2432,25 +2426,24 @@ end
 
 /-! ## 11. Deligne's theorem
 
-The correspondence with the published hypotheses, item by item:
-essentially small — `[EssentiallySmall.{v} A]`; abelian ℂ-linear
-with ℂ-bilinear tensor — `[Abelian A]`, `[Linear ℂ A]`,
-`[MonoidalPreadditive A]`, `[MonoidalLinear ℂ A]`; rigid symmetric
-monoidal — `[MonoidalCategory A]`, `[SymmetricCategory A]`,
-`[RigidCategory A]`; `End 𝟙 = ℂ` — `HasScalarUnit A`; finitely
+The correspondence with the published hypotheses, item by item: essentially
+small — `[EssentiallySmall.{v} A]`; abelian ℂ-linear with ℂ-bilinear tensor —
+`[Abelian A]`, `[Linear ℂ A]`, `[MonoidalPreadditive A]`, `[MonoidalLinear ℂ
+A]`; rigid symmetric monoidal — `[MonoidalCategory A]`, `[SymmetricCategory
+A]`, `[RigidCategory A]`; `End 𝟙 = ℂ` — `HasScalarUnit A`; finitely
 ⊗-generated — `∃ X, TensorGeneratedBy A X`; moderate growth —
-`ModerateLengthGrowth A`.  Exactness of the tensor product needs no
-separate hypothesis (rigidity makes `X ⊗ −` a two-sided adjoint),
-and `[HasFiniteBiproducts A]` is implied by `[Abelian A]`, named
-only so the generation predicate can be stated.  The conclusion is
-taken in fibre-functor form — weaker than Deligne's ⊗-equivalence
-with the representations of an affine supergroup scheme, which
-yields the functor by composing with the forgetful functor.
+`ModerateLengthGrowth A`. Exactness of the tensor product needs no separate
+hypothesis (rigidity makes `X ⊗ −` a two-sided adjoint), and
+`[HasFiniteBiproducts A]` is implied by `[Abelian A]`, named only so the
+generation predicate can be stated. The conclusion is taken in fibre-functor
+form — weaker than Deligne's ⊗-equivalence with the representations of an
+affine supergroup scheme, which yields the functor by composing with the
+forgetful functor.
 
-Reference: Pierre Deligne, *Catégories tensorielles*, Moscow Math.
-J. **2** (2002), 227–248, Théorème 0.6 (with §0.1 for the
-definitions); see also Victor Ostrik, *Tensor categories (after
-P. Deligne)*, arXiv:math/0401347, Thm 2.3. -/
+Reference: Pierre Deligne, *Catégories tensorielles*, Moscow Math. J. **2**
+(2002), 227–248, Théorème 0.6 (with §0.1 for the definitions); see also Victor
+Ostrik, *Tensor categories (after P. Deligne)*, arXiv:math/0401347, Thm 2.3.
+-/
 
 section
 
@@ -2504,4 +2497,3 @@ def DeligneTheoremStatement : Prop :=
 end
 
 end RS
-

@@ -16,14 +16,16 @@ open CategoryTheory CategoryTheory.Limits MonoidalCategory
 
 universe v u
 
-variable (A : Type u) [Category.{v} A]
+variable (A : Type u)
 
 /-- Every Hom-space is finite dimensional over ℂ. -/
-def HasFinDimHom [Preadditive A] [Linear ℂ A] : Prop :=
+def HasFinDimHom [Category.{v} A]
+    [Preadditive A] [Linear ℂ A] : Prop :=
   ∀ X Y : A, FiniteDimensional ℂ (X ⟶ Y)
 
 /-- Every object is a finite biproduct of simple objects. -/
-def IsSemisimple [Preadditive A] [HasFiniteBiproducts A] : Prop :=
+def IsSemisimple [Category.{v} A]
+    [Preadditive A] [HasFiniteBiproducts A] : Prop :=
   ∀ X : A, ∃ (n : ℕ) (S : Fin n → A),
     (∀ i, Simple (S i)) ∧ Nonempty (X ≅ ⨁ S)
 

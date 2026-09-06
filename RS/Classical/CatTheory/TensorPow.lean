@@ -17,14 +17,16 @@ open CategoryTheory CategoryTheory.Limits MonoidalCategory
 
 universe v u
 
-variable (A : Type u) [Category.{v} A] [MonoidalCategory A]
+variable (A : Type u)
 
 /-- The empty tensor power is the unit. -/
-theorem tensorPow_zero (X : A) : tensorPow A X 0 = 𝟙_ A := rfl
+theorem tensorPow_zero [Category.{v} A] [MonoidalCategory A]
+    (X : A) : tensorPow A X 0 = 𝟙_ A := rfl
 
 /-- `X ^ ⊗ (n + 1)` is `X ^ ⊗ n ⊗ X`.  Together with
 `tensorPow_zero` this is the defining recursion. -/
-theorem tensorPow_succ (X : A) (n : ℕ) :
+theorem tensorPow_succ [Category.{v} A] [MonoidalCategory A]
+    (X : A) (n : ℕ) :
     tensorPow A X (n + 1) = tensorPow A X n ⊗ X := rfl
 
 /-- **Generation by retracts of pure powers**: every object is a
@@ -32,7 +34,8 @@ retract of a finite biproduct of tensor powers of `X` alone.  This
 is how the envelope generates, and it is stronger than Deligne's
 hypothesis in two ways at once — a retract rather than a
 subquotient, and no duals among the powers. -/
-def RetractGeneratedBy [Preadditive A] [HasFiniteBiproducts A]
+def RetractGeneratedBy [Category.{v} A] [MonoidalCategory A]
+    [Preadditive A] [HasFiniteBiproducts A]
     (X : A) : Prop :=
   ∀ Y : A, ∃ (k : ℕ) (ns : Fin k → ℕ)
     (ι : Y ⟶ ⨁ fun i => tensorPow A X (ns i))
@@ -40,7 +43,8 @@ def RetractGeneratedBy [Preadditive A] [HasFiniteBiproducts A]
     ι ≫ π = 𝟙 Y
 
 /-- A pure tensor power is the mixed power with no dual factors. -/
-def tensorPowIsoMixed [RigidCategory A] (X : A) (n : ℕ) :
+def tensorPowIsoMixed [Category.{v} A] [MonoidalCategory A]
+    [RigidCategory A] (X : A) (n : ℕ) :
     tensorPow A X n ≅ mixedPow A X n 0 :=
   (ρ_ (tensorPow A X n)).symm
 
@@ -48,7 +52,8 @@ def tensorPowIsoMixed [RigidCategory A] (X : A) (n : ℕ) :
 `ι ≫ π = 𝟙` makes `ι` a split mono, hence a mono, and `Y` is a
 quotient of itself, so a retract of a biproduct of pure powers is a
 subquotient of the corresponding biproduct of mixed powers. -/
-theorem tensorGeneratedBy_of_retract [Preadditive A]
+theorem tensorGeneratedBy_of_retract [Category.{v} A] [MonoidalCategory A]
+    [Preadditive A]
     [HasFiniteBiproducts A] [RigidCategory A] {X : A}
     (h : RetractGeneratedBy A X) : TensorGeneratedBy A X := by
   intro Y

@@ -22,15 +22,15 @@ namespace RS
 
 open Finset Equiv
 
-variable {α : Type*} [Fintype α] [DecidableEq α]
-variable {β : Type*} [Fintype β] [DecidableEq β]
+variable {α : Type*}
 
 /-! ### The completed cycle product over an arbitrary carrier -/
 
 /-- The completed cycle product of a prospective power-sum sequence
 over an arbitrary finite carrier: the product of `t` over the cycle
 type, completed by `t 1` over the fixed points. -/
-noncomputable def cycleFunG (t : ℕ → ℂ) (π : Equiv.Perm α) : ℂ :=
+noncomputable def cycleFunG [Fintype α] [DecidableEq α]
+    (t : ℕ → ℂ) (π : Equiv.Perm α) : ℂ :=
   (π.cycleType.map t).prod * (t 1) ^ (Fintype.card α - π.cycleType.sum)
 
 /-- On `Fin n` the generalised completed cycle product is the
@@ -41,7 +41,9 @@ theorem cycleFunG_fin {n : ℕ} (t : ℕ → ℂ) (π : Equiv.Perm (Fin n)) :
 
 /-- The cycle type is invariant under conjugation by an equivalence
 of carriers.  Universe-polymorphic form of `cycleType_permCongr`. -/
-theorem cycleType_permCongr' (e : α ≃ β) (π : Equiv.Perm α) :
+theorem cycleType_permCongr'
+    [Fintype α] [DecidableEq α] {β : Type*} [Fintype β] [DecidableEq β]
+    (e : α ≃ β) (π : Equiv.Perm α) :
     (e.permCongr π).cycleType = π.cycleType := by
   letI : DecidablePred (fun _ : β => True) := fun _ => .isTrue trivial
   have h : e.permCongr π =
@@ -54,7 +56,9 @@ theorem cycleType_permCongr' (e : α ≃ β) (π : Equiv.Perm α) :
 
 /-- The completed cycle product is invariant under conjugation by
 an equivalence of carriers. -/
-theorem cycleFunG_permCongr (e : α ≃ β) (t : ℕ → ℂ)
+theorem cycleFunG_permCongr
+    [Fintype α] [DecidableEq α] {β : Type*} [Fintype β] [DecidableEq β]
+    (e : α ≃ β) (t : ℕ → ℂ)
     (π : Equiv.Perm α) :
     cycleFunG t (e.permCongr π) = cycleFunG t π := by
   rw [cycleFunG, cycleFunG, cycleType_permCongr',
@@ -62,11 +66,11 @@ theorem cycleFunG_permCongr (e : α ≃ β) (t : ℕ → ℂ)
 
 /-! ### Invariant subsets -/
 
-omit [Fintype α] in
 /-- A finite set closed under a permutation is closed in both
 directions: the permutation restricts to an injective self-map of
 the set, which is onto by finiteness. -/
-theorem mem_iff_of_invariant {π : Equiv.Perm α} {s : Finset α}
+theorem mem_iff_of_invariant [DecidableEq α]
+    {π : Equiv.Perm α} {s : Finset α}
     (hs : ∀ x ∈ s, π x ∈ s) : ∀ x, π x ∈ s ↔ x ∈ s := by
   have himg : s.image π = s :=
     Finset.eq_of_subset_of_card_le
@@ -81,13 +85,13 @@ theorem mem_iff_of_invariant {π : Equiv.Perm α} {s : Finset α}
   rwa [← π.injective hyx]
 
 /-- The complement of an invariant set is invariant. -/
-theorem invariant_compl {π : Equiv.Perm α} {s : Finset α}
+theorem invariant_compl [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {s : Finset α}
     (hs : ∀ x ∈ s, π x ∈ s) : ∀ x ∈ sᶜ, π x ∈ sᶜ := by
   intro x hx
   rw [Finset.mem_compl] at hx ⊢
   exact fun h => hx ((mem_iff_of_invariant hs x).mp h)
 
-omit [Fintype α] [DecidableEq α] in
 /-- Integer powers of a permutation preserve a two-sided invariant
 set. -/
 theorem zpow_apply_mem_of_invariant {π : Equiv.Perm α}
@@ -99,12 +103,14 @@ theorem zpow_apply_mem_of_invariant {π : Equiv.Perm α}
 /-- The restriction of a permutation to a finite subset, as a
 permutation of the subtype: the two-sided restriction when the
 subset is invariant, the identity otherwise. -/
-def permRestrict (π : Equiv.Perm α) (s : Finset α) :
+def permRestrict [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) (s : Finset α) :
     Equiv.Perm {x // x ∈ s} :=
   if h : ∀ x, π x ∈ s ↔ x ∈ s then π.subtypePerm h else 1
 
 /-- On an invariant subset the restriction is `subtypePerm`. -/
-theorem permRestrict_of_invariant {π : Equiv.Perm α} {s : Finset α}
+theorem permRestrict_of_invariant [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {s : Finset α}
     (h : ∀ x, π x ∈ s ↔ x ∈ s) :
     permRestrict π s = π.subtypePerm h := by
   rw [permRestrict, dif_pos h]
@@ -113,27 +119,32 @@ theorem permRestrict_of_invariant {π : Equiv.Perm α} {s : Finset α}
 
 /-- The orbit of a point under a permutation, as a finite set;
 singleton orbits of fixed points included. -/
-def cycleOrbit (π : Equiv.Perm α) (x : α) : Finset α :=
+def cycleOrbit [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) (x : α) : Finset α :=
   Finset.univ.filter (π.SameCycle x)
 
 /-- Membership in an orbit is the same-cycle relation. -/
-theorem mem_cycleOrbit {π : Equiv.Perm α} {x y : α} :
+theorem mem_cycleOrbit [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {x y : α} :
     y ∈ cycleOrbit π x ↔ π.SameCycle x y := by
   simp [cycleOrbit]
 
 /-- A point lies in its own orbit. -/
-theorem self_mem_cycleOrbit (π : Equiv.Perm α) (x : α) :
+theorem self_mem_cycleOrbit [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) (x : α) :
     x ∈ cycleOrbit π x :=
   mem_cycleOrbit.mpr (Equiv.Perm.SameCycle.refl π x)
 
 /-- The image of a point lies in the point's orbit. -/
-theorem apply_mem_cycleOrbit (π : Equiv.Perm α) (x : α) :
+theorem apply_mem_cycleOrbit [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) (x : α) :
     π x ∈ cycleOrbit π x :=
   mem_cycleOrbit.mpr
     (Equiv.Perm.sameCycle_apply_right.mpr Equiv.Perm.SameCycle.rfl)
 
 /-- Orbits through a common point coincide. -/
-theorem cycleOrbit_eq_of_mem {π : Equiv.Perm α} {x y : α}
+theorem cycleOrbit_eq_of_mem [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {x y : α}
     (h : y ∈ cycleOrbit π x) : cycleOrbit π y = cycleOrbit π x := by
   have hxy := mem_cycleOrbit.mp h
   ext z
@@ -141,7 +152,8 @@ theorem cycleOrbit_eq_of_mem {π : Equiv.Perm α} {x y : α}
   exact ⟨fun hyz => hxy.trans hyz, fun hxz => hxy.symm.trans hxz⟩
 
 /-- The orbit of a fixed point is a singleton. -/
-theorem cycleOrbit_eq_singleton {π : Equiv.Perm α} {x : α}
+theorem cycleOrbit_eq_singleton [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {x : α}
     (hx : π x = x) : cycleOrbit π x = {x} := by
   ext y
   rw [mem_cycleOrbit, Finset.mem_singleton]
@@ -149,35 +161,41 @@ theorem cycleOrbit_eq_singleton {π : Equiv.Perm α} {x : α}
     fun h => by rw [h]⟩
 
 /-- The orbit of a moved point is the support of its cycle. -/
-theorem cycleOrbit_eq_support_cycleOf {π : Equiv.Perm α} {x : α}
+theorem cycleOrbit_eq_support_cycleOf [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {x : α}
     (hx : π x ≠ x) : cycleOrbit π x = (π.cycleOf x).support := by
   ext y
   rw [mem_cycleOrbit, Equiv.Perm.mem_support_cycleOf_iff' hx]
 
 /-- The set of orbits of a permutation, singleton orbits
 included. -/
-def cycleOrbits (π : Equiv.Perm α) : Finset (Finset α) :=
+def cycleOrbits [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) : Finset (Finset α) :=
   Finset.univ.image (cycleOrbit π)
 
 /-- Every orbit belongs to the set of orbits. -/
-theorem cycleOrbit_mem_cycleOrbits (π : Equiv.Perm α) (x : α) :
+theorem cycleOrbit_mem_cycleOrbits [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) (x : α) :
     cycleOrbit π x ∈ cycleOrbits π :=
   Finset.mem_image_of_mem _ (Finset.mem_univ x)
 
 /-- The members of the set of orbits are the orbits. -/
-theorem mem_cycleOrbits {π : Equiv.Perm α} {O : Finset α} :
+theorem mem_cycleOrbits [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {O : Finset α} :
     O ∈ cycleOrbits π ↔ ∃ x, cycleOrbit π x = O := by
   simp [cycleOrbits]
 
 /-- An orbit is the orbit of each of its points. -/
-theorem eq_cycleOrbit_of_mem {π : Equiv.Perm α}
+theorem eq_cycleOrbit_of_mem [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α}
     {O : Finset α} (hO : O ∈ cycleOrbits π) {x : α} (hx : x ∈ O) :
     O = cycleOrbit π x := by
   obtain ⟨y, rfl⟩ := mem_cycleOrbits.mp hO
   exact (cycleOrbit_eq_of_mem hx).symm
 
 /-- Orbits are nonempty. -/
-theorem nonempty_of_mem_cycleOrbits {π : Equiv.Perm α}
+theorem nonempty_of_mem_cycleOrbits [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α}
     {O : Finset α} (hO : O ∈ cycleOrbits π) : O.Nonempty := by
   obtain ⟨x, rfl⟩ := mem_cycleOrbits.mp hO
   exact ⟨x, self_mem_cycleOrbit π x⟩
@@ -185,7 +203,8 @@ theorem nonempty_of_mem_cycleOrbits {π : Equiv.Perm α}
 /-! ### The completed cycle product as an orbit product -/
 
 /-- The singleton orbits are the fixed points. -/
-theorem filter_card_one_cycleOrbits (π : Equiv.Perm α) :
+theorem filter_card_one_cycleOrbits [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) :
     (cycleOrbits π).filter (fun O => O.card = 1) =
       π.supportᶜ.image (fun x => {x}) := by
   ext O
@@ -212,7 +231,8 @@ theorem filter_card_one_cycleOrbits (π : Equiv.Perm α) :
 
 /-- The non-singleton orbits are the supports of the cycle
 factors. -/
-theorem filter_card_ne_one_cycleOrbits (π : Equiv.Perm α) :
+theorem filter_card_ne_one_cycleOrbits [Fintype α] [DecidableEq α]
+    (π : Equiv.Perm α) :
     (cycleOrbits π).filter (fun O => ¬O.card = 1) =
       π.cycleFactorsFinset.image Equiv.Perm.support := by
   ext O
@@ -243,7 +263,8 @@ theorem filter_card_ne_one_cycleOrbits (π : Equiv.Perm α) :
 /-- **The completed cycle product is the orbit product**: the
 product of `t` at the orbit sizes, over all orbits, singleton
 orbits included. -/
-theorem cycleFunG_eq_prod_cycleOrbits (t : ℕ → ℂ)
+theorem cycleFunG_eq_prod_cycleOrbits [Fintype α] [DecidableEq α]
+    (t : ℕ → ℂ)
     (π : Equiv.Perm α) :
     cycleFunG t π = ∏ O ∈ cycleOrbits π, t O.card := by
   rw [← Finset.prod_filter_mul_prod_filter_not (cycleOrbits π)
@@ -274,7 +295,8 @@ theorem cycleFunG_eq_prod_cycleOrbits (t : ℕ → ℂ)
 
 /-- Orbits of points of a two-sided invariant set stay inside the
 set. -/
-theorem cycleOrbit_subset_of_invariant {π : Equiv.Perm α}
+theorem cycleOrbit_subset_of_invariant [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α}
     {s : Finset α} (hs : ∀ x, π x ∈ s ↔ x ∈ s) {x : α}
     (hx : x ∈ s) : cycleOrbit π x ⊆ s := by
   intro y hy
@@ -283,7 +305,8 @@ theorem cycleOrbit_subset_of_invariant {π : Equiv.Perm α}
 
 /-- The orbit of the restriction to an invariant set is the orbit
 of the ambient permutation, transported along the subtype map. -/
-theorem cycleOrbit_subtypePerm {π : Equiv.Perm α} {s : Finset α}
+theorem cycleOrbit_subtypePerm [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {s : Finset α}
     (h : ∀ x, π x ∈ s ↔ x ∈ s) (x : {u // u ∈ s}) :
     (cycleOrbit (π.subtypePerm h) x).map
       (Function.Embedding.subtype _) = cycleOrbit π ↑x := by
@@ -301,7 +324,8 @@ theorem cycleOrbit_subtypePerm {π : Equiv.Perm α} {s : Finset α}
 
 /-- The completed cycle product of the restriction to an invariant
 set is the product over the ambient orbits inside the set. -/
-theorem cycleFunG_subtypePerm {π : Equiv.Perm α} {s : Finset α}
+theorem cycleFunG_subtypePerm [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {s : Finset α}
     (h : ∀ x, π x ∈ s ↔ x ∈ s) (t : ℕ → ℂ) :
     cycleFunG t (π.subtypePerm h) =
       ∏ O ∈ (cycleOrbits π).filter (fun O => O ⊆ s), t O.card := by
@@ -341,7 +365,8 @@ theorem cycleFunG_subtypePerm {π : Equiv.Perm α} {s : Finset α}
 /-! ### Invariant subsets are unions of orbits -/
 
 /-- A union of orbits is an invariant set. -/
-theorem biUnion_invariant {π : Equiv.Perm α}
+theorem biUnion_invariant [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α}
     {S : Finset (Finset α)} (hS : S ⊆ cycleOrbits π) :
     ∀ x ∈ S.biUnion id, π x ∈ S.biUnion id := by
   intro x hx
@@ -352,7 +377,8 @@ theorem biUnion_invariant {π : Equiv.Perm α}
   exact apply_mem_cycleOrbit π x
 
 /-- An invariant set is the union of the orbits it contains. -/
-theorem biUnion_filter_subset_eq {π : Equiv.Perm α} {s : Finset α}
+theorem biUnion_filter_subset_eq [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α} {s : Finset α}
     (hs : ∀ x, π x ∈ s ↔ x ∈ s) :
     ((cycleOrbits π).filter (fun O => O ⊆ s)).biUnion id = s := by
   ext x
@@ -368,7 +394,8 @@ theorem biUnion_filter_subset_eq {π : Equiv.Perm α} {s : Finset α}
 
 /-- The orbits inside a union of orbits are the orbits of the
 union. -/
-theorem filter_subset_biUnion {π : Equiv.Perm α}
+theorem filter_subset_biUnion [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α}
     {S : Finset (Finset α)} (hS : S ⊆ cycleOrbits π) :
     (cycleOrbits π).filter (fun O => O ⊆ S.biUnion id) = S := by
   ext O
@@ -388,7 +415,8 @@ theorem filter_subset_biUnion {π : Equiv.Perm α}
 
 /-- The orbits inside the complement of an invariant set are the
 orbits not inside the set. -/
-theorem filter_subset_compl_eq_sdiff {π : Equiv.Perm α}
+theorem filter_subset_compl_eq_sdiff [Fintype α] [DecidableEq α]
+    {π : Equiv.Perm α}
     {s : Finset α} (hs : ∀ x, π x ∈ s ↔ x ∈ s) :
     (cycleOrbits π).filter (fun O => O ⊆ sᶜ) =
       cycleOrbits π \ (cycleOrbits π).filter (fun O => O ⊆ s) := by
@@ -417,7 +445,8 @@ of the completed cycle products of the restriction to the subset
 in the first sequence and of the restriction to the complement in
 the second.  Each orbit contributes a binomial factor, and the
 expansion enumerates the invariant subsets. -/
-theorem cycleFunG_add_split (t t' : ℕ → ℂ) (π : Equiv.Perm α) :
+theorem cycleFunG_add_split [Fintype α] [DecidableEq α]
+    (t t' : ℕ → ℂ) (π : Equiv.Perm α) :
     cycleFunG (fun c => t c + t' c) π =
       ∑ s ∈ Finset.univ.filter
         (fun s : Finset α => ∀ x ∈ s, π x ∈ s),

@@ -21,36 +21,38 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable (C : Type v) [SmallCategory C] [MonoidalCategory C]
+variable (C : Type v)
 
 /-- The ind-property, read on the Day synonym of the presheaf
 category. -/
-def IsIndDay (F : MonoidalCategory.DayFunctor Cᵒᵖ (Type v)) : Prop :=
+def IsIndDay [SmallCategory C] [MonoidalCategory C]
+    (F : MonoidalCategory.DayFunctor Cᵒᵖ (Type v)) : Prop :=
   IsIndObject F.functor
 
 /-- The ind-property is monoidal: it holds for the unit and is
 stable under the Day tensor. -/
-instance isIndDay_isMonoidal :
+instance isIndDay_isMonoidal [SmallCategory C] [MonoidalCategory C] :
     ObjectProperty.IsMonoidal (IsIndDay C) where
   prop_unit := isIndObject_day_unit C
   prop_tensor _ _ h₁ h₂ := isIndObject_day_tensor h₁ h₂
 
 /-- The full subcategory of ind-objects of the Day presheaf
 category is monoidal. -/
-noncomputable example : MonoidalCategory
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] : MonoidalCategory
     (ObjectProperty.FullSubcategory
       (C := MonoidalCategory.DayFunctor Cᵒᵖ (Type v))
       (IsIndDay C)) :=
   inferInstance
 
 /-- The ind-property respects isomorphisms. -/
-instance isIndDay_closedUnderIso :
+instance isIndDay_closedUnderIso [SmallCategory C] [MonoidalCategory C] :
     ObjectProperty.IsClosedUnderIsomorphisms (IsIndDay C) where
   of_iso e h := IsIndObject.map (dayFunctorIso e).hom h
 
 /-- The wrapper equivalence between the ind-subcategory of the
 presheaf category and the ind-subcategory of its Day synonym. -/
-noncomputable def indDayCongr :
+noncomputable def indDayCongr [SmallCategory C] [MonoidalCategory C] :
     ObjectProperty.FullSubcategory
       (IsIndObject (C := C)) ≌
     ObjectProperty.FullSubcategory
@@ -76,7 +78,7 @@ noncomputable def indDayCongr :
 
 /-- `Ind C` is equivalent to the monoidal full subcategory of
 ind-objects of the Day presheaf category. -/
-noncomputable def indDayEquivalence :
+noncomputable def indDayEquivalence [SmallCategory C] [MonoidalCategory C] :
     Ind C ≌ ObjectProperty.FullSubcategory
       (C := MonoidalCategory.DayFunctor Cᵒᵖ (Type v))
       (IsIndDay C) :=
@@ -85,7 +87,8 @@ noncomputable def indDayEquivalence :
 /-- **Deligne 2.2, structure half**: the tensor product of a small
 monoidal category extends to its ind-completion — the Day tensor
 structure transported across the indization equivalence. -/
-noncomputable instance indMonoidalCategory :
+noncomputable instance indMonoidalCategory
+    [SmallCategory C] [MonoidalCategory C] :
     MonoidalCategory (Ind C) :=
   Monoidal.transport ((indDayEquivalence C).symm)
 
@@ -103,7 +106,8 @@ instance symmetricCategoryOp {D : Type*} [Category D]
 
 /-- The braiding transports as well: `Ind C` of a braided small
 category is braided. -/
-noncomputable instance indBraidedCategory [BraidedCategory C] :
+noncomputable instance indBraidedCategory [SmallCategory C] [MonoidalCategory C]
+    [BraidedCategory C] :
     BraidedCategory (Ind C) :=
   inferInstanceAs
     (BraidedCategory (Monoidal.Transported ((indDayEquivalence C).symm)))
@@ -111,6 +115,7 @@ noncomputable instance indBraidedCategory [BraidedCategory C] :
 /-- And the symmetry: `Ind C` of a symmetric small category is
 symmetric. -/
 noncomputable instance indSymmetricCategory
+    [SmallCategory C] [MonoidalCategory C]
     [SymmetricCategory C] :
     SymmetricCategory (Ind C) :=
   inferInstanceAs

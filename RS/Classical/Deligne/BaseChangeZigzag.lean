@@ -14,18 +14,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
+variable {D : Type u}
 
 /-- **Base change preserves the zigzag laws**: the statement of
 record for the dévissage steps. -/
-def BaseChangeZigzagStatement : Prop :=
+def BaseChangeZigzagStatement
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)] :
+    Prop :=
   ∀ (A : D) (_ : MonObj A) (_ : IsCommMonObj A)
     (M M' : Mod D A) (d : ModDualityDatum A M M')
     (_ : ModZigzagDatum A d)

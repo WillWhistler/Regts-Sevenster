@@ -17,28 +17,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 section SwapMap
 
-variable {P P' Q Q' : Mod D A}
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The braiding of the module tensor product is natural. -/
-theorem modTensorMap_swap (f : P ⟶ P') (g : Q ⟶ Q') :
+theorem modTensorMap_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A}
+    (f : P ⟶ P') (g : Q ⟶ Q') :
     modTensorMap A f g ≫ modTensorSwap A P' Q' =
       modTensorSwap A P Q ≫ modTensorMap A g f := by
   apply modTensor_hom_ext
@@ -49,13 +37,15 @@ theorem modTensorMap_swap (f : P ⟶ P') (g : Q ⟶ Q') :
 
 end SwapMap
 
-variable (M M' : Mod D A)
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The nested pairing at arity one is the pairing, through the
 singleton isomorphisms. -/
-theorem modPowOne_pairPow (d : ModDualityDatum A M M') :
+theorem modPowOne_pairPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ((modPowOne A M'.X).inv ⊗ₘ (modPowOne A M.X).inv) ≫
         pairPow A M M' d 1 = pairRaw A M M' d := by
   have hinv : ∀ (X : D) [ModObj A X], (modPowOne A X).inv =
@@ -85,12 +75,15 @@ theorem modPowOne_pairPow (d : ModDualityDatum A M M') :
   dsimp only [Iso.symm_hom]
   monoidal
 
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The Mod-internal power pairing at arity zero is the datum's
 pairing, through the singleton stages. -/
-theorem toZero_modPowPairing (d : ModDualityDatum A M M') :
+theorem toZero_modPowPairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     modTensorMap A (toModPowModZero A M') (toModPowModZero A M) ≫
         modPowPairing A M M' d 0 = d.pair := by
   apply modTensor_hom_ext
@@ -101,12 +94,16 @@ theorem toZero_modPowPairing (d : ModDualityDatum A M M') :
       from rfl]
   exact (modPowOne_pairPow A M M' d).trans rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The seed retracts against the pairing**: under the scalar
 zigzag, the bottom chain unit evaluates to the unit of the
 base. -/
-theorem powSeed_pairing (d : ModDualityDatum A M M')
+theorem powSeed_pairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (hzig : d.copair ≫ modTensorSwap A M M' ≫ d.pair = 𝟙 A) :
     powSeed A M M' d ≫
         modTensorSwap A (modPowMod A M.X 0) (modPowMod A M'.X 0) ≫
@@ -126,35 +123,35 @@ theorem powSeed_pairing (d : ModDualityDatum A M M')
   rw [toZero_modPowPairing, copairUnit, Category.assoc, hzig,
     Category.comp_id]
 
-
-
 section PowEpi
 
-variable (X : D) [ModObj A X]
-
-omit [SymmetricCategory D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The module-power projection is an epimorphism. -/
-instance epi_modPowπ (n : ℕ) : Epi (modPowπ A X n) :=
+instance epi_modPowπ [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (n : ℕ) : Epi (modPowπ A X n) :=
   ⟨fun _ _ w => modPow_hom_ext A X w⟩
 
-variable (Y : D) [ModObj A Y]
-
-omit [SymmetricCategory D] [IsCommMonObj A] in
 /-- The tensor product of two module-power projections is an
 epimorphism. -/
-instance epi_modPowπ_tensorHom (m n : ℕ) :
+instance epi_modPowπ_tensorHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X] (Y : D) [ModObj A Y]
+    (m n : ℕ) :
     Epi (modPowπ A X m ⊗ₘ modPowπ A Y n) := by
   rw [MonoidalCategory.tensorHom_def]
   infer_instance
 
-omit [SymmetricCategory D] [IsCommMonObj A] in
 /-- A tensor pair of power projections whiskered on the right is
 an epimorphism. -/
-instance epi_modPowπ_tensorHom_whiskerRight (m n : ℕ) (W : D) :
+instance epi_modPowπ_tensorHom_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X] (Y : D) [ModObj A Y]
+    (m n : ℕ) (W : D) :
     Epi ((modPowπ A X m ⊗ₘ modPowπ A Y n) ▷ W) := by
   rw [MonoidalCategory.tensorHom_def, comp_whiskerRight]
   have h1 : Epi ((modPowπ A X m ▷ tensorPow D Y n) ▷ W) := by
@@ -169,12 +166,15 @@ instance epi_modPowπ_tensorHom_whiskerRight (m n : ℕ) (W : D) :
     infer_instance
   exact epi_comp _ _
 
-variable (Z' W' : D) [ModObj A Z'] [ModObj A W']
-
-omit [SymmetricCategory D] [IsCommMonObj A] in
 /-- A tensor square of power projection pairs is an
 epimorphism. -/
-instance epi_modPowπ_tensorHom_tensorHom (a b c e : ℕ) :
+instance epi_modPowπ_tensorHom_tensorHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X] (Y : D) [ModObj A Y] (Z' : D)
+    (W' : D) [ModObj A Z'] [ModObj A W']
+    (a b c e : ℕ) :
     Epi ((modPowπ A X a ⊗ₘ modPowπ A Y b) ⊗ₘ
       (modPowπ A Z' c ⊗ₘ modPowπ A W' e)) := by
   rw [MonoidalCategory.tensorHom_def]
@@ -196,30 +196,34 @@ instance epi_modPowπ_tensorHom_tensorHom (a b c e : ℕ) :
     exact epi_comp _ _
   exact epi_comp _ _
 
-omit [SymmetricCategory D] [IsCommMonObj A] in
 /-- A left-whiskered power projection whiskered on the right is
 an epimorphism. -/
-instance epi_whiskerLeft_modPowπ_whiskerRight' (n : ℕ)
+instance epi_whiskerLeft_modPowπ_whiskerRight'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (n : ℕ)
     (Q W : D) : Epi ((Q ◁ modPowπ A X n) ▷ W) := by
   rw [MonoidalCategory.whisker_assoc]
   infer_instance
 
 end PowEpi
 
-
-
 section InterchangeMap
 
-variable (N₁ N₂ P₁ P₂ : Mod D A)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-   in
 /-- The interchange followed by a functorial map computes under
 the stage projections: the raw crossing feeds the two module
 maps. -/
 @[reassoc]
-theorem tensorHom_π_interchange_map {Q R : Mod D A}
+theorem tensorHom_π_interchange_map
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A)
+    {Q R : Mod D A}
     (f : modTensorMod A N₁ P₁ ⟶ Q)
     (g : modTensorMod A N₂ P₂ ⟶ R) :
     (modTensorπ A N₁ N₂ ⊗ₘ modTensorπ A P₁ P₂) ≫
@@ -254,11 +258,17 @@ theorem tensorHom_π_interchange_map {Q R : Mod D A}
 
 end InterchangeMap
 
-
 /-- The transition core under the stage projections: the raw
 interchange, the aligned multiplications, and the pairing of the
 joined arity. -/
-private theorem powDeltaCore_layer1 (d : ModDualityDatum A M M')
+private theorem powDeltaCore_layer1
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     (modTensorπ A (modPowMod A M.X n) (modPowMod A M'.X n) ⊗ₘ
       modTensorπ A (modPowMod A M.X 0) (modPowMod A M'.X 0)) ≫
@@ -309,16 +319,12 @@ private theorem powDeltaCore_layer1 (d : ModDualityDatum A M M')
   rw [hF, hG]
   rfl
 
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The generic coherence core of the raw multiplicativity: the
 inserted pair peels off and multiplies. -/
-private theorem rawMult_core {Y Y' P S : D}
+private theorem rawMult_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    {Y Y' P S : D}
     (p : Y' ⊗ Y ⟶ A) (r : S ⊗ P ⟶ A) :
     (α_ P S ((𝟙_ D ⊗ Y) ⊗ (𝟙_ D ⊗ Y'))).hom ≫
       (P ◁ (α_ S (𝟙_ D ⊗ Y) (𝟙_ D ⊗ Y')).inv) ≫
@@ -466,15 +472,15 @@ private theorem rawMult_core {Y Y' P S : D}
   rw [whisker_exchange_assoc, whisker_exchange_assoc]
   monoidal
 
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The raw multiplicativity of the nested pairing at an aligned
 insertion: the peel of the joined pairing extracts the inserted
 block. -/
-private theorem powDeltaCore_raw (d : ModDualityDatum A M M')
+private theorem powDeltaCore_raw
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     tensorμ (tensorPow D M.X (n + 1)) (tensorPow D M'.X (n + 1))
         (tensorPow D M.X (0 + 1)) (tensorPow D M'.X (0 + 1)) ≫
@@ -595,12 +601,15 @@ private theorem powDeltaCore_raw (d : ModDualityDatum A M M')
   exact rawMult_core A (pairRaw A M M' d)
     (rawPair A M M' d (n + 1))
 
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The transition core at the raw power level: the peel of the
 joined pairing extracts the inserted pair. -/
-private theorem powDeltaCore_layer2 (d : ModDualityDatum A M M')
+private theorem powDeltaCore_layer2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     tensorμ (modPow A M.X (n + 1)) (modPow A M'.X (n + 1))
         (modPow A M.X (0 + 1)) (modPow A M'.X (0 + 1)) ≫
@@ -702,14 +711,18 @@ private theorem powDeltaCore_layer2 (d : ModDualityDatum A M M')
   rw [hβfinal]
   exact powDeltaCore_raw A M M' d n
 
-
-
-
 /-- **Multiplicativity of the pairing against the transition
 core**: the interchange followed by the aligned multiplications
 and the pairing of the joined stage evaluates as the product of
 the stage pairings. -/
-theorem powDeltaCore_pairing (d : ModDualityDatum A M M')
+theorem powDeltaCore_pairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     interchange A (modPowMod A M.X n) (modPowMod A M'.X n)
         (modPowMod A M.X 0) (modPowMod A M'.X 0) ≫
@@ -752,12 +765,16 @@ theorem powDeltaCore_pairing (d : ModDualityDatum A M M')
   rw [h1, h0]
   rfl
 
-
-
-
 /-- **The transition retracts against the pairing**: under the
 scalar zigzag, one insertion peels off against one zigzag. -/
-theorem powDelta_pairing (d : ModDualityDatum A M M')
+theorem powDelta_pairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (hzig : d.copair ≫ modTensorSwap A M M' ≫ d.pair = 𝟙 A)
     (n : ℕ) :
     powDelta A M M' d n ≫
@@ -816,7 +833,14 @@ theorem powDelta_pairing (d : ModDualityDatum A M M')
 
 /-- **The chain units retract against the pairing**: every
 copairing power evaluates to the unit of the base. -/
-theorem powUnitStage_pairing (d : ModDualityDatum A M M')
+theorem powUnitStage_pairing
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (hzig : d.copair ≫ modTensorSwap A M M' ≫ d.pair = 𝟙 A) :
     ∀ n : ℕ, powUnitStage A M M' d n ≫
         modTensorSwap A (modPowMod A M.X n)
@@ -826,18 +850,17 @@ theorem powUnitStage_pairing (d : ModDualityDatum A M M')
   | (n + 1) => by
     show (powUnitStage A M M' d n ≫ powDelta A M M' d n) ≫ _ = _
     rw [Category.assoc, powDelta_pairing A M M' d hzig n]
-    exact powUnitStage_pairing d hzig n
+    exact powUnitStage_pairing A M M' d hzig n
 
-
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **Scalar extraction at the head of the `M'`-power**: the tail
 action on the `M'`-power extracts as the scalar multiplying the
 pairing from the left. -/
-theorem rawPair_actHead (d : ModDualityDatum A M M') (n : ℕ) :
+theorem rawPair_actHead
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (n : ℕ) :
     (powTailAct A M'.X n ▷ tensorPow D M.X (n + 1)) ≫
         rawPair A M M' d (n + 1) =
       (α_ A (tensorPow D M'.X (n + 1))
@@ -907,12 +930,14 @@ theorem rawPair_actHead (d : ModDualityDatum A M M') (n : ℕ) :
   conv_rhs => rw [hβexp]
   monoidal
 
-
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The head action extracts through the descended pairing. -/
-theorem pairPow_actHead (d : ModDualityDatum A M M') (n : ℕ) :
+theorem pairPow_actHead
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (n : ℕ) :
     (modPowAct A M'.X n ▷ modPow A M.X (n + 1)) ≫
         pairPow A M M' d (n + 1) =
       (α_ A (modPow A M'.X (n + 1))
@@ -962,13 +987,15 @@ theorem pairPow_actHead (d : ModDualityDatum A M M') (n : ℕ) :
     ← MonoidalCategory.whiskerLeft_comp_assoc,
     modPowπ_tensor_pairPow]
 
-
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The power pairing is linear**: it is a map of modules into
 the regular module. -/
-theorem modPowPairing_linear (d : ModDualityDatum A M M')
+theorem modPowPairing_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     haveI := modTensorModObj A (modPowMod A M'.X n)
       (modPowMod A M.X n)
@@ -993,6 +1020,5 @@ theorem modPowPairing_linear (d : ModDualityDatum A M M')
     pairPow A M M' d (n + 1) =
     (A ◁ pairPow A M M' d (n + 1)) ≫ μ[A]
   rw [pairPow_actHead A M M' d n, Iso.inv_hom_id_assoc]
-
 
 end RS

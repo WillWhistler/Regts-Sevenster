@@ -5,7 +5,7 @@ import RS.Classical.Deligne.GammaAlgebra
 
 A module object `M` over a commutative monoid object `R` of a
 symmetric ℂ-linear monoidal category with an odd line `L` realizes
-as an honest module over the super-commutative ℂ-algebra
+as a module over the super-commutative ℂ-algebra
 `RS.gammaAlgebra D L R`: the even part is `𝟙_ D ⟶ M`, the odd part
 is `L.obj ⟶ M`, and the four graded action blocks are the
 convolution of the internal action sandwiched between the same
@@ -99,29 +99,40 @@ attribute [instance] SuperCommAlgebra.Mod.evenAddCommGroup
 
 section Action
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable {R : D} [MonObj R] {M : D} [ModObj R M]
+variable {D : Type u}
 
 /-- The *convolution action* of a morphism into a monoid object on
 a morphism into a module object, taken at arbitrary sources:
 tensor the two morphisms and act. -/
-noncomputable def gact {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
+noncomputable def gact
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M]
+    {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
     X ⊗ Y ⟶ M :=
   (a ⊗ₘ m) ≫ actLeft R M
 
 /-- The convolution action unfolded. -/
-theorem gact_def {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
+theorem gact_def
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M]
+    {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
     gact a m = (a ⊗ₘ m) ≫ actLeft R M := rfl
 
 /-- Reindexing the scalar source of a convolution action. -/
-theorem comp_gact {W X Y : D} (f : W ⟶ X) (a : X ⟶ R)
+theorem comp_gact
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M]
+    {W X Y : D} (f : W ⟶ X) (a : X ⟶ R)
     (m : Y ⟶ M) : gact (f ≫ a) m = f ▷ Y ≫ gact a m := by
   have h : f ▷ Y ≫ (a ⊗ₘ m) = (f ≫ a) ⊗ₘ m := by
     rw [← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp]
   rw [gact_def, gact_def, ← h, Category.assoc]
 
 /-- Reindexing the module source of a convolution action. -/
-theorem gact_comp {X Y Z : D} (a : X ⟶ R) (g : Z ⟶ Y)
+theorem gact_comp
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M]
+    {X Y Z : D} (a : X ⟶ R) (g : Z ⟶ Y)
     (m : Y ⟶ M) : gact a (g ≫ m) = X ◁ g ≫ gact a m := by
   have h : X ◁ g ≫ (a ⊗ₘ m) = a ⊗ₘ (g ≫ m) := by
     rw [← id_tensorHom, tensorHom_comp_tensorHom, Category.id_comp]
@@ -129,7 +140,10 @@ theorem gact_comp {X Y Z : D} (a : X ⟶ R) (g : Z ⟶ Y)
 
 /-- **The convolution action is associative** against the
 convolution product, up to the associator of the three sources. -/
-theorem gact_assoc {X Y Z : D} (a : X ⟶ R) (b : Y ⟶ R)
+theorem gact_assoc
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M]
+    {X Y Z : D} (a : X ⟶ R) (b : Y ⟶ R)
     (m : Z ⟶ M) :
     gact (gmul a b) m = (α_ X Y Z).hom ≫ gact a (gact b m) := by
   have hl : ((a ⊗ₘ b) ⊗ₘ m) ≫ (μ[R] ▷ M) ≫ actLeft R M =
@@ -146,23 +160,30 @@ theorem gact_assoc {X Y Z : D} (a : X ⟶ R) (b : Y ⟶ R)
     associator_naturality, Category.assoc]
 
 /-- The monoid unit acts as the identity. -/
-theorem gact_one {Y : D} (m : Y ⟶ M) :
+theorem gact_one
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M]
+    {Y : D} (m : Y ⟶ M) :
     gact (η[R]) m = (λ_ Y).hom ≫ m := by
   rw [gact_def, tensorHom_def', Category.assoc, one_actLeft,
     leftUnitor_naturality]
 
 section Additive
 
-variable [Preadditive D] [MonoidalPreadditive D]
-
 /-- The convolution action is additive in its scalar argument. -/
-theorem add_gact {X Y : D} (a a' : X ⟶ R) (m : Y ⟶ M) :
+theorem add_gact
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D]
+    {X Y : D} (a a' : X ⟶ R) (m : Y ⟶ M) :
     gact (a + a') m = gact a m + gact a' m := by
   rw [gact_def, gact_def, gact_def, MonoidalPreadditive.add_tensor,
     Preadditive.add_comp]
 
 /-- The convolution action is additive in its module argument. -/
-theorem gact_add {X Y : D} (a : X ⟶ R) (m m' : Y ⟶ M) :
+theorem gact_add
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D]
+    {X Y : D} (a : X ⟶ R) (m m' : Y ⟶ M) :
     gact a (m + m') = gact a m + gact a m' := by
   rw [gact_def, gact_def, gact_def, MonoidalPreadditive.tensor_add,
     Preadditive.add_comp]
@@ -171,12 +192,13 @@ end Additive
 
 section Homogeneous
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- The convolution action is ℂ-homogeneous in its scalar
 argument. -/
-theorem smul_gact (r : ℂ) {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
+theorem smul_gact
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (r : ℂ) {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
     gact (r • a) m = r • gact a m := by
   have h : (r • a) ⊗ₘ m = r • (a ⊗ₘ m) := by
     rw [tensorHom_def, tensorHom_def,
@@ -185,7 +207,11 @@ theorem smul_gact (r : ℂ) {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
 
 /-- The convolution action is ℂ-homogeneous in its module
 argument. -/
-theorem gact_smul (r : ℂ) {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
+theorem gact_smul
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (r : ℂ) {X Y : D} (a : X ⟶ R) (m : Y ⟶ M) :
     gact a (r • m) = r • gact a m := by
   have h : a ⊗ₘ (r • m) = r • (a ⊗ₘ m) := by
     rw [tensorHom_def', tensorHom_def',
@@ -198,15 +224,16 @@ end Homogeneous
 
 section Bundled
 
-variable [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-
 /-- The convolution action as a ℂ-bilinear map of hom-modules,
 transported along a chosen morphism `s` from the intended source
 into the tensor product of the two given sources.  The four graded
 action blocks of `RS.gammaModule` are the four instances of this
 construction. -/
-noncomputable def gactLin {W X Y : D} (s : W ⟶ X ⊗ Y) :
+noncomputable def gactLin
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W X Y : D} (s : W ⟶ X ⊗ Y) :
     (X ⟶ R) →ₗ[ℂ] (Y ⟶ M) →ₗ[ℂ] (W ⟶ M) :=
   LinearMap.mk₂ ℂ (fun a m => s ≫ gact a m)
     (fun a a' m => by rw [add_gact, Preadditive.comp_add])
@@ -215,13 +242,21 @@ noncomputable def gactLin {W X Y : D} (s : W ⟶ X ⊗ Y) :
     (fun r a m => by rw [gact_smul, Linear.comp_smul])
 
 @[simp]
-theorem gactLin_apply {W X Y : D} (s : W ⟶ X ⊗ Y) (a : X ⟶ R)
+theorem gactLin_apply
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W X Y : D} (s : W ⟶ X ⊗ Y) (a : X ⟶ R)
     (m : Y ⟶ M) : gactLin s a m = s ≫ gact a m := rfl
 
 /-- **The transported associativity law**: given a coherence
 identity between the two ways of reassociating the chosen sources,
 acting by a convolution product agrees with acting twice. -/
-theorem gactLin_assoc {W W' V X Y Z : D} (s₁ : W' ⟶ W ⊗ Z)
+theorem gactLin_assoc
+    [Category.{v} D] [MonoidalCategory D] {R : D} [MonObj R] {M : D}
+    [ModObj R M] [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    {W W' V X Y Z : D} (s₁ : W' ⟶ W ⊗ Z)
     (s₂ : W ⟶ X ⊗ Y) (s₃ : W' ⟶ X ⊗ V) (s₄ : V ⟶ Y ⊗ Z)
     (h : s₁ ≫ s₂ ▷ Z ≫ (α_ X Y Z).hom = s₃ ≫ X ◁ s₄)
     (a : X ⟶ R) (b : Y ⟶ R) (m : Z ⟶ M) :

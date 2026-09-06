@@ -19,7 +19,7 @@ open Classical
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+variable {α : Type}
 
 end EdgeSubset
 
@@ -34,7 +34,7 @@ genuine chords alone.
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 /-! ### The involution a subset induces on the interface labels
 
@@ -44,22 +44,23 @@ chords are the subset's and whose fixed points are the unused labels.
 This is the object the restriction transports are applied to.
 -/
 
-omit [LinearOrder α] in
 /-- A boundary flag's label is its own index. -/
-theorem boundaryLabel_boundaryFlag (F : EdgeSubset W) {i : α}
+theorem boundaryLabel_boundaryFlag {W : Fragment α}
+    (F : EdgeSubset W) {i : α}
     (h : W.boundaryFlag i ∈ F.boundaryFlags) : F.boundaryLabel h = i :=
   boundaryLabel_eq_of_attach h (W.attach_boundaryFlag i)
 
 /-- The label a subset's chain carries a used label to; the identity on
 unused ones. -/
-noncomputable def chordInv (F : EdgeSubset W) (κ : F.RelTransitionSystem)
+noncomputable def chordInv {W : Fragment α}
+    (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     (i : α) : α :=
   if h : W.boundaryFlag i ∈ F.boundaryFlags then
     F.boundaryLabel (κ.pathMatch_mem h) else i
 
-omit [LinearOrder α] in
 /-- A used label's image is used. -/
-theorem boundaryFlag_chordInv (F : EdgeSubset W)
+theorem boundaryFlag_chordInv {W : Fragment α}
+    (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) {i : α}
     (h : W.boundaryFlag i ∈ F.boundaryFlags) :
     W.boundaryFlag (chordInv F κ i) = κ.pathMatch (W.boundaryFlag i) h := by
@@ -67,18 +68,18 @@ theorem boundaryFlag_chordInv (F : EdgeSubset W)
   rw [dif_pos h]
   exact (W.eq_boundaryFlag _ _ (attach_boundaryLabel (κ.pathMatch_mem h))).symm
 
-omit [LinearOrder α] in
 /-- The chord partner of a participating boundary label is itself
 participating. -/
-theorem chordInv_mem (F : EdgeSubset W) (κ : F.RelTransitionSystem)
+theorem chordInv_mem {W : Fragment α}
+    (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     {i : α} (h : W.boundaryFlag i ∈ F.boundaryFlags) :
     W.boundaryFlag (chordInv F κ i) ∈ F.boundaryFlags := by
   rw [boundaryFlag_chordInv F κ h]
   exact κ.pathMatch_mem h
 
-omit [LinearOrder α] in
 /-- **The induced map is an involution.** -/
-theorem chordInv_invol (F : EdgeSubset W) (κ : F.RelTransitionSystem)
+theorem chordInv_invol {W : Fragment α}
+    (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     (i : α) : chordInv F κ (chordInv F κ i) = i := by
   by_cases h : W.boundaryFlag i ∈ F.boundaryFlags
   · have h2 := chordInv_mem F κ h
@@ -90,9 +91,9 @@ theorem chordInv_invol (F : EdgeSubset W) (κ : F.RelTransitionSystem)
   · unfold chordInv
     rw [dif_neg h, dif_neg h]
 
-omit [LinearOrder α] in
 /-- **The induced map is fixed-point-free on the used labels.** -/
-theorem chordInv_ne (F : EdgeSubset W) (κ : F.RelTransitionSystem)
+theorem chordInv_ne {W : Fragment α}
+    (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     {i : α} (h : W.boundaryFlag i ∈ F.boundaryFlags) :
     chordInv F κ i ≠ i := by
   intro hx

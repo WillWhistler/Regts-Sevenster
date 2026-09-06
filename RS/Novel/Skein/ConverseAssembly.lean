@@ -1256,7 +1256,7 @@ the port flips (13) performs.
 
 section OrientCongr
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 private theorem attachWith_map_congr' {δ γ : Type} {P : δ → Prop}
     {l₁ l₂ : List δ} (hl : l₁ = l₂) (h₁ : ∀ x ∈ l₁, P x)
@@ -1273,10 +1273,10 @@ private theorem attachWith_flatMap_congr' {δ γ : Type} {P : δ → Prop}
   subst hl
   rfl
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The in-flag list sees only the internal directions.** -/
-theorem relInFlagsAt_congr_internal (F : EdgeSubset W)
+theorem relInFlagsAt_congr_internal {W : Fragment α}
+    (F : EdgeSubset W)
     {κ : F.RelTransitionSystem} (o o' : κ.Orientation)
     (hio : ∀ f ∈ F.internalFlags, o.isOut f = o'.isOut f)
     (v : W.Vertex) :
@@ -1295,10 +1295,10 @@ theorem relInFlagsAt_congr_internal (F : EdgeSubset W)
       rw [hio f (EdgeSubset.mem_internalFlags_iff.mpr ⟨hf, v, hv⟩)]
       exact hb⟩
 
-omit [LinearOrder α] in
 open Classical in
 /-- The odd sign at a vertex sees only the internal directions. -/
-theorem coreOddSignAt_congr_internal (F : EdgeSubset W) {ℓ : ℕ}
+theorem coreOddSignAt_congr_internal {W : Fragment α}
+    (F : EdgeSubset W) {ℓ : ℕ}
     {κ : F.RelTransitionSystem} (o o' : κ.Orientation)
     (hio : ∀ f ∈ F.internalFlags, o.isOut f = o'.isOut f)
     (φ : F.CoreOddColouring ℓ) (v : W.Vertex) :
@@ -1306,10 +1306,10 @@ theorem coreOddSignAt_congr_internal (F : EdgeSubset W) {ℓ : ℕ}
   congrArg List.prod (attachWith_map_congr'
     (relInFlagsAt_congr_internal F o o' hio v) _ _ _)
 
-omit [LinearOrder α] in
 open Classical in
 /-- The odd list at a vertex sees only the internal directions. -/
-theorem coreOddListAt_congr_internal (F : EdgeSubset W) {ℓ : ℕ}
+theorem coreOddListAt_congr_internal {W : Fragment α}
+    (F : EdgeSubset W) {ℓ : ℕ}
     {κ : F.RelTransitionSystem} (o o' : κ.Orientation)
     (hio : ∀ f ∈ F.internalFlags, o.isOut f = o'.isOut f)
     (φ : F.CoreOddColouring ℓ) (v : W.Vertex) :
@@ -1317,11 +1317,11 @@ theorem coreOddListAt_congr_internal (F : EdgeSubset W) {ℓ : ℕ}
   attachWith_flatMap_congr'
     (relInFlagsAt_congr_internal F o o' hio v) _ _ _
 
-omit [LinearOrder α] in
 open Classical in
 /-- **RS21's colouring sum sees only the internal directions.**  It is
 therefore unchanged by a port flip. -/
-theorem edgeSum_congr_orient (F : EdgeSubset W) {k ℓ : ℕ}
+theorem edgeSum_congr_orient {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o o' : κ.Orientation)
@@ -1339,7 +1339,8 @@ theorem edgeSum_congr_orient (F : EdgeSubset W) {k ℓ : ℕ}
 open Classical in
 /-- **Replacing off the internal flags costs the colouring sum
 nothing.** -/
-theorem edgeSum_orientReplace (F : EdgeSubset W) {k ℓ : ℕ}
+theorem edgeSum_orientReplace [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation)
@@ -1361,12 +1362,14 @@ the two fragments' own data.
 
 section AnyCanon
 
-variable {L : Type} [LinearOrder L] [IsEmpty L] {V : Fragment L}
+variable {L : Type}
 
 open Classical in
 /-- **The composition's constrained value at an arbitrary canonical
 family.** -/
-theorem throughMixedPartitionC_eq_edgeTermAt_canon {k ℓ : ℕ}
+theorem throughMixedPartitionC_eq_edgeTermAt_canon
+    [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L)
     (𝒟 : DataFamily V)
     (hcanon : ∀ (s : Finset V.Flag) (hc : ∀ f ∈ s, V.pairing f ∈ s)
@@ -1408,7 +1411,8 @@ theorem throughMixedPartitionC_eq_edgeTermAt_canon {k ℓ : ℕ}
 open Classical in
 /-- **At the composition every orientation is path-canonical.**  So
 any family of transition data there is a canonical one. -/
-theorem pathCanonical_isEmpty (F : EdgeSubset V)
+theorem pathCanonical_isEmpty [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    (F : EdgeSubset V)
     {κ : F.RelTransitionSystem} (o : κ.Orientation) :
     EdgeSubset.PathCanonical o :=
   pathCanonical_of_allInternal (allInternal_isEmpty F) o
@@ -1417,7 +1421,9 @@ open Classical in
 /-- **The composition's constrained value at an arbitrary family.**
 No canonicality hypothesis is needed: at an empty label type there
 are no chords to order. -/
-theorem throughMixedPartitionC_eq_edgeTermAt_any {k ℓ : ℕ}
+theorem throughMixedPartitionC_eq_edgeTermAt_any
+    [LinearOrder L] [IsEmpty L] {V : Fragment L}
+    {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ L)
     (𝒟 : DataFamily V) :
     throughMixedPartitionC h V st
@@ -1439,12 +1445,13 @@ same thing, negated.
 
 section TailChain
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 open Classical in
 /-- **The chord matching's tail at a chain label** is that label's
 chain direction, reversed. -/
-theorem cutMatching_tail_of_not_through (F : EdgeSubset W)
+theorem cutMatching_tail_of_not_through [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W)
     (κ : F.RelTransitionSystem) (o : κ.Orientation) (i : UsedLab F)
     (hnt : ¬ IsThroughLabel F i.val) :
     (cutMatching F κ o).tail i
@@ -1568,13 +1575,12 @@ tell the difference.
 
 section MatchEqSum
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
-omit [LinearOrder α] in
 open Classical in
 /-- The odd sign function sees only the internal partners. -/
-theorem coreOddSignFn_matchEq {κ κ' : F.RelTransitionSystem}
+theorem coreOddSignFn_matchEq {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hm : κ.MatchEq κ') {ℓ : ℕ} (φ : F.CoreOddColouring ℓ)
     (f : {f : W.Flag // f ∈ F.internalFlags}) :
     F.coreOddSignFn κ φ f = F.coreOddSignFn κ' φ f := by
@@ -1582,10 +1588,10 @@ theorem coreOddSignFn_matchEq {κ κ' : F.RelTransitionSystem}
   exact congrArg (oddPartnerSign ℓ)
     (congrArg φ.val (Subtype.ext (hm f.val f.prop)))
 
-omit [LinearOrder α] in
 open Classical in
 /-- The odd pair function sees only the internal partners. -/
-theorem coreOddPairFn_matchEq {κ κ' : F.RelTransitionSystem}
+theorem coreOddPairFn_matchEq {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hm : κ.MatchEq κ') {ℓ : ℕ} (φ : F.CoreOddColouring ℓ)
     (f : {f : W.Flag // f ∈ F.internalFlags}) :
     F.coreOddPairFn κ φ f = F.coreOddPairFn κ' φ f := by
@@ -1593,12 +1599,12 @@ theorem coreOddPairFn_matchEq {κ κ' : F.RelTransitionSystem}
   refine congrArg (fun z => [φ.val ⟨f.val, _⟩, oddPartner ℓ z]) ?_
   exact congrArg φ.val (Subtype.ext (hm f.val f.prop))
 
-omit [LinearOrder α] in
 open Classical in
 /-- **The in-flag list sees only the internal directions**, across
 two systems: it is cut out by the directions at the flags attached to
 the vertex, and those are internal. -/
-theorem relInFlagsAt_congr_isOut_internal {κ κ' : F.RelTransitionSystem}
+theorem relInFlagsAt_congr_isOut_internal {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (o : κ.Orientation) (o' : κ'.Orientation)
     (hio : ∀ f ∈ F.internalFlags, o.isOut f = o'.isOut f)
     (v : W.Vertex) :
@@ -1617,11 +1623,11 @@ theorem relInFlagsAt_congr_isOut_internal {κ κ' : F.RelTransitionSystem}
       rw [hio f (EdgeSubset.mem_internalFlags_iff.mpr ⟨hf, v, hv⟩)]
       exact hb⟩
 
-omit [LinearOrder α] in
 open Classical in
 /-- The odd sign at a vertex, under a matching-equal system, from the
 internal directions alone. -/
-theorem coreOddSignAt_matchEq_internal {κ κ' : F.RelTransitionSystem}
+theorem coreOddSignAt_matchEq_internal {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hm : κ.MatchEq κ') {ℓ : ℕ} (o : κ.Orientation)
     (o' : κ'.Orientation)
     (hio : ∀ f ∈ F.internalFlags, o.isOut f = o'.isOut f)
@@ -1634,11 +1640,11 @@ theorem coreOddSignAt_matchEq_internal {κ κ' : F.RelTransitionSystem}
   exact congrArg List.prod
     (List.map_congr_left (fun x _ => coreOddSignFn_matchEq hm φ x))
 
-omit [LinearOrder α] in
 open Classical in
 /-- The odd list at a vertex, under a matching-equal system, from the
 internal directions alone. -/
-theorem coreOddListAt_matchEq_internal {κ κ' : F.RelTransitionSystem}
+theorem coreOddListAt_matchEq_internal {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hm : κ.MatchEq κ') {ℓ : ℕ} (o : κ.Orientation)
     (o' : κ'.Orientation)
     (hio : ∀ f ∈ F.internalFlags, o.isOut f = o'.isOut f)
@@ -1650,13 +1656,13 @@ theorem coreOddListAt_matchEq_internal {κ κ' : F.RelTransitionSystem}
     (fun _x hf => mem_internal_of_mem_relInFlagsAt hf) _) ?_
   exact List.flatMap_congr (fun x _ => coreOddPairFn_matchEq hm φ x)
 
-omit [LinearOrder α] in
 open Classical in
 /-- **RS21's colouring sum under a matching-equal system, from the
 internal directions alone.**  The sum reads the directions only at
 the flags attached to a vertex, so two orientations that agree there
 compute it alike. -/
-theorem edgeSum_matchEq_internal {κ κ' : F.RelTransitionSystem}
+theorem edgeSum_matchEq_internal {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (hm : κ.MatchEq κ') {k ℓ : ℕ} (h : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
@@ -1683,19 +1689,19 @@ which the round trip is read.
 
 section FamilyCongr
 
-variable {L : Type} [LinearOrder L] {V : Fragment L}
+variable {L : Type}
 
-omit [LinearOrder L] in
 /-- A transported system has the same partner map. -/
-theorem match_relOfEq {F₁ F₂ : EdgeSubset V} (hF : F₁ = F₂)
+theorem match_relOfEq {V : Fragment L}
+    {F₁ F₂ : EdgeSubset V} (hF : F₁ = F₂)
     (κ : F₁.RelTransitionSystem) (f : V.Flag) :
     (relOfEq hF κ).match_ f = κ.match_ f := by
   subst hF
   rfl
 
-omit [LinearOrder L] in
 /-- A transported orientation has the same directions. -/
-theorem isOut_orientOfEq {F₁ F₂ : EdgeSubset V} (hF : F₁ = F₂)
+theorem isOut_orientOfEq {V : Fragment L}
+    {F₁ F₂ : EdgeSubset V} (hF : F₁ = F₂)
     {κ : F₁.RelTransitionSystem} (o : κ.Orientation) (f : V.Flag) :
     (orientOfEq hF o).isOut f = o.isOut f := by
   subst hF
@@ -1787,12 +1793,13 @@ theorem isOut_glueDataOpen_pos {α : Type} [LinearOrder α]
 
 section FamilySubsetCongr
 
-variable {L : Type} [LinearOrder L] {V : Fragment L}
+variable {L : Type}
 
 /-- **A family at equal subsets has the same partner map.**  The two
 values have different types, so the equality is read on the partner
 map rather than on the data. -/
-theorem match_dataFamily_congr (𝒟 : DataFamily V)
+theorem match_dataFamily_congr [LinearOrder L] {V : Fragment L}
+    (𝒟 : DataFamily V)
     {s₁ s₂ : Finset V.Flag} (hs : s₁ = s₂)
     (hc₁ : ∀ f ∈ s₁, V.pairing f ∈ s₁)
     (hE₁ : (EdgeSubset.mk s₁ hc₁).Eulerian)
@@ -1807,7 +1814,8 @@ theorem match_dataFamily_congr (𝒟 : DataFamily V)
   rfl
 
 /-- **A family at equal subsets has the same directions.** -/
-theorem isOut_dataFamily_congr (𝒟 : DataFamily V)
+theorem isOut_dataFamily_congr [LinearOrder L] {V : Fragment L}
+    (𝒟 : DataFamily V)
     {s₁ s₂ : Finset V.Flag} (hs : s₁ = s₂)
     (hc₁ : ∀ f ∈ s₁, V.pairing f ∈ s₁)
     (hE₁ : (EdgeSubset.mk s₁ hc₁).Eulerian)
@@ -1989,7 +1997,7 @@ theorem isOut_unglue_glueDataClosed {α : Type} [LinearOrder α]
 
 section TransportRoundTrip
 
-variable {L : Type} [LinearOrder L]
+variable {L : Type}
 
 /-- **The relabel round trip is the identity on families.** -/
 theorem relabelData_roundTrip {α' β' : Type} [LinearOrder α']
@@ -1998,7 +2006,8 @@ theorem relabelData_roundTrip {α' β' : Type} [LinearOrder α']
     relabelDataDown e (relabelDataUp e 𝒟) = 𝒟 := rfl
 
 /-- **The transport round trip is the identity on families.** -/
-theorem dataOfEq_roundTrip {V₁ V₂ : Fragment L} (h : V₁ = V₂)
+theorem dataOfEq_roundTrip [LinearOrder L]
+    {V₁ V₂ : Fragment L} (h : V₁ = V₂)
     (𝒟 : DataFamily V₁) :
     dataOfEq h (dataOfEq h.symm 𝒟) = 𝒟 := by
   subst h

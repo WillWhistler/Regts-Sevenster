@@ -19,17 +19,12 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
+variable {C : Type v}
 
-omit [MonoidalPreadditive C] [MonoidalLinear ℂ C]
-  [RigidCategory C] [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)] in
 /-- The identity of the unit of the ind-completion is nonzero. -/
-theorem id_indUnit_ne_zero (hu : HasScalarUnit C) :
+theorem id_indUnit_ne_zero [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C]
+    (hu : HasScalarUnit C) :
     𝟙 (𝟙_ (Ind C)) ≠ 0 := by
   intro h
   refine id_unit_ne_zero hu ?_
@@ -40,15 +35,14 @@ theorem id_indUnit_ne_zero (hu : HasScalarUnit C) :
       (indOfUnitIso (C := C)).hom) h
   simpa using hconj
 
-variable [BraidedCategory (Ind C)]
-variable {ι : Type v} [LinearOrder ι] (B : ι → Ind C)
-  [∀ i, MonObj (B i)]
-
-omit [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)] in
 /-- **The unit of a big tensor product of ind-algebras
 survives.** -/
-theorem bigTensorUnit_ne_zero_ind (hu : HasScalarUnit C)
+theorem bigTensorUnit_ne_zero_ind
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [BraidedCategory (Ind C)] {ι : Type v} [LinearOrder ι]
+    (B : ι → Ind C) [∀ i, MonObj (B i)]
+    (hu : HasScalarUnit C)
     (hB : ∀ i, MonObj.one (X := B i) ≠ 0) :
     bigTensorUnit B ≠ 0 := by
   refine bigTensorUnit_ne_zero B (id_indUnit_ne_zero hu)

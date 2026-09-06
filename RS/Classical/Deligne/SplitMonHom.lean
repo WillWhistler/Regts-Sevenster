@@ -18,40 +18,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
-variable [HasColimitsOfShape (Discrete ℤ) D]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
+variable {D : Type u}
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D]
-  [HasColimitsOfShape (Discrete ℤ) D]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorLeft X)] in
 /-- **The base entry is multiplicative against the base
 action**: multiplying in the base before entering the bottom
 stage is entering on the right tensor factor and acting. -/
-theorem mul_chainBaseStage (d : ModDualityDatum A M M') :
+theorem mul_chainBaseStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     μ[A] ≫ chainBaseStage A M M' d =
       (A ◁ chainBaseStage A M M' d) ≫
         modTensorAct A (symPowMod A M'.X 0)
@@ -130,7 +108,18 @@ set_option maxHeartbeats 1600000 in
 /-- **The base entry is multiplicative**: the carrier entry of
 the base algebra respects the multiplication, the multiplicative
 half of the monoid-morphism property of the base entry. -/
-theorem splitOfBase_mul (d : ModDualityDatum A M M') :
+theorem splitOfBase_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     μ[A] ≫ splitOfBase A M M' d =
       (splitOfBase A M M' d ⊗ₘ splitOfBase A M M' d) ≫
         (letI := chainBGrMonObj A M M' d;

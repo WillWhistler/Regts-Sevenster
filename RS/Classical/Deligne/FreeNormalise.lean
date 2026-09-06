@@ -23,18 +23,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-  [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A] (V : D)
+variable {D : Type u}
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- **Normalisation**: gathering every head onto the last letter
 is invisible in the module power. -/
-theorem freeNormalise (n : ℕ) :
+theorem freeNormalise
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D)
+    (n : ℕ) :
     (freeCollapse A V (n + 1) ≫ freeInsert A V n) ≫
         modPowπ A (freeMod A V).X (n + 1) =
       modPowπ A (freeMod A V).X (n + 1) := by
@@ -49,15 +48,20 @@ theorem freeNormalise (n : ℕ) :
 
 /-- **The section of the descended collapse**: insert the head on
 the last letter and project. -/
-noncomputable def freeCollapseSection (n : ℕ) :
+noncomputable def freeCollapseSection
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] (V : D)
+    (n : ℕ) :
     A ⊗ tensorPow D V (n + 1) ⟶ modPow A (freeMod A V).X (n + 1) :=
   freeInsert A V n ≫ modPowπ A (freeMod A V).X (n + 1)
 
-omit [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The section retracts the descended collapse. -/
-theorem freeCollapseSection_desc (n : ℕ) :
+theorem freeCollapseSection_desc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] [IsCommMonObj A] (V : D)
+    (n : ℕ) :
     freeCollapseSection A V n ≫ freeCollapseDesc A V (n + 1) =
       𝟙 (A ⊗ tensorPow D V (n + 1)) := by
   rw [freeCollapseSection]
@@ -66,9 +70,14 @@ theorem freeCollapseSection_desc (n : ℕ) :
     (whisker_eq _ (modPowπ_freeCollapseDesc A V (n + 1))) ?_
   exact freeInsert_freeCollapse A V n
 
-omit [Linear ℂ D] [MonoidalLinear ℂ D] in
 /-- The descended collapse retracts the section. -/
-theorem freeCollapseDesc_section (n : ℕ) :
+theorem freeCollapseDesc_section
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D)
+    (n : ℕ) :
     freeCollapseDesc A V (n + 1) ≫ freeCollapseSection A V n =
       𝟙 (modPow A (freeMod A V).X (n + 1)) := by
   apply modPow_hom_ext A (freeMod A V).X
@@ -77,11 +86,14 @@ theorem freeCollapseDesc_section (n : ℕ) :
   refine Eq.trans (freeNormalise A V n) ?_
   exact (Category.comp_id _).symm
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The identification intertwines the two group-algebra
 actions.** -/
-theorem freeModPow_alg (n : ℕ) (z : SymGroupAlgebra (n + 1)) :
+theorem freeModPow_alg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D] (A : D) [MonObj A]
+    [IsCommMonObj A] (V : D)
+    (n : ℕ) (z : SymGroupAlgebra (n + 1)) :
     freeCollapseSection A V n ≫
         (modPowAlg A (freeMod A V).X (n + 1) z :
           modPow A (freeMod A V).X (n + 1) ⟶
@@ -112,11 +124,14 @@ theorem freeModPow_alg (n : ℕ) (z : SymGroupAlgebra (n + 1)) :
   refine Eq.trans (eq_whisker (freeInsert_freeCollapse A V n) _) ?_
   exact Category.id_comp _
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **Module-level vanishing gives whiskered ambient
 vanishing.** -/
-theorem whisker_permAlg_eq_zero (n : ℕ) (hn : n ≠ 0)
+theorem whisker_permAlg_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D] (A : D) [MonObj A]
+    [IsCommMonObj A] (V : D)
+    (n : ℕ) (hn : n ≠ 0)
     (z : SymGroupAlgebra n)
     (h : (modPowAlg A (freeMod A V).X n z :
       modPow A (freeMod A V).X n ⟶
@@ -129,7 +144,13 @@ theorem whisker_permAlg_eq_zero (n : ℕ) (hn : n ≠ 0)
 
 /-- **Whiskered ambient vanishing gives module-level
 vanishing.** -/
-theorem modPowAlg_eq_zero (n : ℕ) (hn : n ≠ 0)
+theorem modPowAlg_eq_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (V : D)
+    (n : ℕ) (hn : n ≠ 0)
     (z : SymGroupAlgebra n)
     (h : (A ◁ (permAlg V n z : tensorPow D V n ⟶
       tensorPow D V n)) = 0) :

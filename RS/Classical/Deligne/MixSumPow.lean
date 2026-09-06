@@ -19,14 +19,15 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [HasFiniteBiproducts D]
+variable {D : Type u}
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 /-- Split a mixed sum into its unit part and its line part. -/
-noncomputable def OddLine.mixSplitHom (L : OddLine D) (p q : ℕ) :
+noncomputable def OddLine.mixSplitHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     (⨁ L.mixFun (p + 1) (q + 1)) ⟶
       (⨁ fun _ : Fin (p + 1) => 𝟙_ D) ⊞
         (⨁ fun _ : Fin (q + 1) => L.obj) :=
@@ -39,7 +40,10 @@ noncomputable def OddLine.mixSplitHom (L : OddLine D) (p q : ℕ) :
         eqToHom (L.mixFun_inr (p + 1) (q + 1) j))
 
 /-- Rebuild a mixed sum from its unit part and its line part. -/
-noncomputable def OddLine.mixSplitInv (L : OddLine D) (p q : ℕ) :
+noncomputable def OddLine.mixSplitInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     (⨁ fun _ : Fin (p + 1) => 𝟙_ D) ⊞
         (⨁ fun _ : Fin (q + 1) => L.obj) ⟶
       ⨁ L.mixFun (p + 1) (q + 1) :=
@@ -54,7 +58,10 @@ noncomputable def OddLine.mixSplitInv (L : OddLine D) (p q : ℕ) :
 /-- The splitting map restricted to a unit summand is the matching
 inclusion into the unit part. -/
 @[reassoc]
-theorem OddLine.ι_inl_mixSplitHom (L : OddLine D) (p q : ℕ)
+theorem OddLine.ι_inl_mixSplitHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ)
     (i : Fin (p + 1)) :
     biproduct.ι (L.mixFun (p + 1) (q + 1)) (Sum.inl i) ≫
         L.mixSplitHom p q =
@@ -83,7 +90,10 @@ theorem OddLine.ι_inl_mixSplitHom (L : OddLine D) (p q : ℕ)
 /-- The splitting map restricted to a line summand is the matching
 inclusion into the line part. -/
 @[reassoc]
-theorem OddLine.ι_inr_mixSplitHom (L : OddLine D) (p q : ℕ)
+theorem OddLine.ι_inr_mixSplitHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ)
     (j : Fin (q + 1)) :
     biproduct.ι (L.mixFun (p + 1) (q + 1)) (Sum.inr j) ≫
         L.mixSplitHom p q =
@@ -110,7 +120,10 @@ theorem OddLine.ι_inr_mixSplitHom (L : OddLine D) (p q : ℕ)
         zero_comp, biproduct.ι_π_ne _ h, comp_zero]
 
 /-- Splitting then rebuilding is the identity on the mixed sum. -/
-theorem OddLine.mixSplit_hom_inv (L : OddLine D) (p q : ℕ) :
+theorem OddLine.mixSplit_hom_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.mixSplitHom p q ≫ L.mixSplitInv p q =
       𝟙 (⨁ L.mixFun (p + 1) (q + 1)) := by
   apply biproduct.hom_ext'
@@ -126,7 +139,10 @@ theorem OddLine.mixSplit_hom_inv (L : OddLine D) (p q : ℕ) :
 
 /-- Rebuilding then splitting is the identity on the split
 form. -/
-theorem OddLine.mixSplit_inv_hom (L : OddLine D) (p q : ℕ) :
+theorem OddLine.mixSplit_inv_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.mixSplitInv p q ≫ L.mixSplitHom p q =
       𝟙 ((⨁ fun _ : Fin (p + 1) => 𝟙_ D) ⊞
         (⨁ fun _ : Fin (q + 1) => L.obj)) := by
@@ -146,7 +162,10 @@ theorem OddLine.mixSplit_inv_hom (L : OddLine D) (p q : ℕ) :
 
 /-- A mixed sum is the biproduct of its unit part and its line
 part. -/
-noncomputable def OddLine.mixSplitIso (L : OddLine D) (p q : ℕ) :
+noncomputable def OddLine.mixSplitIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.mix (p + 1) (q + 1) ≅
       (⨁ fun _ : Fin (p + 1) => 𝟙_ D) ⊞
         (⨁ fun _ : Fin (q + 1) => L.obj) where
@@ -156,7 +175,9 @@ noncomputable def OddLine.mixSplitIso (L : OddLine D) (p q : ℕ) :
   inv_hom_id := L.mixSplit_inv_hom p q
 
 /-- Folding a constant biproduct into the iterated binary sum. -/
-noncomputable def constSumIso (X : D) (k : ℕ) :
+noncomputable def constSumIso
+    [Category.{v} D] [Preadditive D] [HasFiniteBiproducts D]
+    (X : D) (k : ℕ) :
     (⨁ fun _ : Fin (k + 1) => X) ≅ sumPow X k where
   hom := biproduct.desc (sumPowIns X k)
   inv := biproduct.lift (sumPowPrj X k)
@@ -178,7 +199,10 @@ noncomputable def constSumIso (X : D) (k : ℕ) :
 /-- **The mixed sum in fold form**: the mixed sum of `p + 1` units
 and `q + 1` lines is the biproduct of the folded unit power and
 the folded line power. -/
-noncomputable def OddLine.mixSumPowIso (L : OddLine D) (p q : ℕ) :
+noncomputable def OddLine.mixSumPowIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.mix (p + 1) (q + 1) ≅
       sumPow (𝟙_ D) p ⊞ sumPow L.obj q :=
   L.mixSplitIso p q ≪≫
@@ -186,13 +210,15 @@ noncomputable def OddLine.mixSumPowIso (L : OddLine D) (p q : ℕ) :
 
 section Killed
 
-variable [Linear ℂ D] [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-
 /-- **Nonvanishing of the mixed sum**: in a nontrivial ambient
 category, the mixed sum of `p + 1` units and `q + 1` odd lines is
 not Schur-killed at any diagram avoiding the cell
 `(p + 1, q + 1)`. -/
-theorem OddLine.not_schurKilled_mix (P : SchurPackage.{v})
+theorem OddLine.not_schurKilled_mix
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [Linear ℂ D]
+    [MonoidalPreadditive D] [MonoidalLinear ℂ D]
+    (P : SchurPackage.{v})
     (P₀ : SchurPackage.{0}) (hone : ¬ Limits.IsZero (𝟙_ D))
     (L : OddLine D) (p q : ℕ) {lam : YoungDiagram}
     (hcell : ((p + 1, q + 1) : ℕ × ℕ) ∉ lam) :

@@ -23,10 +23,11 @@ universe v u
 
 section HetExt
 
-variable {E : Type u} [Category.{v} E] [MonoidalCategory E]
+variable {E : Type u}
 
 /-- Absorb a whiskered morphism into the first tensor factor. -/
 private theorem tensorHom_whiskerRight_comp
+    [Category.{v} E] [MonoidalCategory E]
     {X₁ X₂ Y₁ Y₂ Z₁ W : E} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (f : Y₁ ⟶ Z₁) (r : Z₁ ⊗ Y₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (f ▷ Y₂) ≫ r = ((a ≫ f) ⊗ₘ b) ≫ r := by
@@ -35,7 +36,7 @@ private theorem tensorHom_whiskerRight_comp
     Category.comp_id]
 
 /-- Absorb a whiskered morphism into the second tensor factor. -/
-private theorem tensorHom_whiskerLeft_comp
+private theorem tensorHom_whiskerLeft_comp [Category.{v} E] [MonoidalCategory E]
     {X₁ X₂ Y₁ Y₂ Z₂ W : E} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (g : Y₂ ⟶ Z₂) (r : Y₁ ⊗ Z₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (Y₁ ◁ g) ≫ r = (a ⊗ₘ (b ≫ g)) ≫ r := by
@@ -45,6 +46,7 @@ private theorem tensorHom_whiskerLeft_comp
 
 /-- Extract a prefix of the first tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerRight_split
+    [Category.{v} E] [MonoidalCategory E]
     {V₁ W₁ U₁ X₂ U₂ Z : E} (x : V₁ ⟶ W₁) (q₁ : W₁ ⟶ U₁)
     (q₂ : X₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     ((x ≫ q₁) ⊗ₘ q₂) ≫ r = (x ▷ X₂) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -54,6 +56,7 @@ private theorem compTensorHom_whiskerRight_split
 
 /-- Extract a prefix of the second tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerLeft_split
+    [Category.{v} E] [MonoidalCategory E]
     {X₁ U₁ V₂ W₂ U₂ Z : E} (q₁ : X₁ ⟶ U₁) (x : V₂ ⟶ W₂)
     (q₂ : W₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     (q₁ ⊗ₘ (x ≫ q₂)) ≫ r = (X₁ ◁ x) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -62,19 +65,14 @@ private theorem compTensorHom_whiskerLeft_split
     MonoidalCategory.whiskerLeft_comp]
   simp only [Category.assoc]
 
-variable [HasColimitsOfShape SmallNat.{v} E]
-variable (B C F : ℕ → E)
-variable (δB : ∀ n, B n ⟶ B (n + 1))
-variable (δC : ∀ n, C n ⟶ C (n + 1))
-variable (δF : ∀ n, F n ⟶ F (n + 1))
-variable
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
-variable
-  [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
-
 /-- Maps out of a tensor of two chain colimits agree once they
 agree on all pairs of stages. -/
-theorem chainColimitHet_pair_hom_ext {Z : E}
+theorem chainColimitHet_pair_hom_ext [Category.{v} E] [MonoidalCategory E]
+    [HasColimitsOfShape SmallNat.{v} E] (B : ℕ → E) (C : ℕ → E)
+    (δB : ∀ n, B n ⟶ B (n + 1)) (δC : ∀ n, C n ⟶ C (n + 1))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    {Z : E}
     {f g : chainColimit B δB ⊗ chainColimit C δC ⟶ Z}
     (w : ∀ i j : ℕ,
       (chainColimitι B δB i ⊗ₘ chainColimitι C δC j) ≫ f =
@@ -93,7 +91,13 @@ theorem chainColimitHet_pair_hom_ext {Z : E}
 
 /-- Maps out of a tensor of two chain colimits whiskered on the
 right agree once they agree on all pairs of stages. -/
-theorem chainColimitHet_pair_whiskerRight_hom_ext {X Z : E}
+theorem chainColimitHet_pair_whiskerRight_hom_ext
+    [Category.{v} E] [MonoidalCategory E]
+    [HasColimitsOfShape SmallNat.{v} E] (B : ℕ → E) (C : ℕ → E)
+    (δB : ∀ n, B n ⟶ B (n + 1)) (δC : ∀ n, C n ⟶ C (n + 1))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    {X Z : E}
     {f g : (chainColimit B δB ⊗ chainColimit C δC) ⊗ X ⟶ Z}
     (w : ∀ i j : ℕ,
       ((chainColimitι B δB i ⊗ₘ chainColimitι C δC j) ▷ X) ≫ f =
@@ -120,7 +124,13 @@ theorem chainColimitHet_pair_whiskerRight_hom_ext {X Z : E}
 
 /-- Maps out of a triple tensor of chain colimits agree once they
 agree on all triples of stages. -/
-theorem chainColimitHet_triple_hom_ext {Z : E}
+theorem chainColimitHet_triple_hom_ext [Category.{v} E] [MonoidalCategory E]
+    [HasColimitsOfShape SmallNat.{v} E] (B : ℕ → E) (C : ℕ → E) (F : ℕ → E)
+    (δB : ∀ n, B n ⟶ B (n + 1)) (δC : ∀ n, C n ⟶ C (n + 1))
+    (δF : ∀ n, F n ⟶ F (n + 1))
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : E, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    {Z : E}
     {f g : (chainColimit B δB ⊗ chainColimit C δC) ⊗
       chainColimit F δF ⟶ Z}
     (w : ∀ i j k : ℕ,
@@ -145,23 +155,17 @@ end HetExt
 
 /-! ## The stage-level laws -/
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
+variable {D : Type u}
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- Stage transports slide out of the first factor of the two-index
 multiplication. -/
 theorem chainStage2Cast_whiskerRight_chainMul2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
     {p q p' q' : ℕ} (hp : p = p') (hq : q = q') (e f : ℕ) :
     (chainStage2Cast A M M' hp hq ▷ chainStage2 A M M' e f) ≫
         chainMul2 A M M' p' q' e f =
@@ -173,10 +177,15 @@ theorem chainStage2Cast_whiskerRight_chainMul2
     MonoidalCategory.id_whiskerRight, Category.id_comp,
     Category.comp_id]
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- Stage transports slide out of the second factor of the
 two-index multiplication. -/
 theorem whiskerLeft_chainStage2Cast_chainMul2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
     (a b : ℕ) {p q p' q' : ℕ} (hp : p = p') (hq : q = q') :
     (chainStage2 A M M' a b ◁ chainStage2Cast A M M' hp hq) ≫
         chainMul2 A M M' a b p' q' =
@@ -188,10 +197,16 @@ theorem whiskerLeft_chainStage2Cast_chainMul2
     MonoidalCategory.whiskerLeft_id, Category.id_comp,
     Category.comp_id]
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- **Commutativity of the stagewise line multiplication**, up to
 the stage transport onto the common arities. -/
-theorem chainBdegMulStage_comm (p₀ q₀ r₀ s₀ i j : ℕ) :
+theorem chainBdegMulStage_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p₀ q₀ r₀ s₀ i j : ℕ) :
     (β_ (chainStage2 A M M' (p₀ + i) (q₀ + i))
         (chainStage2 A M M' (r₀ + j) (s₀ + j))).hom ≫
         chainBdegMulStage A M M' r₀ s₀ p₀ q₀ j i ≫
@@ -205,10 +220,16 @@ theorem chainBdegMulStage_comm (p₀ q₀ r₀ s₀ i j : ℕ) :
     ← chainMul2_comm A M M' (p₀ + i) (q₀ + i) (r₀ + j) (s₀ + j)]
   simp only [Category.assoc, chainStage2Cast_trans]
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- **Associativity of the stagewise line multiplication**, up to
 the stage transport reassociating the offsets. -/
-theorem chainBdegMulStage_assoc (p₀ q₀ r₀ s₀ t₀ u₀ i j k : ℕ) :
+theorem chainBdegMulStage_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p₀ q₀ r₀ s₀ t₀ u₀ i j k : ℕ) :
     (chainBdegMulStage A M M' p₀ q₀ r₀ s₀ i j ▷
         chainStage2 A M M' (t₀ + k) (u₀ + k)) ≫
         chainBdegMulStage A M M' (p₀ + r₀) (q₀ + s₀) t₀ u₀
@@ -252,7 +273,15 @@ theorem chainBdegMulStage_assoc (p₀ q₀ r₀ s₀ t₀ u₀ i j k : ℕ) :
 
 /-- Stage transports along a stage-index equality are absorbed by
 the stage insertions of a line. -/
-theorem chainStage2Cast_chainBdegι (d : ModDualityDatum A M M')
+theorem chainStage2Cast_chainBdegι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) {a b : ℕ} (h : a = b) :
     chainStage2Cast A M M' (by omega : p₀ + a = p₀ + b)
         (by omega : q₀ + a = q₀ + b) ≫
@@ -265,7 +294,15 @@ theorem chainStage2Cast_chainBdegι (d : ModDualityDatum A M M')
 
 /-- The stage insertions intertwine the offset transports of a line
 with the stage transports. -/
-theorem chainBdegι_cast (d : ModDualityDatum A M M')
+theorem chainBdegι_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     {p₀ q₀ p₀' q₀' : ℕ} (hp : p₀ = p₀') (hq : q₀ = q₀') (k : ℕ) :
     chainBdegι A M M' d p₀ q₀ k ≫ chainBdegCast A M M' d hp hq =
       chainStage2Cast A M M' (by omega : p₀ + k = p₀' + k)
@@ -279,14 +316,19 @@ theorem chainBdegι_cast (d : ModDualityDatum A M M')
 
 section MulColimit
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
 /-- Maps out of a tensor of two graded components agree once they
 agree on all pairs of stages. -/
-theorem chainBdeg_pair_hom_ext (d : ModDualityDatum A M M')
+theorem chainBdeg_pair_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ r₀ s₀ : ℕ) {Z : D}
     {f g : chainBdeg A M M' d p₀ q₀ ⊗ chainBdeg A M M' d r₀ s₀ ⟶
       Z}
@@ -304,7 +346,17 @@ theorem chainBdeg_pair_hom_ext (d : ModDualityDatum A M M')
 
 /-- Maps out of a triple tensor of graded components agree once
 they agree on all triples of stages. -/
-theorem chainBdeg_triple_hom_ext (d : ModDualityDatum A M M')
+theorem chainBdeg_triple_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ r₀ s₀ t₀ u₀ : ℕ) {Z : D}
     {f g : (chainBdeg A M M' d p₀ q₀ ⊗
       chainBdeg A M M' d r₀ s₀) ⊗ chainBdeg A M M' d t₀ u₀ ⟶ Z}
@@ -327,7 +379,17 @@ theorem chainBdeg_triple_hom_ext (d : ModDualityDatum A M M')
 /-- **Commutativity of the graded line multiplication**: the
 braiding followed by the swapped multiplication is the
 multiplication, up to the offset transport. -/
-theorem chainBdegMul_comm (d : ModDualityDatum A M M')
+theorem chainBdegMul_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ r₀ s₀ : ℕ) :
     (β_ (chainBdeg A M M' d p₀ q₀)
         (chainBdeg A M M' d r₀ s₀)).hom ≫

@@ -50,19 +50,17 @@ universe v u
 
 section Raw
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable (R : D) [MonObj R]
+variable {D : Type u}
 
 /-- **The underlying morphism of a map of free modules intertwines
 the free actions**, in raw tensor form. -/
-theorem freeMod_hom_lin {V W : D} (f : freeMod R V ⟶ freeMod R W) :
+theorem freeMod_hom_lin [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R]
+    {V W : D} (f : freeMod R V ⟶ freeMod R W) :
     ((α_ R R V).inv ≫ (μ[R] ▷ V)) ≫ Mod.Hom.hom f =
       (R ◁ Mod.Hom.hom f) ≫ ((α_ R R W).inv ≫ (μ[R] ▷ W)) :=
   (Mod.Hom.isModHom f).smul_hom
 
 section Complement
-
-variable [Preadditive D] [MonoidalPreadditive D]
 
 /-- **The complement of a module endomorphism is a module map.**
 Let `f` be a monomorphism intertwining the free actions, let `c` be
@@ -70,7 +68,10 @@ an endomorphism intertwining them, and let `u` satisfy
 `u ≫ f + c = 𝟙`.  Then `u` intertwines the free actions as well:
 the law for `u` is checked after `f`, where it becomes the law for
 `𝟙 - c`.  This is the crux of the whole module. -/
-theorem lin_of_complement {V W : D} (f : R ⊗ V ⟶ R ⊗ W) [Mono f]
+theorem lin_of_complement
+    [Category.{v} D] [MonoidalCategory D] (R : D) [MonObj R] [Preadditive D]
+    [MonoidalPreadditive D]
+    {V W : D} (f : R ⊗ V ⟶ R ⊗ W) [Mono f]
     (hf : ((α_ R R V).inv ≫ (μ[R] ▷ V)) ≫ f =
       (R ◁ f) ≫ ((α_ R R W).inv ≫ (μ[R] ▷ W)))
     (u : R ⊗ W ⟶ R ⊗ V) (c : R ⊗ W ⟶ R ⊗ W)
@@ -104,34 +105,32 @@ end Raw
 
 section BaseChange
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [Abelian D] [MonoidalPreadditive D]
-variable [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
-variable [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)]
-variable (R : D) [MonObj R]
+variable {D : Type u}
 
-omit [MonObj R] in
 /-- **Base change of a short exact sequence is short exact.**
 Tensoring is exact, so the whiskered sequence is again short
 exact. -/
 theorem shortExact_map_tensorLeft
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D)
     {S : CategoryTheory.ShortComplex D} (hS : S.ShortExact) :
     (S.map (tensorLeft R)).ShortExact :=
   hS.map_of_exact (tensorLeft R)
 
-variable {S : CategoryTheory.ShortComplex D}
-
 /-- The underlying morphism of a module-level section, in raw
 tensor form. -/
-def baseChangeSectionHom (s : freeMod R S.X₃ ⟶ freeMod R S.X₂) :
+def baseChangeSectionHom
+    [Category.{v} D] [MonoidalCategory D] [Abelian D] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (s : freeMod R S.X₃ ⟶ freeMod R S.X₂) :
     R ⊗ S.X₃ ⟶ R ⊗ S.X₂ :=
   Mod.Hom.hom s
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
-  [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] in
 /-- A module-level section splits the base-changed epimorphism. -/
 theorem baseChangeSectionHom_g
+    [Category.{v} D] [MonoidalCategory D] [Abelian D] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     baseChangeSectionHom R s ≫ (R ◁ S.g) = 𝟙 (R ⊗ S.X₃) :=
@@ -139,7 +138,12 @@ theorem baseChangeSectionHom_g
 
 /-- The splitting of the base-changed sequence determined by a
 module-level section of the epimorphism. -/
-noncomputable def baseChangeSplitting (hS : S.ShortExact)
+noncomputable def baseChangeSplitting
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     (S.map (tensorLeft R)).Splitting :=
@@ -150,14 +154,24 @@ noncomputable def baseChangeSplitting (hS : S.ShortExact)
 
 /-- The retraction of the base-changed sequence, in raw tensor
 form. -/
-noncomputable def baseChangeRetractionHom (hS : S.ShortExact)
+noncomputable def baseChangeRetractionHom
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     R ⊗ S.X₂ ⟶ R ⊗ S.X₁ :=
   (baseChangeSplitting R hS s hs).r
 
 /-- The retraction retracts the base-changed monomorphism. -/
-theorem baseChangeRetractionHom_f (hS : S.ShortExact)
+theorem baseChangeRetractionHom_f
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     (R ◁ S.f) ≫ baseChangeRetractionHom R hS s hs =
@@ -165,7 +179,12 @@ theorem baseChangeRetractionHom_f (hS : S.ShortExact)
   (baseChangeSplitting R hS s hs).f_r
 
 /-- The retraction and the section are complementary. -/
-theorem baseChangeRetractionHom_id (hS : S.ShortExact)
+theorem baseChangeRetractionHom_id
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     baseChangeRetractionHom R hS s hs ≫ (R ◁ S.f) +
@@ -174,7 +193,12 @@ theorem baseChangeRetractionHom_id (hS : S.ShortExact)
   (baseChangeSplitting R hS s hs).id
 
 /-- **The retraction is a morphism of module objects.** -/
-theorem baseChangeRetraction_lin (hS : S.ShortExact)
+theorem baseChangeRetraction_lin
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     ((α_ R R S.X₂).inv ≫ (μ[R] ▷ S.X₂)) ≫
@@ -189,7 +213,12 @@ theorem baseChangeRetraction_lin (hS : S.ShortExact)
     (baseChangeRetractionHom_id R hS s hs)
 
 /-- **The retraction, as a morphism of module objects.** -/
-noncomputable def baseChangeRetraction (hS : S.ShortExact)
+noncomputable def baseChangeRetraction
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     freeMod R S.X₂ ⟶ freeMod R S.X₁ :=
@@ -198,7 +227,12 @@ noncomputable def baseChangeRetraction (hS : S.ShortExact)
 
 /-- The module retraction retracts the base change of the
 monomorphism. -/
-theorem freeModMap_baseChangeRetraction (hS : S.ShortExact)
+theorem freeModMap_baseChangeRetraction
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     freeModMap R S.f ≫ baseChangeRetraction R hS s hs =
@@ -207,7 +241,12 @@ theorem freeModMap_baseChangeRetraction (hS : S.ShortExact)
 
 /-- The module retraction and the module section are
 complementary, read on underlying morphisms. -/
-theorem baseChangeRetraction_id (hS : S.ShortExact)
+theorem baseChangeRetraction_id
+    [Category.{v} D] [MonoidalCategory D] [Abelian D]
+    [MonoidalPreadditive D] [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)] (R : D) [MonObj R]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     Mod.Hom.hom (baseChangeRetraction R hS s hs ≫ freeModMap R S.f)
@@ -221,15 +260,16 @@ end BaseChange
 
 section Fibre
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Abelian D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **Realisation turns a sum of module morphisms into a sum.**
 The category of module objects has no additive structure, so the
 hypothesis is stated on underlying morphisms. -/
-theorem gammaModuleFunctor_map_add {M N : Mod D R} (f g h : M ⟶ N)
+theorem gammaModuleFunctor_map_add
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {M N : Mod D R} (f g h : M ⟶ N)
     (hfg : Mod.Hom.hom f + Mod.Hom.hom g = Mod.Hom.hom h) :
     (gammaModuleFunctor L R).map f +
         (gammaModuleFunctor L R).map g =
@@ -240,18 +280,20 @@ theorem gammaModuleFunctor_map_add {M N : Mod D R} (f g h : M ⟶ N)
         m ≫ Mod.Hom.hom h
       rw [← Preadditive.comp_add, hfg]
 
-variable [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
-variable [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)]
-
 section Splitting
-
-variable {S : CategoryTheory.ShortComplex D}
 
 /-- **The splitting of the realised sequence.**  Its retraction and
 section are the realisations of the module retraction and of the
 given module section; the three identities are the images of the
 corresponding identities in the category of module objects. -/
-noncomputable def fibreFunSplitting (hS : S.ShortExact)
+noncomputable def fibreFunSplitting
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)]
+    {S : CategoryTheory.ShortComplex D}
+    (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :
     (S.map (fibreFun L R)).Splitting where
@@ -286,6 +328,11 @@ base-change section to a short exact sequence of super modules.**
 No section in the ambient category is required: a section of the
 base-changed epimorphism as a map of module objects suffices. -/
 theorem fibreFun_shortExact_of_baseChangeSection
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] [Abelian D]
+    [MonoidalPreadditive D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    [∀ Z : D, PreservesFiniteLimits (tensorLeft Z)]
+    [∀ Z : D, PreservesFiniteColimits (tensorLeft Z)]
     {S : CategoryTheory.ShortComplex D} (hS : S.ShortExact)
     (s : freeMod R S.X₃ ⟶ freeMod R S.X₂)
     (hs : s ≫ freeModMap R S.g = 𝟙 (freeMod R S.X₃)) :

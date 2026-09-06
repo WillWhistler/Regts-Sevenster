@@ -21,8 +21,7 @@ open CategoryTheory CategoryTheory.MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [RigidCategory A]
+variable {A : Type u}
 
 /-! ## Conjugation invariance -/
 
@@ -30,7 +29,10 @@ variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
 leaves the trace unchanged: the action is functorial and commutes
 with the tensor power, so the conjugating factors travel around the
 loop and cancel. -/
-theorem catTrace_permMor_conj (X : A) (g : End X) (n : ℕ)
+theorem catTrace_permMor_conj
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) (n : ℕ)
     (ρ π : Equiv.Perm (Fin n)) :
     catTrace (permMor X n (ρ * π * ρ⁻¹) ≫ powHom X g n) =
       catTrace (permMor X n π ≫ powHom X g n) := by
@@ -57,7 +59,10 @@ theorem catTrace_permMor_conj (X : A) (g : End X) (n : ℕ)
 of permutations acts blockwise on the splitting of the tensor power,
 as does the tensor power of the endomorphism, so the loop factors
 into the two blocks' loops. -/
-theorem catTrace_permMor_blockSum (X : A) (g : End X) {p q : ℕ}
+theorem catTrace_permMor_blockSum
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) {p q : ℕ}
     (σ : Equiv.Perm (Fin p)) (τ : Equiv.Perm (Fin q)) :
     catTrace (permMor X (p + q) (blockSum σ τ) ≫
         powHom X g (p + q)) =
@@ -121,7 +126,10 @@ theorem catTrace_permMor_blockSum (X : A) (g : End X) {p q : ℕ}
 
 /-- **The trace of a full rotation**: the rotation of `m + 1` slots
 against the tensor power of `g` traces to `tr (g ^ (m + 1))`. -/
-theorem catTrace_permMor_finRotate (X : A) (g : End X) (m : ℕ) :
+theorem catTrace_permMor_finRotate
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) (m : ℕ) :
     catTrace (permMor X (m + 1) (finRotate (m + 1)) ≫
         powHom X g (m + 1)) = catTrace (g ^ (m + 1)) := by
   rw [← topCycle_zero, permMor_topCycle,
@@ -133,7 +141,10 @@ theorem catTrace_permMor_finRotate (X : A) (g : End X) (m : ℕ) :
 
 /-- **The trace of a block sum of rotations** is the product of the
 cycle traces of its block lengths. -/
-theorem catTrace_blockCycles (X : A) (g : End X) :
+theorem catTrace_blockCycles
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) :
     ∀ l : List ℕ, (∀ c ∈ l, 1 ≤ c) →
       catTrace (permMor X l.sum (blockCycles l) ≫
           powHom X g l.sum) =
@@ -162,7 +173,10 @@ the product of `tr (g ^ c)` over the full cycle type of the
 permutation, fixed points contributing `tr g`.  Every permutation is
 conjugate to the block sum of rotations along its full cycle type,
 and the trace is a class function. -/
-theorem catTrace_permMor_powHom (X : A) (g : End X) {n : ℕ}
+theorem catTrace_permMor_powHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [RigidCategory A]
+    (X : A) (g : End X) {n : ℕ}
     (π : Equiv.Perm (Fin n)) :
     catTrace (permMor X n π ≫ powHom X g n) =
       ((fullCycleType π).map (fun c => catTrace (g ^ c))).prod := by

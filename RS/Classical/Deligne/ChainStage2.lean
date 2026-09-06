@@ -19,31 +19,31 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-! ## The two-index stages -/
 
 /-- A two-index stage of the splitting chain: the module tensor
 product of independently sized symmetric powers of the dual
 pair. -/
-noncomputable def chainStage2 (p q : ℕ) : D :=
+noncomputable def chainStage2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) : D :=
   modTensor A (symPowMod A M'.X p) (symPowMod A M.X q)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The diagonal of the two-index stages is the balanced stage. -/
 @[simp]
-theorem chainStage2_diag (k : ℕ) :
+theorem chainStage2_diag
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     chainStage2 A M M' k k = chainStage A M M' k := rfl
 
 /-! ## Stage transports -/
@@ -51,24 +51,38 @@ theorem chainStage2_diag (k : ℕ) :
 section Stage2Cast
 
 /-- Transport of a two-index stage along equalities of arities. -/
-noncomputable def chainStage2Cast {p q p' q' : ℕ}
+noncomputable def chainStage2Cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {p q p' q' : ℕ}
     (hp : p = p') (hq : q = q') :
     chainStage2 A M M' p q ⟶ chainStage2 A M M' p' q' :=
   eqToHom (congrArg₂ (chainStage2 A M M') hp hq)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The trivial transport is the identity. -/
 @[simp]
-theorem chainStage2Cast_rfl (p q : ℕ) :
+theorem chainStage2Cast_rfl
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q : ℕ) :
     chainStage2Cast A M M' (rfl : p = p) (rfl : q = q) =
       𝟙 _ := rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- Stage transports compose. -/
 @[reassoc (attr := simp)]
-theorem chainStage2Cast_trans {p q p' q' p'' q'' : ℕ}
+theorem chainStage2Cast_trans
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {p q p' q' p'' q'' : ℕ}
     (hp : p = p') (hq : q = q') (hp' : p' = p'')
     (hq' : q' = q'') :
     chainStage2Cast A M M' hp hq ≫
@@ -77,12 +91,16 @@ theorem chainStage2Cast_trans {p q p' q' p'' q'' : ℕ}
   subst hp hq hp' hq'
   simp
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The stage projection intertwines the symmetric-power and
 two-index stage transports. -/
 @[reassoc]
-theorem modTensorπ_chainStage2Cast {p q p' q' : ℕ}
+theorem modTensorπ_chainStage2Cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {p q p' q' : ℕ}
     (hp : p = p') (hq : q = q') :
     modTensorπ A (symPowMod A M'.X p) (symPowMod A M.X q) ≫
         chainStage2Cast A M M' hp hq =
@@ -101,7 +119,14 @@ end Stage2Cast
 
 /-- **The two-index chain multiplication**: two stages interchange
 and multiply into the stage of the slotwise summed arities. -/
-noncomputable def chainMul2 (p q r s : ℕ) :
+noncomputable def chainMul2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q r s : ℕ) :
     chainStage2 A M M' p q ⊗ chainStage2 A M M' r s ⟶
       chainStage2 A M M' (p + 1 + r) (q + 1 + s) :=
   interchange A (symPowMod A M'.X p) (symPowMod A M.X q)
@@ -111,7 +136,14 @@ noncomputable def chainMul2 (p q r s : ℕ) :
 /-- Defining equation of the two-index chain multiplication: under
 the stage projections it is the raw crossing followed by the
 slotwise symmetric multiplications. -/
-theorem tensorHom_π_chainMul2 (p q r s : ℕ) :
+theorem tensorHom_π_chainMul2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q r s : ℕ) :
     (modTensorπ A (symPowMod A M'.X p) (symPowMod A M.X q) ⊗ₘ
         modTensorπ A (symPowMod A M'.X r) (symPowMod A M.X s)) ≫
       chainMul2 A M M' p q r s =
@@ -175,13 +207,15 @@ theorem tensorHom_π_chainMul2 (p q r s : ℕ) :
 
 section SymCast
 
-variable (X : D) [ModObj A X]
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- Commutativity of the symmetric multiplication, with both sides
 transported to a common arity. -/
-private theorem symMul_comm_cast {a b c : ℕ} (h : b + a = c)
+private theorem symMul_comm_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    {a b c : ℕ} (h : b + a = c)
     (h' : a + b = c) :
     (β_ (symPow A X a) (symPow A X b)).hom ≫ symMul A X b a ≫
         symPowCast A X h =
@@ -198,7 +232,14 @@ section Chain2Comm
 
 /-- **Commutativity of the two-index chain multiplication**, up to
 the slotwise stage transports. -/
-theorem chainMul2_comm (p q r s : ℕ) :
+theorem chainMul2_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p q r s : ℕ) :
     (β_ (chainStage2 A M M' p q) (chainStage2 A M M' r s)).hom ≫
         chainMul2 A M M' r s p q ≫
         chainStage2Cast A M M'
@@ -425,15 +466,9 @@ end Chain2Comm
 
 section TensorSurgery
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Absorb a whiskered morphism into the first tensor factor. -/
 private theorem tensorHom_whiskerRight_comp
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₁ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (f : Y₁ ⟶ Z₁) (r : Z₁ ⊗ Y₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (f ▷ Y₂) ≫ r = ((a ≫ f) ⊗ₘ b) ≫ r := by
@@ -441,15 +476,8 @@ private theorem tensorHom_whiskerRight_comp
     MonoidalCategory.tensorHom_comp_tensorHom_assoc,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Absorb a whiskered morphism into the second tensor factor. -/
-private theorem tensorHom_whiskerLeft_comp
+private theorem tensorHom_whiskerLeft_comp [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₂ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (g : Y₂ ⟶ Z₂) (r : Y₁ ⊗ Z₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (Y₁ ◁ g) ≫ r = (a ⊗ₘ (b ≫ g)) ≫ r := by
@@ -457,15 +485,9 @@ private theorem tensorHom_whiskerLeft_comp
     MonoidalCategory.tensorHom_comp_tensorHom_assoc,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Extract a prefix of the first tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerRight_split
+    [Category.{v} D] [MonoidalCategory D]
     {V₁ W₁ U₁ X₂ U₂ Z : D} (x : V₁ ⟶ W₁) (q₁ : W₁ ⟶ U₁)
     (q₂ : X₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     ((x ≫ q₁) ⊗ₘ q₂) ≫ r = (x ▷ X₂) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -473,15 +495,9 @@ private theorem compTensorHom_whiskerRight_split
     MonoidalCategory.tensorHom_def, comp_whiskerRight]
   simp only [Category.assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Extract a prefix of the second tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerLeft_split
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ U₁ V₂ W₂ U₂ Z : D} (q₁ : X₁ ⟶ U₁) (x : V₂ ⟶ W₂)
     (q₂ : W₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     (q₁ ⊗ₘ (x ≫ q₂)) ≫ r = (X₁ ◁ x) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -490,17 +506,12 @@ private theorem compTensorHom_whiskerLeft_split
     MonoidalCategory.whiskerLeft_comp]
   simp only [Category.assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The coherence core of associativity**: two interchanged pair
 multiplications reassociate through `tensorμ` whenever each factor
 satisfies the corresponding one-object associativity law. -/
-private theorem chainMulAssoc_core {a₁ a₂ c₁ c₂ e₁ e₂ x₁ x₂ z₁ z₂
+private theorem chainMulAssoc_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {a₁ a₂ c₁ c₂ e₁ e₂ x₁ x₂ z₁ z₂
       t₁ t₂ Z : D}
     {u₁ : a₁ ⊗ c₁ ⟶ x₁} {u₂ : a₂ ⊗ c₂ ⟶ x₂}
     {w₁ : c₁ ⊗ e₁ ⟶ z₁} {w₂ : c₂ ⊗ e₂ ⟶ z₂}
@@ -533,7 +544,14 @@ section Chain2Assoc
 
 /-- **Associativity of the two-index chain multiplication**, up to
 the slotwise stage transports onto the common arities. -/
-theorem chainMul2_assoc (a b c d e f : ℕ) :
+theorem chainMul2_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (a b c d e f : ℕ) :
     (chainMul2 A M M' a b c d ▷ chainStage2 A M M' e f) ≫
         chainMul2 A M M' (a + 1 + c) (b + 1 + d) e f ≫
         chainStage2Cast A M M'
@@ -913,7 +931,14 @@ section Chain2Delta
 
 /-- **The two-index chain transition**: multiplication by the
 seed, which raises both arities by one. -/
-noncomputable def chainDelta2 (d : ModDualityDatum A M M')
+noncomputable def chainDelta2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (p q : ℕ) :
     chainStage2 A M M' p q ⟶ chainStage2 A M M' (p + 1) (q + 1) :=
   (ρ_ (chainStage2 A M M' p q)).inv ≫
@@ -923,7 +948,14 @@ noncomputable def chainDelta2 (d : ModDualityDatum A M M')
 
 /-- **The right unit law of the seed** at two indices: multiplying
 by the seed on the right is the transition. -/
-theorem chainSeed_mul2_right (d : ModDualityDatum A M M')
+theorem chainSeed_mul2_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (p q : ℕ) :
     (chainStage2 A M M' p q ◁ chainSeed A M M' d) ≫
         chainMul2 A M M' p q 0 0 =
@@ -935,7 +967,14 @@ theorem chainSeed_mul2_right (d : ModDualityDatum A M M')
 /-- **The right transition square** at two indices: inserting the
 seed in the second factor and multiplying is multiplying and then
 inserting the seed. -/
-theorem chainDelta2_mul_right (d : ModDualityDatum A M M')
+theorem chainDelta2_mul_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (i j k l : ℕ) :
     (chainStage2 A M M' i j ◁ chainDelta2 A M M' d k l) ≫
         chainMul2 A M M' i j (k + 1) (l + 1) =
@@ -1008,7 +1047,14 @@ theorem chainDelta2_mul_right (d : ModDualityDatum A M M')
   rw [reassoc_of% h4]
 
 /-- Transitions transport along index casts. -/
-theorem chainStage2Cast_delta2 (d : ModDualityDatum A M M')
+theorem chainStage2Cast_delta2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     {a b a' b' : ℕ} (ha : a = a') (hb : b = b') :
     chainStage2Cast A M M' ha hb ≫ chainDelta2 A M M' d a' b' =
       chainDelta2 A M M' d a b ≫
@@ -1021,7 +1067,14 @@ theorem chainStage2Cast_delta2 (d : ModDualityDatum A M M')
 /-- **The left transition square** at two indices: inserting the
 seed in the first factor and multiplying is multiplying and then
 inserting the seed, up to the index transports. -/
-theorem chainDelta2_mul_left (d : ModDualityDatum A M M')
+theorem chainDelta2_mul_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (i j k l : ℕ) :
     (chainDelta2 A M M' d i j ▷ chainStage2 A M M' k l) ≫
         chainMul2 A M M' (i + 1) (j + 1) k l =

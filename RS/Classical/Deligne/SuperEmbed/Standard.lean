@@ -46,11 +46,12 @@ abbrev mixedPar {p q : ℕ} : Fin (p + 1) ⊕ Fin (q + 1) → Bool :=
 
 section BiprodLetters
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [HasBinaryBiproducts A]
+variable {A : Type u}
 
 /-- The inclusion of one copy into an iterated biproduct sum. -/
-noncomputable def sumPowIns (X : A) : (k : ℕ) → Fin (k + 1) →
+noncomputable def sumPowIns
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) : (k : ℕ) → Fin (k + 1) →
     (X ⟶ sumPow X k)
   | 0, _ => 𝟙 X
   | k + 1, i =>
@@ -58,60 +59,67 @@ noncomputable def sumPowIns (X : A) : (k : ℕ) → Fin (k + 1) →
         (fun j => sumPowIns X k j ≫ biprod.inl) i
 
 /-- The projection onto one copy of an iterated biproduct sum. -/
-noncomputable def sumPowPrj (X : A) : (k : ℕ) → Fin (k + 1) →
+noncomputable def sumPowPrj
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) : (k : ℕ) → Fin (k + 1) →
     (sumPow X k ⟶ X)
   | 0, _ => 𝟙 X
   | k + 1, i =>
       Fin.lastCases biprod.snd
         (fun j => biprod.fst ≫ sumPowPrj X k j) i
 
-omit [MonoidalCategory A] in
 /-- The recursion of the copy inclusion. -/
-theorem sumPowIns_succ (X : A) (k : ℕ) (i : Fin (k + 2)) :
+theorem sumPowIns_succ [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) (k : ℕ) (i : Fin (k + 2)) :
     sumPowIns X (k + 1) i =
       Fin.lastCases biprod.inr
         (fun j => sumPowIns X k j ≫ biprod.inl) i := rfl
 
-omit [MonoidalCategory A] in
 /-- The recursion of the copy projection. -/
-theorem sumPowPrj_succ (X : A) (k : ℕ) (i : Fin (k + 2)) :
+theorem sumPowPrj_succ [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) (k : ℕ) (i : Fin (k + 2)) :
     sumPowPrj X (k + 1) i =
       Fin.lastCases biprod.snd
         (fun j => biprod.fst ≫ sumPowPrj X k j) i := rfl
 
-omit [MonoidalCategory A] in
 /-- Sandwich of a first-summand round trip.  Stated at general
 objects. -/
-private theorem inl_sandwich {X P Q : A} (f : X ⟶ P) (g : P ⟶ X)
+private theorem inl_sandwich
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {X P Q : A} (f : X ⟶ P) (g : P ⟶ X)
     (h : f ≫ g = 𝟙 X) :
     (f ≫ (biprod.inl : P ⟶ P ⊞ Q)) ≫ (biprod.fst ≫ g) = 𝟙 X := by
   rw [Category.assoc, biprod.inl_fst_assoc, h]
 
-omit [MonoidalCategory A] in
 /-- Sandwich of a vanishing first-summand round trip.  Stated at
 general objects. -/
-private theorem inl_sandwich_zero {X X' P Q : A} (f : X ⟶ P)
+private theorem inl_sandwich_zero
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {X X' P Q : A} (f : X ⟶ P)
     (g : P ⟶ X') (h : f ≫ g = 0) :
     (f ≫ (biprod.inl : P ⟶ P ⊞ Q)) ≫ (biprod.fst ≫ g) = 0 := by
   rw [Category.assoc, biprod.inl_fst_assoc, h]
 
-omit [MonoidalCategory A] in
 /-- The second summand misses a first-summand projection.  Stated
 at general objects. -/
-private theorem inr_miss {X' P Q : A} (g : P ⟶ X') :
+private theorem inr_miss
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {X' P Q : A} (g : P ⟶ X') :
     (biprod.inr : Q ⟶ P ⊞ Q) ≫ (biprod.fst ≫ g) = 0 := by
   rw [← Category.assoc, biprod.inr_fst, Limits.zero_comp]
 
-omit [MonoidalCategory A] in
 /-- The first summand misses the second-summand projection.
 Stated at general objects. -/
-private theorem inl_miss {X P Q : A} (f : X ⟶ P) :
+private theorem inl_miss
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {X P Q : A} (f : X ⟶ P) :
     (f ≫ (biprod.inl : P ⟶ P ⊞ Q)) ≫ biprod.snd = 0 := by
   rw [Category.assoc, biprod.inl_snd, Limits.comp_zero]
 
-omit [MonoidalCategory A] in
 /-- A copy's round trip through the sum is the identity. -/
-theorem sumPowIns_prj_same (X : A) :
+theorem sumPowIns_prj_same
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) :
     ∀ (k : ℕ) (i : Fin (k + 1)),
       sumPowIns X k i ≫ sumPowPrj X k i = 𝟙 X := by
   intro k
@@ -129,9 +137,10 @@ theorem sumPowIns_prj_same (X : A) :
         Fin.lastCases_castSucc]
       exact inl_sandwich _ _ (ih j)
 
-omit [MonoidalCategory A] in
 /-- Distinct copies' round trips vanish. -/
-theorem sumPowIns_prj_ne (X : A) :
+theorem sumPowIns_prj_ne
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) :
     ∀ (k : ℕ) {i i' : Fin (k + 1)}, i ≠ i' →
       sumPowIns X k i ≫ sumPowPrj X k i' = 0 := by
   intro k
@@ -161,10 +170,11 @@ theorem sumPowIns_prj_ne (X : A) :
         exact inl_sandwich_zero _ _
           (ih (fun h => hii' (congrArg Fin.castSucc h)))
 
-omit [MonoidalCategory A] in
 /-- One-step gathering of the summand round trips.  Stated at
 general objects. -/
-private theorem biprod_gather {P Q X : A} {m : ℕ}
+private theorem biprod_gather
+    [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    {P Q X : A} {m : ℕ}
     (p : Fin m → (P ⟶ X)) (i : Fin m → (X ⟶ P))
     (htot : (∑ j : Fin m, p j ≫ i j) = 𝟙 P) :
     (∑ j : Fin m, (biprod.fst ≫ p j) ≫ (i j ≫ biprod.inl)) +
@@ -179,9 +189,9 @@ private theorem biprod_gather {P Q X : A} {m : ℕ}
   rw [h1, htot, Category.id_comp]
   exact biprod.total
 
-omit [MonoidalCategory A] in
 /-- The copies decompose the identity of the sum. -/
-theorem sumPow_total (X : A) :
+theorem sumPow_total [Category.{v} A] [Preadditive A] [HasBinaryBiproducts A]
+    (X : A) :
     ∀ k : ℕ,
       (∑ i : Fin (k + 1), sumPowPrj X k i ≫ sumPowIns X k i) =
         𝟙 (sumPow X k) := by
@@ -204,7 +214,10 @@ theorem sumPow_total (X : A) :
 /-- **The letter system of the mixed sum**: `p + 1` unit letters
 through the first summand and `q + 1` odd letters through the
 second. -/
-noncomputable def mixedSumLetters (p q : ℕ) (U : A) :
+noncomputable def mixedSumLetters
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [HasBinaryBiproducts A]
+    (p q : ℕ) (U : A) :
     MixedLetters (Fin (p + 1) ⊕ Fin (q + 1)) mixedPar U
       (sumPow (𝟙_ A) p ⊞ sumPow U q) where
   ins k :=
@@ -299,13 +312,12 @@ end BiprodLetters
 
 section Nonzero
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [Preadditive A] [MonoidalPreadditive A]
+variable {A : Type u}
 
-omit [MonoidalCategory A] [MonoidalPreadditive A] in
 /-- A zero identity transfers along an isomorphism.  Stated at
 general objects. -/
-private theorem id_zero_transfer {X Y : A} (e : X ≅ Y)
+private theorem id_zero_transfer [Category.{v} A] [Preadditive A]
+    {X Y : A} (e : X ≅ Y)
     (h : 𝟙 X = 0) : 𝟙 Y = 0 := by
   calc 𝟙 Y = e.inv ≫ 𝟙 X ≫ e.hom := by
         rw [Category.id_comp, e.inv_hom_id]
@@ -314,7 +326,10 @@ private theorem id_zero_transfer {X Y : A} (e : X ≅ Y)
 /-- **Powers of an invertible line are nonzero** when the unit is:
 tensoring with one more copy of the line is undone through its
 self-pairing. -/
-theorem tensorPow_id_ne_zero (hone : ¬ Limits.IsZero (𝟙_ A))
+theorem tensorPow_id_ne_zero
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    (hone : ¬ Limits.IsZero (𝟙_ A))
     {U : A} (hUU : U ⊗ U ≅ 𝟙_ A) :
     ∀ k : ℕ, 𝟙 (tensorPow A U k) ≠
       (0 : tensorPow A U k ⟶ tensorPow A U k) := by
@@ -339,16 +354,17 @@ end Nonzero
 
 section AmbientSide
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [HasBinaryBiproducts A]
+variable {A : Type u}
 
 /-- **Extraction in the ambient category**: if the mixed sum is
 Schur-killed at a diagram, every colour sum of the block idempotent
 vanishes — a purely combinatorial consequence, shared with every
 other model. -/
-theorem colourSum_eq_zero_of_schurKilled (P : SchurPackage.{v})
+theorem colourSum_eq_zero_of_schurKilled
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v})
     (hone : ¬ Limits.IsZero (𝟙_ A)) {U : A} (hUU : U ⊗ U ≅ 𝟙_ A)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) (p q : ℕ)
     {lam : YoungDiagram}
@@ -837,10 +853,7 @@ group-algebra element. -/
 
 section Summit
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
-  [HasBinaryBiproducts A]
+variable {A : Type u}
 
 /-- **The nonvanishing half of Deligne 1.9, internally**: in a
 nontrivial ambient category, a direct sum of `p + 1` unit copies
@@ -848,7 +861,11 @@ and `q + 1` odd-line copies is *not* Schur-killed at any diagram
 avoiding the cell `(p + 1, q + 1)`.  Together with
 `schurKilled_unit_odd` this characterises the killed diagrams of
 the mixed sum exactly. -/
-theorem not_schurKilled_sum (P : SchurPackage.{v})
+theorem not_schurKilled_sum
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A] [HasBinaryBiproducts A]
+    (P : SchurPackage.{v})
     (P₀ : SchurPackage.{0}) (hone : ¬ Limits.IsZero (𝟙_ A))
     {U : A} (hUU : U ⊗ U ≅ 𝟙_ A)
     (hβ : (β_ U U).hom = -(𝟙 (U ⊗ U))) (p q : ℕ)

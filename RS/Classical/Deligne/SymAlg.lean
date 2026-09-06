@@ -52,34 +52,37 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## Transport along equal arities -/
 
 section PowCast
 
-variable (X : D)
-
 /-- Transport of a tensor power along an equality of arities.  It is
 an `eqToHom`, so it composes and cancels by `eqToHom` simp lemmas. -/
-def powCast {m n : ℕ} (h : m = n) :
+def powCast [Category.{v} D] [MonoidalCategory D] (X : D)
+    {m n : ℕ} (h : m = n) :
     tensorPow D X m ⟶ tensorPow D X n :=
   eqToHom (congrArg (tensorPow D X) h)
 
 @[simp]
-theorem powCast_rfl (n : ℕ) : powCast X (rfl : n = n) = 𝟙 _ := rfl
+theorem powCast_rfl [Category.{v} D] [MonoidalCategory D] (X : D)
+    (n : ℕ) : powCast X (rfl : n = n) = 𝟙 _ := rfl
 
 @[reassoc (attr := simp)]
-theorem powCast_comp {m n k : ℕ} (h : m = n) (h' : n = k) :
+theorem powCast_comp [Category.{v} D] [MonoidalCategory D] (X : D)
+    {m n k : ℕ} (h : m = n) (h' : n = k) :
     powCast X h ≫ powCast X h' = powCast X (h.trans h') := by
   simp [powCast]
 
 /-- Two arity transports with the same endpoints agree. -/
-theorem powCast_irrel {m n : ℕ} (h h' : m = n) :
+theorem powCast_irrel [Category.{v} D] [MonoidalCategory D] (X : D)
+    {m n : ℕ} (h h' : m = n) :
     powCast X h = powCast X h' := rfl
 
 /-- Whiskering an arity transport is an arity transport. -/
-theorem powCast_whiskerRight {m n : ℕ} (h : m = n) :
+theorem powCast_whiskerRight [Category.{v} D] [MonoidalCategory D] (X : D)
+    {m n : ℕ} (h : m = n) :
     powCast X h ▷ X = powCast X (by omega : m + 1 = n + 1) := by
   subst h
   simp only [powCast_rfl, MonoidalCategory.id_whiskerRight]
@@ -98,21 +101,22 @@ module factor be compared in a common frame.
 
 section Peel
 
-variable (X : D)
-
 /-- Peel the first factor off a non-empty tensor power. -/
-noncomputable def powPeel : (q : ℕ) →
+noncomputable def powPeel
+    [Category.{v} D] [MonoidalCategory D] (X : D) : (q : ℕ) →
     (tensorPow D X (q + 1) ≅ X ⊗ tensorPow D X q)
   | 0 => λ_ X ≪≫ (ρ_ X).symm
-  | q + 1 => whiskerRightIso (powPeel q) X ≪≫ α_ X (tensorPow D X q) X
+  | q + 1 => whiskerRightIso (powPeel X q) X ≪≫ α_ X (tensorPow D X q) X
 
 /-- The base case of the peeling. -/
-theorem powPeel_zero : powPeel X 0 = λ_ X ≪≫ (ρ_ X).symm := rfl
+theorem powPeel_zero [Category.{v} D] [MonoidalCategory D] (X : D) :
+    powPeel X 0 = λ_ X ≪≫ (ρ_ X).symm := rfl
 
 /-- Attach a peeled factor to the power below it.  The associator,
 retyped so that its target is stated through the tensor power — this
 keeps every statement about it type-correct at low transparency. -/
-noncomputable def powAttach (p q : ℕ) :
+noncomputable def powAttach [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p q : ℕ) :
     tensorPow D X p ⊗ (X ⊗ tensorPow D X q) ⟶
       tensorPow D X (p + 1) ⊗ tensorPow D X q :=
   (α_ (tensorPow D X p) X (tensorPow D X q)).inv
@@ -120,20 +124,24 @@ noncomputable def powAttach (p q : ℕ) :
 /-- Expose the top factor of the second block of a pair of powers.
 The associator, retyped so that its source is stated through the
 tensor power. -/
-noncomputable def powExpose (p q : ℕ) :
+noncomputable def powExpose [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p q : ℕ) :
     tensorPow D X p ⊗ tensorPow D X (q + 1) ⟶
       (tensorPow D X p ⊗ tensorPow D X q) ⊗ X :=
   (α_ (tensorPow D X p) (tensorPow D X q) X).inv
 
 /-- The successor stage of the concatenation, through the exposed
 top factor; definitional. -/
-theorem tensorPowConcat_succ_hom (p q : ℕ) :
+theorem tensorPowConcat_succ_hom [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p q : ℕ) :
     (tensorPowConcat X p (q + 1)).hom =
       powExpose X p q ≫ ((tensorPowConcat X p q).hom ▷ X) :=
   rfl
 
 /-- The base case of the concatenation shift, at general objects. -/
-private theorem concat_peel_zero_aux (P : D) :
+private theorem concat_peel_zero_aux
+    [Category.{v} D] [MonoidalCategory D] (X : D)
+    (P : D) :
     (α_ P (𝟙_ D) X).inv ≫ ((ρ_ P).hom ▷ X) =
       (P ◁ ((λ_ X).hom ≫ (ρ_ X).inv)) ≫ (α_ P X (𝟙_ D)).inv ≫
         (ρ_ (P ⊗ X)).hom := by
@@ -141,7 +149,9 @@ private theorem concat_peel_zero_aux (P : D) :
 
 /-- The associator shuffle of the concatenation shift, at general
 objects. -/
-private theorem concat_peel_step_aux {P R S : D} (e : R ⟶ X ⊗ S) :
+private theorem concat_peel_step_aux
+    [Category.{v} D] [MonoidalCategory D] (X : D)
+    {P R S : D} (e : R ⟶ X ⊗ S) :
     (α_ P R X).inv ≫ ((P ◁ e) ▷ X) ≫ ((α_ P X S).inv ▷ X) =
       (P ◁ ((e ▷ X) ≫ (α_ X S X).hom)) ≫
         (α_ P X (S ⊗ X)).inv ≫ (α_ (P ⊗ X) S X).inv := by
@@ -155,7 +165,8 @@ private theorem concat_peel_step_aux {P R S : D} (e : R ⟶ X ⊗ S) :
 /-- The step of the concatenation shift, stated through the retyped
 bridges and the unexpanded peeling, so that every composite is typed
 at a tensor power. -/
-private theorem concat_peel_step (p q : ℕ) :
+private theorem concat_peel_step [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p q : ℕ) :
     powExpose X p (q + 1) ≫
         ((tensorPow D X p ◁ (powPeel X q).hom) ▷ X) ≫
         (powAttach X p q ▷ X) ≫
@@ -178,7 +189,8 @@ private theorem concat_peel_step (p q : ℕ) :
 /-- **The concatenation shift**: concatenating `p` with `q + 1`
 factors is peeling the first of the `q + 1`, attaching it to the
 `p`, and concatenating `p + 1` with `q`. -/
-theorem tensorPowConcat_peel (p : ℕ) : ∀ q : ℕ,
+theorem tensorPowConcat_peel [Category.{v} D] [MonoidalCategory D] (X : D)
+    (p : ℕ) : ∀ q : ℕ,
     (tensorPowConcat X p (q + 1)).hom =
       (tensorPow D X p ◁ (powPeel X q).hom) ≫
         powAttach X p q ≫
@@ -194,7 +206,7 @@ theorem tensorPowConcat_peel (p : ℕ) : ∀ q : ℕ,
             (α_ (tensorPow D X p) X (𝟙_ D)).inv ≫ z)
         (Category.comp_id (ρ_ (tensorPow D X p ⊗ X)).hom)).symm
   | q + 1 => by
-    rw [tensorPowConcat_succ_hom X p (q + 1), tensorPowConcat_peel p q]
+    rw [tensorPowConcat_succ_hom X p (q + 1), tensorPowConcat_peel X p q]
     simp only [MonoidalCategory.comp_whiskerRight]
     rw [powCast_whiskerRight, reassoc_of% (concat_peel_step X p q)]
     exact (Category.assoc _ _ _).trans (congrArg
@@ -213,15 +225,17 @@ it associates and acts on the right factor.  These are the legs of
 
 section WinLeg
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-
 /-- The slot leg acting on the left factor, through the braided
 right action. -/
-noncomputable def winLegM : (X ⊗ A) ⊗ X ⟶ X ⊗ X :=
+noncomputable def winLegM
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] : (X ⊗ A) ⊗ X ⟶ X ⊗ X :=
   actRight A X ▷ X
 
 /-- The slot leg acting on the right factor: associate, then act. -/
-noncomputable def winLegN : (X ⊗ A) ⊗ X ⟶ X ⊗ X :=
+noncomputable def winLegN
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : D)
+    [ModObj A X] : (X ⊗ A) ⊗ X ⟶ X ⊗ X :=
   (α_ X A X).hom ≫ X ◁ actLeft A X
 
 end WinLeg
@@ -230,18 +244,18 @@ end WinLeg
 
 section ModPowDefs
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-
 /-- The relation object of the slot `a + 2 + b = n`: the ambient
 power with the monoid inserted between the module factors in slots
 `a` and `a + 1`.  An abbreviation, so that statements about it stay
 type-correct at low transparency. -/
-abbrev modPowMid (a b : ℕ) : D :=
+abbrev modPowMid [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (a b : ℕ) : D :=
   (tensorPow D X a ⊗ ((X ⊗ A) ⊗ X)) ⊗ tensorPow D X b
 
 /-- Glue a resolved slot back into the ambient power: reassociate
 the two exposed factors onto the lower power and concatenate. -/
-noncomputable def modPowGlue (a b : ℕ) :
+noncomputable def modPowGlue [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a b : ℕ) :
     (tensorPow D X a ⊗ (X ⊗ X)) ⊗ tensorPow D X b ⟶
       tensorPow D X (a + 2 + b) :=
   ((α_ (tensorPow D X a) X X).inv ▷ tensorPow D X b) ≫
@@ -249,14 +263,20 @@ noncomputable def modPowGlue (a b : ℕ) :
 
 /-- The first relation leg at slot `(a, b)`: act on the left module
 factor through the braided right action, then glue. -/
-noncomputable def modPowLegM (a b : ℕ) :
+noncomputable def modPowLegM
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowMid A X a b ⟶ tensorPow D X (a + 2 + b) :=
   ((tensorPow D X a ◁ winLegM A X) ▷ tensorPow D X b) ≫
     modPowGlue X a b
 
 /-- The second relation leg at slot `(a, b)`: associate and act on
 the right module factor, then glue. -/
-noncomputable def modPowLegN (a b : ℕ) :
+noncomputable def modPowLegN
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : D)
+    [ModObj A X]
+    (a b : ℕ) :
     modPowMid A X a b ⟶ tensorPow D X (a + 2 + b) :=
   ((tensorPow D X a ◁ winLegN A X) ▷ tensorPow D X b) ≫
     modPowGlue X a b
@@ -267,22 +287,29 @@ theorem slot_decomp {n : ℕ} (i : Fin (n - 1)) :
     i.val + 2 + (n - 2 - i.val) = n := by
   have := i.isLt; omega
 
-variable [Preadditive D] [HasFiniteBiproducts D]
-
 /-- The source of the relation pair: the biproduct of the relation
 objects over all `n − 1` adjacent slots.  An abbreviation, so that
 the biproduct API applies to the legs without unfolding. -/
-noncomputable abbrev modPowSrc (n : ℕ) : D :=
+noncomputable abbrev modPowSrc
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D) [Preadditive D]
+    [HasFiniteBiproducts D]
+    (n : ℕ) : D :=
   ⨁ fun i : Fin (n - 1) => modPowMid A X i.val (n - 2 - i.val)
 
 /-- The first leg of the relation pair, assembled over all slots. -/
-noncomputable def modPowLegFst (n : ℕ) :
+noncomputable def modPowLegFst
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    (n : ℕ) :
     modPowSrc A X n ⟶ tensorPow D X n :=
   biproduct.desc fun i =>
     modPowLegM A X i.val (n - 2 - i.val) ≫ powCast X (slot_decomp i)
 
 /-- The second leg of the relation pair, assembled over all slots. -/
-noncomputable def modPowLegSnd (n : ℕ) :
+noncomputable def modPowLegSnd
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : D)
+    [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    (n : ℕ) :
     modPowSrc A X n ⟶ tensorPow D X n :=
   biproduct.desc fun i =>
     modPowLegN A X i.val (n - 2 - i.val) ≫ powCast X (slot_decomp i)
@@ -293,27 +320,39 @@ end ModPowDefs
 
 section ModPow
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
 /-- **The `n`-th module power** of `X` over `A`: the coequalizer of
 the wide relation pair, identifying `(x·c) ⊗ y ~ x ⊗ (c·y)` in every
 adjacent slot simultaneously.  No binary module tensor product and
 no associativity enter. -/
-noncomputable def modPow (n : ℕ) : D :=
+noncomputable def modPow
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) : D :=
   coequalizer (modPowLegFst A X n) (modPowLegSnd A X n)
 
 /-- The projection of the ambient power onto the module power. -/
-noncomputable def modPowπ (n : ℕ) :
+noncomputable def modPowπ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) :
     tensorPow D X n ⟶ modPow A X n :=
   coequalizer.π _ _
 
-instance (n : ℕ) : Epi (modPowπ A X n) :=
+instance [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) : Epi (modPowπ A X n) :=
   inferInstanceAs (Epi (coequalizer.π _ _))
 
 /-- The two assembled legs agree after the projection. -/
 @[reassoc]
-theorem modPow_condition (n : ℕ) :
+theorem modPow_condition
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) :
     modPowLegFst A X n ≫ modPowπ A X n =
       modPowLegSnd A X n ≫ modPowπ A X n :=
   coequalizer.condition _ _
@@ -322,7 +361,11 @@ theorem modPow_condition (n : ℕ) :
 decomposition `a + 2 + b = n` the two slot legs agree after the
 projection. -/
 @[reassoc]
-theorem modPow_rel {n : ℕ} (a b : ℕ) (h : a + 2 + b = n) :
+theorem modPow_rel
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} (a b : ℕ) (h : a + 2 + b = n) :
     modPowLegM A X a b ≫ powCast X h ≫ modPowπ A X n =
       modPowLegN A X a b ≫ powCast X h ≫ modPowπ A X n := by
   have hb : b = n - 2 - a := by omega
@@ -341,13 +384,21 @@ theorem modPow_rel {n : ℕ} (a b : ℕ) (h : a + 2 + b = n) :
 
 /-- Morphisms out of the module power are determined by their
 composite with the projection. -/
-theorem modPow_hom_ext {n : ℕ} {W : D} {k l : modPow A X n ⟶ W}
+theorem modPow_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} {W : D} {k l : modPow A X n ⟶ W}
     (h : modPowπ A X n ≫ k = modPowπ A X n ≫ l) : k = l :=
   coequalizer.hom_ext h
 
 /-- Descend a morphism that coequalizes every slot relation to the
 module power. -/
-noncomputable def modPowDesc {n : ℕ} {W : D} (k : tensorPow D X n ⟶ W)
+noncomputable def modPowDesc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} {W : D} (k : tensorPow D X n ⟶ W)
     (h : ∀ a b (hab : a + 2 + b = n),
       modPowLegM A X a b ≫ powCast X hab ≫ k =
         modPowLegN A X a b ≫ powCast X hab ≫ k) :
@@ -362,7 +413,11 @@ noncomputable def modPowDesc {n : ℕ} {W : D} (k : tensorPow D X n ⟶ W)
 /-- The descent factors the given morphism through the
 projection. -/
 @[reassoc (attr := simp)]
-theorem modPowπ_desc {n : ℕ} {W : D} (k : tensorPow D X n ⟶ W)
+theorem modPowπ_desc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} {W : D} (k : tensorPow D X n ⟶ W)
     (h : ∀ a b (hab : a + 2 + b = n),
       modPowLegM A X a b ≫ powCast X hab ≫ k =
         modPowLegN A X a b ≫ powCast X hab ≫ k) :
@@ -377,7 +432,11 @@ isomorphism.
 -/
 
 /-- Below two factors the projection is an isomorphism. -/
-noncomputable def modPowTriv {n : ℕ} (h : n ≤ 1) :
+noncomputable def modPowTriv
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} (h : n ≤ 1) :
     modPow A X n ≅ tensorPow D X n where
   hom := modPowDesc A X (𝟙 _) (fun a b hab => absurd hab (by omega))
   inv := modPowπ A X n
@@ -386,11 +445,17 @@ noncomputable def modPowTriv {n : ℕ} (h : n ≤ 1) :
   inv_hom_id := modPowπ_desc A X _ _
 
 /-- **The empty module power is the unit.** -/
-noncomputable def modPowZero : modPow A X 0 ≅ 𝟙_ D :=
+noncomputable def modPowZero
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] : modPow A X 0 ≅ 𝟙_ D :=
   modPowTriv A X (by omega)
 
 /-- **The singleton module power is the module.** -/
-noncomputable def modPowOne : modPow A X 1 ≅ X :=
+noncomputable def modPowOne
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] : modPow A X 1 ≅ X :=
   modPowTriv A X (by omega) ≪≫ λ_ X
 
 /-! ### Whiskering the presentation on the right
@@ -404,13 +469,14 @@ both where tensoring on the left is assumed exact and where
 tensoring on the right is.
 -/
 
-variable (n : ℕ) (W : D)
-variable [PreservesColimit (parallelPair (modPowLegFst A X n)
-  (modPowLegSnd A X n)) (tensorRight W)]
-
 /-- Whiskering the module-power coequalizer on the right yields a
 colimit cofork. -/
-noncomputable def modPowWhiskerRightIsColimit :
+noncomputable def modPowWhiskerRightIsColimit
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (n : ℕ) (W : D)
+    [PreservesColimit (parallelPair (modPowLegFst A X n) (modPowLegSnd A X
+      n)) (tensorRight W)] :
     IsColimit (Cofork.ofπ (modPowπ A X n ▷ W)
       (by rw [← MonoidalCategory.comp_whiskerRight, modPow_condition,
         MonoidalCategory.comp_whiskerRight]) :
@@ -419,18 +485,35 @@ noncomputable def modPowWhiskerRightIsColimit :
 
 /-- Morphisms out of a right-whiskered module power are determined
 by their composite with the whiskered projection. -/
-theorem modPow_whiskerRight_hom_ext {Z : D}
+theorem modPow_whiskerRight_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (n : ℕ) (W : D)
+    [PreservesColimit (parallelPair (modPowLegFst A X n) (modPowLegSnd A X
+      n)) (tensorRight W)]
+    {Z : D}
     {k l : modPow A X n ⊗ W ⟶ Z}
     (h : (modPowπ A X n ▷ W) ≫ k = (modPowπ A X n ▷ W) ≫ l) :
     k = l :=
   Cofork.IsColimit.hom_ext (modPowWhiskerRightIsColimit A X n W) h
 
 /-- The right-whiskered projection is an epimorphism. -/
-instance epi_modPowπ_whiskerRight : Epi (modPowπ A X n ▷ W) :=
+instance epi_modPowπ_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (n : ℕ) (W : D)
+    [PreservesColimit (parallelPair (modPowLegFst A X n) (modPowLegSnd A X
+      n)) (tensorRight W)] : Epi (modPowπ A X n ▷ W) :=
   epi_of_isColimit_cofork (modPowWhiskerRightIsColimit A X n W)
 
 /-- Descend a morphism along the right-whiskered projection. -/
-noncomputable def modPowWhiskerRightDesc {Z : D}
+noncomputable def modPowWhiskerRightDesc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (n : ℕ) (W : D)
+    [PreservesColimit (parallelPair (modPowLegFst A X n) (modPowLegSnd A X
+      n)) (tensorRight W)]
+    {Z : D}
     (k : tensorPow D X n ⊗ W ⟶ Z)
     (h : (modPowLegFst A X n ▷ W) ≫ k =
       (modPowLegSnd A X n ▷ W) ≫ k) :
@@ -440,7 +523,13 @@ noncomputable def modPowWhiskerRightDesc {Z : D}
 /-- The right-whiskered descent factors through the whiskered
 projection. -/
 @[reassoc (attr := simp)]
-theorem modPowπ_whiskerRight_desc {Z : D}
+theorem modPowπ_whiskerRight_desc
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] (n : ℕ) (W : D)
+    [PreservesColimit (parallelPair (modPowLegFst A X n) (modPowLegSnd A X
+      n)) (tensorRight W)]
+    {Z : D}
     (k : tensorPow D X n ⊗ W ⟶ Z)
     (h : (modPowLegFst A X n ▷ W) ≫ k =
       (modPowLegSnd A X n ▷ W) ≫ k) :
@@ -459,11 +548,11 @@ conjugated into the ambient power by the concatenation.
 
 section AdjSwap
 
-variable [SymmetricCategory D] (X : D)
-
 /-- The braiding of slots `a` and `a + 1` of the ambient power:
 the top braiding of the first `a + 2` factors, in block form. -/
-noncomputable def adjSwapMor (a b : ℕ) :
+noncomputable def adjSwapMor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (a b : ℕ) :
     tensorPow D X (a + 2 + b) ⟶ tensorPow D X (a + 2 + b) :=
   (tensorPowConcat X (a + 2) b).inv ≫
     (swapTop X a ▷ tensorPow D X b) ≫
@@ -501,7 +590,9 @@ private theorem topSwap_eq_mk (a : ℕ) :
 
 /-- **The adjacent braiding is the action of the adjacent
 transposition.** -/
-theorem adjSwapMor_eq_permMor (a b : ℕ) :
+theorem adjSwapMor_eq_permMor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (a b : ℕ) :
     adjSwapMor X a b =
       permMor X (a + 2 + b)
         (Equiv.swap ⟨a, by omega⟩ ⟨a + 1, by omega⟩) := by
@@ -516,7 +607,9 @@ theorem adjSwapMor_eq_permMor (a b : ℕ) :
 
 /-- Transport of a permutation action along an equality of
 arities. -/
-theorem powCast_permMor {m n : ℕ} (h : m = n)
+theorem powCast_permMor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {m n : ℕ} (h : m = n)
     (σ : Equiv.Perm (Fin m)) :
     powCast X h ≫ permMor X n ((finCongr h).permCongr σ) =
       permMor X m σ ≫ powCast X h := by
@@ -528,7 +621,9 @@ theorem powCast_permMor {m n : ℕ} (h : m = n)
 
 /-- Transport of a transposition action along an equality of
 arities. -/
-theorem powCast_permMor_swap {m n : ℕ} (h : m = n) (u v : Fin m) :
+theorem powCast_permMor_swap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {m n : ℕ} (h : m = n) (u v : Fin m) :
     powCast X h ≫ permMor X n (Equiv.swap (Fin.cast h u) (Fin.cast h v)) =
       permMor X m (Equiv.swap u v) ≫ powCast X h := by
   have h2 := powCast_permMor X h (Equiv.swap u v)
@@ -547,16 +642,18 @@ braiding, so the exchanged slot acts by the same morphism.
 
 section WinSwap
 
-variable [SymmetricCategory D]
-
 /-- Exchange of the two module factors of a relation slot, carrying
 the monoid along: `(x ⊗ c) ⊗ y ↦ (y ⊗ c) ⊗ x`. -/
-noncomputable def winSwap (A X : D) : (X ⊗ A) ⊗ X ⟶ (X ⊗ A) ⊗ X :=
+noncomputable def winSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A X : D) : (X ⊗ A) ⊗ X ⟶ (X ⊗ A) ⊗ X :=
   (β_ (X ⊗ A) X).hom ≫ (X ◁ (β_ X A).hom) ≫ (α_ X A X).inv
 
 /-- The slot exchange is an involution. -/
 @[reassoc (attr := simp)]
-theorem winSwap_winSwap (A X : D) :
+theorem winSwap_winSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A X : D) :
     winSwap A X ≫ winSwap A X = 𝟙 _ := by
   simp only [winSwap, BraidedCategory.braiding_tensor_left_hom,
     Category.assoc, Iso.inv_hom_id_assoc]
@@ -571,12 +668,12 @@ theorem winSwap_winSwap (A X : D) :
     SymmetricCategory.symmetry, MonoidalCategory.whiskerLeft_id,
     Category.id_comp, Iso.hom_inv_id]
 
-variable (A : D) [MonObj A] (X : D) [ModObj A X]
-
 /-- The first leg intertwines the slot exchange with the braiding:
 acting on the left factor and braiding is exchanging and acting on
 the right factor. -/
-theorem winLegM_braiding :
+theorem winLegM_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winLegM A X ≫ (β_ X X).hom = winSwap A X ≫ winLegN A X := by
   rw [winLegM, BraidedCategory.braiding_naturality_left, actRight,
     MonoidalCategory.whiskerLeft_comp, winSwap, winLegN]
@@ -584,7 +681,9 @@ theorem winLegM_braiding :
 
 /-- The second leg intertwines the slot exchange with the braiding,
 by the involutivity of both. -/
-theorem winLegN_braiding :
+theorem winLegN_braiding
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winLegN A X ≫ (β_ X X).hom = winSwap A X ≫ winLegM A X := by
   have h1 : winLegM A X = winSwap A X ≫ winLegN A X ≫ (β_ X X).hom := by
     rw [← Category.assoc, ← winLegM_braiding, Category.assoc,
@@ -598,12 +697,12 @@ end WinSwap
 
 section Descent
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-
-omit [MonObj A] [ModObj A X] in
 /-- The same-slot conjugation, at general objects, so that no
 tensor-power arity enters the rewriting. -/
-private theorem glue_adjSwap_aux {P Q N : D}
+private theorem glue_adjSwap_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D)
+    {P Q N : D}
     (C : ((P ⊗ X) ⊗ X) ⊗ Q ≅ N) (u : (X ⊗ A) ⊗ X ⟶ X ⊗ X) :
     (((P ◁ u) ▷ Q) ≫ ((α_ P X X).inv ▷ Q ≫ C.hom)) ≫
         (C.inv ≫
@@ -620,21 +719,25 @@ private theorem glue_adjSwap_aux {P Q N : D}
   rw [reassoc_of% h, ← MonoidalCategory.comp_whiskerRight_assoc,
     ← MonoidalCategory.whiskerLeft_comp]
 
-omit [MonObj A] [ModObj A X] in
 /-- Postcomposing a glued slot morphism with the adjacent braiding
 at the same slot braids the resolved factors. -/
-private theorem glue_adjSwap (a b : ℕ) (u : (X ⊗ A) ⊗ X ⟶ X ⊗ X) :
+private theorem glue_adjSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D)
+    (a b : ℕ) (u : (X ⊗ A) ⊗ X ⟶ X ⊗ X) :
     (((tensorPow D X a ◁ u) ▷ tensorPow D X b) ≫ modPowGlue X a b) ≫
         adjSwapMor X a b =
       ((tensorPow D X a ◁ (u ≫ (β_ X X).hom)) ▷ tensorPow D X b) ≫
         modPowGlue X a b :=
   glue_adjSwap_aux A X (tensorPowConcat X (a + 2) b) u
 
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
 /-- The slot relation with no arity transport. -/
 @[reassoc]
-theorem modPow_rel_self (a b : ℕ) :
+theorem modPow_rel_self
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a b : ℕ) :
     modPowLegM A X a b ≫ modPowπ A X (a + 2 + b) =
       modPowLegN A X a b ≫ modPowπ A X (a + 2 + b) := by
   have h := modPow_rel A X a b (rfl : a + 2 + b = a + 2 + b)
@@ -643,7 +746,11 @@ theorem modPow_rel_self (a b : ℕ) :
 /-- **Descent along the projection**: the property that an ambient
 endomorphism carries every slot relation into the kernel of the
 projection again. -/
-def modPowDescends (n : ℕ)
+def modPowDescends
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ)
     (f : tensorPow D X n ⟶ tensorPow D X n) : Prop :=
   ∀ a b (hab : a + 2 + b = n),
     modPowLegM A X a b ≫ powCast X hab ≫ f ≫ modPowπ A X n =
@@ -651,7 +758,11 @@ def modPowDescends (n : ℕ)
 
 /-- **The same-slot case**: the adjacent braiding at the slot of the
 relation itself. -/
-private theorem adjSwap_rel_same (a b : ℕ) :
+private theorem adjSwap_rel_same
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a b : ℕ) :
     modPowLegM A X a b ≫ adjSwapMor X a b ≫
         modPowπ A X (a + 2 + b) =
       modPowLegN A X a b ≫ adjSwapMor X a b ≫
@@ -678,11 +789,11 @@ context of the relation slot, the braiding passes the legs by the
 exchange law, through the block form of the embedded permutation.
 -/
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- A morphism conjugate to one of the upper context passes a glued
 slot leg; at general objects. -/
-private theorem ctx_above_aux {P Q N : D}
+private theorem ctx_above_aux
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    {P Q N : D}
     (C : ((P ⊗ X) ⊗ X) ⊗ Q ≅ N) (w : (X ⊗ A) ⊗ X ⟶ X ⊗ X)
     (v : Q ⟶ Q) (E : N ⟶ N)
     (hE : C.hom ≫ E = (((P ⊗ X) ⊗ X) ◁ v) ≫ C.hom) :
@@ -693,11 +804,11 @@ private theorem ctx_above_aux {P Q N : D}
   rw [← MonoidalCategory.whisker_exchange_assoc,
     ← MonoidalCategory.whisker_exchange_assoc]
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- A morphism conjugate to one of the lower context passes a glued
 slot leg; at general objects. -/
-private theorem ctx_below_aux {P Q N : D}
+private theorem ctx_below_aux
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    {P Q N : D}
     (C : ((P ⊗ X) ⊗ X) ⊗ Q ≅ N) (w : (X ⊗ A) ⊗ X ⟶ X ⊗ X)
     (v : P ⟶ P) (E : N ⟶ N)
     (hE : C.hom ≫ E = (((v ▷ X) ▷ X) ▷ Q) ≫ C.hom) :
@@ -718,7 +829,11 @@ private theorem ctx_below_aux {P Q N : D}
 variable {A X} in
 /-- **The disjoint case, braid above**: the adjacent braiding lies
 inside the upper context of the relation slot. -/
-private theorem adjSwap_rel_above (a j b₀ : ℕ)
+private theorem adjSwap_rel_above
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a j b₀ : ℕ)
     (h : a + 2 + (j + 2 + b₀) = a + 2 + j + 2 + b₀) :
     modPowLegM A X a (j + 2 + b₀) ≫ powCast X h ≫
         adjSwapMor X (a + 2 + j) b₀ ≫
@@ -767,7 +882,11 @@ private theorem adjSwap_rel_above (a j b₀ : ℕ)
 variable {A X} in
 /-- **The disjoint case, braid below**: the adjacent braiding lies
 inside the lower context of the relation slot. -/
-private theorem adjSwap_rel_below (a₀ j b : ℕ)
+private theorem adjSwap_rel_below
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a₀ j b : ℕ)
     (h : a₀ + 2 + j + 2 + b = a₀ + 2 + (j + 2 + b)) :
     modPowLegM A X (a₀ + 2 + j) b ≫ powCast X h ≫
         adjSwapMor X a₀ (j + 2 + b) ≫
@@ -837,43 +956,56 @@ content of the two cases.
 -/
 
 /-- The braiding of the two upper factors of the resolved window. -/
-noncomputable def winHigh : (X ⊗ X) ⊗ X ⟶ (X ⊗ X) ⊗ X :=
+noncomputable def winHigh
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D) :
+    (X ⊗ X) ⊗ X ⟶ (X ⊗ X) ⊗ X :=
   (α_ X X X).hom ≫ (X ◁ (β_ X X).hom) ≫ (α_ X X X).inv
 
 /-- The braiding of the two lower factors of the resolved window. -/
-noncomputable def winLow : (X ⊗ X) ⊗ X ⟶ (X ⊗ X) ⊗ X :=
+noncomputable def winLow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D) :
+    (X ⊗ X) ⊗ X ⟶ (X ⊗ X) ⊗ X :=
   (β_ X X).hom ▷ X
 
 /-- Exchange of the two pure module factors of a lower-relation
 window, carrying nothing else along. -/
-noncomputable def winTSwap : ((X ⊗ A) ⊗ X) ⊗ X ⟶ ((X ⊗ A) ⊗ X) ⊗ X :=
+noncomputable def winTSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D) : ((X ⊗ A) ⊗ X) ⊗ X ⟶ ((X ⊗ A) ⊗ X) ⊗ X :=
   (α_ (X ⊗ A) X X).hom ≫ ((X ⊗ A) ◁ (β_ X X).hom) ≫
     (α_ (X ⊗ A) X X).inv
 
 /-- From a lower-relation window to an upper-relation window: the
 top module factor moves down past the flanked pair, by the braiding
 against the pair. -/
-noncomputable def winShiftUp : ((X ⊗ A) ⊗ X) ⊗ X ⟶ X ⊗ ((X ⊗ A) ⊗ X) :=
+noncomputable def winShiftUp
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D) : ((X ⊗ A) ⊗ X) ⊗ X ⟶ X ⊗ ((X ⊗ A) ⊗ X) :=
   ((α_ X A X).hom ▷ X) ≫ (α_ X (A ⊗ X) X).hom ≫
     (X ◁ (β_ (A ⊗ X) X).hom) ≫ (X ◁ (α_ X A X).inv)
 
 /-- From an upper-relation window to a lower-relation window: the
 bottom module factor moves up past the flanked pair. -/
-noncomputable def winShiftDown : X ⊗ ((X ⊗ A) ⊗ X) ⟶ ((X ⊗ A) ⊗ X) ⊗ X :=
+noncomputable def winShiftDown
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D) : X ⊗ ((X ⊗ A) ⊗ X) ⟶ ((X ⊗ A) ⊗ X) ⊗ X :=
   (α_ X (X ⊗ A) X).inv ≫ ((β_ X (X ⊗ A)).hom ▷ X)
 
 /-- Exchange of the two lower module factors of an upper-relation
 window, across the monoid. -/
-noncomputable def winNSwap : X ⊗ ((X ⊗ A) ⊗ X) ⟶ X ⊗ ((X ⊗ A) ⊗ X) :=
+noncomputable def winNSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D) : X ⊗ ((X ⊗ A) ⊗ X) ⟶ X ⊗ ((X ⊗ A) ⊗ X) :=
   (α_ X (X ⊗ A) X).inv ≫
     (((α_ X X A).inv ≫ ((β_ X X).hom ▷ A) ≫ (α_ X X A).hom) ▷ X) ≫
     (α_ X (X ⊗ A) X).hom
 
-omit [MonObj A] [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- **Lower window, first leg**: the first leg passes the upper
 braiding, exchanging the two untouched module factors. -/
-private theorem winLegM_winHigh (u : X ⊗ A ⟶ X) :
+private theorem winLegM_winHigh
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D)
+    (u : X ⊗ A ⟶ X) :
     ((u ▷ X) ▷ X) ≫ winHigh X = winTSwap A X ≫ ((u ▷ X) ▷ X) := by
   rw [winHigh, winTSwap, ← Category.assoc,
     MonoidalCategory.associator_naturality_left]
@@ -881,11 +1013,11 @@ private theorem winLegM_winHigh (u : X ⊗ A ⟶ X) :
   rw [← MonoidalCategory.whisker_exchange_assoc,
     MonoidalCategory.associator_inv_naturality_left]
 
-omit [MonObj A] [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- The braiding against a pair, unwound at the swapped slot: the
 hexagon against the symmetry. -/
-private theorem braiding_pair_unwind :
+private theorem braiding_pair_unwind
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    (X : D) :
     (β_ (A ⊗ X) X).hom ≫ (α_ X A X).inv ≫ ((β_ X A).hom ▷ X) =
       (α_ A X X).hom ≫ (A ◁ (β_ X X).hom) ≫ (α_ A X X).inv := by
   rw [BraidedCategory.braiding_tensor_left_hom]
@@ -894,11 +1026,11 @@ private theorem braiding_pair_unwind :
     SymmetricCategory.symmetry, MonoidalCategory.id_whiskerRight,
     Category.comp_id]
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- Conjugating an endomorphism of the two upper factors from the
 lower-window bracketing to the deep bracketing. -/
-private theorem shift_conj_aux (g : X ⊗ X ⟶ X ⊗ X) :
+private theorem shift_conj_aux
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (g : X ⊗ X ⟶ X ⊗ X) :
     (α_ (X ⊗ A) X X).hom ≫ ((X ⊗ A) ◁ g) ≫ (α_ (X ⊗ A) X X).inv ≫
         ((α_ X A X).hom ▷ X) =
       ((α_ X A X).hom ▷ X) ≫ (α_ X (A ⊗ X) X).hom ≫
@@ -920,10 +1052,11 @@ private theorem shift_conj_aux (g : X ⊗ X ⟶ X ⊗ X) :
   simp only [Category.assoc]
   rw [reassoc_of% hpre, hpost]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- **Lower window, exchanged second leg**: the exchange followed by
 the second leg is the shift followed by the upper first leg. -/
-private theorem winTSwap_winLegN :
+private theorem winTSwap_winLegN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winTSwap A X ≫ (winLegN A X ▷ X) =
       winShiftUp A X ≫ (X ◁ winLegM A X) ≫ (α_ X X X).inv := by
   conv_lhs => rw [winLegN, MonoidalCategory.comp_whiskerRight,
@@ -940,10 +1073,11 @@ private theorem winTSwap_winLegN :
   simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc]
   rw [← reassoc_of% (shift_conj_aux A X (β_ X X).hom)]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- **Lower window, second leg**: the second leg passes the upper
 braiding through the shifted window's second leg. -/
-private theorem winShiftUp_winLegN :
+private theorem winShiftUp_winLegN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winShiftUp A X ≫ (X ◁ winLegN A X) ≫ (α_ X X X).inv =
       (winLegN A X ▷ X) ≫ winHigh X := by
   have hnat : ((X ◁ actLeft A X) ▷ X) ≫ (α_ X X X).hom ≫
@@ -967,10 +1101,11 @@ private theorem winShiftUp_winLegN :
   simp only [Category.assoc]
   rw [reassoc_of% hnat, hcancel]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- **Upper window, first leg**: the shift followed by the lower
 first leg is the upper first leg followed by the lower braiding. -/
-private theorem winShiftDown_winLegM :
+private theorem winShiftDown_winLegM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winShiftDown A X ≫ (winLegM A X ▷ X) =
       ((X ◁ winLegM A X) ≫ (α_ X X X).inv) ≫ winLow X := by
   conv_lhs => rw [winShiftDown, winLegM, Category.assoc,
@@ -980,10 +1115,11 @@ private theorem winShiftDown_winLegM :
   conv_rhs => rw [winLegM, winLow, Category.assoc,
     MonoidalCategory.associator_inv_naturality_middle_assoc]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- **Upper window, exchanged first leg**: the exchange followed by
 the first leg is the shift followed by the lower second leg. -/
-private theorem winNSwap_winLegM :
+private theorem winNSwap_winLegM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winNSwap A X ≫ (X ◁ winLegM A X) ≫ (α_ X X X).inv =
       winShiftDown A X ≫ (winLegN A X ▷ X) := by
   have hmid : (α_ X (X ⊗ A) X).hom ≫ (X ◁ ((β_ X A).hom ▷ X)) ≫
@@ -1015,10 +1151,11 @@ private theorem winNSwap_winLegM :
   rw [reassoc_of% hPu]
   simp only [Category.assoc]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- **Upper window, second leg**: the exchange followed by the
 second leg is the second leg followed by the lower braiding. -/
-private theorem winNSwap_winLegN :
+private theorem winNSwap_winLegN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] :
     winNSwap A X ≫ (X ◁ winLegN A X) ≫ (α_ X X X).inv =
       ((X ◁ winLegN A X) ≫ (α_ X X X).inv) ≫ winLow X := by
   have htail : ((α_ X X A).hom ▷ X) ≫ (α_ X (X ⊗ A) X).hom ≫
@@ -1054,24 +1191,25 @@ assembled window and the concatenation.
 -/
 
 /-- Assemble a resolved three-slot window onto the power below. -/
-noncomputable def winAssemble (a : ℕ) :
+noncomputable def winAssemble [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a : ℕ) :
     tensorPow D X a ⊗ ((X ⊗ X) ⊗ X) ⟶ tensorPow D X (a + 3) :=
   (α_ (tensorPow D X a) (X ⊗ X) X).inv ≫
     ((α_ (tensorPow D X a) X X).inv ▷ X)
 
 /-- The framed window morphism: act inside the window, assemble,
 concatenate, and transport. -/
-noncomputable def winFrame (a q : ℕ) {n : ℕ} (h : a + 3 + q = n)
+noncomputable def winFrame [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a q : ℕ) {n : ℕ} (h : a + 3 + q = n)
     {V : D} (u : V ⟶ (X ⊗ X) ⊗ X) :
     (tensorPow D X a ⊗ V) ⊗ tensorPow D X q ⟶ tensorPow D X n :=
   ((tensorPow D X a ◁ u) ▷ tensorPow D X q) ≫
     (winAssemble X a ▷ tensorPow D X q) ≫
     (tensorPowConcat X (a + 3) q).hom ≫ powCast X h
 
-omit [SymmetricCategory D] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- Precomposition inside the frame. -/
-theorem winFrame_pre (a q : ℕ) {n : ℕ} (h : a + 3 + q = n)
+theorem winFrame_pre [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a q : ℕ) {n : ℕ} (h : a + 3 + q = n)
     {V V' : D} (m : V' ⟶ V) (u : V ⟶ (X ⊗ X) ⊗ X) :
     winFrame X a q h (m ≫ u) =
       ((tensorPow D X a ◁ m) ▷ tensorPow D X q) ≫
@@ -1080,7 +1218,9 @@ theorem winFrame_pre (a q : ℕ) {n : ℕ} (h : a + 3 + q = n)
     MonoidalCategory.comp_whiskerRight, Category.assoc]
 
 /-- The lower-relation mid object entering the frame. -/
-noncomputable def winFromLower (a q : ℕ) :
+noncomputable def winFromLower
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (a q : ℕ) :
     modPowMid A X a (q + 1) ≅
       (tensorPow D X a ⊗ (((X ⊗ A) ⊗ X) ⊗ X)) ⊗ tensorPow D X q :=
   whiskerLeftIso (tensorPow D X a ⊗ ((X ⊗ A) ⊗ X)) (powPeel X q) ≪≫
@@ -1089,16 +1229,17 @@ noncomputable def winFromLower (a q : ℕ) :
       (tensorPow D X q)
 
 /-- The upper-relation mid object entering the frame. -/
-noncomputable def winFromUpper (a q : ℕ) :
+noncomputable def winFromUpper
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (a q : ℕ) :
     modPowMid A X (a + 1) q ≅
       (tensorPow D X a ⊗ (X ⊗ ((X ⊗ A) ⊗ X))) ⊗ tensorPow D X q :=
   whiskerRightIso (α_ (tensorPow D X a) X ((X ⊗ A) ⊗ X))
     (tensorPow D X q)
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- The upper legs enter the frame; at general objects. -/
-private theorem frame_upper_aux {P Q W N : D} (w : W ⟶ X ⊗ X)
+private theorem frame_upper_aux [Category.{v} D] [MonoidalCategory D] (X : D)
+    {P Q W N : D} (w : W ⟶ X ⊗ X)
     (C : (((P ⊗ X) ⊗ X) ⊗ X) ⊗ Q ⟶ N) :
     (((P ⊗ X) ◁ w) ▷ Q) ≫ ((α_ (P ⊗ X) X X).inv ▷ Q) ≫ C =
       ((α_ P X W).hom ▷ Q) ≫
@@ -1124,10 +1265,10 @@ private theorem frame_upper_aux {P Q W N : D} (w : W ⟶ X ⊗ X)
     MonoidalCategory.comp_whiskerRight]
   simp only [Category.assoc]
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- The upper legs enter the frame. -/
-private theorem legUpper_frame (a q : ℕ) {n : ℕ}
+private theorem legUpper_frame
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (a q : ℕ) {n : ℕ}
     (h12 : a + 1 + 2 + q = n) (h3 : a + 3 + q = n)
     (w : (X ⊗ A) ⊗ X ⟶ X ⊗ X) {W' : D}
     (k : tensorPow D X n ⟶ W') :
@@ -1142,11 +1283,10 @@ private theorem legUpper_frame (a q : ℕ) {n : ℕ}
     whiskerRightIso_hom, Category.assoc] at h0 ⊢
   exact h0
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- The lower legs enter the frame; at general objects, against a
 peeled upper context. -/
-private theorem frame_lower_aux {P Q R W N : D} (w : W ⟶ X ⊗ X)
+private theorem frame_lower_aux [Category.{v} D] [MonoidalCategory D] (X : D)
+    {P Q R W N : D} (w : W ⟶ X ⊗ X)
     (e : R ⟶ X ⊗ Q) (C₁ : ((P ⊗ X) ⊗ X) ⊗ R ⟶ N)
     (C₃ : (((P ⊗ X) ⊗ X) ⊗ X) ⊗ Q ⟶ N)
     (hC : C₁ = (((P ⊗ X) ⊗ X) ◁ e) ≫
@@ -1174,10 +1314,9 @@ private theorem frame_lower_aux {P Q R W N : D} (w : W ⟶ X ⊗ X)
   conv_rhs => rw [← MonoidalCategory.associator_inv_naturality_left_assoc,
     ← MonoidalCategory.associator_inv_naturality_left_assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- The shift instance of the lower-frame decomposition. -/
-private theorem legLower_shift (a q : ℕ) {n : ℕ}
+private theorem legLower_shift [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a q : ℕ) {n : ℕ}
     (h12 : a + 2 + (q + 1) = n) (h3 : a + 3 + q = n) :
     (tensorPowConcat X (a + 2) (q + 1)).hom ≫ powCast X h12 =
       (((tensorPow D X a ⊗ X) ⊗ X) ◁ (powPeel X q).hom) ≫
@@ -1187,10 +1326,10 @@ private theorem legLower_shift (a q : ℕ) {n : ℕ}
   simp only [Category.assoc, powCast_comp]
   rfl
 
-omit [SymmetricCategory D] [MonObj A] [ModObj A X] [Preadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- The lower legs enter the frame. -/
-private theorem legLower_frame (a q : ℕ) {n : ℕ}
+private theorem legLower_frame
+    [Category.{v} D] [MonoidalCategory D] (A : D) (X : D)
+    (a q : ℕ) {n : ℕ}
     (h12 : a + 2 + (q + 1) = n) (h3 : a + 3 + q = n)
     (w : (X ⊗ A) ⊗ X ⟶ X ⊗ X) {W' : D}
     (k : tensorPow D X n ⟶ W') :
@@ -1215,11 +1354,11 @@ private theorem legLower_frame (a q : ℕ) {n : ℕ}
     Category.assoc] at h0 ⊢
   exact h0
 
-omit [MonObj A] [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- The upper-pair braiding conjugated through the frame; at
 general objects. -/
-private theorem frame_swap_high_aux {P Q N V : D}
+private theorem frame_swap_high_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {P Q N V : D}
     (u : V ⟶ (X ⊗ X) ⊗ X)
     (Ca : (((P ⊗ X) ⊗ X) ⊗ X) ⊗ Q ⟶ N)
     (Cb : (((P ⊗ X) ⊗ X) ⊗ X) ⊗ Q ≅ N) (hab : Ca = Cb.hom) :
@@ -1257,9 +1396,10 @@ private theorem frame_swap_high_aux {P Q N V : D}
   rw [← MonoidalCategory.comp_whiskerRight_assoc (P ◁ u),
     ← MonoidalCategory.whiskerLeft_comp]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- The upper-pair braiding through the frame. -/
-private theorem winFrame_adjSwap_high (a q : ℕ)
+private theorem winFrame_adjSwap_high
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (a q : ℕ)
     (h3 : a + 3 + q = a + 1 + 2 + q) {V : D}
     (u : V ⟶ (X ⊗ X) ⊗ X) :
     winFrame X a q h3 u ≫ adjSwapMor X (a + 1) q =
@@ -1274,11 +1414,11 @@ private theorem winFrame_adjSwap_high (a q : ℕ)
     Category.assoc] at h0 ⊢
   exact h0
 
-omit [MonObj A] [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- The lower-pair braiding conjugated through the frame; at
 general objects, against a peeled upper context. -/
-private theorem frame_swap_low_aux {P Q R N V : D}
+private theorem frame_swap_low_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    {P Q R N V : D}
     (u : V ⟶ (X ⊗ X) ⊗ X) (e : R ≅ X ⊗ Q)
     (C₃ : (((P ⊗ X) ⊗ X) ⊗ X) ⊗ Q ⟶ N)
     (Cb : ((P ⊗ X) ⊗ X) ⊗ R ≅ N)
@@ -1321,9 +1461,10 @@ private theorem frame_swap_low_aux {P Q R N V : D}
   rw [← MonoidalCategory.comp_whiskerRight_assoc (P ◁ u),
     ← MonoidalCategory.whiskerLeft_comp]
 
-omit [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] in
 /-- The lower-pair braiding through the frame. -/
-private theorem winFrame_adjSwap_low (a q : ℕ)
+private theorem winFrame_adjSwap_low
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (X : D)
+    (a q : ℕ)
     (h3 : a + 3 + q = a + 2 + (q + 1)) {V : D}
     (u : V ⟶ (X ⊗ X) ⊗ X) :
     winFrame X a q h3 u ≫ adjSwapMor X a (q + 1) =
@@ -1346,7 +1487,11 @@ private theorem winFrame_adjSwap_low (a q : ℕ)
 variable {A X} in
 /-- **The overlap case, braid above**: the braided pair shares its
 lower factor with the upper module factor of the relation slot. -/
-private theorem adjSwap_rel_LU (a q : ℕ)
+private theorem adjSwap_rel_LU
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a q : ℕ)
     (h : a + 2 + (q + 1) = a + 1 + 2 + q) :
     modPowLegM A X a (q + 1) ≫ powCast X h ≫
         adjSwapMor X (a + 1) q ≫ modPowπ A X (a + 1 + 2 + q) =
@@ -1394,7 +1539,11 @@ private theorem adjSwap_rel_LU (a q : ℕ)
 variable {A X} in
 /-- **The overlap case, braid below**: the braided pair shares its
 upper factor with the lower module factor of the relation slot. -/
-private theorem adjSwap_rel_UL (a q : ℕ)
+private theorem adjSwap_rel_UL
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a q : ℕ)
     (h : a + 1 + 2 + q = a + 2 + (q + 1)) :
     modPowLegM A X (a + 1) q ≫ powCast X h ≫
         adjSwapMor X a (q + 1) ≫ modPowπ A X (a + 2 + (q + 1)) =
@@ -1448,7 +1597,11 @@ private theorem adjSwap_rel_UL (a q : ℕ)
 
 variable {A X} in
 /-- Descent transports along an equality of arities. -/
-theorem modPowDescends_cast {n₁ n₂ : ℕ} (h : n₁ = n₂)
+theorem modPowDescends_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n₁ n₂ : ℕ} (h : n₁ = n₂)
     {f₁ : tensorPow D X n₁ ⟶ tensorPow D X n₁}
     {f₂ : tensorPow D X n₂ ⟶ tensorPow D X n₂}
     (hf : powCast X h ≫ f₂ = f₁ ≫ powCast X h)
@@ -1462,7 +1615,11 @@ variable {A X} in
 /-- **Descent of the adjacent braiding**: every slot relation passes
 every adjacent braiding, by the same-slot, disjoint and overlap
 cases. -/
-theorem modPowDescends_adjSwap (a₀ b₀ : ℕ) :
+theorem modPowDescends_adjSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (a₀ b₀ : ℕ) :
     modPowDescends A X (a₀ + 2 + b₀) (adjSwapMor X a₀ b₀) := by
   intro a b hab
   rcases Nat.lt_trichotomy a a₀ with hlt | rfl | hgt
@@ -1490,7 +1647,10 @@ passes the action of every permutation — on the adjacent
 transpositions by the case analysis, and in general by generation
 and multiplicativity, exactly as the ambient action itself was
 assembled. -/
-theorem modPowDescends_permMor :
+theorem modPowDescends_permMor
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] :
     ∀ (n : ℕ) (σ : Equiv.Perm (Fin n)),
       modPowDescends A X n (permMor X n σ)
   | 0, _ => fun _ _ hab => absurd hab (by omega)
@@ -1537,7 +1697,11 @@ theorem modPowDescends_permMor :
 
 variable {A X} in
 /-- **The permutation action descends to the module power.** -/
-noncomputable def modPowPerm (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+noncomputable def modPowPerm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     modPow A X n ⟶ modPow A X n :=
   modPowDesc A X (permMor X n σ ≫ modPowπ A X n)
     (modPowDescends_permMor n σ)
@@ -1545,21 +1709,33 @@ noncomputable def modPowPerm (n : ℕ) (σ : Equiv.Perm (Fin n)) :
 variable {A X} in
 /-- Defining square of the descended action. -/
 @[reassoc (attr := simp)]
-theorem modPowπ_perm (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+theorem modPowπ_perm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     modPowπ A X n ≫ modPowPerm (A := A) (X := X) n σ =
       permMor X n σ ≫ modPowπ A X n :=
   modPowπ_desc A X _ _
 
 variable {A X} in
 /-- The identity acts as the identity on the module power. -/
-theorem modPowPerm_one (n : ℕ) :
+theorem modPowPerm_one
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) :
     modPowPerm (A := A) (X := X) n 1 = 𝟙 (modPow A X n) := by
   apply modPow_hom_ext
   rw [modPowπ_perm, permMor_one, Category.id_comp, Category.comp_id]
 
 variable {A X} in
 /-- The descended action is functorial. -/
-theorem modPowPerm_mul (n : ℕ) (σ τ : Equiv.Perm (Fin n)) :
+theorem modPowPerm_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] {A : D}
+    [MonObj A] {X : D} [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) (σ τ : Equiv.Perm (Fin n)) :
     modPowPerm (A := A) (X := X) n (σ * τ) =
       modPowPerm (A := A) (X := X) n τ ≫
         modPowPerm (A := A) (X := X) n σ := by
@@ -1570,7 +1746,11 @@ theorem modPowPerm_mul (n : ℕ) (σ τ : Equiv.Perm (Fin n)) :
 /-- **The symmetric group acting on the module power**, as a monoid
 homomorphism. -/
 @[simps]
-noncomputable def modPowPermHom (n : ℕ) :
+noncomputable def modPowPermHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (n : ℕ) :
     Equiv.Perm (Fin n) →* End (modPow A X n) where
   toFun := modPowPerm n
   map_one' := modPowPerm_one n
@@ -1631,31 +1811,43 @@ power -/
 
 section SymPow
 
-variable [SymmetricCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D]
-
 /-- **The symmetric-group algebra acting on the module power**, the
 `ℂ`-linear extension of the descended action. -/
-noncomputable def modPowAlg (n : ℕ) :
+noncomputable def modPowAlg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     SymGroupAlgebra n →ₐ[ℂ] End (modPow A X n) :=
   MonoidAlgebra.lift ℂ (End (modPow A X n)) (Equiv.Perm (Fin n))
     (modPowPermHom A X n)
 
 /-- The algebra map sends a group element to its action. -/
 @[simp]
-theorem modPowAlg_single (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+theorem modPowAlg_single
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     modPowAlg A X n (MonoidAlgebra.single σ (1 : ℂ)) =
       modPowPerm (A := A) (X := X) n σ := by
   rw [modPowAlg, MonoidAlgebra.lift_single, one_smul]
   rfl
 
 /-- The symmetriser acting on the module power. -/
-noncomputable def symPowIdem (n : ℕ) : modPow A X n ⟶ modPow A X n :=
+noncomputable def symPowIdem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : modPow A X n ⟶ modPow A X n :=
   modPowAlg A X n (symmetriser n)
 
 /-- The symmetriser's action is idempotent. -/
-theorem symPowIdem_idem (n : ℕ) :
+theorem symPowIdem_idem
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     symPowIdem A X n ≫ symPowIdem A X n = symPowIdem A X n := by
   have h := congrArg (modPowAlg A X n) (symmetriser_idem n)
   rw [map_mul] at h
@@ -1668,46 +1860,77 @@ with section `symPowσ`; this presentation is chosen because the
 consumers of the Key Lemma build morphisms out of the symmetric
 power by descent along `symPowπ` and morphisms into it through the
 section. -/
-noncomputable def symPow (n : ℕ) : D :=
+noncomputable def symPow
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : D :=
   coequalizer (symPowIdem A X n) (𝟙 (modPow A X n))
 
 /-- The projection onto the symmetric power. -/
-noncomputable def symPowπ (n : ℕ) : modPow A X n ⟶ symPow A X n :=
+noncomputable def symPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : modPow A X n ⟶ symPow A X n :=
   coequalizer.π _ _
 
-instance (n : ℕ) : Epi (symPowπ A X n) :=
+instance [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : Epi (symPowπ A X n) :=
   inferInstanceAs (Epi (coequalizer.π _ _))
 
 /-- The symmetriser is absorbed by the projection. -/
 @[reassoc (attr := simp)]
-theorem symPowIdem_π (n : ℕ) :
+theorem symPowIdem_π
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     symPowIdem A X n ≫ symPowπ A X n = symPowπ A X n := by
   have h := coequalizer.condition (symPowIdem A X n)
     (𝟙 (modPow A X n))
   rwa [Category.id_comp] at h
 
 /-- The section of the symmetric power, from idempotency. -/
-noncomputable def symPowσ (n : ℕ) : symPow A X n ⟶ modPow A X n :=
+noncomputable def symPowσ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) : symPow A X n ⟶ modPow A X n :=
   coequalizer.desc (symPowIdem A X n)
     (by rw [Category.id_comp, symPowIdem_idem])
 
 /-- The section realises the symmetriser as projection followed by
 inclusion. -/
 @[reassoc (attr := simp)]
-theorem symPowπ_symPowσ (n : ℕ) :
+theorem symPowπ_symPowσ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     symPowπ A X n ≫ symPowσ A X n = symPowIdem A X n :=
   coequalizer.π_desc _ _
 
 /-- Morphisms out of the symmetric power are determined by their
 composite with the projection. -/
-theorem symPow_hom_ext {n : ℕ} {W : D} {k l : symPow A X n ⟶ W}
+theorem symPow_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    {n : ℕ} {W : D} {k l : symPow A X n ⟶ W}
     (h : symPowπ A X n ≫ k = symPowπ A X n ≫ l) : k = l :=
   coequalizer.hom_ext h
 
 /-- **The symmetric power is a direct summand**: the section
 followed by the projection is the identity. -/
 @[reassoc (attr := simp)]
-theorem symPowσ_symPowπ (n : ℕ) :
+theorem symPowσ_symPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    (n : ℕ) :
     symPowσ A X n ≫ symPowπ A X n = 𝟙 (symPow A X n) := by
   apply symPow_hom_ext A X
   rw [← Category.assoc, symPowπ_symPowσ, symPowIdem_π,
@@ -1715,14 +1938,22 @@ theorem symPowσ_symPowπ (n : ℕ) :
 
 /-- Descend a morphism absorbed by the symmetriser to the symmetric
 power. -/
-noncomputable def symPowDesc {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
+noncomputable def symPowDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
     (h : symPowIdem A X n ≫ k = k) : symPow A X n ⟶ W :=
   coequalizer.desc k (by rw [Category.id_comp, h])
 
 /-- The descent factors the given morphism through the
 projection. -/
 @[reassoc (attr := simp)]
-theorem symPowπ_desc {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
+theorem symPowπ_desc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    {n : ℕ} {W : D} (k : modPow A X n ⟶ W)
     (h : symPowIdem A X n ≫ k = k) :
     symPowπ A X n ≫ symPowDesc A X k h = k :=
   coequalizer.π_desc _ _

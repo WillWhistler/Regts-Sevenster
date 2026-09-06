@@ -52,14 +52,16 @@ universe v u
 
 section Pairing
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] [HasCoequalizers D]
-variable (R : D) [MonObj R] {M M' N N' : Mod D R}
+variable {D : Type u}
 
 /-- **Naturality of the pairing**: pairing after postcomposition
 with a pair of module morphisms is pairing followed by the
 functorial map of the relative tensor product. -/
-theorem gpair_naturality {X Y : D} (f : M ⟶ M') (g : N ⟶ N')
+theorem gpair_naturality
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] (R : D) [MonObj R] {M : Mod D R} {M' : Mod D R}
+    {N : Mod D R} {N' : Mod D R}
+    {X Y : D} (f : M ⟶ M') (g : N ⟶ N')
     (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     gpair (M := M') (N := N') (m ≫ f.hom) (n ≫ g.hom) =
       gpair (M := M) (N := N) m n ≫ modTensorMap R f g := by
@@ -72,7 +74,11 @@ theorem gpair_naturality {X Y : D} (f : M ⟶ M') (g : N ⟶ N')
 /-- **The transported naturality of the pairing**: the form taken
 by `RS.gpair_naturality` at a source identification, that is, at
 one graded block of the comparison map. -/
-theorem gpairLin_naturality {W X Y : D} (s : W ⟶ X ⊗ Y)
+theorem gpairLin_naturality
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D] (R : D) [MonObj R] {M : Mod D R} {M' : Mod D R}
+    {N : Mod D R} {N' : Mod D R}
+    {W X Y : D} (s : W ⟶ X ⊗ Y)
     (f : M ⟶ M') (g : N ⟶ N') (m : X ⟶ M.X) (n : Y ⟶ N.X) :
     s ≫ gpair (M := M') (N := N') (m ≫ f.hom) (n ≫ g.hom) =
       (s ≫ gpair (M := M) (N := N) m n) ≫ modTensorMap R f g := by
@@ -84,20 +90,26 @@ end Pairing
 
 section BundledFunctoriality
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [BraidedCategory D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (R : D) [MonObj R] [IsCommMonObj R]
-variable {M M' M'' N N' N'' : Mod D R}
+variable {D : Type u}
 
 /-- The bundled functorial map preserves identities. -/
-theorem modTensorMapMod_id' (M N : Mod D R) :
+theorem modTensorMapMod_id'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R]
+    (M N : Mod D R) :
     modTensorMapMod R (𝟙 M) (𝟙 N) = 𝟙 (modTensorMod R M N) :=
   Mod.hom_ext _ _ (modTensorMap_id R (M := M) (N := N))
 
 /-- The bundled functorial map preserves composition. -/
-theorem modTensorMapMod_comp' (f : M ⟶ M') (f' : M' ⟶ M'')
+theorem modTensorMapMod_comp'
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R] {M : Mod D R} {M' : Mod D R}
+    {M'' : Mod D R} {N : Mod D R} {N' : Mod D R} {N'' : Mod D R}
+    (f : M ⟶ M') (f' : M' ⟶ M'')
     (g : N ⟶ N') (g' : N' ⟶ N'') :
     modTensorMapMod R (f ≫ f') (g ≫ g') =
       modTensorMapMod R f g ≫ modTensorMapMod R f' g' :=
@@ -105,7 +117,13 @@ theorem modTensorMapMod_comp' (f : M ⟶ M') (f' : M' ⟶ M'')
 
 /-- The relative tensor product of two isomorphisms of module
 objects. -/
-noncomputable def modTensorMapModIso (e : M ≅ M') (e' : N ≅ N') :
+noncomputable def modTensorMapModIso
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (R : D) [MonObj R] [IsCommMonObj R] {M : Mod D R} {M' : Mod D R}
+    {N : Mod D R} {N' : Mod D R}
+    (e : M ≅ M') (e' : N ≅ N') :
     modTensorMod R M N ≅ modTensorMod R M' N' where
   hom := modTensorMapMod R e.hom e'.hom
   inv := modTensorMapMod R e.inv e'.inv
@@ -153,13 +171,7 @@ end SuperConveniences
 
 section Naturality
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
-variable {M M' N N' : Mod D R}
+variable {D : Type u}
 
 open SuperCommAlgebra.Mod
 
@@ -168,31 +180,57 @@ written at the Γ-modules themselves.  This is
 `RS.gammaModuleFunctor` on morphisms, and is reducibly equal to
 it; naming it keeps the two ends of a naturality square typed by
 the same expressions. -/
-noncomputable abbrev gammaFunMap (f : M ⟶ M') :
+noncomputable abbrev gammaFunMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {M : Mod D R} {M' : Mod D R}
+    (f : M ⟶ M') :
     gammaModule D L R M.X ⟶ gammaModule D L R M'.X :=
   (gammaModuleFunctor L R).map f
 
-omit [HasCoequalizers D] [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)] in
 /-- Realization takes an identity to an identity. -/
-theorem gammaFunMap_id (M : Mod D R) :
+theorem gammaFunMap_id
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M : Mod D R) :
     gammaFunMap L R (𝟙 M) = 𝟙 (gammaModule D L R M.X) :=
   CategoryTheory.Functor.map_id _ _
 
 @[simp]
-theorem gammaPairComparison_evenMap (M N : Mod D R) :
+theorem gammaPairComparison_evenMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M N : Mod D R) :
     (gammaPairComparison L R M N).evenMap = gammaPairEven L R M N :=
   rfl
 
 @[simp]
-theorem gammaPairComparison_oddMap (M N : Mod D R) :
+theorem gammaPairComparison_oddMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (M N : Mod D R) :
     (gammaPairComparison L R M N).oddMap = gammaPairOdd L R M N :=
   rfl
 
 /-- The naturality square, with the realized morphisms typed at
 the Γ-modules.  This is `RS.gammaPairComparison_naturality` in the
 form in which it is proved. -/
-theorem gammaPairComparison_naturality_aux (f : M ⟶ M')
+theorem gammaPairComparison_naturality_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] {M : Mod D R}
+    {M' : Mod D R} {N : Mod D R} {N' : Mod D R}
+    (f : M ⟶ M')
     (g : N ⟶ N') :
     SuperCommAlgebra.Mod.tensorHom (gammaFunMap L R f)
         (gammaFunMap L R g) ≫ gammaPairComparison L R M' N' =
@@ -215,7 +253,14 @@ theorem gammaPairComparison_naturality_aux (f : M ⟶ M')
 
 /-- **The naturality square of the comparison map**, in both
 module variables at once. -/
-theorem gammaPairComparison_naturality (f : M ⟶ M') (g : N ⟶ N') :
+theorem gammaPairComparison_naturality
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] {M : Mod D R}
+    {M' : Mod D R} {N : Mod D R} {N' : Mod D R}
+    (f : M ⟶ M') (g : N ⟶ N') :
     SuperCommAlgebra.Mod.tensorHom
         ((gammaModuleFunctor L R).map f)
         ((gammaModuleFunctor L R).map g) ≫
@@ -226,7 +271,14 @@ theorem gammaPairComparison_naturality (f : M ⟶ M') (g : N ⟶ N') :
 
 /-- **The naturality square of the comparison map in the first
 module variable**. -/
-theorem gammaPairComparison_naturality_left (f : M ⟶ M')
+theorem gammaPairComparison_naturality_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] {M : Mod D R}
+    {M' : Mod D R}
+    (f : M ⟶ M')
     (N : Mod D R) :
     SuperCommAlgebra.Mod.tensorHom
         ((gammaModuleFunctor L R).map f)
@@ -241,7 +293,14 @@ theorem gammaPairComparison_naturality_left (f : M ⟶ M')
 
 /-- **The naturality square of the comparison map in the second
 module variable**. -/
-theorem gammaPairComparison_naturality_right (M : Mod D R)
+theorem gammaPairComparison_naturality_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] {N : Mod D R}
+    {N' : Mod D R}
+    (M : Mod D R)
     (g : N ⟶ N') :
     SuperCommAlgebra.Mod.tensorHom
         (𝟙 (gammaModule D L R M.X))
@@ -257,7 +316,14 @@ theorem gammaPairComparison_naturality_right (M : Mod D R)
 /-- **Invariance of the comparison map under isomorphism**:
 whether the comparison map is an isomorphism depends only on the
 isomorphism classes of the two module objects. -/
-theorem gammaPairComparison_isIso_of_iso (e : M ≅ M') (e' : N ≅ N')
+theorem gammaPairComparison_isIso_of_iso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] {M : Mod D R}
+    {M' : Mod D R} {N : Mod D R} {N' : Mod D R}
+    (e : M ≅ M') (e' : N ≅ N')
     (h : IsIso (gammaPairComparison L R M' N')) :
     IsIso (gammaPairComparison L R M N) := by
   haveI := h

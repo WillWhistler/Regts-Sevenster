@@ -21,22 +21,13 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasCoequalizers D]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (B : D) [MonObj B] [IsCommMonObj B]
-variable (φ : A ⟶ B) [IsMonHom φ]
-variable [∀ Z : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+variable {D : Type u}
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D] [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Multiplying through `φ` twice is multiplying through `φ` once
 after multiplying in `A`. -/
-lemma pushMul_pushMul :
+lemma pushMul_pushMul
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (B : D)
+    [MonObj B] (φ : A ⟶ B) [IsMonHom φ] :
     ((B ◁ φ ≫ μ[B]) ▷ A) ≫ (B ◁ φ ≫ μ[B]) =
       (α_ B A A).hom ≫ B ◁ (μ[A] ≫ φ) ≫ μ[B] := by
   rw [IsMonHom.mul_hom φ, tensorHom_def]
@@ -46,39 +37,34 @@ lemma pushMul_pushMul :
     associator_naturality_right_assoc,
     associator_naturality_middle_assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D] [MonObj A] [IsCommMonObj A] [IsCommMonObj B]
-  [IsMonHom φ]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Multiplying in `B` before pushing through `φ` is multiplying
 in `B` after. -/
-lemma mul_pushMul :
+lemma mul_pushMul
+    [Category.{v} D] [MonoidalCategory D] (A : D) (B : D) [MonObj B]
+    (φ : A ⟶ B) :
     (μ[B] ▷ A) ≫ (B ◁ φ ≫ μ[B]) =
       (α_ B B A).hom ≫ B ◁ (B ◁ φ ≫ μ[B]) ≫ μ[B] := by
   rw [← whisker_exchange_assoc, MonObj.mul_assoc,
     associator_naturality_right_assoc]
   simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
-  [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The first module-tensor leg of the base change of a free
 module, at carrier atoms. -/
-lemma legM_restrictRegular_freeMod (V : D) :
+lemma legM_restrictRegular_freeMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     modTensorLegM A (restrictRegular φ) (freeMod A V) =
       (B ◁ φ ≫ μ[B]) ▷ (A ⊗ V) :=
   congrArg (fun t : B ⊗ A ⟶ B => t ▷ (A ⊗ V))
     (actRight_restrictRegular φ)
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D] [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The comparison map coequalizes the two module-tensor legs,
 stated at carrier atoms. -/
-lemma baseChangeFree_condition_atoms (V : D) :
+lemma baseChangeFree_condition_atoms
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (B : D)
+    [MonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     ((B ◁ φ ≫ μ[B]) ▷ (A ⊗ V)) ≫
         ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V) =
       ((α_ B A (A ⊗ V)).hom ≫
@@ -95,12 +81,11 @@ lemma baseChangeFree_condition_atoms (V : D) :
     Category.assoc]
   rw [associator_inv_naturality_middle_assoc, reassoc_of% hstruct]
 
-omit [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
-  [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The comparison map coequalizes the two module-tensor legs. -/
-lemma baseChangeFree_condition (V : D) :
+lemma baseChangeFree_condition
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (B : D) [MonObj B] [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     modTensorLegM A (restrictRegular φ) (freeMod A V) ≫
         ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V) =
       modTensorLegN A (restrictRegular φ) (freeMod A V) ≫
@@ -112,36 +97,46 @@ lemma baseChangeFree_condition (V : D) :
 
 /-- The comparison map from the base change of a free module to
 the free module over the new base. -/
-noncomputable def baseChangeFreeHom (V : D) :
+noncomputable def baseChangeFreeHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     baseChange φ (freeMod A V) ⟶ B ⊗ V :=
   modTensorDesc A (restrictRegular φ) (freeMod A V)
     ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V)
     (baseChangeFree_condition A B φ V)
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Defining equation of the comparison map. -/
 @[reassoc]
-lemma modTensorπ_baseChangeFreeHom (V : D) :
+lemma modTensorπ_baseChangeFreeHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     modTensorπ A (restrictRegular φ) (freeMod A V) ≫
         baseChangeFreeHom A B φ V =
       (α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V :=
   modTensorπ_desc A (restrictRegular φ) (freeMod A V) _ _
 
 /-- The inverse comparison map: insert the unit of `A`. -/
-noncomputable def baseChangeFreeInv (V : D) :
+noncomputable def baseChangeFreeInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B] (φ : A ⟶ B)
+    [IsMonHom φ]
+    (V : D) :
     B ⊗ V ⟶ baseChange φ (freeMod A V) :=
   B ◁ ((λ_ V).inv ≫ η[A] ▷ V) ≫
     modTensorπ A (restrictRegular φ) (freeMod A V)
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The balance relation of the base-change projection on a free
 module, at carrier atoms. -/
 @[reassoc]
-lemma baseChangeFree_balance (V : D) :
+lemma baseChangeFree_balance
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     ((B ◁ φ ≫ μ[B]) ▷ (A ⊗ V)) ≫
         modTensorπ A (restrictRegular φ) (freeMod A V) =
       ((α_ B A (A ⊗ V)).hom ≫
@@ -153,12 +148,13 @@ lemma baseChangeFree_balance (V : D) :
     (legM_restrictRegular_freeMod A B φ V)).symm.trans
     (modTensor_condition A (restrictRegular φ) (freeMod A V))
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Multiplying out and reinserting the unit of `A` returns the
 projection: the retract identity behind `hom ≫ inv = 𝟙`. -/
-lemma baseChangeFree_retract (V : D) :
+lemma baseChangeFree_retract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V) ≫
         (B ◁ ((λ_ V).inv ≫ η[A] ▷ V) ≫
           modTensorπ A (restrictRegular φ) (freeMod A V)) =
@@ -170,12 +166,13 @@ lemma baseChangeFree_retract (V : D) :
     ← whiskerLeft_comp_assoc, whiskerLeft_one_mul,
     MonoidalCategory.whiskerLeft_id, Category.id_comp]
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The two comparison maps compose to the identity of the base
 change. -/
-lemma baseChangeFree_hom_inv (V : D) :
+lemma baseChangeFree_hom_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     baseChangeFreeHom A B φ V ≫ baseChangeFreeInv A B φ V =
       𝟙 (baseChange φ (freeMod A V)) := by
   apply modTensor_hom_ext A (restrictRegular φ) (freeMod A V)
@@ -185,13 +182,12 @@ lemma baseChangeFree_hom_inv (V : D) :
       (baseChangeFree_retract A B φ V)).trans
       (Category.comp_id _).symm)
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D] [IsCommMonObj A] [IsCommMonObj B]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- Inserting the unit of `A` and multiplying out through `φ` is
 the identity of `B ⊗ V`. -/
-lemma baseChangeFree_section_atoms (V : D) :
+lemma baseChangeFree_section_atoms
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (B : D)
+    [MonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     B ◁ ((λ_ V).inv ≫ η[A] ▷ V) ≫
         ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V) =
       𝟙 (B ⊗ V) := by
@@ -202,12 +198,13 @@ lemma baseChangeFree_section_atoms (V : D) :
     IsMonHom.one_hom φ, MonObj.mul_one]
   monoidal
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The two comparison maps compose to the identity of the free
 module over the new base. -/
-lemma baseChangeFree_inv_hom (V : D) :
+lemma baseChangeFree_inv_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    (V : D) :
     baseChangeFreeInv A B φ V ≫ baseChangeFreeHom A B φ V =
       𝟙 (B ⊗ V) :=
   (Category.assoc _ _ _).trans
@@ -215,14 +212,12 @@ lemma baseChangeFree_inv_hom (V : D) :
       (modTensorπ_baseChangeFreeHom A B φ V)).trans
       (baseChangeFree_section_atoms A B φ V))
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D] [MonObj A] [IsCommMonObj A] [IsCommMonObj B]
-  [IsMonHom φ]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)] in
 /-- The comparison map intertwines the two `B`-actions, at carrier
 atoms. -/
-lemma baseChangeFree_linear_atoms (V : D) :
+lemma baseChangeFree_linear_atoms
+    [Category.{v} D] [MonoidalCategory D] (A : D) (B : D) [MonObj B]
+    (φ : A ⟶ B)
+    (V : D) :
     ((α_ B B (A ⊗ V)).inv ≫ μ[B] ▷ (A ⊗ V)) ≫
         ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V) =
       B ◁ ((α_ B A V).inv ≫ (B ◁ φ ≫ μ[B]) ▷ V) ≫
@@ -240,20 +235,28 @@ lemma baseChangeFree_linear_atoms (V : D) :
   rw [associator_inv_naturality_middle_assoc,
     associator_inv_naturality_middle_assoc, reassoc_of% hstruct]
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A] in
 /-- Defining equation of the `B`-action on the base change of a
 free module, at carrier atoms. -/
-lemma whiskerLeft_π_baseChangeAct_free (V : D) :
+lemma whiskerLeft_π_baseChangeAct_free
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (V : D) :
     B ◁ modTensorπ A (restrictRegular φ) (freeMod A V) ≫
         baseChangeAct φ (freeMod A V) =
       ((α_ B B (A ⊗ V)).inv ≫ μ[B] ▷ (A ⊗ V)) ≫
         modTensorπ A (restrictRegular φ) (freeMod A V) :=
   whiskerLeft_modTensorπ_baseChangeAct φ (freeMod A V)
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A] in
 /-- The comparison map is `B`-linear. -/
 @[reassoc]
-lemma baseChangeAct_baseChangeFreeHom (V : D) :
+lemma baseChangeAct_baseChangeFreeHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (V : D) :
     baseChangeAct φ (freeMod A V) ≫ baseChangeFreeHom A B φ V =
       B ◁ baseChangeFreeHom A B φ V ≫
         ((α_ B B V).inv ≫ μ[B] ▷ V) := by
@@ -303,9 +306,13 @@ lemma baseChangeAct_baseChangeFreeHom (V : D) :
     (baseChangeFree_linear_atoms A B φ V)).trans
     ((h4.trans h5).symm)
 
-omit [Preadditive D] [MonoidalPreadditive D] [IsCommMonObj A] in
 /-- The inverse comparison map is `B`-linear. -/
-lemma freeAct_baseChangeFreeInv (V : D) :
+lemma freeAct_baseChangeFreeInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (V : D) :
     ((α_ B B V).inv ≫ μ[B] ▷ V) ≫ baseChangeFreeInv A B φ V =
       B ◁ baseChangeFreeInv A B φ V ≫
         baseChangeAct φ (freeMod A V) := by
@@ -320,7 +327,12 @@ lemma freeAct_baseChangeFreeInv (V : D) :
 /-- **Base change of a free module**: the base change along `φ` of
 the free `A`-module on `V` is the free `B`-module on `V`, as an
 isomorphism of `B`-modules. -/
-noncomputable def baseChangeFreeIso (V : D) :
+noncomputable def baseChangeFreeIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (B : D) [MonObj B]
+    [IsCommMonObj B] (φ : A ⟶ B) [IsMonHom φ]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (V : D) :
     baseChangeMod φ (freeMod A V) ≅ freeMod B V where
   hom := Mod.Hom.mk' (baseChangeFreeHom A B φ V)
     (by exact baseChangeAct_baseChangeFreeHom A B φ V)

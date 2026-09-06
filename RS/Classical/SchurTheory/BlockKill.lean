@@ -12,11 +12,10 @@ namespace RS
 
 open Finset LinearMap
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
+variable {G : Type*}
 
-omit [Fintype G] [DecidableEq G] in
 /-- An intertwiner commutes with the algebra action. -/
-theorem intertwiner_comp_asAlgebraHom
+theorem intertwiner_comp_asAlgebraHom [Group G]
     {V W : Type*} [AddCommGroup V] [Module ℂ V]
     [AddCommGroup W] [Module ℂ W]
     {ρ : Representation ℂ G V} {σ : Representation ℂ G W}
@@ -40,7 +39,5 @@ theorem intertwiner_comp_asAlgebraHom
   | hsmul r a ha =>
     rw [map_smul, map_smul, LinearMap.comp_smul,
       LinearMap.smul_comp, ha]
-
-variable (T : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
 
 end RS

@@ -15,10 +15,11 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-- The mate of the partner: the candidate inverse. -/
-noncomputable def dualityMate {X X' Y Y' : D}
+noncomputable def dualityMate [Category.{v} D] [MonoidalCategory D]
+    {X X' Y Y' : D}
     [ExactPairing X X'] [ExactPairing Y Y'] (f' : X' ⟶ Y') :
     Y ⟶ X :=
   (λ_ Y).inv ≫ (η_ X X' ▷ Y) ≫ (α_ X X' Y).hom ≫

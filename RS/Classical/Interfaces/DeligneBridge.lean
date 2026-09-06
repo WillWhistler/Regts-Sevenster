@@ -20,12 +20,13 @@ namespace RS
 open CategoryTheory MonoidalCategory
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
-variable {A : Type*} [Category A] [MonoidalCategory A]
-  [SymmetricCategory A]
+variable {A : Type*}
 
 /-- Supersymmetry transports along a braided functor into
 SuperVect: the transported form absorbs the Koszul braiding. -/
-theorem braided_transported_supersymmetry (ω : A ⥤ SuperVect)
+theorem braided_transported_supersymmetry
+    [Category A] [MonoidalCategory A] [SymmetricCategory A]
+    (ω : A ⥤ SuperVect)
     [ω.Braided] (X : A) [ExactPairing X X]
     (hsym : (β_ X X).hom ≫ ε_ X X = ε_ X X) :
     SuperVect.Hom.comp (μ ω X X ≫ ω.map (ε_ X X) ≫ η ω)
@@ -41,7 +42,9 @@ SuperVect carries a self-dual object with a supersymmetric form
 to a standard orthosymplectic model — the transported form
 becomes the standard form and the transported copairing the
 standard copairing. -/
-theorem braided_std_model (ω : A ⥤ SuperVect) [ω.Braided]
+theorem braided_std_model
+    [Category A] [MonoidalCategory A] [SymmetricCategory A]
+    (ω : A ⥤ SuperVect) [ω.Braided]
     (X : A) [ExactPairing X X]
     (hsym : (β_ X X).hom ≫ ε_ X X = ε_ X X) :
     ∃ (k ℓ : ℕ) (e : SuperVect.Hom (stdSuperPair k ℓ) (ω.obj X))

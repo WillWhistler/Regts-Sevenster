@@ -16,16 +16,15 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasBinaryBiproducts D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
-variable (M N : Mod D R)
+variable {D : Type u}
 
 /-- The comparison of the realization of a biproduct with the
 biproduct of the realizations. -/
-noncomputable def gammaBiprodMap :
+noncomputable def gammaBiprodMap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasBinaryBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [IsCommMonObj R] (M : Mod D R) (N : Mod D R) :
     gammaModule D L R (modBiprod R M N).X ⟶
       (gammaModule D L R M.X).biprod
         (gammaModule D L R N.X) := by
@@ -61,11 +60,10 @@ noncomputable def gammaBiprodMap :
           exact (Category.assoc _ _ _).trans
             (congrArg _ (gact_naturality R _ u m)) }
 
-omit [SymmetricCategory D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj R] in
 /-- Morphisms into a binary biproduct are pairs, ℂ-linearly. -/
-theorem bijective_pair (P : D) :
+theorem bijective_pair [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [HasBinaryBiproducts D] (R : D) [MonObj R] (M : Mod D R) (N : Mod D R)
+    (P : D) :
     Function.Bijective
       (fun f : P ⟶ M.X ⊞ N.X =>
         ((f ≫ biprod.fst, f ≫ biprod.snd) :
@@ -83,7 +81,11 @@ theorem bijective_pair (P : D) :
 
 /-- **The realization of a biproduct is the biproduct of the
 realizations.** -/
-noncomputable def gammaBiprodIso :
+noncomputable def gammaBiprodIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasBinaryBiproducts D] (L : OddLine D) (R : D)
+    [MonObj R] [IsCommMonObj R] (M : Mod D R) (N : Mod D R) :
     gammaModule D L R (modBiprod R M N).X ≅
       (gammaModule D L R M.X).biprod
         (gammaModule D L R N.X) :=

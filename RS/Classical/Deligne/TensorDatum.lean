@@ -18,23 +18,20 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 section InterchangeDesc
-
-variable (X₁ X₂ Y₁ Y₂ : Mod D A)
 
 /-- **The descended interchange**: the interchange of module
 tensor products descends to the relative tensor of the bundles,
 because it is linear in both factors. -/
-noncomputable def interchangeDesc :
+noncomputable def interchangeDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X₁ : Mod D A) (X₂ : Mod D A)
+    (Y₁ : Mod D A) (Y₂ : Mod D A) :
     modTensor A (modTensorMod A X₁ X₂) (modTensorMod A Y₁ Y₂) ⟶
       modTensor A (modTensorMod A X₁ Y₁) (modTensorMod A X₂ Y₂) :=
   modTensorDesc A (modTensorMod A X₁ X₂) (modTensorMod A Y₁ Y₂)
@@ -54,7 +51,13 @@ noncomputable def interchangeDesc :
 
 /-- Defining equation of the descended interchange. -/
 @[reassoc (attr := simp)]
-theorem modTensorπ_interchangeDesc :
+theorem modTensorπ_interchangeDesc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X₁ : Mod D A) (X₂ : Mod D A)
+    (Y₁ : Mod D A) (Y₂ : Mod D A) :
     modTensorπ A (modTensorMod A X₁ X₂) (modTensorMod A Y₁ Y₂) ≫
         interchangeDesc A X₁ X₂ Y₁ Y₂ =
       interchange A X₁ X₂ Y₁ Y₂ :=
@@ -62,7 +65,13 @@ theorem modTensorπ_interchangeDesc :
 
 /-- The descended interchange intertwines the actions. -/
 @[reassoc]
-theorem interchangeDesc_act :
+theorem interchangeDesc_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X₁ : Mod D A) (X₂ : Mod D A)
+    (Y₁ : Mod D A) (Y₂ : Mod D A) :
     modTensorAct A (modTensorMod A X₁ X₂) (modTensorMod A Y₁ Y₂) ≫
         interchangeDesc A X₁ X₂ Y₁ Y₂ =
       (A ◁ interchangeDesc A X₁ X₂ Y₁ Y₂) ≫
@@ -87,16 +96,23 @@ end InterchangeDesc
 
 section Datum
 
-variable {N₁ N₂ N₁' N₂' : Mod D A}
-
 /-- The fold of the doubled regular module onto the base. -/
-noncomputable def regPairFold :
+noncomputable def regPairFold
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] :
     modTensor A (regularMod A) (regularMod A) ⟶ A :=
   (modTensorUnitLeft A (regularMod A)).hom
 
 /-- **The tensor pairing**: cross through the descended
 interchange, pair coordinatewise, and fold. -/
-noncomputable def tensorPair (d₁ : ModDualityDatum A N₁ N₁')
+noncomputable def tensorPair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     modTensor A (modTensorMod A N₁' N₂') (modTensorMod A N₁ N₂)
       ⟶ A :=
@@ -104,13 +120,22 @@ noncomputable def tensorPair (d₁ : ModDualityDatum A N₁ N₁')
     modTensorMap A d₁.pairMod d₂.pairMod ≫ regPairFold A
 
 /-- The unfolding of the base into the doubled regular module. -/
-noncomputable def regPairUnfold :
+noncomputable def regPairUnfold
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] [IsCommMonObj A] :
     A ⟶ modTensor A (regularMod A) (regularMod A) :=
   (modTensorUnitLeft A (regularMod A)).inv
 
 /-- **The tensor copairing**: unfold the unit, insert both
 copairings, and regroup through the descended interchange. -/
-noncomputable def tensorCopair (d₁ : ModDualityDatum A N₁ N₁')
+noncomputable def tensorCopair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     A ⟶ modTensor A (modTensorMod A N₁ N₂)
       (modTensorMod A N₁' N₂') :=
@@ -118,11 +143,13 @@ noncomputable def tensorCopair (d₁ : ModDualityDatum A N₁ N₁')
     modTensorMap A d₁.copairMod d₂.copairMod ≫
     interchangeDesc A N₁ N₁' N₂ N₂'
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The inverse of the doubled-unit fold intertwines the
 multiplication and the action. -/
-theorem regPairUnfold_act :
+theorem regPairUnfold_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] :
     μ[A] ≫ regPairUnfold A =
       (A ◁ regPairUnfold A) ≫
         modTensorAct A (regularMod A) (regularMod A) := by
@@ -133,7 +160,14 @@ theorem regPairUnfold_act :
   rfl
 
 /-- **The tensor pairing is linear.** -/
-theorem tensorPair_linear (d₁ : ModDualityDatum A N₁ N₁')
+theorem tensorPair_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     modTensorAct A (modTensorMod A N₁' N₂')
         (modTensorMod A N₁ N₂) ≫ tensorPair A d₁ d₂ =
@@ -148,7 +182,14 @@ theorem tensorPair_linear (d₁ : ModDualityDatum A N₁ N₁')
   rfl
 
 /-- **The tensor copairing is linear.** -/
-theorem tensorCopair_linear (d₁ : ModDualityDatum A N₁ N₁')
+theorem tensorCopair_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     μ[A] ≫ tensorCopair A d₁ d₂ =
       (A ◁ tensorCopair A d₁ d₂) ≫
@@ -165,7 +206,14 @@ theorem tensorCopair_linear (d₁ : ModDualityDatum A N₁ N₁')
 /-- **The tensor product of duality data** (Deligne 1.15, tensor
 part): dual pairs tensor, with the crossed coordinatewise pairing
 and copairing. -/
-noncomputable def tensorDatum (d₁ : ModDualityDatum A N₁ N₁')
+noncomputable def tensorDatum
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {N₁ : Mod D A} {N₂ : Mod D A}
+    {N₁' : Mod D A} {N₂' : Mod D A}
+    (d₁ : ModDualityDatum A N₁ N₁')
     (d₂ : ModDualityDatum A N₂ N₂') :
     ModDualityDatum A (modTensorMod A N₁ N₂)
       (modTensorMod A N₁' N₂') where

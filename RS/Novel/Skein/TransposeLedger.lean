@@ -68,15 +68,17 @@ section Transform
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W} {k ℓ : ℕ} {κ : F.RelTransitionSystem}
-  {a b c d : W.Flag} {v : W.Vertex}
+variable {α : Type}
 
 /-- The fixed-exponent transform: at every circuit exponent the
 transported summand is `T` times the old summand — `T` is
 exponent-independent (restating the vertex ledger with
 the explicit factor). -/
-theorem twoPath_transform_exp (hM : MixedFunctional k ℓ)
+theorem twoPath_transform_exp
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (hsq : RepairSquare κ a b c d v) (o : κ.Orientation)
@@ -97,7 +99,11 @@ the open circuit counts by the explicit factor
 `T = twoPathTransformFactor = −1` — the circuit count is unchanged
 and the vertex transposition supplies the sign; the state-dependent
 `∂`-piece of the colour re-routing is trivial at the sum level. -/
-theorem twoPath_transform (hM : MixedFunctional k ℓ)
+theorem twoPath_transform
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W} {k : ℕ} {ℓ : ℕ}
+    {κ : F.RelTransitionSystem} {a : W.Flag} {b : W.Flag} {c : W.Flag}
+    {d : W.Flag} {v : W.Vertex}
+    (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     (hsq : RepairSquare κ a b c d v) (o : κ.Orientation)

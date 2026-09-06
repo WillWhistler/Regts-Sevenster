@@ -17,23 +17,13 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [BraidedCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A]
+variable {D : Type u}
 
-omit [BraidedCategory D] [Preadditive D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Case analysis for decompositions of the three-element list
 `[M', M, N]`: a slot is the leading pair or the boundary. -/
-theorem prepend_pair_slot_cases {pre post : List (Mod D A)}
+theorem prepend_pair_slot_cases
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    {pre post : List (Mod D A)}
     {M M' N P Q : Mod D A}
     (hd : [M', M, N] = pre ++ P :: Q :: post) :
     (pre = [] ∧ P = M' ∧ Q = M ∧ post = [N]) ∨
@@ -49,28 +39,28 @@ theorem prepend_pair_slot_cases {pre post : List (Mod D A)}
       exact Or.inr ⟨by rw [h1], h2.symm, h3.symm, h4.symm⟩
     · exact absurd (congrArg List.length hd) (by simp; omega)
 
-
 section Contract3L
-
-variable [IsCommMonObj A] {M M' : Mod D A}
 
 /-- The fold-level three-window contraction of a leading pair: pair
 off the leading window, act on the head of the remainder with the
 resulting scalar from the left. -/
-noncomputable def contract3LFold (p : modTensor A M' M ⟶ A)
+noncomputable def contract3LFold
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (N : Mod D A) : modList A [M', M, N] ⟶ modMulti A [N] :=
   (α_ M'.X M.X (N.X ⊗ 𝟙_ D)).inv ≫
     ((modTensorπ A M' M ≫ p) ▷ (N.X ⊗ 𝟙_ D)) ≫
     modListHeadAct A N [] ≫ modMultiπ A [N]
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The window morphism of the leading pair passes to the pairing
 through the projection. -/
-theorem window_contract3LFold (p : modTensor A M' M ⟶ A)
+theorem window_contract3LFold
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (N : Mod D A) (w : (M'.X ⊗ A) ⊗ M.X ⟶ M'.X ⊗ M.X) :
     ((w ▷ modList A [N]) ≫
         (α_ M'.X M.X (modList A [N])).hom) ≫
@@ -84,15 +74,14 @@ theorem window_contract3LFold (p : modTensor A M' M ⟶ A)
   rw [Category.assoc, Iso.hom_inv_id_assoc,
     ← MonoidalCategory.comp_whiskerRight_assoc]
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The pair-slot condition of the leading three-window
 contraction: the two window legs of the leading pair agree after
 the contraction. -/
-theorem contract3LFold_pair_cond (p : modTensor A M' M ⟶ A)
+theorem contract3LFold_pair_cond
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D] (A : D)
+    [MonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (N : Mod D A) :
     modMultiLegM A [] M' M [N] ≫ contract3LFold A p N =
       modMultiLegN A [] M' M [N] ≫ contract3LFold A p N := by
@@ -110,13 +99,15 @@ theorem contract3LFold_pair_cond (p : modTensor A M' M ⟶ A)
   exact congrArg (fun t => (t ▷ (N.X ⊗ 𝟙_ D)) ≫
     modListHeadAct A N [] ≫ modMultiπ A [N]) hcond2
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The boundary-slot condition of the leading three-window
 contraction: the two window legs of the dual--head boundary agree
 after the contraction, through the linearity of the pairing. -/
-theorem contract3LFold_boundary_cond (p : modTensor A M' M ⟶ A)
+theorem contract3LFold_boundary_cond
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
     (N : Mod D A) :
@@ -198,7 +189,12 @@ theorem contract3LFold_boundary_cond (p : modTensor A M' M ⟶ A)
 /-- **The multi-level contraction at a leading three-element
 window**: a linear pairing contracts the leading pair of the
 multi-tensor, the scalar acting on the remaining module. -/
-noncomputable def modMultiContract3L (p : modTensor A M' M ⟶ A)
+noncomputable def modMultiContract3L
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
     (N : Mod D A) :
@@ -237,12 +233,14 @@ noncomputable def modMultiContract3L (p : modTensor A M' M ⟶ A)
           (congrArg (fun t =>
             modMultiLegN A [M'] M N [] ≫ t) hid.symm))
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Defining equation of the leading three-window contraction. -/
 @[reassoc (attr := simp)]
-theorem modMultiπ_contract3L (p : modTensor A M' M ⟶ A)
+theorem modMultiπ_contract3L
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A])
     (N : Mod D A) :
@@ -252,16 +250,20 @@ theorem modMultiπ_contract3L (p : modTensor A M' M ⟶ A)
 
 end Contract3L
 
-
 section ZagCore
-
-variable [IsCommMonObj A] {M M' : Mod D A}
 
 /-- **The zag composite** of a copairing and a linear pairing:
 insert the copairing on the right, concatenate, and contract the
 leading pair.  The zagzig law of a duality datum states that this
 composite is the identity. -/
-noncomputable def zagComposite (c : A ⟶ modTensor A M M')
+noncomputable def zagComposite
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {M : Mod D A} {M' : Mod D A}
+    (c : A ⟶ modTensor A M M')
     (p : modTensor A M' M ⟶ A)
     (hp : haveI := modTensorModObj A M' M
       actLeft A (modTensor A M' M) ≫ p = (A ◁ p) ≫ μ[A]) :

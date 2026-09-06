@@ -21,14 +21,13 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
-  [MonoidalCategory A] [SymmetricCategory A] [MonoidalPreadditive A]
-  [RigidCategory A]
+variable {A : Type u}
 
-omit [SymmetricCategory A] in
 /-- The evaluation of a nonzero object is nonzero: were it zero,
 the zigzag identity would make `𝟙 X` zero. -/
-theorem evaluation_ne_zero {X : A} (hX : ¬ IsZero X) :
+theorem evaluation_ne_zero [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    {X : A} (hX : ¬ IsZero X) :
     (ε_ X (Xᘁ)) ≠ 0 := by
   intro hz
   apply hX
@@ -46,7 +45,10 @@ theorem evaluation_ne_zero {X : A} (hX : ¬ IsZero X) :
 /-- **Whiskering by a nonzero object is faithful** on morphisms: in
 a rigid symmetric abelian category with simple unit, `f ▷ X = 0`
 forces `f = 0` when `X` is nonzero. -/
-theorem eq_zero_of_whiskerRight_eq_zero (hs : Simple (𝟙_ A))
+theorem eq_zero_of_whiskerRight_eq_zero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    (hs : Simple (𝟙_ A))
     {X : A} (hX : ¬ IsZero X) {P Q : A} {f : P ⟶ Q}
     (hw : f ▷ X = 0) : f = 0 := by
   haveI := hs
@@ -79,13 +81,15 @@ theorem eq_zero_of_whiskerRight_eq_zero (hs : Simple (𝟙_ A))
 
 section Transport
 
-variable [Linear ℂ A] [MonoidalLinear ℂ A]
-
 /-- **Nonvanishing transports up the standard embedding**: if an
 element of the group algebra acts nonzero at its own size, it acts
 nonzero at every larger size — the extended action is the whiskered
 one, and whiskering by the nonzero `X` is faithful. -/
-private theorem whiskerPowAlg_ne_zero (hs : Simple (𝟙_ A))
+private theorem whiskerPowAlg_ne_zero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [MonoidalPreadditive A] [RigidCategory A] [Linear ℂ A]
+    [MonoidalLinear ℂ A]
+    (hs : Simple (𝟙_ A))
     {X : A} (hX : ¬ Limits.IsZero X) {m : ℕ} (k : ℕ)
     (f : End (tensorPow A X m)) (hf : f ≠ 0) :
     whiskerPowAlg X m k f ≠ 0 := by
@@ -96,7 +100,11 @@ private theorem whiskerPowAlg_ne_zero (hs : Simple (𝟙_ A))
     exact ih (eq_zero_of_whiskerRight_eq_zero hs hX
       (show (whiskerPowAlg X m k f) ▷ X = 0 from hz))
 
-theorem permAlg_symCast_ne_zero (hs : Simple (𝟙_ A))
+theorem permAlg_symCast_ne_zero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [MonoidalPreadditive A] [RigidCategory A] [Linear ℂ A]
+    [MonoidalLinear ℂ A]
+    (hs : Simple (𝟙_ A))
     {X : A} (hX : ¬ Limits.IsZero X) {m n : ℕ} (h : m ≤ n)
     (x : SymGroupAlgebra m) (hx : permAlg X m x ≠ 0) :
     permAlg X n (symCast h x) ≠ 0 := by
@@ -106,9 +114,11 @@ theorem permAlg_symCast_ne_zero (hs : Simple (𝟙_ A))
 
 end Transport
 
-omit [SymmetricCategory A] [RigidCategory A] in
 /-- A zero factor makes the tensor zero. -/
-theorem isZero_tensor_of_isZero_left {B V : A}
+theorem isZero_tensor_of_isZero_left
+    [Category.{v} A] [Abelian A] [MonoidalCategory A]
+    [MonoidalPreadditive A]
+    {B V : A}
     (hB : Limits.IsZero B) : Limits.IsZero (B ⊗ V) := by
   rw [Limits.IsZero.iff_id_eq_zero] at hB ⊢
   rw [show 𝟙 (B ⊗ V) = 𝟙 B ▷ V from
@@ -119,7 +129,10 @@ theorem isZero_tensor_of_isZero_left {B V : A}
 the tensor with a nonzero dualizable object vanishes, the other
 factor vanishes — the whiskered evaluation is an epimorphism from
 a zero object. -/
-theorem isZero_left_of_tensor_isZero (hs : Simple (𝟙_ A))
+theorem isZero_left_of_tensor_isZero
+    [Category.{v} A] [Abelian A] [MonoidalCategory A] [SymmetricCategory A]
+    [MonoidalPreadditive A] [RigidCategory A]
+    (hs : Simple (𝟙_ A))
     {B V : A} (hV : ¬ Limits.IsZero V)
     (h : Limits.IsZero (B ⊗ V)) : Limits.IsZero B := by
   -- The braided evaluation out of `V ⊗ Vᘁ` is epi onto the unit.

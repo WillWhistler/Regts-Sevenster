@@ -34,17 +34,19 @@ noncomputable def basisProj {V : Type*} [AddCommGroup V]
     Module.End ℂ V :=
   (b.coord i).smulRight (b i)
 
-variable {V : Type*} [AddCommGroup V] [Module ℂ V] {d : ℕ}
+variable {V : Type*}
 
 /-- The projection scales the `i`-th coordinate back onto the
 `i`-th basis vector. -/
-theorem basisProj_apply (b : Basis (Fin d) ℂ V) (i : Fin d)
+theorem basisProj_apply [AddCommGroup V] [Module ℂ V] {d : ℕ}
+    (b : Basis (Fin d) ℂ V) (i : Fin d)
     (m : V) : basisProj b i m = b.repr m i • b i := by
   unfold basisProj
   rw [LinearMap.smulRight_apply, Basis.coord_apply]
 
 /-- Each basis projection is idempotent. -/
-theorem basisProj_mul_self (b : Basis (Fin d) ℂ V) (i : Fin d) :
+theorem basisProj_mul_self [AddCommGroup V] [Module ℂ V] {d : ℕ}
+    (b : Basis (Fin d) ℂ V) (i : Fin d) :
     basisProj b i * basisProj b i = basisProj b i := by
   apply LinearMap.ext
   intro m
@@ -52,7 +54,8 @@ theorem basisProj_mul_self (b : Basis (Fin d) ℂ V) (i : Fin d) :
     Basis.repr_self, Finsupp.single_eq_same, one_smul]
 
 /-- Distinct basis projections are orthogonal. -/
-theorem basisProj_mul_ne (b : Basis (Fin d) ℂ V) {i j : Fin d}
+theorem basisProj_mul_ne [AddCommGroup V] [Module ℂ V] {d : ℕ}
+    (b : Basis (Fin d) ℂ V) {i j : Fin d}
     (hij : i ≠ j) : basisProj b i * basisProj b j = 0 := by
   apply LinearMap.ext
   intro m
@@ -61,7 +64,8 @@ theorem basisProj_mul_ne (b : Basis (Fin d) ℂ V) {i j : Fin d}
   rw [Finsupp.single_eq_of_ne hij, zero_smul, smul_zero]
 
 /-- The basis projections sum to the identity. -/
-theorem sum_basisProj (b : Basis (Fin d) ℂ V) :
+theorem sum_basisProj [AddCommGroup V] [Module ℂ V] {d : ℕ}
+    (b : Basis (Fin d) ℂ V) :
     ∑ i, basisProj b i = 1 := by
   apply LinearMap.ext
   intro m
@@ -70,7 +74,8 @@ theorem sum_basisProj (b : Basis (Fin d) ℂ V) :
   exact b.sum_repr m
 
 /-- Each basis projection is nonzero. -/
-theorem basisProj_ne_zero (b : Basis (Fin d) ℂ V) (i : Fin d) :
+theorem basisProj_ne_zero [AddCommGroup V] [Module ℂ V] {d : ℕ}
+    (b : Basis (Fin d) ℂ V) (i : Fin d) :
     basisProj b i ≠ 0 := by
   intro h0
   have h1 := LinearMap.congr_fun h0 (b i)

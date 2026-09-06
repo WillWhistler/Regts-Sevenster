@@ -20,13 +20,6 @@ open CategoryTheory CategoryTheory.Idempotents
 
 variable {R : ℕ} (f : EdgeRankParameter R)
 
-/-- The underlying-morphism additive map (local copy). -/
-private def nmtF {P Q : Karoubi (SkeinObj f)} :
-    (P ⟶ Q) →+ (P.X ⟶ Q.X) where
-  toFun g := g.f
-  map_zero' := rfl
-  map_add' _ _ := rfl
-
 /-! ### Trace splitting along a complete orthogonal family -/
 
 /-- The trace splits along a complete orthogonal idempotent
@@ -41,7 +34,7 @@ theorem karoubiTrace_split {X : Karoubi (SkeinObj f)}
     rw [show (∑ a : ι, (e a).f) = X.p from by
       calc ∑ a : ι, (e a).f
           = ((∑ a : ι, e a : End X)).f :=
-            (map_sum (nmtF f) _ _).symm
+            (map_sum (karoubiHomAddHom X X) _ _).symm
         _ = ((1 : End X)).f := by rw [hco.complete]
         _ = X.p := rfl]
     rw [Karoubi.p_comp]
@@ -84,14 +77,14 @@ structure AtomResolution (M : Mat_ (Karoubi (SkeinObj f))) where
   atomic : ∀ i a, IsAtomicIdempotent (e i a)
 
 /-- Atom resolutions exist. -/
-noncomputable def atomResolution (P : SchurPackage.{1})
+noncomputable def atomResolution
     (M : Mat_ (Karoubi (SkeinObj f))) : AtomResolution f M := by
   have h : ∀ i : M.ι, ∃ (ι : Type) (_ : Fintype ι)
       (e : ι → End (M.X i)),
       CompleteOrthogonalIdempotents e ∧
         ∀ a, IsAtomicIdempotent (e a) := fun i => by
     haveI := karoubiEndFinite f (M.X i)
-    haveI := karoubiEnd_isSemisimpleRing f (M.X i) P
+    haveI := karoubiEnd_isSemisimpleRing f (M.X i)
     exact exists_completeOrthogonal_atomic
   choose idx fin e hco hatom using h
   exact ⟨idx, fin, e, hco, hatom⟩
@@ -308,14 +301,14 @@ theorem AtomResolution.t_comp (A : AtomResolution f M)
   rw [show ((∑ q : A.κ, (A.t φ p q ≫ A.t ψ q r :
       A.S p ⟶ A.S r))).f =
     ∑ q : A.κ, ((A.t φ p q ≫ A.t ψ q r :
-      A.S p ⟶ A.S r)).f from map_sum (nmtF f) _ _]
+      A.S p ⟶ A.S r)).f from map_sum (karoubiHomAddHom _ _) _ _]
   rw [A.t_f]
   rw [show ((φ ≫ ψ : End M) p.1 r.1) =
     ∑ j : M.ι, φ p.1 j ≫ ψ j r.1 from rfl]
   rw [show ((∑ j : M.ι, φ p.1 j ≫ ψ j r.1 :
       M.X p.1 ⟶ M.X r.1)).f =
     ∑ j : M.ι, ((φ p.1 j ≫ ψ j r.1 :
-      M.X p.1 ⟶ M.X r.1)).f from map_sum (nmtF f) _ _]
+      M.X p.1 ⟶ M.X r.1)).f from map_sum (karoubiHomAddHom _ _) _ _]
   rw [Preadditive.sum_comp, Preadditive.comp_sum]
   rw [show (∑ q : A.κ, ((A.t φ p q ≫ A.t ψ q r :
       A.S p ⟶ A.S r)).f) =
@@ -360,7 +353,7 @@ theorem AtomResolution.t_comp (A : AtomResolution f M)
   rw [show (∑ b : A.idx j, (A.e j b).f) = (M.X j).p from by
     calc ∑ b : A.idx j, (A.e j b).f
         = ((∑ b : A.idx j, A.e j b : End (M.X j))).f :=
-          (map_sum (nmtF f) _ _).symm
+          (map_sum (karoubiHomAddHom (M.X j) (M.X j)) _ _).symm
       _ = ((1 : End (M.X j))).f := by
           rw [(A.complete j).complete]
       _ = (M.X j).p := rfl]
@@ -697,7 +690,6 @@ noncomputable def AtomResolution.δ (c : A.κ) : ℂ :=
 /-- **The nilpotent leg**: nilpotent matrix-envelope
 endomorphisms have vanishing diagonal trace. -/
 theorem matTrace_eq_zero_of_isNilpotent'
-    (P : SchurPackage.{1})
     {φ : End M} (hφ : IsNilpotent φ) :
     matTrace f M φ = 0 := by
   classical
@@ -712,7 +704,7 @@ theorem matTrace_eq_zero_of_isNilpotent'
           _ = 0 := mul_zero φ
       rw [hφ0, map_zero]
   | succ j =>
-      set A := atomResolution f P M with hA
+      set A := atomResolution f M with hA
       have hBnil : (A.B φ) ^ (j + 1) = 0 := by
         rw [← A.B_pow φ j, hk, A.B_zero]
       calc matTrace f M φ

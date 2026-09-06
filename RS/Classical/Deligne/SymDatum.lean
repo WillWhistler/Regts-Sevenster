@@ -19,30 +19,21 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 section Transfer
 
-variable {P P' Q Q' : Mod D A}
-
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **Duality data transfer**: a duality datum for a pair of
 modules induces one on any pair connected to it by module maps —
 the pairing pulls back along maps into the pair, the copairing
 pushes forward along maps out of it.  Linearity is inherited
 compositionally. -/
 noncomputable def ModDualityDatum.transfer
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A}
     (d : ModDualityDatum A P P') (s : Q ⟶ P) (s' : Q' ⟶ P')
     (r : P ⟶ Q) (r' : P' ⟶ Q') : ModDualityDatum A Q Q' where
   pair := modTensorMap A s' s ≫ d.pair
@@ -71,12 +62,16 @@ end Transfer
 
 section SymBundles
 
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable {X : D} [ModObj A X]
-
 /-- The symmetriser projection, as a morphism of bundled
 modules; the mirror of `symPowσMod`. -/
-noncomputable def symPowπMod (n : ℕ) :
+noncomputable def symPowπMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] {X : D} [ModObj A X]
+    (n : ℕ) :
     modPowMod A X n ⟶ symPowMod A X n :=
   letI := symPowModObj A X n
   letI := modPowModObj A X n
@@ -88,13 +83,18 @@ end SymBundles
 
 section SymDatum
 
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable (M M' : Mod D A)
-
 /-- **The symmetric power duality datum**: the symmetric powers
 of a dual pair form a dual pair, by transferring the power datum
 along the symmetriser section and projection. -/
-noncomputable def symDualityDatum (d : ModDualityDatum A M M')
+noncomputable def symDualityDatum
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (n : ℕ) :
     ModDualityDatum A (symPowMod A M.X n) (symPowMod A M'.X n) :=
   (powDualityDatum A M M' d n).transfer A

@@ -37,28 +37,35 @@ variable {S : SuperCommAlgebra.{u, u'}}
 
 section Componentwise
 
-variable {A E₁ E₂ F₁ F₂ : Type*} [AddCommGroup A] [Module ℂ A]
-  [AddCommGroup E₁] [Module ℂ E₁] [AddCommGroup E₂] [Module ℂ E₂]
-  [AddCommGroup F₁] [Module ℂ F₁] [AddCommGroup F₂] [Module ℂ F₂]
+variable {A E₁ E₂ F₁ F₂ : Type*}
 
 /-- **The componentwise action block**: a pair of bilinear action
 blocks acting on the two factors of a product separately.  The four
 action blocks of a biproduct of super modules are the four instances
 of this construction. -/
-def prodAct (f : A →ₗ[ℂ] E₁ →ₗ[ℂ] F₁) (g : A →ₗ[ℂ] E₂ →ₗ[ℂ] F₂) :
+def prodAct [AddCommGroup A] [Module ℂ A] [AddCommGroup E₁] [Module ℂ E₁]
+    [AddCommGroup E₂] [Module ℂ E₂] [AddCommGroup F₁] [Module ℂ F₁]
+    [AddCommGroup F₂] [Module ℂ F₂]
+    (f : A →ₗ[ℂ] E₁ →ₗ[ℂ] F₁) (g : A →ₗ[ℂ] E₂ →ₗ[ℂ] F₂) :
     A →ₗ[ℂ] (E₁ × E₂) →ₗ[ℂ] F₁ × F₂ :=
   LinearMap.mk₂ ℂ (fun a p => (f a p.1, g a p.2))
     (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun _ _ _ => by simp) (fun _ _ _ => by simp)
 
 @[simp]
-theorem prodAct_apply (f : A →ₗ[ℂ] E₁ →ₗ[ℂ] F₁)
+theorem prodAct_apply
+    [AddCommGroup A] [Module ℂ A] [AddCommGroup E₁] [Module ℂ E₁]
+    [AddCommGroup E₂] [Module ℂ E₂] [AddCommGroup F₁] [Module ℂ F₁]
+    [AddCommGroup F₂] [Module ℂ F₂]
+    (f : A →ₗ[ℂ] E₁ →ₗ[ℂ] F₁)
     (g : A →ₗ[ℂ] E₂ →ₗ[ℂ] F₂) (a : A) (p : E₁ × E₂) :
     prodAct f g a p = (f a p.1, g a p.2) := rfl
 
 /-- The total identity for a product of ℂ-modules, in the form in
 which each degree of the biproduct of super modules needs it. -/
-theorem inl_fst_add_inr_snd (p : E₁ × E₂) :
+theorem inl_fst_add_inr_snd
+    [AddCommGroup E₁] [Module ℂ E₁] [AddCommGroup E₂] [Module ℂ E₂]
+    (p : E₁ × E₂) :
     LinearMap.inl ℂ E₁ E₂ (LinearMap.fst ℂ E₁ E₂ p)
       + LinearMap.inr ℂ E₁ E₂ (LinearMap.snd ℂ E₁ E₂ p) = p := by
   simp

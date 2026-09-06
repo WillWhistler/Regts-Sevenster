@@ -21,32 +21,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-! ## Interchange coherence in a symmetric category -/
 
 section Interchange
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The interchange of the crossed middle pair undoes the
 interchange, in a symmetric category. -/
 @[reassoc]
-theorem tensorμ_tensorμ (a b c d : D) :
+theorem tensorμ_tensorμ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (a b c d : D) :
     tensorμ a b c d ≫ tensorμ a c b d =
       𝟙 ((a ⊗ b) ⊗ (c ⊗ d)) := by
   calc tensorμ a b c d ≫ tensorμ a c b d
@@ -57,18 +43,13 @@ theorem tensorμ_tensorμ (a b c d : D) :
         rw [SymmetricCategory.symmetry]
         monoidal
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The mirror of `tensorμ_braiding`: interchanging and then
 braiding the two blocks equals braiding slotwise and then
 interchanging in the exchanged order. -/
 @[reassoc]
-theorem tensorμ_braiding_right (a b c d : D) :
+theorem tensorμ_braiding_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (a b c d : D) :
     tensorμ a b c d ≫ (β_ (a ⊗ c) (b ⊗ d)).hom =
       ((β_ a b).hom ⊗ₘ (β_ c d).hom) ≫ tensorμ b a d c := by
   have hβ : (β_ (a ⊗ c) (b ⊗ d)).hom =
@@ -86,14 +67,16 @@ end Interchange
 
 section SlotComm
 
-variable (X : D) [ModObj A X]
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- **The projected power multiplication is commutative**: after
 the symmetriser projection, multiplying in the braided order and
 transporting the arity agrees with multiplying directly. -/
-theorem braid_modPowMul_cast_symPowπ (a b : ℕ) {c : ℕ}
+theorem braid_modPowMul_cast_symPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) {c : ℕ}
     (h : b + a = c) (h' : a + b = c) :
     (β_ (modPow A X a) (modPow A X b)).hom ≫
         modPowMul A X b a ≫ modPowCast A X h ≫ symPowπ A X c =
@@ -111,22 +94,30 @@ end SlotComm
 
 /-! ## The stage projection -/
 
-variable (M M' : Mod D A)
-
 /-- **The stage projection**: a power stage maps to the matching
 splitting-chain stage by swapping the pair into copairing order
 and projecting both slots onto the symmetric powers. -/
-noncomputable def projStage (k : ℕ) :
+noncomputable def projStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     powStage A M M' k ⟶ chainStage A M M' k :=
   modTensorSwap A (modPowMod A M.X k) (modPowMod A M'.X k) ≫
     modTensorMap A (symPowπMod A k) (symPowπMod A k)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The stage projection under the stage projections of the
 coequalizers: the braiding of the factors followed by the
 symmetriser projections. -/
-theorem modTensorπ_projStage (k : ℕ) :
+theorem modTensorπ_projStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     modTensorπ A (modPowMod A M.X k) (modPowMod A M'.X k) ≫
         projStage A M M' k =
       (β_ (modPow A M.X (k + 1)) (modPow A M'.X (k + 1))).hom ≫
@@ -145,20 +136,27 @@ theorem modTensorπ_projStage (k : ℕ) :
 
 /-! ## The zero stages -/
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The symmetriser projection carries the singleton power stage
 of a module to its singleton symmetric-power stage. -/
-theorem toModPowModZero_symPowπMod :
+theorem toModPowModZero_symPowπMod
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) :
     toModPowModZero A M ≫ symPowπMod A 0 =
       toSymPowModZero A M :=
   Mod.hom_ext _ _ rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The seed bridge**: the stage projection carries the seed of
 the power chain to the seed of the splitting chain. -/
-theorem powSeed_projStage (d : ModDualityDatum A M M') :
+theorem powSeed_projStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     powSeed A M M' d ≫ projStage A M M' 0 =
       chainSeed A M M' d := by
   have h1 : copairUnit A M M' d ≫
@@ -179,15 +177,17 @@ theorem powSeed_projStage (d : ModDualityDatum A M M') :
 
 section MulBridge
 
-variable (X : D) [ModObj A X]
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The multiplication bridge, at the carriers**: the descended
 power multiplication followed by the symmetriser projection is
 the slotwise projection followed by the descended symmetric
 multiplication. -/
-theorem powMulDesc_symPowπ (m n : ℕ) :
+theorem powMulDesc_symPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X]
+    (m n : ℕ) :
     powMulDesc A X m n ≫ symPowπ A X (m + 1 + n + 1) =
       modTensorMap A (symPowπMod A m) (symPowπMod A n) ≫
         symMulDesc A X m n := by
@@ -203,7 +203,14 @@ end MulBridge
 /-- **The transition core**: the interchange followed by the
 power multiplications and the stage projection is the slotwise
 stage projection followed by the chain multiplication. -/
-theorem projStage_mul (k : ℕ) :
+theorem projStage_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     interchange A (modPowMod A M.X k) (modPowMod A M'.X k)
         (modPowMod A M.X 0) (modPowMod A M'.X 0) ≫
       modTensorMap A
@@ -423,7 +430,14 @@ theorem projStage_mul (k : ℕ) :
 /-- **The transition bridge**: the stage projection intertwines
 the power-chain transition with the splitting-chain
 transition. -/
-theorem powDelta_projStage (d : ModDualityDatum A M M') (k : ℕ) :
+theorem powDelta_projStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (k : ℕ) :
     powDelta A M M' d k ≫ projStage A M M' (k + 1) =
       projStage A M M' k ≫ chainDelta A M M' d k := by
   rw [powDelta, chainDelta, ← powSeed_projStage A M M' d,
@@ -445,7 +459,14 @@ power-chain unit to the corresponding splitting-chain unit.
 Together with the identification of the copairing powers as the
 power-chain units, this transports the copair element of the
 power datum to the stage units of the splitting chain. -/
-theorem powUnitStage_projStage (d : ModDualityDatum A M M')
+theorem powUnitStage_projStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (k : ℕ) :
     powUnitStage A M M' d k ≫ projStage A M M' k =
       chainUnitStage A M M' d k := by

@@ -16,18 +16,18 @@ namespace RS
 
 open Finset LinearMap
 
-variable {G : Type*} [Group G] [Fintype G] [DecidableEq G]
-
-variable (S T : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+variable {G : Type*}
 
 /-- The native representation map. -/
-noncomputable abbrev nPsi :
+noncomputable abbrev nPsi
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
     MonoidAlgebra ℂ G →ₐ[ℂ] Module.End ℂ (subCarrier S) :=
   (rhoS S).asAlgebraHom
 
-omit [Fintype G] [DecidableEq G] in
 /-- The kill criterion for the native action. -/
-theorem nPsi_eq_zero_iff (y : MonoidAlgebra ℂ G) :
+theorem nPsi_eq_zero_iff
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y : MonoidAlgebra ℂ G) :
     nPsi S y = 0 ↔ ∀ t ∈ S, y * t = 0 := by
   constructor
   · intro h0 t ht
@@ -51,10 +51,11 @@ theorem nPsi_eq_zero_iff (y : MonoidAlgebra ℂ G) :
     rw [hk _ m.2]
     rfl
 
-omit [Fintype G] [DecidableEq G] in
 /-- Annihilation transports along equivalences of the native
 representations. -/
 theorem kills_of_equiv_kills_native
+    [Group G] (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (T : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hequiv : Nonempty ((rhoS S).Equiv (rhoS T)))
     (y : MonoidAlgebra ℂ G)
     (hy : ∀ s ∈ S, y * s = 0) : ∀ t ∈ T, y * t = 0 := by
@@ -84,7 +85,8 @@ theorem kills_of_equiv_kills_native
 open scoped Classical in
 /-- A block element acting as zero on its simple kills every
 simple submodule. -/
-theorem natBlock_kills_of_psi_zero
+theorem natBlock_kills_of_psi_zero [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S)
     (x : MonoidAlgebra ℂ G)
     (h0 : nPsi S (nProjector S * x) = 0) :
@@ -101,7 +103,8 @@ theorem natBlock_kills_of_psi_zero
 
 open scoped Classical in
 /-- The projector acts as the identity on its own simple. -/
-theorem nPsi_projector_eq_one
+theorem nPsi_projector_eq_one [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     nPsi S (nProjector S) = 1 := by
   apply LinearMap.ext
@@ -117,30 +120,37 @@ theorem nPsi_projector_eq_one
   rfl
 
 /-- The native block. -/
-noncomputable abbrev natBlock : Submodule ℂ (MonoidAlgebra ℂ G) :=
+noncomputable abbrev natBlock [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
+    Submodule ℂ (MonoidAlgebra ℂ G) :=
   LinearMap.range (mulLeft ℂ (nProjector S))
 
 /-- The standard-coordinates equivalence of the carrier. -/
-noncomputable def stdEquiv :
+noncomputable def stdEquiv [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
     subCarrier S ≃ₗ[ℂ] (Fin (nDim S) → ℂ) :=
   (Module.finBasis ℂ (subCarrier S)).equivFun
 
 /-- The block map in standard coordinates. -/
-noncomputable def mPsi (y : MonoidAlgebra ℂ G) :
+noncomputable def mPsi [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y : MonoidAlgebra ℂ G) :
     (Fin (nDim S) → ℂ) →ₗ[ℂ] (Fin (nDim S) → ℂ) :=
   ((stdEquiv S).toLinearMap.comp (nPsi S y)).comp
     (stdEquiv S).symm.toLinearMap
 
-omit [DecidableEq G] in
 /-- The coordinate form of the block map, unfolded. -/
-theorem mPsi_apply (y : MonoidAlgebra ℂ G)
+theorem mPsi_apply [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y : MonoidAlgebra ℂ G)
     (v : Fin (nDim S) → ℂ) :
     mPsi S y v = stdEquiv S (nPsi S y ((stdEquiv S).symm v)) :=
   rfl
 
-omit [DecidableEq G] in
 /-- It carries multiplication to composition. -/
-theorem mPsi_mul (y y' : MonoidAlgebra ℂ G) :
+theorem mPsi_mul [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y y' : MonoidAlgebra ℂ G) :
     mPsi S (y * y') = (mPsi S y).comp (mPsi S y') := by
   apply LinearMap.ext
   intro v
@@ -150,10 +160,11 @@ theorem mPsi_mul (y y' : MonoidAlgebra ℂ G) :
     map_mul _ _ _]
   rfl
 
-omit [DecidableEq G] in
 /-- It vanishes exactly when the block map does, the coordinates
 being an isomorphism. -/
-theorem mPsi_zero_iff (y : MonoidAlgebra ℂ G) :
+theorem mPsi_zero_iff [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
+    (y : MonoidAlgebra ℂ G) :
     mPsi S y = 0 ↔ nPsi S y = 0 := by
   constructor
   · intro h0
@@ -174,7 +185,8 @@ theorem mPsi_zero_iff (y : MonoidAlgebra ℂ G) :
     simp
 
 /-- The projector acts as the identity on the carrier. -/
-theorem mPsi_projector_eq_one
+theorem mPsi_projector_eq_one [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     mPsi S (nProjector S) = LinearMap.id := by
   apply LinearMap.ext
@@ -186,7 +198,8 @@ theorem mPsi_projector_eq_one
   rfl
 
 /-- The standard-coordinates block map on the block. -/
-noncomputable def mPsiLin :
+noncomputable def mPsiLin [Group G] [Fintype G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G)) :
     natBlock S →ₗ[ℂ]
       ((Fin (nDim S) → ℂ) →ₗ[ℂ] (Fin (nDim S) → ℂ)) where
   toFun y := mPsi S y.1
@@ -211,7 +224,8 @@ noncomputable def mPsiLin :
     simp [mPsi_apply]
 
 /-- The coordinate block map is injective. -/
-theorem mPsiLin_injective
+theorem mPsiLin_injective [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     Function.Injective (mPsiLin S) := by
   intro a b hab
@@ -231,7 +245,8 @@ theorem mPsiLin_injective
 
 /-- And surjective onto the endomorphisms, by a dimension count —
 so the block is the full matrix algebra of its carrier. -/
-theorem mPsiLin_surjective
+theorem mPsiLin_surjective [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S) :
     Function.Surjective (mPsiLin S) := by
   have hrk : Module.finrank ℂ (natBlock S) =
@@ -248,7 +263,8 @@ theorem mPsiLin_surjective
 open scoped Classical in
 /-- **Native block faithfulness**: an algebra map that does not
 kill the projector is injective on its block. -/
-theorem nProjector_block_faithful
+theorem nProjector_block_faithful [Group G] [Fintype G] [DecidableEq G]
+    (S : Submodule (MonoidAlgebra ℂ G) (MonoidAlgebra ℂ G))
     (hS : IsSimpleModule (MonoidAlgebra ℂ G) S)
     {B : Type*} [Ring B] [Algebra ℂ B]
     (φ : MonoidAlgebra ℂ G →ₐ[ℂ] B)

@@ -11,9 +11,8 @@ relative to the assembled Schur package, *every* side `s > 2e√A`
 confines, not merely some side.
 
 `HookConfinement.lean` proves the existential form over an arbitrary
-package, which is what the forward proof consumes; the constant here
-comes from the block dimensions of the assembled package, through
-`square_growth_sharp`.
+package. The constant here comes from the block dimensions of the
+assembled package, through `square_growth_sharp`.
 -/
 
 namespace RS
@@ -27,15 +26,15 @@ theorem schurPackage_dim (μ : YoungDiagram) :
 
 namespace PermTower
 
-variable {E : ℕ → Type u} [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)]
-  {A : ℝ}
+variable {E : ℕ → Type u}
 
 /-- **Sharp square death**: in a tower of growth `A`, the square of
 any side `s > 2e√A` is dead relative to the assembled package.  Its
 block dimension exceeds `√A ^ (s²)` by `square_growth_sharp`, so the
 square of that dimension exceeds `A ^ (s²)`, which is what
 `not_alive_square` asks for. -/
-theorem not_alive_square_sharp [∀ n, Module.Finite ℂ (E n)]
+theorem not_alive_square_sharp [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    [∀ n, Module.Finite ℂ (E n)]
     (T : PermTower E A) {s : ℕ}
     (hs : 2 * Real.exp 1 * Real.sqrt A < s) :
     ¬ T.Alive schurPackage.{u} (squareDiagram s) := by
@@ -50,7 +49,8 @@ theorem not_alive_square_sharp [∀ n, Module.Finite ℂ (E n)]
 /-- **Sharp hook confinement**: in a tower of growth `A`, every alive
 shape lies in the `(s − 1, s − 1)` hook, for *every* side
 `s > 2e√A`. -/
-theorem hook_confinement_sharp [∀ n, Module.Finite ℂ (E n)]
+theorem hook_confinement_sharp [∀ n, Ring (E n)] [∀ n, Algebra ℂ (E n)] {A : ℝ}
+    [∀ n, Module.Finite ℂ (E n)]
     (T : PermTower E A) {s : ℕ}
     (hs : 2 * Real.exp 1 * Real.sqrt A < s) :
     ∀ μ : YoungDiagram, T.Alive schurPackage.{u} μ →

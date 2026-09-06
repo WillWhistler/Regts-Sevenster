@@ -23,35 +23,39 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- Tensoring preserves integer-indexed coproducts in the
 ind-category, by transport from the universe-sized discrete
 shape. -/
-instance tensorLeft_ind_preservesShapeInt (X : Ind C) :
+instance tensorLeft_ind_preservesShapeInt
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (X : Ind C) :
     PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X) :=
   preservesColimitsOfShape_of_equiv
     (Discrete.equivalence Equiv.ulift.{v}) _
 
 /-- Tensoring preserves integer-indexed coproducts in the
 ind-category, right-hand version. -/
-instance tensorRight_ind_preservesShapeInt (X : Ind C) :
+instance tensorRight_ind_preservesShapeInt
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (X : Ind C) :
     PreservesColimitsOfShape (Discrete ℤ) (tensorRight X) :=
   preservesColimitsOfShape_of_equiv
     (Discrete.equivalence Equiv.ulift.{v}) _
-
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalLinear ℂ (Ind C)]
-variable (B : Ind C) [MonObj B] [IsCommMonObj B]
-variable (N N' : Mod (Ind C) B)
 
 /-- **The Key Lemma** (Deligne 2.8) over the ind-completion: a
 duality datum with the zigzag laws, over a base whose symmetric
 powers of the module never vanish, admits splitting data — the
 graded splitting algebra with its degree-`±1` insertions. -/
-theorem keyLemmaData_ind (d : ModDualityDatum B N N') :
+theorem keyLemmaData_ind
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    [CategoryTheory.Linear ℂ (Ind C)] [MonoidalLinear ℂ (Ind C)] (B : Ind C)
+    [MonObj B] [IsCommMonObj B] (N : Mod (Ind C) B) (N' : Mod (Ind C) B)
+    (d : ModDualityDatum B N N') :
     KeyLemmaDataStatement B d := by
   intro hz _ hS
   letI := chainBGrMonObj B N N' d

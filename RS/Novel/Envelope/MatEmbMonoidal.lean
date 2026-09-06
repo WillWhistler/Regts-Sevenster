@@ -31,31 +31,33 @@ open CategoryTheory.Limits CategoryTheory.Idempotents
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] [MonoidalCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type u}
 
 /-! ### The embedding is additive
 
 Mathlib already provides `(Mat_.embedding C).Additive`. -/
 
-example : (Mat_.embedding C).Additive := inferInstance
+example
+    [Category.{v} C] [Preadditive C] :
+    (Mat_.embedding C).Additive := inferInstance
 
 /-! ### The embedding is `ℂ`-linear -/
 
 section Linear
 
-variable [CategoryTheory.Linear ℂ C] [MonoidalLinear ℂ C]
-
 /-- The embedding into the matrix category is ℂ-linear. -/
-instance matEmbeddingLinear : (Mat_.embedding C).Linear ℂ where
+instance matEmbeddingLinear
+    [Category.{v} C] [Preadditive C] [CategoryTheory.Linear ℂ C] :
+    (Mat_.embedding C).Linear ℂ where
   map_smul f r := by ext ⟨⟩ ⟨⟩; rfl
 
 end Linear
 
 /-! #### Naturality and coherence lemmas -/
 
-omit [MonoidalPreadditive C] in
-private theorem matEmb_μ_natural_left {X Y : C} (f : X ⟶ Y) (X' : C) :
+private theorem matEmb_μ_natural_left
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {X Y : C} (f : X ⟶ Y) (X' : C) :
     (Mat_.embedding C).map f ▷ (Mat_.embedding C).obj X' ≫ matEmbTensorHom Y X'
       =
     matEmbTensorHom X X' ≫ (Mat_.embedding C).map (f ▷ X') := by
@@ -86,8 +88,9 @@ private theorem matEmb_μ_natural_left {X Y : C} (f : X ⟶ Y) (X' : C) :
   show (f ⊗ₘ 𝟙 X') ≫ 𝟙 (Y ⊗ X') = 𝟙 (X ⊗ X') ≫ (f ▷ X')
   rw [tensorHom_id, comp_id, id_comp]
 
-omit [MonoidalPreadditive C] in
-private theorem matEmb_μ_natural_right {X Y : C} (X' : C) (f : X ⟶ Y) :
+private theorem matEmb_μ_natural_right
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    {X Y : C} (X' : C) (f : X ⟶ Y) :
     (Mat_.embedding C).obj X' ◁ (Mat_.embedding C).map f ≫ matEmbTensorHom X' Y
       =
     matEmbTensorHom X' X ≫ (Mat_.embedding C).map (X' ◁ f) := by
@@ -121,8 +124,9 @@ private theorem matEmb_μ_natural_right {X Y : C} (X' : C) (f : X ⟶ Y) :
 /-! #### Associativity -/
 
 -- Restate the private Mat_ associator lemma
-omit [MonoidalPreadditive C] in
-private theorem mat_assocHom_apply' (M N K : Mat_ C)
+private theorem mat_assocHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M N K : Mat_ C)
     (i : M.ι) (j : N.ι) (k : K.ι) (i' : M.ι) (j' : N.ι) (k' : K.ι) :
     (α_ M N K).hom ((i, j), k) (i', (j', k')) =
       if hi : i = i' then if hj : j = j' then if hk : k = k' then
@@ -133,8 +137,9 @@ private theorem mat_assocHom_apply' (M N K : Mat_ C)
 -- Raised budget: associativity of the embedding is checked
 -- entrywise on a triple index.
 set_option maxHeartbeats 3200000 in
-omit [MonoidalPreadditive C] in
-private theorem matEmb_associativity (X Y Z : C) :
+private theorem matEmb_associativity
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X Y Z : C) :
     matEmbTensorHom X Y ▷ (Mat_.embedding C).obj Z ≫
     matEmbTensorHom (X ⊗ Y) Z ≫ (Mat_.embedding C).map (α_ X Y Z).hom =
     (α_ ((Mat_.embedding C).obj X) ((Mat_.embedding C).obj Y)
@@ -236,14 +241,16 @@ private theorem matEmb_associativity (X Y Z : C) :
 /-! #### Unitality -/
 
 -- Component lemmas restated from private defs
-omit [MonoidalPreadditive C] in
-private theorem mat_leftUnitorHom_apply' (M : Mat_ C) (i : PUnit) (j k : M.ι) :
+private theorem mat_leftUnitorHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) (i : PUnit) (j k : M.ι) :
     (λ_ M).hom (i, j) k =
       if h : j = k then eqToHom (by subst h; rfl) ≫ (λ_ (M.X k)).hom else 0
         := rfl
 
-omit [MonoidalPreadditive C] in
-private theorem mat_rightUnitorHom_apply' (M : Mat_ C) (i : M.ι) (j : PUnit) (k
+private theorem mat_rightUnitorHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (M : Mat_ C) (i : M.ι) (j : PUnit) (k
   : M.ι) :
     (ρ_ M).hom (i, j) k =
       if h : i = k then eqToHom (by subst h; rfl) ≫ (ρ_ (M.X k)).hom else 0
@@ -252,8 +259,9 @@ private theorem mat_rightUnitorHom_apply' (M : Mat_ C) (i : M.ι) (j : PUnit) (k
 -- Raised budget: unitality is checked entrywise against the
 -- one-object index.
 set_option maxHeartbeats 3200000 in
-omit [MonoidalPreadditive C] in
-private theorem matEmb_left_unitality (X : C) :
+private theorem matEmb_left_unitality
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X : C) :
     (λ_ ((Mat_.embedding C).obj X)).hom =
     (𝟙 ((Mat_.embedding C).obj (𝟙_ C)) :
       𝟙_ (Mat_ C) ⟶ (Mat_.embedding C).obj (𝟙_ C)) ▷
@@ -315,8 +323,9 @@ private theorem matEmb_left_unitality (X : C) :
 
 -- As for left unitality.
 set_option maxHeartbeats 3200000 in
-omit [MonoidalPreadditive C] in
-private theorem matEmb_right_unitality (X : C) :
+private theorem matEmb_right_unitality
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    (X : C) :
     (ρ_ ((Mat_.embedding C).obj X)).hom =
     (Mat_.embedding C).obj X ◁
     (𝟙 ((Mat_.embedding C).obj (𝟙_ C)) :
@@ -381,7 +390,9 @@ private theorem matEmb_right_unitality (X : C) :
 `εIso : 𝟙_ (Mat_ C) ≅ (Mat_.embedding C).obj (𝟙_ C)`, the identity since
 these coincide, and `μIso X Y : emb X ⊗ emb Y ≅ emb (X ⊗ Y)` from
 `matEmbTensorIso`. -/
-private noncomputable def matEmbCoreMonoidal :
+private noncomputable def matEmbCoreMonoidal
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] :
     (Mat_.embedding C).CoreMonoidal where
   εIso := Iso.refl _
   μIso X Y := matEmbTensorIso X Y
@@ -393,7 +404,9 @@ private noncomputable def matEmbCoreMonoidal :
 
 /-- The embedding `Mat_.embedding C` is strong monoidal.  The full `Monoidal`
 structure, `OplaxMonoidal` coherence included, comes from `CoreMonoidal`. -/
-noncomputable instance matEmbeddingMonoidal :
+noncomputable instance matEmbeddingMonoidal
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] :
     Functor.Monoidal (Mat_.embedding C) :=
   matEmbCoreMonoidal.toMonoidal
 
@@ -401,10 +414,11 @@ noncomputable instance matEmbeddingMonoidal :
 
 section Braided
 
-variable [BraidedCategory C]
-
 -- Braiding component formula (restated from private def)
-private theorem mat_braidHom_apply' (M N : Mat_ C)
+private theorem mat_braidHom_apply'
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C]
+    (M N : Mat_ C)
     (i₁ : M.ι) (i₂ : N.ι) (j₁ : N.ι) (j₂ : M.ι) :
     (β_ M N).hom (i₁, i₂) (j₁, j₂) =
       if hi : i₂ = j₁ then if hj : i₁ = j₂ then
@@ -414,7 +428,10 @@ private theorem mat_braidHom_apply' (M N : Mat_ C)
 -- Raised budget: the braided axiom is checked entrywise through
 -- the tensorator.
 set_option maxHeartbeats 3200000 in
-private theorem matEmb_braided (X Y : C) :
+private theorem matEmb_braided
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C]
+    (X Y : C) :
     Functor.LaxMonoidal.μ (Mat_.embedding C) X Y ≫
       (Mat_.embedding C).map (β_ X Y).hom =
     (β_ ((Mat_.embedding C).obj X) ((Mat_.embedding C).obj Y)).hom ≫
@@ -472,7 +489,9 @@ private theorem matEmb_braided (X Y : C) :
   rw [hLHS, hRHS]
 
 /-- The embedding `Mat_.embedding C` is braided when `C` is braided. -/
-noncomputable instance matEmbeddingBraided :
+noncomputable instance matEmbeddingBraided
+    [Category.{v} C] [Preadditive C] [MonoidalCategory C]
+    [MonoidalPreadditive C] [BraidedCategory C] :
     Functor.Braided (Mat_.embedding C) where
   braided := matEmb_braided
 

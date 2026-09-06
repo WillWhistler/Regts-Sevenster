@@ -19,51 +19,58 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-! ## Stage transports -/
 
 section StageCast
 
-variable (M M' : Mod D A)
-
 /-- Transport of a chain stage along an equality of arities. -/
-noncomputable def chainStageCast {j k : ℕ} (h : j = k) :
+noncomputable def chainStageCast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {j k : ℕ} (h : j = k) :
     chainStage A M M' j ⟶ chainStage A M M' k :=
   eqToHom (congrArg (chainStage A M M') h)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The trivial transport is the identity. -/
 @[simp]
-theorem chainStageCast_rfl (k : ℕ) :
+theorem chainStageCast_rfl
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     chainStageCast A M M' (rfl : k = k) = 𝟙 _ := rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- Stage transports compose. -/
 @[reassoc (attr := simp)]
-theorem chainStageCast_trans {i j k : ℕ} (h : i = j) (h' : j = k) :
+theorem chainStageCast_trans
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {i j k : ℕ} (h : i = j) (h' : j = k) :
     chainStageCast A M M' h ≫ chainStageCast A M M' h' =
       chainStageCast A M M' (h.trans h') := by
   subst h h'
   simp
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- The stage projection intertwines the symmetric-power and stage
 transports. -/
 @[reassoc]
-theorem modTensorπ_chainStageCast {j k : ℕ} (h : j = k) :
+theorem modTensorπ_chainStageCast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {j k : ℕ} (h : j = k) :
     modTensorπ A (symPowMod A M'.X j) (symPowMod A M.X j) ≫
         chainStageCast A M M' h =
       (symPowCast A M'.X (congrArg Nat.succ h) ⊗ₘ
@@ -80,41 +87,44 @@ end StageCast
 
 section EpiKit
 
-variable (N P : Mod D A)
-
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The module-tensor projection is an epimorphism. -/
-instance epi_modTensorπ : Epi (modTensorπ A N P) :=
+instance epi_modTensorπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D] (A : D) [MonObj A] (N : Mod D A) (P : Mod D A) :
+    Epi (modTensorπ A N P) :=
   ⟨fun _ _ w => modTensor_hom_ext A N P w⟩
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- The right-whiskered module-tensor projection is an
 epimorphism. -/
-instance epi_modTensorπ_whiskerRight (W : D) :
+instance epi_modTensorπ_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (W : D) :
     Epi (modTensorπ A N P ▷ W) :=
   ⟨fun _ _ w => modTensor_whiskerR_hom_ext A N P W w⟩
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- The left-whiskered module-tensor projection is an
 epimorphism. -/
-instance epi_whiskerLeft_modTensorπ (Q : D) :
+instance epi_whiskerLeft_modTensorπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (Q : D) :
     Epi (Q ◁ modTensorπ A N P) :=
   ⟨fun _ _ w => modTensor_whisker_hom_ext A N P Q w⟩
 
 /-- Whiskering the module-tensor coequalizer on the right and then
 on the left still yields a colimit cofork. -/
-noncomputable def modTensorWhiskerRLIsColimit (W Q : D) :
+noncomputable def modTensorWhiskerRLIsColimit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (W Q : D) :
     IsColimit (Cofork.ofπ (Q ◁ (modTensorπ A N P ▷ W))
       (by rw [← MonoidalCategory.whiskerLeft_comp,
         ← comp_whiskerRight, modTensor_condition,
@@ -124,22 +134,26 @@ noncomputable def modTensorWhiskerRLIsColimit (W Q : D) :
   isColimitCoforkMapOfIsColimit (tensorLeft Q) _
     (modTensorWhiskerRIsColimit A N P W)
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- The doubly whiskered module-tensor projection is an
 epimorphism. -/
-instance epi_whiskerLeft_modTensorπ_whiskerRight (W Q : D) :
+instance epi_whiskerLeft_modTensorπ_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (W Q : D) :
     Epi (Q ◁ (modTensorπ A N P ▷ W)) :=
   epi_of_isColimit_cofork (modTensorWhiskerRLIsColimit A N P W Q)
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)] [IsCommMonObj A] in
 /-- A projection whiskered on the right by two objects is an
 epimorphism. -/
-instance epi_modTensorπ_whiskerRight_whiskerRight (V W : D) :
+instance epi_modTensorπ_whiskerRight_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (V W : D) :
     Epi ((modTensorπ A N P ▷ V) ▷ W) := by
   rw [show (modTensorπ A N P ▷ V) ▷ W =
       (α_ (N.X ⊗ P.X) V W).hom ≫
@@ -148,23 +162,27 @@ instance epi_modTensorπ_whiskerRight_whiskerRight (V W : D) :
     simp [MonoidalCategory.whiskerRight_tensor]]
   infer_instance
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- A projection whiskered on the left and then on the right is an
 epimorphism. -/
-instance epi_whiskerLeft_modTensorπ_whiskerRight' (Q W : D) :
+instance epi_whiskerLeft_modTensorπ_whiskerRight'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (Q W : D) :
     Epi ((Q ◁ modTensorπ A N P) ▷ W) := by
   rw [MonoidalCategory.whisker_assoc]
   infer_instance
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] [IsCommMonObj A] in
 /-- A projection whiskered on the left by two objects is an
 epimorphism. -/
-instance epi_whiskerLeft_whiskerLeft_modTensorπ (Q R : D) :
+instance epi_whiskerLeft_whiskerLeft_modTensorπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A)
+    (Q R : D) :
     Epi (Q ◁ (R ◁ modTensorπ A N P)) := by
   rw [show Q ◁ (R ◁ modTensorπ A N P) =
       (α_ Q R (N.X ⊗ P.X)).inv ≫
@@ -172,47 +190,57 @@ instance epi_whiskerLeft_whiskerLeft_modTensorπ (Q R : D) :
         (α_ Q R (modTensor A N P)).hom by monoidal]
   infer_instance
 
-variable (Q R : Mod D A)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- The tensor product of two module-tensor projections is an
 epimorphism. -/
-instance epi_modTensorπ_tensorHom :
+instance epi_modTensorπ_tensorHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A) (Q : Mod D A)
+    (R : Mod D A) :
     Epi (modTensorπ A N P ⊗ₘ modTensorπ A Q R) := by
   rw [MonoidalCategory.tensorHom_def]
   infer_instance
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- The right-whiskered tensor product of two projections is an
 epimorphism. -/
-instance epi_modTensorπ_tensorHom_whiskerRight (W : D) :
+instance epi_modTensorπ_tensorHom_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A) (Q : Mod D A)
+    (R : Mod D A)
+    (W : D) :
     Epi ((modTensorπ A N P ⊗ₘ modTensorπ A Q R) ▷ W) := by
   rw [MonoidalCategory.tensorHom_def, comp_whiskerRight]
   infer_instance
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- The left-whiskered tensor product of two projections is an
 epimorphism. -/
-instance epi_modTensorπ_tensorHom_whiskerLeft (W : D) :
+instance epi_modTensorπ_tensorHom_whiskerLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A) (Q : Mod D A)
+    (R : Mod D A)
+    (W : D) :
     Epi (W ◁ (modTensorπ A N P ⊗ₘ modTensorπ A Q R)) := by
   rw [MonoidalCategory.tensorHom_def,
     MonoidalCategory.whiskerLeft_comp]
   infer_instance
 
-variable (S T : Mod D A)
-
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [IsCommMonObj A] in
 /-- The tensored triple of module-tensor projections is an
 epimorphism. -/
-instance epi_modTensorπ_tensorHom_tensorHom :
+instance epi_modTensorπ_tensorHom_tensorHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] (N : Mod D A) (P : Mod D A) (Q : Mod D A)
+    (R : Mod D A) (S : Mod D A) (T : Mod D A) :
     Epi ((modTensorπ A N P ⊗ₘ modTensorπ A Q R) ⊗ₘ
       modTensorπ A S T) := by
   rw [MonoidalCategory.tensorHom_def]
@@ -224,13 +252,15 @@ end EpiKit
 
 section SymCast
 
-variable (X : D) [ModObj A X]
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] [IsCommMonObj A] in
 /-- Commutativity of the symmetric multiplication, with both sides
 transported to a common arity. -/
-private theorem symMul_comm_cast {a b c : ℕ} (h : b + a = c)
+private theorem symMul_comm_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X]
+    {a b c : ℕ} (h : b + a = c)
     (h' : a + b = c) :
     (β_ (symPow A X a) (symPow A X b)).hom ≫ symMul A X b a ≫
         symPowCast A X h =
@@ -245,11 +275,16 @@ end SymCast
 
 section ChainComm
 
-variable (M M' : Mod D A)
-
 /-- **Commutativity of the chain multiplication**, up to the stage
 transport of `n + 1 + m = m + 1 + n`. -/
-theorem chainMul_comm (m n : ℕ) :
+theorem chainMul_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (m n : ℕ) :
     (β_ (chainStage A M M' m) (chainStage A M M' n)).hom ≫
         chainMul A M M' n m ≫
         chainStageCast A M M' (by omega : n + 1 + m = m + 1 + n) =
@@ -468,15 +503,9 @@ end ChainComm
 
 section TensorSurgery
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Absorb a whiskered morphism into the first tensor factor. -/
 private theorem tensorHom_whiskerRight_comp
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₁ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (f : Y₁ ⟶ Z₁) (r : Z₁ ⊗ Y₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (f ▷ Y₂) ≫ r = ((a ≫ f) ⊗ₘ b) ≫ r := by
@@ -484,15 +513,8 @@ private theorem tensorHom_whiskerRight_comp
     MonoidalCategory.tensorHom_comp_tensorHom_assoc,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Absorb a whiskered morphism into the second tensor factor. -/
-private theorem tensorHom_whiskerLeft_comp
+private theorem tensorHom_whiskerLeft_comp [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₂ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (g : Y₂ ⟶ Z₂) (r : Y₁ ⊗ Z₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (Y₁ ◁ g) ≫ r = (a ⊗ₘ (b ≫ g)) ≫ r := by
@@ -500,15 +522,9 @@ private theorem tensorHom_whiskerLeft_comp
     MonoidalCategory.tensorHom_comp_tensorHom_assoc,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Extract a prefix of the first tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerRight_split
+    [Category.{v} D] [MonoidalCategory D]
     {V₁ W₁ U₁ X₂ U₂ Z : D} (x : V₁ ⟶ W₁) (q₁ : W₁ ⟶ U₁)
     (q₂ : X₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     ((x ≫ q₁) ⊗ₘ q₂) ≫ r = (x ▷ X₂) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -516,15 +532,9 @@ private theorem compTensorHom_whiskerRight_split
     MonoidalCategory.tensorHom_def, comp_whiskerRight]
   simp only [Category.assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Extract a prefix of the second tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerLeft_split
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ U₁ V₂ W₂ U₂ Z : D} (q₁ : X₁ ⟶ U₁) (x : V₂ ⟶ W₂)
     (q₂ : W₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     (q₁ ⊗ₘ (x ≫ q₂)) ≫ r = (X₁ ◁ x) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -533,17 +543,12 @@ private theorem compTensorHom_whiskerLeft_split
     MonoidalCategory.whiskerLeft_comp]
   simp only [Category.assoc]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The coherence core of associativity**: two interchanged pair
 multiplications reassociate through `tensorμ` whenever each factor
 satisfies the corresponding one-object associativity law. -/
-private theorem chainMulAssoc_core {a₁ a₂ c₁ c₂ e₁ e₂ x₁ x₂ z₁ z₂
+private theorem chainMulAssoc_core
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {a₁ a₂ c₁ c₂ e₁ e₂ x₁ x₂ z₁ z₂
       t₁ t₂ Z : D}
     {u₁ : a₁ ⊗ c₁ ⟶ x₁} {u₂ : a₂ ⊗ c₂ ⟶ x₂}
     {w₁ : c₁ ⊗ e₁ ⟶ z₁} {w₂ : c₂ ⊗ e₂ ⟶ z₂}
@@ -574,11 +579,16 @@ end TensorSurgery
 
 section ChainAssoc
 
-variable (M M' : Mod D A)
-
 /-- **Associativity of the chain multiplication**, up to the stage
 transports onto the common arity `m + 1 + n + 1 + p`. -/
-theorem chainMul_assoc (m n p : ℕ) :
+theorem chainMul_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (m n p : ℕ) :
     (chainMul A M M' m n ▷ chainStage A M M' p) ≫
         chainMul A M M' (m + 1 + n) p ≫
         chainStageCast A M M'

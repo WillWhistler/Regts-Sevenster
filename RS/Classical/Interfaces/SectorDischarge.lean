@@ -180,7 +180,8 @@ private theorem evenSectorTrTransport_perm
   have hkey : evenConjTransport f P e e' n
       (evenPermRep f P n (MonoidAlgebra.of ℂ _ σ)) =
       ((modelPermMap σ : SuperVect.Hom
-        (superPow (stdSuperPair k l) n) (superPow (stdSuperPair k l) n))).evenMap :=
+        (superPow (stdSuperPair k l) n)
+          (superPow (stdSuperPair k l) n))).evenMap :=
     congrArg SuperVect.Hom.evenMap
       (transport_perm_eq f P e e' he'e hee' n σ)
   rw [hkey]
@@ -214,7 +215,8 @@ private theorem oddSectorTrTransport_perm
   have hkey : evenConjTransport f P e e' n
       (evenPermRep f P n (MonoidAlgebra.of ℂ _ σ)) =
       ((modelPermMap σ : SuperVect.Hom
-        (superPow (stdSuperPair k l) n) (superPow (stdSuperPair k l) n))).evenMap :=
+        (superPow (stdSuperPair k l) n)
+          (superPow (stdSuperPair k l) n))).evenMap :=
     congrArg SuperVect.Hom.evenMap
       (transport_perm_eq f P e e' he'e hee' n σ)
   rw [hkey]

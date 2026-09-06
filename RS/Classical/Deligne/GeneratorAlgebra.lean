@@ -31,15 +31,16 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **The splitting algebra of a single object, countably
 presented.**  Proposition 2.9 makes the object locally mixed, and
 the countable descent replaces the witnessing algebra by a countably
 presented one. -/
-theorem exists_generator_algebra (ψ : ℂ ≃+* End (𝟙_ C))
+theorem exists_generator_algebra
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0})
     (L : OddLine (Ind C)) (X₀ : C) (lam : YoungDiagram)
     (hkill : letI := linearOfScalarUnit ψ; SchurKilled P X₀ lam)

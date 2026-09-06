@@ -14,41 +14,41 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
 /-- The boundary label of a boundary flag. -/
-noncomputable def boundaryLabel (F : EdgeSubset W) {f : W.Flag}
+noncomputable def boundaryLabel {W : Fragment α}
+    (F : EdgeSubset W) {f : W.Flag}
     (hf : f ∈ F.boundaryFlags) : α :=
   Classical.choose (F.attach_boundary_of_mem hf)
 
-omit [LinearOrder α] in
 /-- The defining equation of the boundary label. -/
-theorem attach_boundaryLabel {f : W.Flag}
+theorem attach_boundaryLabel {W : Fragment α} {F : EdgeSubset W}
+    {f : W.Flag}
     (hf : f ∈ F.boundaryFlags) :
     W.attach f = Sum.inr (F.boundaryLabel hf) :=
   Classical.choose_spec (F.attach_boundary_of_mem hf)
 
-omit [LinearOrder α] in
 /-- The label determines the attachment. -/
-theorem boundaryLabel_eq_of_attach {f : W.Flag} {i : α}
+theorem boundaryLabel_eq_of_attach {W : Fragment α} {F : EdgeSubset W}
+    {f : W.Flag} {i : α}
     (hf : f ∈ F.boundaryFlags) (h : W.attach f = Sum.inr i) :
     F.boundaryLabel hf = i :=
   Sum.inr.inj ((attach_boundaryLabel hf).symm.trans h)
 
-omit [LinearOrder α] in
 /-- **A boundary flag is the flag of its own label.** -/
-theorem boundaryFlag_boundaryLabel {f : W.Flag} {F : EdgeSubset W}
+theorem boundaryFlag_boundaryLabel {W : Fragment α}
+    {f : W.Flag} {F : EdgeSubset W}
     (hf : f ∈ F.boundaryFlags) :
     W.boundaryFlag (F.boundaryLabel hf) = f :=
   (W.eq_boundaryFlag (F.boundaryLabel hf) f
     (EdgeSubset.attach_boundaryLabel hf)).symm
 
-omit [LinearOrder α] in
 /-- Distinct boundary flags carry distinct labels. -/
-theorem boundaryLabel_inj {f g : W.Flag}
+theorem boundaryLabel_inj {W : Fragment α} {F : EdgeSubset W}
+    {f g : W.Flag}
     (hf : f ∈ F.boundaryFlags) (hg : g ∈ F.boundaryFlags)
     (h : F.boundaryLabel hf = F.boundaryLabel hg) : f = g := by
   have h1 := W.eq_boundaryFlag (F.boundaryLabel hf) f
@@ -57,20 +57,20 @@ theorem boundaryLabel_inj {f g : W.Flag}
     (attach_boundaryLabel hg)
   rw [h1, h2, h]
 
-omit [LinearOrder α] in
 /-- The boundary label does not depend on the membership proof. -/
-theorem boundaryLabel_congr {f g : W.Flag}
+theorem boundaryLabel_congr {W : Fragment α} {F : EdgeSubset W}
+    {f g : W.Flag}
     (hf : f ∈ F.boundaryFlags) (hg : g ∈ F.boundaryFlags)
     (h : f = g) : F.boundaryLabel hf = F.boundaryLabel hg := by
   subst h
   rfl
 
-variable {κ : F.RelTransitionSystem}
-
 /-- **The crossing relation on labels**: `ChordCross` is exactly
 the four-label interleaving condition (each chord low-to-high, the
 first chord starting first). -/
 theorem chordCross_iff_labels
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {κ : F.RelTransitionSystem}
     (b b' : {x : W.Flag // x ∈ F.boundaryFlags}) :
     ChordCross κ b b' ↔
       (F.boundaryLabel b.prop <

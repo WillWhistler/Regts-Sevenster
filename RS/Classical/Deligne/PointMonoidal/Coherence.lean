@@ -51,29 +51,25 @@ attribute [local irreducible] superVectMu
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   (M N Q : S.Mod.{u, u, u, u})
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (Q.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (Q.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((N.tensor Q).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((N.tensor Q).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    (((M.tensor N).tensor Q).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    (((M.tensor N).tensor Q).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    ((M.tensor (N.tensor Q)).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((M.tensor (N.tensor Q)).tensor (pointMod P)).odd]
 
 set_option linter.unusedSimpArgs false in
 /-- **Associativity of the monoidal comparison.** -/
 @[reassoc]
-theorem superVectMu_associativity :
+theorem superVectMu_associativity
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (Q.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (Q.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((N.tensor Q).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((N.tensor Q).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (((M.tensor N).tensor Q).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (((M.tensor N).tensor Q).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor (N.tensor Q)).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor (N.tensor Q)).tensor (pointMod P)).odd] :
     (superVectMu P M N ▷ toSuperVect P Q) ≫
         superVectMu P (M.tensor N) Q ≫
         superVectHom P (α_ M N Q).hom =
@@ -323,23 +319,20 @@ attribute [local irreducible] superVectMu
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   {M M' N N' : S.Mod.{u, u, u, u}}
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (M'.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M'.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N'.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N'.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M'.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M'.tensor N).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N').tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N').tensor (pointMod P)).odd]
 
 /-- **The comparison is natural in the left variable.** -/
-theorem superVectMu_naturality_left (f : M ⟶ M') :
+theorem superVectMu_naturality_left
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (M'.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M'.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M'.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M'.tensor N).tensor (pointMod P)).odd]
+    (f : M ⟶ M') :
     (superVectHom P f ▷ toSuperVect P N) ≫ superVectMu P M' N =
       superVectMu P M N ≫ superVectHom P (f ▷ N) := by
   refine SuperVect.hom_ext
@@ -420,7 +413,18 @@ theorem superVectMu_naturality_left (f : M ⟶ M') :
     rfl
 
 /-- **The comparison is natural in the right variable.** -/
-theorem superVectMu_naturality_right (g : N ⟶ N') :
+theorem superVectMu_naturality_right
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N'.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N'.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N').tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N').tensor (pointMod P)).odd]
+    (g : N ⟶ N') :
     (toSuperVect P M ◁ superVectHom P g) ≫ superVectMu P M N' =
       superVectMu P M N ≫ superVectHom P (M ◁ g) := by
   refine SuperVect.hom_ext
@@ -512,8 +516,7 @@ variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   (M N : S.Mod.{u, u, u, u})
 
 /-- A residue class is its own coordinate times the unit. -/
-theorem pointEven_eq_smul_one
-    (a : (pointMod P : S.Mod.{u, u, u, u}).even) :
+theorem pointEven_eq_smul_one (a : (pointMod P : S.Mod.{u, u, u, u}).even) :
     a = a.down • pointOne P :=
   ULift.ext _ _ (by
     show a.down = a.down * 1
@@ -550,8 +553,7 @@ theorem tmulOE_point_eq_smul (m : M.odd)
 variable (M N)
 
 /-- **The comparison undoes the inverse**, in even degree. -/
-theorem superVectMuEvenRaw_baseNuEven
-    (w : ((M.tensor N).tensor (pointMod P) :
+theorem superVectMuEvenRaw_baseNuEven (w : ((M.tensor N).tensor (pointMod P) :
       S.Mod.{u, u, u, u}).even) :
     superVectMuEvenRaw P M N (baseNuEven P M N w) = w := by
   refine LinearMap.congr_fun (liftEven_unique (M.tensor N)
@@ -588,8 +590,7 @@ theorem superVectMuEvenRaw_baseNuEven
     rw [map_zero, map_zero]
 
 /-- **The comparison undoes the inverse**, in odd degree. -/
-theorem superVectMuOddRaw_baseNuOdd
-    (w : ((M.tensor N).tensor (pointMod P) :
+theorem superVectMuOddRaw_baseNuOdd (w : ((M.tensor N).tensor (pointMod P) :
       S.Mod.{u, u, u, u}).odd) :
     superVectMuOddRaw P M N (baseNuOdd P M N w) = w := by
   refine LinearMap.congr_fun (liftOdd_unique (M.tensor N)
@@ -829,15 +830,14 @@ theorem superVectMuOddRaw_bijective :
     ⟨baseNuOdd P M N, baseNuOdd_superVectMuOddRaw P M N,
       superVectMuOddRaw_baseNuOdd P M N⟩
 
-variable [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
-
 /-- The even component of the comparison is bijective. -/
-theorem superVectMu_evenMap_bijective :
+theorem superVectMu_evenMap_bijective
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd] :
     Function.Bijective (superVectMu P M N).evenMap := by
   have h : ⇑(superVectMu P M N).evenMap =
       (⇑(toSuperVectEvenEquiv P (M.tensor N)) ∘
@@ -851,7 +851,13 @@ theorem superVectMu_evenMap_bijective :
     (superVectPairEvenEquiv P M N).symm.bijective
 
 /-- The odd component of the comparison is bijective. -/
-theorem superVectMu_oddMap_bijective :
+theorem superVectMu_oddMap_bijective
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd] :
     Function.Bijective (superVectMu P M N).oddMap := by
   have h : ⇑(superVectMu P M N).oddMap =
       (⇑(toSuperVectOddEquiv P (M.tensor N)) ∘
@@ -867,14 +873,26 @@ theorem superVectMu_oddMap_bijective :
 /-- **The monoidal comparison is an isomorphism of super vector
 spaces**: base change at a complex point is strong, not merely
 lax. -/
-noncomputable def superVectMuIso :
+noncomputable def superVectMuIso
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd] :
     toSuperVect P M ⊗ toSuperVect P N ≅ toSuperVect P (M.tensor N) :=
   SuperVect.isoOfBijective (superVectMu P M N)
     (superVectMu_evenMap_bijective P M N)
     (superVectMu_oddMap_bijective P M N)
 
 /-- **The monoidal comparison is invertible.** -/
-instance isIso_superVectMu : IsIso (superVectMu P M N) :=
+instance isIso_superVectMu [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd] :
+    IsIso (superVectMu P M N) :=
   (superVectMuIso P M N).isIso_hom
 
 end MuIso
@@ -882,10 +900,6 @@ end MuIso
 section SuperVectUnit
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd]
 
 /-- **The unit comparison of the fibre functor**, before the
 coordinates are installed: a complex number is scaled into the
@@ -898,7 +912,11 @@ noncomputable def superVectEpsRaw :
 
 /-- **The unit comparison of the fibre functor**: the unit super
 vector space maps to the base change of the unit module. -/
-noncomputable def superVectEps :
+noncomputable def superVectEps
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     𝟙_ SuperVect ⟶ toSuperVect P (S.unitMod : S.Mod.{u, u, u, u}) where
   evenMap :=
     LinearMap.comp
@@ -907,10 +925,6 @@ noncomputable def superVectEps :
       (superVectEpsRaw P)
   oddMap := 0
 
-omit [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd] in
 /-- The raw unit comparison, evaluated. -/
 theorem superVectEpsRaw_apply (r : ℂ) :
     superVectEpsRaw P r =
@@ -918,7 +932,12 @@ theorem superVectEpsRaw_apply (r : ℂ) :
         (LinearMap.toSpanSingleton ℂ S.even S.one r) := rfl
 
 /-- The unit comparison, evaluated. -/
-theorem superVectEps_evenMap_apply (r : ℂ) :
+theorem superVectEps_evenMap_apply
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd]
+    (r : ℂ) :
     (superVectEps P).evenMap r =
       toSuperVectEvenEquiv P (S.unitMod : S.Mod.{u, u, u, u})
         (superVectEpsRaw P r) := rfl
@@ -977,20 +996,23 @@ instance subsingleton_unitMod_tensor_point_odd :
 
 section EpsIsoSuper
 
-variable [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd]
-
 /-- The odd part of the fibre of the unit module vanishes. -/
-instance subsingleton_toSuperVect_unitMod_odd :
+instance subsingleton_toSuperVect_unitMod_odd
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     Subsingleton
       (toSuperVect P (S.unitMod : S.Mod.{u, u, u, u})).odd :=
   (toSuperVectOddEquiv P
     (S.unitMod : S.Mod.{u, u, u, u})).symm.toEquiv.subsingleton
 
 /-- The even component of the unit comparison is bijective. -/
-theorem superVectEps_evenMap_bijective :
+theorem superVectEps_evenMap_bijective
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     Function.Bijective (superVectEps P).evenMap := by
   have h : ⇑(superVectEps P).evenMap =
       ⇑(toSuperVectEvenEquiv P (S.unitMod : S.Mod.{u, u, u, u})) ∘
@@ -1003,7 +1025,11 @@ theorem superVectEps_evenMap_bijective :
 
 /-- The odd component of the unit comparison is bijective: both
 sides vanish. -/
-theorem superVectEps_oddMap_bijective :
+theorem superVectEps_oddMap_bijective
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     Function.Bijective (superVectEps P).oddMap := by
   haveI : Subsingleton (𝟙_ SuperVect).odd :=
     (inferInstance : Subsingleton PUnit.{1})
@@ -1012,14 +1038,22 @@ theorem superVectEps_oddMap_bijective :
 
 /-- **The unit comparison is an isomorphism of super vector
 spaces.** -/
-noncomputable def superVectEpsIso :
+noncomputable def superVectEpsIso
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] :
     𝟙_ SuperVect ≅ toSuperVect P (S.unitMod : S.Mod.{u, u, u, u}) :=
   SuperVect.isoOfBijective (superVectEps P)
     (superVectEps_evenMap_bijective P)
     (superVectEps_oddMap_bijective P)
 
 /-- **The unit comparison is invertible.** -/
-instance isIso_superVectEps : IsIso (superVectEps P) :=
+instance isIso_superVectEps
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd] : IsIso (superVectEps P) :=
   (superVectEpsIso P).isIso_hom
 
 end EpsIsoSuper
@@ -1036,33 +1070,19 @@ attribute [local irreducible] superVectMu
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   (M : S.Mod.{u, u, u, u})
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    (((S.unitMod : S.Mod.{u, u, u, u}).tensor M).tensor
-      (pointMod P)).even]
-  [FiniteDimensional ℂ
-    (((S.unitMod : S.Mod.{u, u, u, u}).tensor M).tensor
-      (pointMod P)).odd]
-  [FiniteDimensional ℂ
-    ((M.tensor (S.unitMod : S.Mod.{u, u, u, u})).tensor
-      (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((M.tensor (S.unitMod : S.Mod.{u, u, u, u})).tensor
-      (pointMod P)).odd]
 
-omit [FiniteDimensional ℂ
-    ((M.tensor (S.unitMod : S.Mod.{u, u, u, u})).tensor
-      (pointMod P)).even]
-  [FiniteDimensional ℂ
-    ((M.tensor (S.unitMod : S.Mod.{u, u, u, u})).tensor
-      (pointMod P)).odd] in
 /-- **Left unitality of the monoidal comparison.** -/
-theorem superVectMu_left_unitality :
+theorem superVectMu_left_unitality
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd]
+    [FiniteDimensional ℂ (((S.unitMod : S.Mod.{u, u, u, u}).tensor M).tensor
+      (pointMod P)).even]
+    [FiniteDimensional ℂ (((S.unitMod : S.Mod.{u, u, u, u}).tensor M).tensor
+      (pointMod P)).odd] :
     (λ_ (toSuperVect P M)).hom =
       (superVectEps P ▷ toSuperVect P M) ≫
         superVectMu P S.unitMod M ≫
@@ -1107,14 +1127,18 @@ theorem superVectMu_left_unitality :
   · rw [Subsingleton.elim u 0, TensorProduct.zero_tmul,
       svOddInr_zero, map_zero, map_zero]
 
-omit [FiniteDimensional ℂ
-    (((S.unitMod : S.Mod.{u, u, u, u}).tensor M).tensor
-      (pointMod P)).even]
-  [FiniteDimensional ℂ
-    (((S.unitMod : S.Mod.{u, u, u, u}).tensor M).tensor
-      (pointMod P)).odd] in
 /-- **Right unitality of the monoidal comparison.** -/
-theorem superVectMu_right_unitality :
+theorem superVectMu_right_unitality
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).even]
+    [FiniteDimensional ℂ ((S.unitMod : S.Mod.{u, u, u, u}).tensor (pointMod
+      P)).odd]
+    [FiniteDimensional ℂ ((M.tensor (S.unitMod : S.Mod.{u, u, u, u})).tensor
+      (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor (S.unitMod : S.Mod.{u, u, u, u})).tensor
+      (pointMod P)).odd] :
     (ρ_ (toSuperVect P M)).hom =
       (toSuperVect P M ◁ superVectEps P) ≫
         superVectMu P M S.unitMod ≫
@@ -1209,20 +1233,19 @@ attribute [local irreducible] superVectMu
 
 variable {S : SuperCommAlgebra.{u, u}} (P : SuperPoint S)
   (M N : S.Mod.{u, u, u, u})
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
-  [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
-  [FiniteDimensional ℂ ((N.tensor M).tensor (pointMod P)).even]
-  [FiniteDimensional ℂ ((N.tensor M).tensor (pointMod P)).odd]
 
 /-- **The monoidal comparison intertwines the braidings**: the
 Koszul sign of the super vector spaces is the sign of the braiding
 of the super modules. -/
 @[reassoc]
-theorem superVectMu_braiding :
+theorem superVectMu_braiding [FiniteDimensional ℂ (M.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (M.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).even]
+    [FiniteDimensional ℂ (N.tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((M.tensor N).tensor (pointMod P)).odd]
+    [FiniteDimensional ℂ ((N.tensor M).tensor (pointMod P)).even]
+    [FiniteDimensional ℂ ((N.tensor M).tensor (pointMod P)).odd] :
     superVectMu P M N ≫ superVectHom P (β_ M N).hom =
       (β_ (toSuperVect P M) (toSuperVect P N)).hom ≫
         superVectMu P N M := by

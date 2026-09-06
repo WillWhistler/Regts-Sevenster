@@ -94,4 +94,29 @@ theorem colourSwapWord_evenMap {n : ℕ} (w : List (Fin n))
     refine congrArg₂ (fun a b => a * b) rfl ?_
     exact congrArg F (Subtype.ext (funext (fun j => rfl)))
 
+/-- The word evaluation on odd coordinate functions uses the same
+word sign and permutation of positions. -/
+theorem colourSwapWord_oddMap {n : ℕ} (w : List (Fin n))
+    (F : (colourPower k ℓ (n + 1)).odd)
+    (c : {c : MixedColouring k ℓ (n + 1) // ¬ c.IsEven}) :
+    ((colourSwapWord k ℓ w) : SuperVect.Hom _ _).oddMap F c =
+      wordSign w c.val *
+        F ⟨c.val ∘ wordPerm w,
+          MixedColouring.not_isEven_comp c.prop _⟩ := by
+  induction w generalizing c with
+  | nil =>
+    show F c = 1 * F ⟨c.val ∘ (1 : _root_.Equiv.Perm
+      (Fin (n + 1))), MixedColouring.not_isEven_comp c.prop _⟩
+    rw [one_mul]
+    exact congrArg F (Subtype.ext rfl)
+  | cons i w ih =>
+    change adjSign c.val ⟨i.val, by omega⟩ ⟨i.val + 1, by omega⟩ *
+      ((colourSwapWord k ℓ w) : SuperVect.Hom _ _).oddMap F
+        ⟨c.val ∘ _root_.Equiv.swap
+          (⟨i.val, by omega⟩ : Fin (n + 1))
+          ⟨i.val + 1, by omega⟩,
+          MixedColouring.not_isEven_comp c.prop _⟩ = _
+    rw [ih, ← mul_assoc]
+    rfl
+
 end RS

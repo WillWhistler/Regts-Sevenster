@@ -18,21 +18,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-- **The base entry**: the base algebra acts on the seed element
 in the bottom stage. -/
-noncomputable def chainBaseStage (d : ModDualityDatum A M M') :
+noncomputable def chainBaseStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     A ⟶ chainStage2 A M M' 0 0 :=
   (ρ_ A).inv ≫
     MonoidalCategory.whiskerLeft A
@@ -41,7 +37,13 @@ noncomputable def chainBaseStage (d : ModDualityDatum A M M') :
 
 /-- **The module entry**: the module joins the seed element in
 the second slot, one degree up. -/
-noncomputable def chainSeedQ (d : ModDualityDatum A M M') :
+noncomputable def chainSeedQ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     M.X ⟶ chainStage2 A M M' 0 1 :=
   (ρ_ M.X).inv ≫
     MonoidalCategory.whiskerLeft M.X
@@ -50,17 +52,27 @@ noncomputable def chainSeedQ (d : ModDualityDatum A M M') :
 
 /-- **The dual entry**: the dual module joins the seed element in
 the first slot, one degree down. -/
-noncomputable def chainSeedP (d : ModDualityDatum A M M') :
+noncomputable def chainSeedP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     M'.X ⟶ chainStage2 A M M' 1 0 :=
   (ρ_ M'.X).inv ≫
     MonoidalCategory.whiskerLeft M'.X
       (Y₂ := chainStage2 A M M' 0 0) (chainSeed A M M' d) ≫
     chainInsP A M M' 0 0
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The unit of the base enters as the seed element. -/
-theorem unit_chainBaseStage (d : ModDualityDatum A M M') :
+theorem unit_chainBaseStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     η[A] ≫ chainBaseStage A M M' d = chainSeed A M M' d := by
   have h1 : η[A] ≫ (ρ_ A).inv =
       (ρ_ (𝟙_ D)).inv ≫
@@ -93,14 +105,16 @@ theorem unit_chainBaseStage (d : ModDualityDatum A M M') :
 
 /-! ## The entries against the base action -/
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The base action commutes with the stage transports. -/
-theorem chainStage2Cast_actLeft {p q p' q' : ℕ}
-    (hp : p = p') (hq : q = q') :
+theorem chainStage2Cast_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    {p q p' q' : ℕ} (hp : p = p') (hq : q = q') :
     (A ◁ chainStage2Cast A M M' hp hq) ≫
-        modTensorAct A (symPowMod A M'.X p')
-          (symPowMod A M.X q') =
+        modTensorAct A (symPowMod A M'.X p') (symPowMod A M.X q') =
       modTensorAct A (symPowMod A M'.X p) (symPowMod A M.X q) ≫
         chainStage2Cast A M M' hp hq := by
   subst hp hq
@@ -110,11 +124,16 @@ theorem chainStage2Cast_actLeft {p q p' q' : ℕ}
 
 /-- **The two-index transition is linear over the base**: acting
 on a stage and raising is raising and acting. -/
-theorem chainDelta2_actLeft (d : ModDualityDatum A M M')
-    (p q : ℕ) :
+theorem chainDelta2_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (p q : ℕ) :
     (A ◁ chainDelta2 A M M' d p q) ≫
-        modTensorAct A (symPowMod A M'.X (p + 1))
-          (symPowMod A M.X (q + 1)) =
+        modTensorAct A (symPowMod A M'.X (p + 1)) (symPowMod A M.X (q + 1)) =
       modTensorAct A (symPowMod A M'.X p) (symPowMod A M.X q) ≫
         chainDelta2 A M M' d p q := by
   have ha : (A ◁ chainMul2 A M M' p q 0 0) ≫
@@ -196,8 +215,14 @@ theorem chainDelta2_actLeft (d : ModDualityDatum A M M')
 
 /-- **Multiplication by the base entry on the left** is the stage
 action followed by the transition, up to the index transport. -/
-theorem chainBaseStage_mul2 (d : ModDualityDatum A M M')
-    (p q : ℕ) :
+theorem chainBaseStage_mul2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') (p q : ℕ) :
     (chainBaseStage A M M' d ▷ chainStage2 A M M' p q) ≫
         chainMul2 A M M' 0 0 p q =
       modTensorAct A (symPowMod A M'.X p) (symPowMod A M.X q) ≫
@@ -305,14 +330,15 @@ theorem chainBaseStage_mul2 (d : ModDualityDatum A M M')
 
 section LetterAct
 
-variable (X : D) [ModObj A X]
-
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The insertion is compatible with the action on the inserted
 letter**: acting on the letter and inserting is inserting and
 acting on the enlarged power. -/
-theorem symInsL_actLetter (n : ℕ) :
+theorem symInsL_actLetter
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (X : D) [ModObj A X] (n : ℕ) :
     (actLeft A X ▷ symPow A X (n + 1)) ≫ symInsL A X n =
       (α_ A X (symPow A X (n + 1))).hom ≫
         (A ◁ symInsL A X n) ≫ symPowAct A X (n + 1) := by
@@ -349,18 +375,20 @@ theorem symInsL_actLetter (n : ℕ) :
 
 end LetterAct
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The first-slot insertion is linear over the base in the
 letter**: acting on the inserted dual module and inserting is
 inserting and acting on the raised stage. -/
-theorem chainInsP_actLetter (p q : ℕ) :
+theorem chainInsP_actLetter
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) (p q : ℕ) :
     (actLeft A M'.X ▷ chainStage2 A M M' p q) ≫
         chainInsP A M M' p q =
       (α_ A M'.X (chainStage2 A M M' p q)).hom ≫
         (A ◁ chainInsP A M M' p q) ≫
-        modTensorAct A (symPowMod A M'.X (p + 1))
-          (symPowMod A M.X q) := by
+        modTensorAct A (symPowMod A M'.X (p + 1)) (symPowMod A M.X q) := by
   have l1 : ((A ⊗ M'.X) ◁ modTensorπ A (symPowMod A M'.X p)
         (symPowMod A M.X q)) ≫
         (actLeft A M'.X ▷ chainStage2 A M M' p q) =
@@ -475,16 +503,19 @@ theorem chainInsP_actLetter (p q : ℕ) :
     (eq_whisker hmid _))) ?_
   exact whisker_eq _ (whisker_eq _ (Category.assoc _ _ _))
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The dual entry is linear over the base**: the action on the
 dual module followed by the entry is the entry followed by the
 stage action. -/
-theorem chainSeedP_linear (d : ModDualityDatum A M M') :
+theorem chainSeedP_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     actLeft A M'.X ≫ chainSeedP A M M' d =
       (A ◁ chainSeedP A M M' d) ≫
-        modTensorAct A (symPowMod A M'.X 1)
-          (symPowMod A M.X 0) := by
+        modTensorAct A (symPowMod A M'.X 1) (symPowMod A M.X 0) := by
   have hsplit : chainSeedP A M M' d =
       (ρ_ M'.X).inv ≫
         MonoidalCategory.whiskerLeft M'.X
@@ -543,17 +574,11 @@ theorem chainSeedP_linear (d : ModDualityDatum A M M') :
   refine Eq.trans (Category.assoc _ _ _) ?_
   exact whisker_eq _ (Category.assoc _ _ _)
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The braided crossing of a tensor pair past a factor splits
 into the crossings of its parts, one on either side of the
 carried slot. -/
-private theorem letter_cross_struct_aux (P Q V T : D) :
+private theorem letter_cross_struct_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (P Q V T : D) :
     (α_ (P ⊗ Q) V T).inv ≫ ((β_ (P ⊗ Q) V).hom ▷ T) ≫
         (α_ V (P ⊗ Q) T).hom =
       (α_ P Q (V ⊗ T)).hom ≫ (P ◁ (α_ Q V T).inv) ≫
@@ -565,20 +590,13 @@ private theorem letter_cross_struct_aux (P Q V T : D) :
     Category.assoc]
   monoidal
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Acting on a letter destined for the second slot commutes with
 the braided crossing: the acting object crosses the first factor
 alongside the letter and acts once the letter has entered. -/
-private theorem letter_cross_snd_aux {P Q V T T' W : D}
-    (u : P ⊗ Q ⟶ Q) (f : Q ⊗ T ⟶ T') (a' : P ⊗ T' ⟶ T')
-    (w : V ⊗ T' ⟶ W)
-    (hf : (P ◁ f) ≫ a' =
+private theorem letter_cross_snd_aux
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    {P Q V T T' W : D} (u : P ⊗ Q ⟶ Q) (f : Q ⊗ T ⟶ T') (a' : P ⊗ T' ⟶ T')
+    (w : V ⊗ T' ⟶ W) (hf : (P ◁ f) ≫ a' =
       (α_ P Q T).inv ≫ (u ▷ T) ≫ f) :
     (u ▷ (V ⊗ T)) ≫ ((α_ Q V T).inv ≫
         ((β_ Q V).hom ▷ T) ≫ (α_ V Q T).hom ≫
@@ -603,21 +621,23 @@ private theorem letter_cross_snd_aux {P Q V T T' W : D}
     reassoc_of% hfV,
     reassoc_of% (letter_cross_struct_aux P Q V T)]
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The second-slot insertion is linear over the base in the
 letter**: acting on the inserted module and inserting is
 inserting and acting on the raised stage.  The letter enters the
 second slot through the braided crossing, while the descended
 action passes through the first factor; over a symmetric base the
 two meet in the second slot. -/
-theorem chainInsQ_actLetter (p q : ℕ) :
+theorem chainInsQ_actLetter
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) (p q : ℕ) :
     (actLeft A M.X ▷ chainStage2 A M M' p q) ≫
         chainInsQ A M M' p q =
       (α_ A M.X (chainStage2 A M M' p q)).hom ≫
         (A ◁ chainInsQ A M M' p q) ≫
-        modTensorAct A (symPowMod A M'.X p)
-          (symPowMod A M.X (q + 1)) := by
+        modTensorAct A (symPowMod A M'.X p) (symPowMod A M.X (q + 1)) := by
   have hf : (A ◁ symInsL A M.X q) ≫ symPowAct A M.X (q + 1) =
       (α_ A M.X (symPow A M.X (q + 1))).inv ≫
         (actLeft A M.X ▷ symPow A M.X (q + 1)) ≫
@@ -700,16 +720,19 @@ theorem chainInsQ_actLetter (p q : ℕ) :
     (whisker_eq _ (whisker_eq _ r4))))) ?_
   rfl
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The module entry is linear over the base**: the action on
 the module followed by the entry is the entry followed by the
 stage action. -/
-theorem chainSeedQ_linear (d : ModDualityDatum A M M') :
+theorem chainSeedQ_linear
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     actLeft A M.X ≫ chainSeedQ A M M' d =
       (A ◁ chainSeedQ A M M' d) ≫
-        modTensorAct A (symPowMod A M'.X 0)
-          (symPowMod A M.X 1) := by
+        modTensorAct A (symPowMod A M'.X 0) (symPowMod A M.X 1) := by
   have hsplit : chainSeedQ A M M' d =
       (ρ_ M.X).inv ≫
         MonoidalCategory.whiskerLeft M.X
@@ -772,92 +795,79 @@ theorem chainSeedQ_linear (d : ModDualityDatum A M M') :
 
 section PairMul
 
-omit [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Whiskered map into a tensored pair, absorbed on the left. -/
-private theorem whiskerR_tensor {W X Y P Q : D} (f : W ⟶ X)
-    (g : X ⟶ P) (h : Y ⟶ Q) :
+private theorem whiskerR_tensor [Category.{v} D] [MonoidalCategory D]
+    {W X Y P Q : D} (f : W ⟶ X) (g : X ⟶ P) (h : Y ⟶ Q) :
     (f ▷ Y) ≫ (g ⊗ₘ h) = (f ≫ g) ⊗ₘ h := by
   rw [← MonoidalCategory.tensorHom_id,
     MonoidalCategory.tensorHom_comp_tensorHom,
     Category.id_comp]
 
-omit [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- Whiskered map into a tensored pair, absorbed on the right. -/
-private theorem whiskerL_tensor {W X Y P Q : D} (f : W ⟶ X)
-    (g : Y ⟶ P) (h : X ⟶ Q) :
+private theorem whiskerL_tensor [Category.{v} D] [MonoidalCategory D]
+    {W X Y P Q : D} (f : W ⟶ X) (g : Y ⟶ P) (h : X ⟶ Q) :
     (Y ◁ f) ≫ (g ⊗ₘ h) = g ⊗ₘ (f ≫ h) := by
   rw [← MonoidalCategory.id_tensorHom,
     MonoidalCategory.tensorHom_comp_tensorHom,
     Category.id_comp]
 
-omit [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A tensored pair followed by a first-slot whisker. -/
-private theorem tensor_whiskerR {W X Y P Q : D} (g : W ⟶ X)
-    (k : X ⟶ P) (h : Y ⟶ Q) :
+private theorem tensor_whiskerR [Category.{v} D] [MonoidalCategory D]
+    {W X Y P Q : D} (g : W ⟶ X) (k : X ⟶ P) (h : Y ⟶ Q) :
     (g ⊗ₘ h) ≫ (k ▷ Q) = (g ≫ k) ⊗ₘ h := by
   rw [← MonoidalCategory.tensorHom_id,
     MonoidalCategory.tensorHom_comp_tensorHom,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D]
-  [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- A tensored pair followed by a second-slot whisker. -/
-private theorem tensor_whiskerL {W X Y P Q : D} (g : W ⟶ X)
-    (h : Y ⟶ P) (k : P ⟶ Q) :
+private theorem tensor_whiskerL [Category.{v} D] [MonoidalCategory D]
+    {W X Y P Q : D} (g : W ⟶ X) (h : Y ⟶ P) (k : P ⟶ Q) :
     (g ⊗ₘ h) ≫ (X ◁ k) = g ⊗ₘ (h ≫ k) := by
   rw [← MonoidalCategory.id_tensorHom,
     MonoidalCategory.tensorHom_comp_tensorHom,
     Category.comp_id]
 
-variable (d : ModDualityDatum A M M')
-
 /-- **The raw pair product**: both entries enter and multiply
 into the diagonal stage two levels up. -/
-noncomputable def chainPairRaw : M.X ⊗ M'.X ⟶
+noncomputable def chainPairRaw
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') : M.X ⊗ M'.X ⟶
     chainStage2 A M M' 2 2 :=
   (chainSeedQ A M M' d ⊗ₘ chainSeedP A M M' d) ≫
     chainMul2 A M M' 0 1 1 0
 
 /-- The common normal form of the two balance legs: the base
 strand braids out front and acts after the raw pair product. -/
-private noncomputable def pairOmega : (M.X ⊗ A) ⊗ M'.X ⟶
+private noncomputable def pairOmega
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') : (M.X ⊗ A) ⊗ M'.X ⟶
     chainStage2 A M M' 2 2 :=
   ((β_ M.X A).hom ▷ M'.X) ≫ (α_ A M.X M'.X).hom ≫
     (A ◁ chainPairRaw A M M' d) ≫
     modTensorAct A (symPowMod A M'.X (0 + 1 + 1))
       (symPowMod A M.X (1 + 1 + 0))
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The associator carries the whiskered entries onto the
 whiskered pair. -/
-private theorem pair_assoc_nat :
+private theorem pair_assoc_nat
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ((A ◁ chainSeedQ A M M' d) ⊗ₘ chainSeedP A M M' d) ≫
-        (α_ A (chainStage2 A M M' 0 1)
-          (chainStage2 A M M' 1 0)).hom =
+        (α_ A (chainStage2 A M M' 0 1) (chainStage2 A M M' 1 0)).hom =
       (α_ A M.X M'.X).hom ≫
         (A ◁ (chainSeedQ A M M' d ⊗ₘ chainSeedP A M M' d)) := by
   have h := associator_naturality (𝟙 A) (chainSeedQ A M M' d)
@@ -866,7 +876,14 @@ private theorem pair_assoc_nat :
   exact h
 
 /-- **The first balance leg reaches the normal form.** -/
-private theorem legM_pairRaw :
+private theorem legM_pairRaw
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     modTensorLegM A M M' ≫ chainPairRaw A M M' d =
       pairOmega A M M' d := by
   have h2 : (actLeft A M.X ▷ M'.X) ≫
@@ -951,11 +968,15 @@ private theorem legM_pairRaw :
     (hE3.trans ((whisker_eq _ hE4).trans
       (hE5.trans (whisker_eq _ hE6))))))
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- The inverse associator carries the pair onto the whiskered
 entries. -/
-private theorem rpair_assoc_nat :
+private theorem rpair_assoc_nat
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (chainSeedQ A M M' d ⊗ₘ (A ◁ chainSeedP A M M' d)) ≫
         (α_ (chainStage2 A M M' 0 1) A
           (chainStage2 A M M' 1 0)).inv =
@@ -969,7 +990,14 @@ private theorem rpair_assoc_nat :
   exact h
 
 /-- **The second balance leg reaches the normal form.** -/
-private theorem legN_pairRaw :
+private theorem legN_pairRaw
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     modTensorLegN A M M' ≫ chainPairRaw A M M' d =
       pairOmega A M M' d := by
   have h2 : (M.X ◁ actLeft A M'.X) ≫
@@ -1126,31 +1154,53 @@ private theorem legN_pairRaw :
     (whisker_eq _ hE8)))
 
 /-- The two balance legs agree. -/
-theorem chainPair_cond :
+theorem chainPair_cond
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     modTensorLegM A M M' ≫ chainPairRaw A M M' d =
       modTensorLegN A M M' ≫ chainPairRaw A M M' d :=
   (legM_pairRaw A M M' d).trans (legN_pairRaw A M M' d).symm
 
 /-- **The pair product of the entries**, descended to the
 relative tensor product. -/
-noncomputable def chainPairMul : modTensor A M M' ⟶
+noncomputable def chainPairMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') : modTensor A M M' ⟶
     chainStage2 A M M' 2 2 :=
   modTensorDesc A M M' (chainPairRaw A M M' d)
     (chainPair_cond A M M' d)
 
 /-- Defining equation of the descended pair product. -/
 @[reassoc]
-theorem modTensorπ_chainPairMul :
+theorem modTensorπ_chainPairMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     modTensorπ A M M' ≫ chainPairMul A M M' d =
       chainPairRaw A M M' d :=
   modTensorπ_desc A M M' _ _
 
-omit [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The insertion at the bottom, cast-free. -/
-private theorem symInsL_zero (X : D) [ModObj A X] :
+private theorem symInsL_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] (X : D) [ModObj A X] :
     symInsL A X 0 =
       ((symPowOne A X).inv ▷ symPow A X 1) ≫
         symMul A X 1 1 := by
@@ -1161,7 +1211,12 @@ private theorem symInsL_zero (X : D) [ModObj A X] :
 /-- **Pair multiplication is double insertion**: multiplying the
 embedded letter pair onto a bottom-stage element inserts the two
 letters. -/
-theorem pairIns :
+theorem pairIns [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     ((((symPowOne A M'.X).inv ⊗ₘ (symPowOne A M.X).inv) ≫
         modTensorπ A (symPowMod A M'.X 0)
           (symPowMod A M.X 0)) ▷ chainStage2 A M M' 0 0) ≫
@@ -1431,11 +1486,16 @@ theorem pairIns :
 
 /-- The first-slot insertion against the multiplication, solved
 for the whiskered form. -/
-private theorem insP_solved :
+private theorem insP_solved
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     (chainInsP A M M' 0 0 ▷ chainStage2 A M M' 0 1) ≫
         chainMul2 A M M' (0 + 1) 0 0 1 =
-      (α_ M'.X (chainStage2 A M M' 0 0)
-        (chainStage2 A M M' 0 1)).hom ≫
+      (α_ M'.X (chainStage2 A M M' 0 0) (chainStage2 A M M' 0 1)).hom ≫
       (M'.X ◁ chainMul2 A M M' 0 0 0 1) ≫
       chainInsP A M M' (0 + 1 + 0) (0 + 1 + 1) := by
   have h := chainInsP_mul A M M' 0 0 0 1
@@ -1448,11 +1508,16 @@ private theorem insP_solved :
 
 /-- The second-slot insertion against the multiplication, solved
 for the whiskered form. -/
-private theorem insQ_solved :
+private theorem insQ_solved
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     (chainInsQ A M M' 0 0 ▷ chainStage2 A M M' 0 0) ≫
         chainMul2 A M M' 0 (0 + 1) 0 0 =
-      (α_ M.X (chainStage2 A M M' 0 0)
-        (chainStage2 A M M' 0 0)).hom ≫
+      (α_ M.X (chainStage2 A M M' 0 0) (chainStage2 A M M' 0 0)).hom ≫
       (M.X ◁ chainMul2 A M M' 0 0 0 0) ≫
       chainInsQ A M M' (0 + 1 + 0) (0 + 1 + 0) := by
   have h := chainInsQ_mul A M M' 0 0 0 0
@@ -1465,13 +1530,17 @@ private theorem insQ_solved :
 
 /-- The multiplication with the first-slot insertion in its
 second factor: braid, insert, multiply. -/
-private theorem insP_snd :
+private theorem insP_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     (chainStage2 A M M' 0 1 ◁ chainInsP A M M' 0 0) ≫
         chainMul2 A M M' 0 1 1 0 =
-      (β_ (chainStage2 A M M' 0 1)
-        (M'.X ⊗ chainStage2 A M M' 0 0)).hom ≫
-      (α_ M'.X (chainStage2 A M M' 0 0)
-        (chainStage2 A M M' 0 1)).hom ≫
+      (β_ (chainStage2 A M M' 0 1) (M'.X ⊗ chainStage2 A M M' 0 0)).hom ≫
+      (α_ M'.X (chainStage2 A M M' 0 0) (chainStage2 A M M' 0 1)).hom ≫
       (M'.X ◁ chainMul2 A M M' 0 0 0 1) ≫
       chainInsP A M M' (0 + 1 + 0) (0 + 1 + 1) := by
   have hcomm : chainMul2 A M M' 0 1 1 0 =
@@ -1525,13 +1594,17 @@ private theorem insP_snd :
 
 /-- The multiplication with the second-slot insertion in its
 second factor: braid, insert, multiply. -/
-private theorem insQ_snd :
+private theorem insQ_snd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     (chainStage2 A M M' 0 0 ◁ chainInsQ A M M' 0 0) ≫
         chainMul2 A M M' 0 0 0 1 =
-      (β_ (chainStage2 A M M' 0 0)
-        (M.X ⊗ chainStage2 A M M' 0 0)).hom ≫
-      (α_ M.X (chainStage2 A M M' 0 0)
-        (chainStage2 A M M' 0 0)).hom ≫
+      (β_ (chainStage2 A M M' 0 0) (M.X ⊗ chainStage2 A M M' 0 0)).hom ≫
+      (α_ M.X (chainStage2 A M M' 0 0) (chainStage2 A M M' 0 0)).hom ≫
       (M.X ◁ chainMul2 A M M' 0 0 0 0) ≫
       chainInsQ A M M' (0 + 1 + 0) (0 + 1 + 0) := by
   have hcomm : chainMul2 A M M' 0 0 0 1 =
@@ -1585,7 +1658,14 @@ private theorem insQ_snd :
 
 /-- Any morphism into a stage followed by the transition is the
 seed fed beside it. -/
-private theorem comp_chainDelta2 {W : D} (p q : ℕ)
+private theorem comp_chainDelta2
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') {W : D} (p q : ℕ)
     (f : W ⟶ chainStage2 A M M' p q) :
     f ≫ chainDelta2 A M M' d p q =
       (ρ_ W).inv ≫
@@ -1628,7 +1708,14 @@ private theorem comp_chainDelta2 {W : D} (p q : ℕ)
 /-- **The raw pair product, normalised**: both letters braid to
 canonical position, the seeds feed in, and the two insertions
 stack. -/
-private theorem pairRaw_normal :
+private theorem pairRaw_normal
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     chainPairRaw A M M' d =
       (β_ M.X M'.X).hom ≫
       ((((ρ_ M'.X).inv ≫ MonoidalCategory.whiskerLeft M'.X
@@ -1815,10 +1902,16 @@ private theorem pairRaw_normal :
 /-- **The swapped base element against the double transition,
 normalised**: the pair element rides the first transition into
 the double insertion, and the second transition slides inside. -/
-private theorem swapDelta_normal :
+private theorem swapDelta_normal
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     ((((symPowOne A M'.X).inv ⊗ₘ (symPowOne A M.X).inv) ≫
-      modTensorπ A (symPowMod A M'.X 0)
-        (symPowMod A M.X 0)) ≫
+      modTensorπ A (symPowMod A M'.X 0) (symPowMod A M.X 0)) ≫
       chainDelta2 A M M' d 0 0) ≫ chainDelta2 A M M' d 1 1 =
     (ρ_ (M'.X ⊗ M.X)).inv ≫
       (α_ M'.X M.X (𝟙_ D)).hom ≫
@@ -1925,16 +2018,10 @@ private theorem swapDelta_normal :
     ((whisker_eq _ (whisker_eq _ (whisker_eq _ C5))).trans
       (whisker_eq _ C6))))
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The unit-strand coherence of the two seed routes. -/
-private theorem pairPrefix_coh :
+private theorem pairPrefix_coh
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (M : Mod D A) (M' : Mod D A) :
     ((ρ_ M'.X).inv ▷ M.X) ≫ (α_ M'.X (𝟙_ D) M.X).hom ≫
       (M'.X ◁ ((β_ (𝟙_ D) M.X).hom ≫
         ((ρ_ M.X).inv ▷ (𝟙_ D)) ≫
@@ -1944,16 +2031,10 @@ private theorem pairPrefix_coh :
   rw [braiding_tensorUnit_left]
   monoidal
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- A point whiskered onto the left braids to the unit strand. -/
-private theorem seedShuffle {S : D} (t : 𝟙_ D ⟶ S) :
+private theorem seedShuffle
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (M : Mod D A) {S : D} (t : 𝟙_ D ⟶ S) :
     (t ▷ M.X) ≫ (β_ S M.X).hom ≫ ((ρ_ M.X).inv ▷ S) ≫
       (α_ M.X (𝟙_ D) S).hom =
     (β_ (𝟙_ D) M.X).hom ≫ ((ρ_ M.X).inv ▷ (𝟙_ D)) ≫
@@ -1985,16 +2066,10 @@ private theorem seedShuffle {S : D} (t : 𝟙_ D ⟶ S) :
           (M.X ◁ ((𝟙_ D) ◁ t)) := by
         rw [h3]
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The unit-strand coherence, with a generic continuation. -/
-private theorem pairPrefix_coh' {T : D}
+private theorem pairPrefix_coh'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (M : Mod D A) (M' : Mod D A) {T : D}
     (g : M.X ⊗ ((𝟙_ D) ⊗ (𝟙_ D)) ⟶ T) :
     ((ρ_ M'.X).inv ▷ M.X) ≫ (α_ M'.X (𝟙_ D) M.X).hom ≫
       (M'.X ◁ ((β_ (𝟙_ D) M.X).hom ≫
@@ -2018,7 +2093,14 @@ private theorem pairPrefix_coh' {T : D}
 
 /-- **The two seed routes agree**: feeding the seeds through the
 pair equals feeding them through the transition. -/
-private theorem pairSeed_match :
+private theorem pairSeed_match
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     (((ρ_ M'.X).inv ≫ MonoidalCategory.whiskerLeft M'.X
         (Y₂ := chainStage2 A M M' 0 0) (chainSeed A M M' d)) ⊗ₘ
       ((ρ_ M.X).inv ≫ MonoidalCategory.whiskerLeft M.X
@@ -2236,8 +2318,14 @@ private theorem pairSeed_match :
         exact hSeed.symm
 
 /-- The seed-route agreement, with a generic continuation. -/
-private theorem pairSeed_match' {T : D}
-    (g : M'.X ⊗ (M.X ⊗ chainStage2 A M M'
+private theorem pairSeed_match'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') {T : D} (g : M'.X ⊗ (M.X ⊗ chainStage2 A M M'
       (0 + 1) (0 + 1)) ⟶ T) :
     ((((ρ_ M'.X).inv ≫ MonoidalCategory.whiskerLeft M'.X
       (Y₂ := chainStage2 A M M' 0 0)
@@ -2295,13 +2383,19 @@ private theorem pairSeed_match' {T : D}
 
 /-- **The raw pair product is the swapped base element against
 the double transition.** -/
-theorem chainPairRaw_eq :
+theorem chainPairRaw_eq
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     chainPairRaw A M M' d =
       (β_ M.X M'.X).hom ≫
         (((((symPowOne A M'.X).inv ⊗ₘ
           (symPowOne A M.X).inv) ≫
-          modTensorπ A (symPowMod A M'.X 0)
-            (symPowMod A M.X 0)) ≫
+          modTensorπ A (symPowMod A M'.X 0) (symPowMod A M.X 0)) ≫
           chainDelta2 A M M' d 0 0) ≫
           chainDelta2 A M M' d 1 1) := by
   rw [pairRaw_normal, swapDelta_normal]
@@ -2334,11 +2428,17 @@ theorem chainPairRaw_eq :
 /-- **The descended pair product is the swap, the pair
 embedding, and the double transition** — the map form of the
 section identity. -/
-theorem chainPairMul_eq :
+theorem chainPairMul_eq
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     chainPairMul A M M' d =
       modTensorSwap A M M' ≫
-        modTensorMap A (toSymPowModZero A M')
-          (toSymPowModZero A M) ≫
+        modTensorMap A (toSymPowModZero A M') (toSymPowModZero A M) ≫
         chainDelta2 A M M' d 0 0 ≫
         chainDelta2 A M M' d 1 1 := by
   refine modTensor_hom_ext A M M' ?_
@@ -2366,7 +2466,14 @@ theorem chainPairMul_eq :
 
 /-- **The copair element multiplies to the doubly advanced
 seed**: the element form of the section identity. -/
-theorem copairUnit_chainPairMul :
+theorem copairUnit_chainPairMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M') :
     copairUnit A M M' d ≫ chainPairMul A M M' d =
       chainSeed A M M' d ≫ chainDelta2 A M M' d 0 0 ≫
         chainDelta2 A M M' d 1 1 := by

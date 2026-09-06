@@ -17,44 +17,44 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
+variable {D : Type u}
 
 /-- **The sandwich tower**: iterate tensoring with the pair
 `M ⊗ M'` on the left. -/
-noncomputable def sandwichTower : ℕ → Mod D A
+noncomputable def sandwichTower
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
+    ℕ → Mod D A
   | 0 => M
   | (k + 1) => modTensorMod A (modTensorMod A M M')
-      (sandwichTower k)
+      (sandwichTower A M M' k)
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
-@[simp] lemma sandwichTower_zero :
+@[simp] lemma sandwichTower_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A) :
     sandwichTower A M M' 0 = M := rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
-@[simp] lemma sandwichTower_succ (k : ℕ) :
+@[simp] lemma sandwichTower_succ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     sandwichTower A M M' (k + 1) =
       modTensorMod A (modTensorMod A M M')
         (sandwichTower A M M' k) := rfl
 
-omit [Preadditive D] [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The retract iterates up the tower**: a module that is a
 retract of its sandwich is a retract of every tower stage. -/
 theorem sandwichTower_retract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
     (i₀ : M ⟶ modTensorMod A (modTensorMod A M M') M)
     (r₀ : modTensorMod A (modTensorMod A M M') M ⟶ M)
     (h₀ : i₀ ≫ r₀ = 𝟙 M) :
@@ -63,7 +63,7 @@ theorem sandwichTower_retract
   | 0 => ⟨𝟙 M, 𝟙 M, Category.id_comp _⟩
   | (k + 1) => by
     obtain ⟨ik, rk, hk⟩ :=
-      sandwichTower_retract i₀ r₀ h₀ k
+      sandwichTower_retract A M M' i₀ r₀ h₀ k
     refine ⟨i₀ ≫ modTensorMapMod A (𝟙 _) ik,
       modTensorMapMod A (𝟙 _) rk ≫ r₀, ?_⟩
     have hmid : modTensorMapMod A

@@ -22,28 +22,17 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 /-! ## The free module as a twisted regular module -/
 
-omit [Preadditive D] [MonoidalPreadditive D] [HasCoequalizers D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [IsCommMonObj A] in
 /-- The braiding intertwines the free action on the generator with
 the twist of the regular action: both hexagon legs multiply the
 two algebra factors after carrying the generator to the front. -/
-theorem freeRegTwist_act (V : D) :
+theorem freeRegTwist_act
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V : D) :
     letI := ModObj.regular A
     ((α_ A A V).inv ≫ (μ[A] ▷ V)) ≫ (β_ A V).hom =
       (A ◁ (β_ A V).hom) ≫ actAcross A V A := by
@@ -59,7 +48,10 @@ theorem freeRegTwist_act (V : D) :
 /-- **The free module is a twisted regular module**: the free
 module on `V` is the twist by `V` of the regular module, through
 the braiding carrying the algebra past the generator. -/
-noncomputable def freeRegTwistIso (V : D) :
+noncomputable def freeRegTwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (V : D) :
     freeMod A V ≅ tensorLeftMod A V (regularMod A) where
   hom := Mod.Hom.mk' (β_ A V).hom (by
     letI := ModObj.regular A
@@ -85,7 +77,12 @@ module on `V` with a module `M` is the twist of `M` by `V`.  The
 free module is the twisted regular module, the twist shuffle
 collects both twists in front, and the regular module is the unit
 of the relative tensor. -/
-noncomputable def freeTensorTwistIso (V : D) (M : Mod D A) :
+noncomputable def freeTensorTwistIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A]
+    (V : D) (M : Mod D A) :
     modTensorMod A (freeMod A V) M ≅ tensorLeftMod A V M :=
   modTensorMapIso A (freeRegTwistIso A V)
       (tensorLeftUnitMod A M).symm ≪≫

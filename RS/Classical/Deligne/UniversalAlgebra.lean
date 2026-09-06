@@ -17,27 +17,18 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C]
-  [MonoidalLinear ℂ C] [RigidCategory C]
-variable [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  [SymmetricCategory (Ind C)]
-variable [HasCoequalizers (Ind C)]
-variable [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable [HasFiniteBiproducts (Ind C)]
+variable {C : Type v}
 
-omit [CategoryTheory.Linear ℂ (Ind C)]
-  [MonoidalPreadditive (Ind C)] [MonoidalLinear ℂ (Ind C)]
-  [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **The universal algebra**: one nonzero algebra over which
 every object of the family becomes a mixed sum and every chosen
 morphism acquires a section. -/
-theorem exists_universal_algebra (hu : HasScalarUnit C)
+theorem exists_universal_algebra
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [CategoryTheory.Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    [RigidCategory C] [SymmetricCategory (Ind C)] [HasCoequalizers (Ind C)]
+    [∀ Z : Ind C, PreservesColimitsOfShape WalkingParallelPair (tensorLeft
+      Z)] [HasFiniteBiproducts (Ind C)]
+    (hu : HasScalarUnit C)
     (L : OddLine (Ind C)) {J K : Type v} (X : J → Ind C)
     (V W : K → Ind C) (g : ∀ k, V k ⟶ W k)
     (hmix : ∀ j, L.LocallyMixed (X j))

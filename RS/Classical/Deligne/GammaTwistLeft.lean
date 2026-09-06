@@ -39,13 +39,14 @@ universe v u
 
 section Braid
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
+variable {D : Type u}
 
 /-- Carrying an object past a context is inverse to carrying it
 back: over a symmetric base the two directions are inverse
 isomorphisms. -/
-theorem braidPast_symm (A V T : D) :
+theorem braidPast_symm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A V T : D) :
     (braidPast A V T).inv = (braidPast V A T).hom := by
   simp only [braidPast, Iso.trans_inv, Iso.trans_hom, Iso.symm_inv,
     Iso.symm_hom, whiskerRightIso_inv, whiskerRightIso_hom,
@@ -53,7 +54,9 @@ theorem braidPast_symm (A V T : D) :
     SymmetricCategory.braiding_swap_eq_inv_braiding]
 
 /-- Carrying an object past the unit is the unit coherence. -/
-theorem braidPast_tensorUnit (A Z : D) :
+theorem braidPast_tensorUnit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    (A Z : D) :
     (braidPast A (𝟙_ D) Z).hom ≫ (λ_ (A ⊗ Z)).hom =
       A ◁ (λ_ Z).hom := by
   rw [braidPast_hom, braiding_tensorUnit_right]
@@ -65,18 +68,22 @@ end Braid
 
 section Cap
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D]
+variable {D : Type u}
 
 /-- **The left odd cap**: contract the two leading legs of a doubly
 twisted object against the square trivialisation of the odd
 line. -/
-def OddLine.capL (L : OddLine D) (Z : D) :
+def OddLine.capL [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (Z : D) :
     L.obj ⊗ (L.obj ⊗ Z) ⟶ Z :=
   (α_ L.obj L.obj Z).inv ≫ (L.sq.hom ▷ Z) ≫ (λ_ Z).hom
 
 /-- The left odd cap unfolded. -/
-theorem OddLine.capL_def (L : OddLine D) (Z : D) :
+theorem OddLine.capL_def
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (Z : D) :
     L.capL Z =
       (α_ L.obj L.obj Z).inv ≫ (L.sq.hom ▷ Z) ≫ (λ_ Z).hom :=
   rfl
@@ -84,7 +91,10 @@ theorem OddLine.capL_def (L : OddLine D) (Z : D) :
 /-- **The left odd cap is natural** in the capped object: a
 morphism whiskered by the two legs passes through the
 contraction. -/
-theorem OddLine.capL_naturality (L : OddLine D) {Z Z' : D}
+theorem OddLine.capL_naturality
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) {Z Z' : D}
     (f : Z ⟶ Z') :
     (L.obj ◁ (L.obj ◁ f)) ≫ L.capL Z' = L.capL Z ≫ f := by
   simp only [OddLine.capL_def, Category.assoc]
@@ -94,7 +104,10 @@ theorem OddLine.capL_naturality (L : OddLine D) {Z Z' : D}
 /-- **The left odd cap commutes with carrying an object past the
 two odd legs**: capping after the carry is carrying after the
 cap. -/
-theorem OddLine.capL_braidPast (L : OddLine D) (A Z : D) :
+theorem OddLine.capL_braidPast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (A Z : D) :
     (L.obj ◁ (braidPast A L.obj Z).hom) ≫ L.capL (A ⊗ Z) =
       (braidPast L.obj A (L.obj ⊗ Z)).hom ≫ (A ◁ L.capL Z) := by
   have hP : (braidPast A (L.obj ⊗ L.obj) Z).hom ≫
@@ -137,15 +150,16 @@ end Cap
 
 section Slide
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D]
-variable (L : OddLine D) (R : D) [MonObj R] (N : D) [ModObj R N]
+variable {D : Type u}
 
 /-- **The sliding lemma**: the action on a left twist by the odd
 line, capped, is the convolution action of the scalar on the
 capped module element, up to carrying the odd leg past the scalar.
 This is the whole content of the left parity shift. -/
-theorem left_cap_slide {W X : D} (a : W ⟶ R) (m : X ⟶ L.obj ⊗ N) :
+theorem left_cap_slide
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] (N : D) [ModObj R N]
+    {W X : D} (a : W ⟶ R) (m : X ⟶ L.obj ⊗ N) :
     (L.obj ◁ ((a ⊗ₘ m) ≫ actAcross R L.obj N)) ≫ L.capL N =
       (braidPast L.obj W X).hom ≫
         gact a ((L.obj ◁ m) ≫ L.capL N) := by
@@ -174,7 +188,10 @@ reassociating the chosen sources, the contraction of a twisted
 action is the transported convolution action against the
 contraction.  The four action compatibilities of
 `RS.gammaTwistLeftHom` are the four instances of this. -/
-theorem left_cap_slide' {W X U V V' : D} (a : W ⟶ R)
+theorem left_cap_slide'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R] (N : D) [ModObj R N]
+    {W X U V V' : D} (a : W ⟶ R)
     (m : X ⟶ L.obj ⊗ N) (s₁ : U ⟶ W ⊗ X) (p : V ⟶ L.obj ⊗ U)
     (q : V' ⟶ L.obj ⊗ X) (s₂ : V ⟶ W ⊗ V')
     {Φ : (U ⟶ L.obj ⊗ N) → (V ⟶ N)}
@@ -196,13 +213,15 @@ end Slide
 
 section Equivalence
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+variable {D : Type u}
 
 /-- **Lowering along the left cap is a ℂ-linear isomorphism**: it
 is the tensor–hom bijection of the self-duality of the odd line. -/
-noncomputable def OddLine.capLEquiv (L : OddLine D) (Y Z : D) :
+noncomputable def OddLine.capLEquiv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Y Z : D) :
     (Y ⟶ L.obj ⊗ Z) ≃ₗ[ℂ] (L.obj ⊗ Y ⟶ Z) where
   toFun f := (L.obj ◁ f) ≫ L.capL Z
   map_add' f g := by
@@ -238,12 +257,20 @@ noncomputable def OddLine.capLEquiv (L : OddLine D) (Y Z : D) :
 
 /-- **The even component**: points of a left twist by the odd line
 are odd elements of the module. -/
-noncomputable def gammaTwistLeftEven (L : OddLine D) (Z : D) :
+noncomputable def gammaTwistLeftEven
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Z : D) :
     (𝟙_ D ⟶ L.obj ⊗ Z) ≃ₗ[ℂ] (L.obj ⟶ Z) :=
   (L.capLEquiv (𝟙_ D) Z).trans
     (Linear.homCongr ℂ (ρ_ L.obj) (Iso.refl Z))
 
-theorem gammaTwistLeftEven_apply (L : OddLine D) (Z : D)
+theorem gammaTwistLeftEven_apply
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Z : D)
     (f : 𝟙_ D ⟶ L.obj ⊗ Z) :
     (gammaTwistLeftEven L Z).toLinearMap f =
       (ρ_ L.obj).inv ≫ (L.obj ◁ f) ≫ L.capL Z := by
@@ -256,12 +283,20 @@ theorem gammaTwistLeftEven_apply (L : OddLine D) (Z : D)
 line are points of the module.  The sign is the self-braiding of
 the odd line, and it is what makes the odd blocks of the twist
 match the shifted blocks of the module. -/
-noncomputable def gammaTwistLeftOdd (L : OddLine D) (Z : D) :
+noncomputable def gammaTwistLeftOdd
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Z : D) :
     (L.obj ⟶ L.obj ⊗ Z) ≃ₗ[ℂ] (𝟙_ D ⟶ Z) :=
   ((L.capLEquiv L.obj Z).trans
     (Linear.homCongr ℂ L.sq (Iso.refl Z))).trans (LinearEquiv.neg ℂ)
 
-theorem gammaTwistLeftOdd_apply (L : OddLine D) (Z : D)
+theorem gammaTwistLeftOdd_apply
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (Z : D)
     (g : L.obj ⟶ L.obj ⊗ Z) :
     (gammaTwistLeftOdd L Z).toLinearMap g =
       (-L.sq.inv) ≫ (L.obj ◁ g) ≫ L.capL Z := by
@@ -278,20 +313,17 @@ end Equivalence
 
 section Twist
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-  [HasCoequalizers D]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
-  [∀ Z : D,
-    PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+variable {D : Type u}
 
 /-- **The two contractions form a morphism of Γ-modules**: they
 intertwine the four action blocks of the Γ-module of the left twist
 with the four relabelled blocks of the parity shift of the
 Γ-module of the module. -/
-noncomputable def gammaTwistLeftHom (L : OddLine D) (R : D)
+noncomputable def gammaTwistLeftHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [CategoryTheory.Linear ℂ D]
+    [MonoidalLinear ℂ D]
+    (L : OddLine D) (R : D)
     [MonObj R] [IsCommMonObj R] (N : Mod D R) :
     gammaModule D L R (tensorLeftMod R L.obj N).X ⟶
       SuperCommAlgebra.Mod.shift (gammaModule D L R N.X) where

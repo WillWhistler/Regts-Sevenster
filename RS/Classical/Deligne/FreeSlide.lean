@@ -17,18 +17,20 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable (A : D) [MonObj A] (V : D)
+variable {D : Type u}
 
 /-- **Splitting the head off a free letter**: the head becomes a
 trailing scalar and the letter keeps the unit. -/
-noncomputable def freeSplit : (A ⊗ V) ⟶ (A ⊗ V) ⊗ A :=
+noncomputable def freeSplit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) : (A ⊗ V) ⟶ (A ⊗ V) ⊗ A :=
   (β_ A V).hom ≫ (((λ_ V).inv ≫ (η[A] ▷ V)) ▷ A)
 
 /-- **Splitting and acting back is the identity**: the scalar
 returns to the head it came from. -/
-theorem freeSplit_actRight :
+theorem freeSplit_actRight
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) :
     letI := freeModObj A V
     freeSplit A V ≫ actRight A (A ⊗ V) = 𝟙 (A ⊗ V) := by
   letI := freeModObj A V
@@ -43,21 +45,20 @@ theorem freeSplit_actRight :
     ← MonoidalCategory.comp_whiskerRight, MonObj.mul_one]
   monoidal
 
-variable [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D]
-
 /-- **The slide window**: split the head off the first letter and
 act with it on the second. -/
-noncomputable def freeSlideWin :
+noncomputable def freeSlideWin
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) :
     (A ⊗ V) ⊗ (A ⊗ V) ⟶ (A ⊗ V) ⊗ (A ⊗ V) :=
   letI := freeModObj A V
   (freeSplit A V ▷ (A ⊗ V)) ≫ winLegN A (A ⊗ V)
 
-omit [Preadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D] in
 /-- Splitting and acting back through the first slot leg is the
 identity of the window. -/
-theorem freeSplit_winLegM :
+theorem freeSplit_winLegM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) :
     letI := freeModObj A V
     (freeSplit A V ▷ (A ⊗ V)) ≫ winLegM A (A ⊗ V) =
       𝟙 ((A ⊗ V) ⊗ (A ⊗ V)) := by
@@ -68,7 +69,11 @@ theorem freeSplit_winLegM :
 /-- **The slide is invisible in the module power**: it is the
 difference of the two slot legs at a window whose first leg is the
 identity. -/
-theorem freeSlideWin_modPowπ {n : ℕ} (a b : ℕ)
+theorem freeSlideWin_modPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} (a b : ℕ)
     (hab : a + 2 + b = n) :
     letI := freeModObj A V
     ((tensorPow D (A ⊗ V) a ◁ freeSlideWin A V) ▷
@@ -98,7 +103,10 @@ theorem freeSlideWin_modPowπ {n : ℕ} (a b : ℕ)
 
 /-- **The top slide**: slide the head of the penultimate letter
 into the last one. -/
-noncomputable def freeSlideTop (k : ℕ) :
+noncomputable def freeSlideTop
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D)
+    (k : ℕ) :
     tensorPow D (A ⊗ V) (k + 2) ⟶ tensorPow D (A ⊗ V) (k + 2) :=
   letI := freeModObj A V
   (α_ (tensorPow D (A ⊗ V) k) (A ⊗ V) (A ⊗ V)).hom ≫
@@ -106,7 +114,11 @@ noncomputable def freeSlideTop (k : ℕ) :
     (α_ (tensorPow D (A ⊗ V) k) (A ⊗ V) (A ⊗ V)).inv
 
 /-- **The top slide is invisible in the module power.** -/
-theorem freeSlideTop_modPowπ (k : ℕ) :
+theorem freeSlideTop_modPowπ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] (V : D) [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (k : ℕ) :
     letI := freeModObj A V
     freeSlideTop A V k ≫ modPowπ A (A ⊗ V) (k + 2) =
       modPowπ A (A ⊗ V) (k + 2) := by

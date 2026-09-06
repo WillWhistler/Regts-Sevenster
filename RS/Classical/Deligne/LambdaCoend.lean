@@ -18,14 +18,14 @@ open CategoryTheory MonoidalCategory Limits Opposite
 
 universe v u v' u'
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [RightRigidCategory A]
-variable {D : Type u'} [Category.{v'} D] [MonoidalCategory D]
+variable {A : Type u}
 
 /-- The Λ diagram of a pair of functors: `(X, Y) ↦ α(Xᘁ) ⊗ β(Y)`,
 contravariant in `X` through the adjoint mate. -/
 @[simps!]
-def lambdaDiagram (α β : A ⥤ D) : Aᵒᵖ ⥤ A ⥤ D where
+def lambdaDiagram [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D]
+    (α β : A ⥤ D) : Aᵒᵖ ⥤ A ⥤ D where
   obj X :=
     { obj := fun Y => α.obj ((unop X)ᘁ) ⊗ β.obj Y
       map := fun g => α.obj ((unop X)ᘁ) ◁ β.map g
@@ -48,37 +48,54 @@ def lambdaDiagram (α β : A ⥤ D) : Aᵒᵖ ⥤ A ⥤ D where
 
 section
 
-variable (α β : A ⥤ D)
-
 /-- Existence of the Λ coend of the pair `(α, β)`. -/
-abbrev HasLambda : Prop := HasCoend (lambdaDiagram α β)
-
-variable [HasLambda α β]
+abbrev HasLambda [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) : Prop := HasCoend (lambdaDiagram α β)
 
 /-- The Λ object of a pair of functors: the coend of
 `(X, Y) ↦ α(Xᘁ) ⊗ β(Y)`. -/
-noncomputable def lambdaObj : D := coend (lambdaDiagram α β)
+noncomputable def lambdaObj
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [HasLambda α β] : D := coend (lambdaDiagram α β)
 
 /-- The stage map of the Λ coend at an object of the source. -/
-noncomputable def lambdaStage (X : A) :
+noncomputable def lambdaStage
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [HasLambda α β]
+    (X : A) :
     α.obj (Xᘁ) ⊗ β.obj X ⟶ lambdaObj α β :=
   coend.ι (lambdaDiagram α β) X
 
 /-- Dinaturality of the stage maps. -/
 @[reassoc]
-theorem lambdaStage_condition {X Y : A} (f : X ⟶ Y) :
+theorem lambdaStage_condition
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [HasLambda α β]
+    {X Y : A} (f : X ⟶ Y) :
     (α.map (fᘁ) ▷ β.obj X) ≫ lambdaStage α β X =
       (α.obj (Yᘁ) ◁ β.map f) ≫ lambdaStage α β Y :=
   coend.condition (lambdaDiagram α β) f
 
 /-- Maps out of the Λ object agree once they agree on stages. -/
-theorem lambdaObj_hom_ext {W : D} {f g : lambdaObj α β ⟶ W}
+theorem lambdaObj_hom_ext
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [HasLambda α β]
+    {W : D} {f g : lambdaObj α β ⟶ W}
     (h : ∀ X, lambdaStage α β X ≫ f = lambdaStage α β X ≫ g) :
     f = g :=
   coend.hom_ext h
 
 /-- Descend a dinatural family of maps to the Λ object. -/
-noncomputable def lambdaDesc {W : D}
+noncomputable def lambdaDesc
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [HasLambda α β]
+    {W : D}
     (f : ∀ X : A, α.obj (Xᘁ) ⊗ β.obj X ⟶ W)
     (hf : ∀ ⦃X Y : A⦄ (g : X ⟶ Y),
       (α.map (gᘁ) ▷ β.obj X) ≫ f X =
@@ -87,7 +104,11 @@ noncomputable def lambdaDesc {W : D}
   coend.desc f hf
 
 @[reassoc (attr := simp)]
-theorem lambdaStage_desc {W : D}
+theorem lambdaStage_desc
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [HasLambda α β]
+    {W : D}
     (f : ∀ X : A, α.obj (Xᘁ) ⊗ β.obj X ⟶ W)
     (hf : ∀ ⦃X Y : A⦄ (g : X ⟶ Y),
       (α.map (gᘁ) ▷ β.obj X) ≫ f X =
@@ -99,12 +120,14 @@ end
 
 section
 
-variable {α α' α'' β β' β'' : A ⥤ D}
-
 /-- Natural transformations in both arguments induce a map of Λ
 diagrams. -/
 @[simps]
-def lambdaDiagramMap (η : α ⟶ α') (τ : β ⟶ β') :
+def lambdaDiagramMap
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {α : A ⥤ D}
+    {α' : A ⥤ D} {β : A ⥤ D} {β' : A ⥤ D}
+    (η : α ⟶ α') (τ : β ⟶ β') :
     lambdaDiagram α β ⟶ lambdaDiagram α' β' where
   app X :=
     { app := fun Y => η.app ((unop X)ᘁ) ⊗ₘ τ.app Y
@@ -129,26 +152,42 @@ def lambdaDiagramMap (η : α ⟶ α') (τ : β ⟶ β') :
       η.naturality]
 
 /-- Functoriality of the Λ object in both arguments. -/
-noncomputable def lambdaMap [HasLambda α β] [HasLambda α' β']
+noncomputable def lambdaMap
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {α : A ⥤ D}
+    {α' : A ⥤ D} {β : A ⥤ D} {β' : A ⥤ D}
+    [HasLambda α β] [HasLambda α' β']
     (η : α ⟶ α') (τ : β ⟶ β') :
     lambdaObj α β ⟶ lambdaObj α' β' :=
   coend.map (lambdaDiagramMap η τ)
 
 @[reassoc (attr := simp)]
-theorem lambdaStage_map [HasLambda α β] [HasLambda α' β']
+theorem lambdaStage_map
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {α : A ⥤ D}
+    {α' : A ⥤ D} {β : A ⥤ D} {β' : A ⥤ D}
+    [HasLambda α β] [HasLambda α' β']
     (η : α ⟶ α') (τ : β ⟶ β') (X : A) :
     lambdaStage α β X ≫ lambdaMap η τ =
       (η.app (Xᘁ) ⊗ₘ τ.app X) ≫ lambdaStage α' β' X :=
   coend.ι_map (lambdaDiagramMap η τ) X
 
 @[simp]
-theorem lambdaMap_id [HasLambda α β] :
+theorem lambdaMap_id
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {α : A ⥤ D}
+    {β : A ⥤ D}
+    [HasLambda α β] :
     lambdaMap (𝟙 α) (𝟙 β) = 𝟙 (lambdaObj α β) := by
   refine lambdaObj_hom_ext α β fun X => ?_
   simp
 
 @[reassoc]
-theorem lambdaMap_comp [HasLambda α β] [HasLambda α' β']
+theorem lambdaMap_comp
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {α : A ⥤ D}
+    {α' : A ⥤ D} {α'' : A ⥤ D} {β : A ⥤ D} {β' : A ⥤ D} {β'' : A ⥤ D}
+    [HasLambda α β] [HasLambda α' β']
     [HasLambda α'' β''] (η : α ⟶ α') (η' : α' ⟶ α'')
     (τ : β ⟶ β') (τ' : β' ⟶ β'') :
     lambdaMap η τ ≫ lambdaMap η' τ' =
@@ -165,24 +204,29 @@ open Functor.LaxMonoidal
 /-- The right dual of the monoidal unit supplied by the rigid
 structure — the instance the Λ stages use, which need not be the
 unit-specific instance. -/
-noncomputable def unitRigidDual : A :=
+noncomputable def unitRigidDual
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A] : A :=
   @HasRightDual.rightDual A _ _ (𝟙_ A)
     (RightRigidCategory.rightDual (𝟙_ A))
 
 /-- The rigid right dual of the monoidal unit is the unit, through
 the canonical comparison of exact pairings. -/
-noncomputable def unitRightDualIso : (unitRigidDual : A) ≅ 𝟙_ A :=
+noncomputable def unitRightDualIso
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A] :
+    (unitRigidDual : A) ≅ 𝟙_ A :=
   rightDualIso
     (@HasRightDual.exact A _ _ (𝟙_ A)
       (RightRigidCategory.rightDual (𝟙_ A)))
     exactPairingUnit
 
-variable (α β : A ⥤ D) [α.LaxMonoidal] [β.LaxMonoidal]
-
 /-- The unit of the Λ object of a pair of lax monoidal functors:
 the units of the functors into the stage at the monoidal unit,
 through the comparison of the unit with its rigid dual. -/
-noncomputable def lambdaUnit [HasLambda α β] :
+noncomputable def lambdaUnit
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D) [α.LaxMonoidal] [β.LaxMonoidal]
+    [HasLambda α β] :
     𝟙_ D ⟶ lambdaObj α β :=
   (λ_ (𝟙_ D)).inv ≫
     ((ε α ≫ α.map unitRightDualIso.inv) ⊗ₘ ε β) ≫
@@ -192,13 +236,12 @@ end Unit
 
 section TensorCoend
 
-variable {J : Type u} [Category.{v} J]
-
-omit [MonoidalCategory D] in
 /-- Maps out of the image of a coend under a
 colimit-preserving functor agree once they agree on the images
 of the stages. -/
-theorem coend_hom_ext_of_preserves {E : Type u'} [Category.{v'} E]
+theorem coend_hom_ext_of_preserves
+    {D : Type u'} [Category.{v'} D] {J : Type u} [Category.{v} J]
+    {E : Type u'} [Category.{v'} E]
     (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (G : D ⥤ E)
     [PreservesColimit (multispanIndexCoend F).multispan G]
     {Z : E} {f g : G.obj (coend F) ⟶ Z}
@@ -232,7 +275,10 @@ theorem coend_hom_ext_of_preserves {E : Type u'} [Category.{v'} E]
 whiskered stages, provided tensoring preserves the coend's
 colimit presentation.  The workhorse for descending
 multiplications through `Λ ⊗ Λ`. -/
-theorem tensorLeft_coend_hom_ext (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F]
+theorem tensorLeft_coend_hom_ext
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J]
+    (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F]
     (W : D) [PreservesColimit (multispanIndexCoend F).multispan
       (tensorLeft W)] {Z : D} {f g : W ⊗ coend F ⟶ Z}
     (h : ∀ j, (W ◁ coend.ι F j) ≫ f = (W ◁ coend.ι F j) ≫ g) :
@@ -261,7 +307,10 @@ theorem tensorLeft_coend_hom_ext (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F]
         (Limits.WalkingMultispan.Hom.fst a)) ≫ t) hf
 
 /-- Right-hand mirror of `RS.tensorLeft_coend_hom_ext`. -/
-theorem tensorRight_coend_hom_ext (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F]
+theorem tensorRight_coend_hom_ext
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J]
+    (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F]
     (W : D) [PreservesColimit (multispanIndexCoend F).multispan
       (tensorRight W)] {Z : D} {f g : coend F ⊗ W ⟶ Z}
     (h : ∀ j, (coend.ι F j ▷ W) ≫ f = (coend.ι F j ▷ W) ≫ g) :
@@ -291,18 +340,15 @@ theorem tensorRight_coend_hom_ext (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F]
 
 section
 
-variable (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (W : D)
-  [PreservesColimit (multispanIndexCoend F).multispan
-    (tensorLeft W)] {Z : D}
-  (k : ∀ j : J, W ⊗ (F.obj (op j)).obj j ⟶ Z)
-  (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j),
-    (W ◁ (F.map g.op).app i) ≫ k i =
-      (W ◁ (F.obj (op j)).map g) ≫ k j)
-
 /-- The cocone under the whiskered multispan carried by a
 dinatural family. -/
 @[simps]
-def tensorLeftCoendCocone :
+def tensorLeftCoendCocone
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ D) (W : D) {Z : D}
+    (k : ∀ j : J, W ⊗ (F.obj (op j)).obj j ⟶ Z)
+    (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j), (W ◁ (F.map g.op).app i) ≫ k i = (W ◁
+      (F.obj (op j)).map g) ≫ k j) :
     Cocone ((multispanIndexCoend F).multispan ⋙ tensorLeft W) where
   pt := Z
   ι :=
@@ -338,13 +384,26 @@ def tensorLeftCoendCocone :
 
 /-- Descend a whiskered dinatural family through a tensor by a
 coend. -/
-noncomputable def tensorLeftCoendDesc : W ⊗ coend F ⟶ Z :=
+noncomputable def tensorLeftCoendDesc
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (W : D)
+    [PreservesColimit (multispanIndexCoend F).multispan (tensorLeft W)]
+    {Z : D} (k : ∀ j : J, W ⊗ (F.obj (op j)).obj j ⟶ Z)
+    (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j), (W ◁ (F.map g.op).app i) ≫ k i = (W ◁
+      (F.obj (op j)).map g) ≫ k j) : W ⊗ coend F ⟶ Z :=
   (isColimitOfPreserves (tensorLeft W)
     (colimit.isColimit (multispanIndexCoend F).multispan)).desc
       (tensorLeftCoendCocone F W k hk)
 
 @[reassoc (attr := simp)]
-theorem whiskerLeft_ι_tensorLeftCoendDesc (j : J) :
+theorem whiskerLeft_ι_tensorLeftCoendDesc
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (W : D)
+    [PreservesColimit (multispanIndexCoend F).multispan (tensorLeft W)]
+    {Z : D} (k : ∀ j : J, W ⊗ (F.obj (op j)).obj j ⟶ Z)
+    (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j), (W ◁ (F.map g.op).app i) ≫ k i = (W ◁
+      (F.obj (op j)).map g) ≫ k j)
+    (j : J) :
     (W ◁ coend.ι F j) ≫ tensorLeftCoendDesc F W k hk = k j :=
   (isColimitOfPreserves (tensorLeft W)
     (colimit.isColimit (multispanIndexCoend F).multispan)).fac
@@ -354,18 +413,15 @@ end
 
 section
 
-variable (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (W : D)
-  [PreservesColimit (multispanIndexCoend F).multispan
-    (tensorRight W)] {Z : D}
-  (k : ∀ j : J, (F.obj (op j)).obj j ⊗ W ⟶ Z)
-  (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j),
-    ((F.map g.op).app i ▷ W) ≫ k i =
-      ((F.obj (op j)).map g ▷ W) ≫ k j)
-
 /-- The cocone under the right-whiskered multispan carried by a
 dinatural family. -/
 @[simps]
-def tensorRightCoendCocone :
+def tensorRightCoendCocone
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ D) (W : D) {Z : D}
+    (k : ∀ j : J, (F.obj (op j)).obj j ⊗ W ⟶ Z)
+    (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j), ((F.map g.op).app i ▷ W) ≫ k i = ((F.obj
+      (op j)).map g ▷ W) ≫ k j) :
     Cocone ((multispanIndexCoend F).multispan ⋙ tensorRight W)
     where
   pt := Z
@@ -402,13 +458,26 @@ def tensorRightCoendCocone :
 
 /-- Descend a right-whiskered dinatural family through a tensor by
 a coend. -/
-noncomputable def tensorRightCoendDesc : coend F ⊗ W ⟶ Z :=
+noncomputable def tensorRightCoendDesc
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (W : D)
+    [PreservesColimit (multispanIndexCoend F).multispan (tensorRight W)]
+    {Z : D} (k : ∀ j : J, (F.obj (op j)).obj j ⊗ W ⟶ Z)
+    (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j), ((F.map g.op).app i ▷ W) ≫ k i = ((F.obj
+      (op j)).map g ▷ W) ≫ k j) : coend F ⊗ W ⟶ Z :=
   (isColimitOfPreserves (tensorRight W)
     (colimit.isColimit (multispanIndexCoend F).multispan)).desc
       (tensorRightCoendCocone F W k hk)
 
 @[reassoc (attr := simp)]
-theorem ι_whiskerRight_tensorRightCoendDesc (j : J) :
+theorem ι_whiskerRight_tensorRightCoendDesc
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] {J : Type u}
+    [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ D) [HasCoend F] (W : D)
+    [PreservesColimit (multispanIndexCoend F).multispan (tensorRight W)]
+    {Z : D} (k : ∀ j : J, (F.obj (op j)).obj j ⊗ W ⟶ Z)
+    (hk : ∀ ⦃i j : J⦄ (g : i ⟶ j), ((F.map g.op).app i ▷ W) ≫ k i = ((F.obj
+      (op j)).map g ▷ W) ≫ k j)
+    (j : J) :
     (coend.ι F j ▷ W) ≫ tensorRightCoendDesc F W k hk = k j :=
   (isColimitOfPreserves (tensorRight W)
     (colimit.isColimit (multispanIndexCoend F).multispan)).fac
@@ -422,11 +491,11 @@ section Multiplication
 
 open Functor.LaxMonoidal
 
-omit [RightRigidCategory A] in
 /-- The braid shuffle: the two ways of carrying the reversed pair
 across a third object agree — the Yang–Baxter consequence behind
 the associativity of the Λ multiplication. -/
-theorem braid_shuffle {P Q R : A} [BraidedCategory A] :
+theorem braid_shuffle [Category.{v} A] [MonoidalCategory A]
+    {P Q R : A} [BraidedCategory A] :
     ((β_ P Q).hom ▷ R) ≫ (β_ (Q ⊗ P) R).hom ≫
         (α_ R Q P).inv =
       (α_ P Q R).hom ≫ (P ◁ (β_ Q R).hom) ≫
@@ -453,10 +522,10 @@ theorem braid_shuffle {P Q R : A} [BraidedCategory A] :
           (α_ R Q P).inv) := by
         monoidal
 
-omit [RightRigidCategory A] in
 /-- Maps into a right dual agree once their evaluation composites
 agree. -/
-theorem eq_of_whiskerRight_comp_evaluation {P Q Z : A}
+theorem eq_of_whiskerRight_comp_evaluation [Category.{v} A] [MonoidalCategory A]
+    {P Q Z : A}
     [ExactPairing P Q] {h₁ h₂ : Z ⟶ Q}
     (H : (h₁ ▷ P) ≫ ε_ P Q = (h₂ ▷ P) ≫ ε_ P Q) : h₁ = h₂ := by
   apply_fun tensorRightHomEquiv Z P Q (𝟙_ A) at H
@@ -473,7 +542,9 @@ theorem eq_of_whiskerRight_comp_evaluation {P Q Z : A}
 /-- The comparison of the dual of a product with the product of
 the duals reduces the rigid evaluation to the tensor-pairing
 evaluation. -/
-theorem rightDualTensorIso_inv_comp_evaluation (X Y : A) :
+theorem rightDualTensorIso_inv_comp_evaluation
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (X Y : A) :
     ((rightDualTensorIso X Y).inv ▷ (X ⊗ Y)) ≫
       ε_ (X ⊗ Y) ((X ⊗ Y)ᘁ) =
         ε_ (X ⊗ Y) ((Yᘁ : A) ⊗ (Xᘁ : A)) := by
@@ -486,7 +557,9 @@ theorem rightDualTensorIso_inv_comp_evaluation (X Y : A) :
 /-- The mate of a left whiskering, through the comparison of the
 dual of a tensor product with the tensor of the duals: the
 dinaturality input of the Λ multiplication. -/
-theorem whiskerLeft_mate_square (X : A) {Y Y' : A} (g : Y ⟶ Y') :
+theorem whiskerLeft_mate_square
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (X : A) {Y Y' : A} (g : Y ⟶ Y') :
     ((gᘁ) ▷ (Xᘁ : A)) ≫ (rightDualTensorIso X Y).inv =
       (rightDualTensorIso X Y').inv ≫ ((X ◁ g)ᘁ) := by
   refine eq_of_whiskerRight_comp_evaluation (P := X ⊗ Y) ?_
@@ -526,7 +599,9 @@ theorem whiskerLeft_mate_square (X : A) {Y Y' : A} (g : Y ⟶ Y') :
 
 /-- The mate of a right whiskering: the left-slot mirror of
 `RS.whiskerLeft_mate_square`. -/
-theorem whiskerRight_mate_square {X X' : A} (f : X ⟶ X')
+theorem whiskerRight_mate_square
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {X X' : A} (f : X ⟶ X')
     (Y : A) :
     ((Yᘁ : A) ◁ (fᘁ)) ≫ (rightDualTensorIso X Y).inv =
       (rightDualTensorIso X' Y).inv ≫ ((f ▷ Y)ᘁ) := by
@@ -553,7 +628,9 @@ theorem whiskerRight_mate_square {X X' : A} (f : X ⟶ X')
 /-- The mate of the associator, through the comparisons of duals
 of tensor products: the source-side kernel of the Λ
 associativity. -/
-theorem associator_mate_square (X Y Z : A) :
+theorem associator_mate_square
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (X Y Z : A) :
     (α_ (Zᘁ : A) (Yᘁ : A) (Xᘁ : A)).hom ≫
         ((Zᘁ : A) ◁ (rightDualTensorIso X Y).inv) ≫
         (rightDualTensorIso (X ⊗ Y) Z).inv =
@@ -654,7 +731,8 @@ theorem associator_mate_square (X Y Z : A) :
 /-- Associativity of the composite dual comparisons: the full
 source-side input of the Λ associativity, assembled from the
 braid shuffle and the mate of the associator. -/
-theorem cAssoc [BraidedCategory A] (X Y Z : A) :
+theorem cAssoc [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    [BraidedCategory A] (X Y Z : A) :
     (((β_ (Xᘁ : A) (Yᘁ : A)).hom ≫
         (rightDualTensorIso X Y).inv) ▷ (Zᘁ : A)) ≫
       (β_ ((X ⊗ Y)ᘁ : A) (Zᘁ : A)).hom ≫
@@ -680,7 +758,9 @@ theorem cAssoc [BraidedCategory A] (X Y Z : A) :
 
 /-- The mate of the braiding through the dual-tensor
 comparisons: the source-side kernel of the Λ commutativity. -/
-theorem braiding_mate_square [SymmetricCategory A] (X Y : A) :
+theorem braiding_mate_square
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    [SymmetricCategory A] (X Y : A) :
     (rightDualTensorIso Y X).inv ≫ (((β_ X Y).hom)ᘁ) =
       (β_ (Xᘁ : A) (Yᘁ : A)).hom ≫
         (rightDualTensorIso X Y).inv := by
@@ -696,12 +776,11 @@ theorem braiding_mate_square [SymmetricCategory A] (X Y : A) :
     SymmetricCategory.symmetry, MonoidalCategory.whiskerLeft_id,
     Category.id_comp]
 
-variable [BraidedCategory A] [BraidedCategory D]
-variable (α β : A ⥤ D) [α.LaxMonoidal] [β.LaxMonoidal]
-
 /-- The tensor dual comparison at the monoidal unit, pinned to
 the rigid blanket instances that the Λ stages use. -/
-noncomputable def unitTensorDualIso (Y : A) :
+noncomputable def unitTensorDualIso
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (Y : A) :
     ((𝟙_ A ⊗ Y)ᘁ : A) ≅ (Yᘁ : A) ⊗ unitRigidDual :=
   @rightDualTensorIso A _ _ (𝟙_ A) Y
     (RightRigidCategory.rightDual (𝟙_ A))
@@ -710,16 +789,17 @@ noncomputable def unitTensorDualIso (Y : A) :
 
 /-- The rigid evaluation of the monoidal unit, at the blanket
 instance. -/
-noncomputable def unitRigidEvaluation :
+noncomputable def unitRigidEvaluation
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A] :
     (unitRigidDual (A := A)) ⊗ 𝟙_ A ⟶ 𝟙_ A :=
   @ExactPairing.evaluation A _ _ (𝟙_ A) (unitRigidDual (A := A))
     (@HasRightDual.exact A _ _ (𝟙_ A)
       (RightRigidCategory.rightDual (𝟙_ A)))
 
-omit [BraidedCategory A] in
 /-- The unit comparison reduces the blanket evaluation of the
 unit to the unit pairing. -/
-theorem unitRightDualIso_inv_comp_evaluation :
+theorem unitRightDualIso_inv_comp_evaluation
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A] :
     ((unitRightDualIso (A := A)).inv ▷ (𝟙_ A)) ≫
       unitRigidEvaluation (A := A) = ε_ (𝟙_ A) (𝟙_ A) := by
   have h := @rightAdjointMate_comp_evaluation A _ _ (𝟙_ A)
@@ -729,10 +809,11 @@ theorem unitRightDualIso_inv_comp_evaluation :
   rw [MonoidalCategory.whiskerLeft_id, Category.id_comp]
   rfl
 
-omit [BraidedCategory A] in
 /-- The pinned tensor dual comparison at the unit reduces the
 rigid evaluation to the expanded tensor evaluation. -/
-theorem unitTensorDualIso_inv_comp_evaluation (Y : A) :
+theorem unitTensorDualIso_inv_comp_evaluation
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (Y : A) :
     ((unitTensorDualIso Y).inv ▷ (𝟙_ A ⊗ Y)) ≫
       ε_ (𝟙_ A ⊗ Y) ((𝟙_ A ⊗ Y)ᘁ) =
         𝟙 _ ⊗≫ (Yᘁ : A) ◁
@@ -752,18 +833,21 @@ theorem unitTensorDualIso_inv_comp_evaluation (Y : A) :
 
 /-- The tensor dual comparison with the unit on the right, pinned
 to the rigid blanket instances. -/
-noncomputable def tensorUnitDualIso (Y : A) :
+noncomputable def tensorUnitDualIso
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (Y : A) :
     ((Y ⊗ 𝟙_ A)ᘁ : A) ≅ unitRigidDual ⊗ (Yᘁ : A) :=
   @rightDualTensorIso A _ _ Y (𝟙_ A)
     (RightRigidCategory.rightDual Y)
     (RightRigidCategory.rightDual (𝟙_ A))
     (RightRigidCategory.rightDual (Y ⊗ 𝟙_ A))
 
-omit [BraidedCategory A] in
 /-- The pinned tensor dual comparison with the unit on the right
 reduces the rigid evaluation to the expanded tensor
 evaluation. -/
-theorem tensorUnitDualIso_inv_comp_evaluation (Y : A) :
+theorem tensorUnitDualIso_inv_comp_evaluation
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    (Y : A) :
     ((tensorUnitDualIso Y).inv ▷ (Y ⊗ 𝟙_ A)) ≫
       ε_ (Y ⊗ 𝟙_ A) ((Y ⊗ 𝟙_ A)ᘁ) =
         𝟙 _ ⊗≫ (unitRigidDual (A := A)) ◁
@@ -784,7 +868,10 @@ theorem tensorUnitDualIso_inv_comp_evaluation (Y : A) :
 
 /-- The mate of the right unitor: the mirror of
 `RS.leftUnitor_mate`. -/
-theorem rightUnitor_mate (Y : A) :
+theorem rightUnitor_mate
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    [BraidedCategory A]
+    (Y : A) :
     (ρ_ (Yᘁ : A)).inv ≫
         ((Yᘁ : A) ◁ (unitRightDualIso (A := A)).inv) ≫
         (β_ (Yᘁ : A) (unitRigidDual (A := A))).hom ≫
@@ -858,7 +945,10 @@ theorem rightUnitor_mate (Y : A) :
 /-- The mate of the left unitor, expressed through the unit and
 tensor dual comparisons: the source-side input of the Λ unit
 law. -/
-theorem leftUnitor_mate (Y : A) :
+theorem leftUnitor_mate
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    [BraidedCategory A]
+    (Y : A) :
     (λ_ (Yᘁ : A)).inv ≫
         ((unitRightDualIso (A := A)).inv ▷ (Yᘁ : A)) ≫
         (β_ (unitRigidDual (A := A)) (Yᘁ : A)).hom ≫
@@ -915,7 +1005,12 @@ theorem leftUnitor_mate (Y : A) :
 /-- The stage-level multiplication of the Λ object: middle-four
 exchange, the tensorators of the two functors, and the comparison
 of the dual of a product with the product of the duals. -/
-noncomputable def lambdaMulStage (X Y : A) :
+noncomputable def lambdaMulStage
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    (X Y : A) :
     (α.obj (Xᘁ) ⊗ β.obj X) ⊗ (α.obj (Yᘁ) ⊗ β.obj Y) ⟶
       α.obj ((X ⊗ Y)ᘁ) ⊗ β.obj (X ⊗ Y) :=
   tensorμ (α.obj (Xᘁ)) (β.obj X) (α.obj (Yᘁ)) (β.obj Y) ≫
@@ -924,7 +1019,12 @@ noncomputable def lambdaMulStage (X Y : A) :
       (rightDualTensorIso X Y).inv) ▷ β.obj (X ⊗ Y))
 
 /-- The stage-level associativity of the Λ multiplication. -/
-theorem lambdaMulStage_assoc [HasLambda α β] (X Y Z : A) :
+theorem lambdaMulStage_assoc
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] (X Y Z : A) :
     (lambdaMulStage α β X Y ▷ (α.obj (Zᘁ) ⊗ β.obj Z)) ≫
       lambdaMulStage α β (X ⊗ Y) Z ≫
       lambdaStage α β ((X ⊗ Y) ⊗ Z) =
@@ -1013,7 +1113,12 @@ theorem lambdaMulStage_assoc [HasLambda α β] (X Y Z : A) :
 /-- Dinaturality of the stage-level multiplication in the right
 variable: the input of the inner coend descent of the Λ
 multiplication. -/
-theorem lambdaMulStage_dinat_right [HasLambda α β] (X : A)
+theorem lambdaMulStage_dinat_right
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] (X : A)
     {Y Y' : A} (g : Y ⟶ Y') :
     ((α.obj (Xᘁ) ⊗ β.obj X) ◁ (α.map (gᘁ) ▷ β.obj Y)) ≫
         lambdaMulStage α β X Y ≫ lambdaStage α β (X ⊗ Y) =
@@ -1054,7 +1159,12 @@ theorem lambdaMulStage_dinat_right [HasLambda α β] (X : A)
 /-- The stage-level left unit computation: the Λ unit composed
 into the multiplication at a stage collapses to the left
 unitor. -/
-theorem lambdaMulStage_unit_left [HasLambda α β] (Y : A) :
+theorem lambdaMulStage_unit_left
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] (Y : A) :
     ((λ_ (𝟙_ D)).inv ▷ (α.obj (Yᘁ) ⊗ β.obj Y)) ≫
       ((((ε α ≫ α.map unitRightDualIso.inv) ⊗ₘ ε β)) ▷
         (α.obj (Yᘁ) ⊗ β.obj Y)) ≫
@@ -1104,7 +1214,12 @@ theorem lambdaMulStage_unit_left [HasLambda α β] (Y : A) :
 /-- Dinaturality of the stage-level multiplication in the left
 variable: the input of the outer coend descent of the Λ
 multiplication. -/
-theorem lambdaMulStage_dinat_left [HasLambda α β] {X X' : A}
+theorem lambdaMulStage_dinat_left
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] {X X' : A}
     (f : X ⟶ X') (Y : A) :
     ((α.map (fᘁ) ▷ β.obj X) ▷ (α.obj (Yᘁ) ⊗ β.obj Y)) ≫
         lambdaMulStage α β X Y ≫ lambdaStage α β (X ⊗ Y) =
@@ -1147,7 +1262,12 @@ theorem lambdaMulStage_dinat_left [HasLambda α β] {X X' : A}
 /-- The inner descent of the Λ multiplication: for a fixed left
 stage, the stage-level multiplication descends through the right
 coend. -/
-noncomputable def lambdaMulLeft [HasLambda α β] (X : A)
+noncomputable def lambdaMulLeft
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] (X : A)
     [PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft (α.obj (Xᘁ) ⊗ β.obj X))] :
@@ -1157,7 +1277,12 @@ noncomputable def lambdaMulLeft [HasLambda α β] (X : A)
     (fun _ _ g => lambdaMulStage_dinat_right α β X g)
 
 @[reassoc]
-theorem whiskerLeft_stage_lambdaMulLeft [HasLambda α β] (X : A)
+theorem whiskerLeft_stage_lambdaMulLeft
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] (X : A)
     [PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft (α.obj (Xᘁ) ⊗ β.obj X))] (Y : A) :
@@ -1167,7 +1292,12 @@ theorem whiskerLeft_stage_lambdaMulLeft [HasLambda α β] (X : A)
   whiskerLeft_ι_tensorLeftCoendDesc (lambdaDiagram α β) _ _ _ Y
 
 /-- Dinaturality of the inner descent in the left variable. -/
-theorem lambdaMulLeft_dinat [HasLambda α β]
+theorem lambdaMulLeft_dinat
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)] {X X' : A} (f : X ⟶ X') :
@@ -1191,7 +1321,12 @@ theorem lambdaMulLeft_dinat [HasLambda α β]
 /-- **The Λ multiplication** (Deligne 3.7's product): the
 stage-level multiplication descended through both coend
 variables. -/
-noncomputable def lambdaMul [HasLambda α β]
+noncomputable def lambdaMul
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1204,7 +1339,12 @@ noncomputable def lambdaMul [HasLambda α β]
     (fun _ _ f => lambdaMulLeft_dinat α β f)
 
 @[reassoc (attr := simp)]
-theorem stage_whiskerRight_lambdaMul [HasLambda α β]
+theorem stage_whiskerRight_lambdaMul
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1216,7 +1356,12 @@ theorem stage_whiskerRight_lambdaMul [HasLambda α β]
   ι_whiskerRight_tensorRightCoendDesc (lambdaDiagram α β) _ _ _ X
 
 /-- The two-stage computation of the Λ multiplication. -/
-theorem stage_tensorHom_lambdaMul [HasLambda α β]
+theorem stage_tensorHom_lambdaMul
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1231,7 +1376,12 @@ theorem stage_tensorHom_lambdaMul [HasLambda α β]
 
 /-- **The left unit law of the Λ algebra**: the Λ unit composed
 into the Λ multiplication is the left unitor. -/
-theorem lambdaMul_unit_left [HasLambda α β]
+theorem lambdaMul_unit_left
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1262,7 +1412,12 @@ theorem lambdaMul_unit_left [HasLambda α β]
 
 /-- The stage-level right unit computation: the mirror of
 `RS.lambdaMulStage_unit_left`. -/
-theorem lambdaMulStage_unit_right [HasLambda α β] (Y : A) :
+theorem lambdaMulStage_unit_right
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β] (Y : A) :
     ((α.obj (Yᘁ) ⊗ β.obj Y) ◁ (λ_ (𝟙_ D)).inv) ≫
       ((α.obj (Yᘁ) ⊗ β.obj Y) ◁
         ((ε α ≫ α.map unitRightDualIso.inv) ⊗ₘ ε β)) ≫
@@ -1310,7 +1465,12 @@ theorem lambdaMulStage_unit_right [HasLambda α β] (Y : A) :
     MonoidalCategory.whiskerLeft_id, Category.id_comp]
 
 /-- **The right unit law of the Λ algebra**. -/
-theorem lambdaMul_unit_right [HasLambda α β]
+theorem lambdaMul_unit_right
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1336,10 +1496,13 @@ theorem lambdaMul_unit_right [HasLambda α β]
   erw [lambdaMulStage_unit_right]
   rw [rightUnitor_naturality]
 
-omit [BraidedCategory A] [α.LaxMonoidal] [β.LaxMonoidal] in
 /-- Maps out of the triple tensor of the Λ object agree once
 they agree on triples of stages. -/
-theorem lambda_triple_hom_ext [HasLambda α β]
+theorem lambda_triple_hom_ext
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory D]
+    (α : A ⥤ D) (β : A ⥤ D)
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1393,7 +1556,12 @@ theorem lambda_triple_hom_ext [HasLambda α β]
   exact h X Y W'
 
 /-- **Associativity of the Λ multiplication** (Deligne 3.8). -/
-theorem lambdaMul_assoc [HasLambda α β]
+theorem lambdaMul_assoc
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1446,11 +1614,13 @@ theorem lambdaMul_assoc [HasLambda α β]
           stage_tensorHom_lambdaMul,
           MonoidalCategory.id_tensorHom]
 
-omit [BraidedCategory A] [BraidedCategory D] [α.LaxMonoidal]
-  [β.LaxMonoidal] in
 /-- Maps out of the square of the Λ object agree once they agree
 on pairs of stages. -/
-theorem lambda_pair_hom_ext [HasLambda α β]
+theorem lambda_pair_hom_ext
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (α : A ⥤ D)
+    (β : A ⥤ D)
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1486,7 +1656,12 @@ monoidal functors from a braided rigid source is a monoid
 object, with the stage at the unit as unit and the descended
 stage-level multiplication as product. -/
 @[implicit_reducible]
-noncomputable def lambdaMonObj [HasLambda α β]
+noncomputable def lambdaMonObj
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1511,7 +1686,12 @@ noncomputable def lambdaMonObj [HasLambda α β]
 
 /-- The stage-level multiplication is natural in the pair of
 monoidal transformations. -/
-theorem lambdaMulStage_map {α' β' : A ⥤ D} [α'.LaxMonoidal]
+theorem lambdaMulStage_map
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [BraidedCategory A]
+    [BraidedCategory D] (α : A ⥤ D) (β : A ⥤ D) [α.LaxMonoidal]
+    [β.LaxMonoidal]
+    {α' β' : A ⥤ D} [α'.LaxMonoidal]
     [β'.LaxMonoidal] (η : α ⟶ α') (τ : β ⟶ β')
     [NatTrans.IsMonoidal η] [NatTrans.IsMonoidal τ] (X Y : A) :
     lambdaMulStage α β X Y ≫
@@ -1536,12 +1716,14 @@ section Commutativity
 
 open Functor.LaxMonoidal
 
-variable [SymmetricCategory A] [SymmetricCategory D]
-variable (α β : A ⥤ D) [α.LaxBraided] [β.LaxBraided]
-
 /-- The stage-level commutativity of the Λ multiplication over a
 symmetric source and target with braided functors. -/
-theorem lambdaMulStage_comm [HasLambda α β] (X Y : A) :
+theorem lambdaMulStage_comm
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D]
+    [SymmetricCategory A] [SymmetricCategory D] (α : A ⥤ D) (β : A ⥤ D)
+    [α.LaxBraided] [β.LaxBraided]
+    [HasLambda α β] (X Y : A) :
     lambdaMulStage α β X Y ≫ lambdaStage α β (X ⊗ Y) =
       (β_ (α.obj (Xᘁ) ⊗ β.obj X)
           (α.obj (Yᘁ) ⊗ β.obj Y)).hom ≫
@@ -1575,7 +1757,12 @@ theorem lambdaMulStage_comm [HasLambda α β] (X Y : A) :
     ← tensorμ_braiding_assoc]
 
 /-- **Commutativity of the Λ multiplication** (Deligne 3.8). -/
-theorem lambdaMul_comm [HasLambda α β]
+theorem lambdaMul_comm
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D]
+    [SymmetricCategory A] [SymmetricCategory D] (α : A ⥤ D) (β : A ⥤ D)
+    [α.LaxBraided] [β.LaxBraided]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]
@@ -1593,7 +1780,12 @@ theorem lambdaMul_comm [HasLambda α β]
 /-- **The Λ algebra is commutative** over symmetric data with
 braided functors (Deligne 3.7–3.8 in full). -/
 @[implicit_reducible]
-noncomputable def lambdaIsCommMonObj [HasLambda α β]
+noncomputable def lambdaIsCommMonObj
+    [Category.{v} A] [MonoidalCategory A] [RightRigidCategory A]
+    {D : Type u'} [Category.{v'} D] [MonoidalCategory D]
+    [SymmetricCategory A] [SymmetricCategory D] (α : A ⥤ D) (β : A ⥤ D)
+    [α.LaxBraided] [β.LaxBraided]
+    [HasLambda α β]
     [∀ W : D, PreservesColimit
       (multispanIndexCoend (lambdaDiagram α β)).multispan
       (tensorLeft W)]

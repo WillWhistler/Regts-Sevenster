@@ -18,17 +18,22 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The direct and composite presentations of the fibre functor
 agree.** -/
-theorem fibreFun_eq_fibreOver : fibreFun L R = fibreOver L R := rfl
+theorem fibreFun_eq_fibreOver
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
+    fibreFun L R = fibreOver L R := rfl
 
 /-- The composite presentation is additive. -/
-instance fibreOver_additive : (fibreOver L R).Additive :=
+instance fibreOver_additive
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
+    (fibreOver L R).Additive :=
   fibreFun_eq_fibreOver L R ▸ fibreFun_additive L R
 
 end

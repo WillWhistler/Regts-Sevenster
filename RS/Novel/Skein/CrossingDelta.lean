@@ -17,12 +17,13 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 /-- Symmetrized crossing of two chords given by (unordered) label
 pairs: each chord is normalized low-to-high and the two normalized
 chords interleave, in either order. -/
-def chordPairCrossSym (p q : α × α) : Prop :=
+def chordPairCrossSym [LinearOrder α]
+    (p q : α × α) : Prop :=
   ChordPairCross (min p.1 p.2) (max p.1 p.2) (min q.1 q.2)
       (max q.1 q.2) ∨
     ChordPairCross (min q.1 q.2) (max q.1 q.2) (min p.1 p.2)
@@ -30,7 +31,8 @@ def chordPairCrossSym (p q : α × α) : Prop :=
 
 /-- The symmetrization is redundant: `ChordPairCross` of normalized
 chords is itself symmetric (its two disjuncts swap). -/
-theorem chordPairCrossSym_iff (p₁ p₂ q₁ q₂ : α) :
+theorem chordPairCrossSym_iff [LinearOrder α]
+    (p₁ p₂ q₁ q₂ : α) :
     chordPairCrossSym (p₁, p₂) (q₁, q₂) ↔
       ChordPairCross (min p₁ p₂) (max p₁ p₂) (min q₁ q₂)
         (max q₁ q₂) :=
@@ -39,7 +41,8 @@ theorem chordPairCrossSym_iff (p₁ p₂ q₁ q₂ : α) :
 /-- The two ordered crossing indicators of one sorted chord `(u, w)`
 against a chord recorded as `(x, y)` sum to the interleaving
 indicator, gated by `x < y`. -/
-private theorem sorted_pair_sum {x y u w : α} (huw : u < w) :
+private theorem sorted_pair_sum [LinearOrder α]
+    {x y u w : α} (huw : u < w) :
     ((if u < w ∧ x < y ∧ u < x ∧ x < w ∧ w < y then (1 : ℕ)
         else 0) +
       (if x < y ∧ u < w ∧ x < u ∧ u < y ∧ y < w then (1 : ℕ)
@@ -64,7 +67,8 @@ private theorem sorted_pair_sum {x y u w : α} (huw : u < w) :
 /-- The four ordered crossing indicators between one chord with ends
 labelled `a`, `b` and a chord recorded as `(x, y)` sum to the gated
 interleaving indicator of the normalized chords. -/
-private theorem side_label_sum {a b x y : α} (hab : a ≠ b) :
+private theorem side_label_sum [LinearOrder α]
+    {a b x y : α} (hab : a ≠ b) :
     (((if a < b ∧ x < y ∧ a < x ∧ x < b ∧ b < y then (1 : ℕ)
           else 0) +
         (if x < y ∧ a < b ∧ x < a ∧ a < y ∧ y < b then (1 : ℕ)
@@ -99,7 +103,8 @@ private theorem side_label_sum {a b x y : α} (hab : a ≠ b) :
 crossing indicators between two disjoint chords with end labels
 `{a, b}` and `{c, d}` sum to the symmetrized mutual-crossing
 indicator. -/
-private theorem eight_label_sum {a b c d : α} (hab : a ≠ b)
+private theorem eight_label_sum [LinearOrder α]
+    {a b c d : α} (hab : a ≠ b)
     (hcd : c ≠ d) :
     (((if a < b ∧ c < d ∧ a < c ∧ c < b ∧ b < d then (1 : ℕ)
           else 0) +
@@ -118,122 +123,26 @@ private theorem eight_label_sum {a b c d : α} (hab : a ≠ b)
             (if d < c ∧ b < a ∧ d < b ∧ b < c ∧ c < a then (1 : ℕ)
               else 0))))) =
       if chordPairCrossSym (a, b) (c, d) then (1 : ℕ) else 0 := by
-  -- ═══════ FOUR ORDERINGS OF THE TWO CHORDS' ENDS ═══════
-  -- Each leaves exactly two of the eight ordered pairs, and the
-  -- two survivors are transposes of one another.
-  rcases lt_or_gt_of_ne hab with h1 | h1 <;>
-    rcases lt_or_gt_of_ne hcd with h2 | h2
-  · -- a < b, c < d: survivors (u,p) and (p,u)
-    have z2 : (if a < b ∧ d < c ∧ a < d ∧ d < b ∧ b < c
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.2.1)
-    have z3 : (if b < a ∧ c < d ∧ b < c ∧ c < a ∧ a < d
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z4 : (if b < a ∧ d < c ∧ b < d ∧ d < a ∧ a < c
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z6 : (if c < d ∧ b < a ∧ c < b ∧ b < d ∧ d < a
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.2.1)
-    have z7 : (if d < c ∧ a < b ∧ d < a ∧ a < c ∧ c < b
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    have z8 : (if d < c ∧ b < a ∧ d < b ∧ b < c ∧ c < a
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    rw [z2, z3, z4, z6, z7, z8]
-    simp only [add_zero, zero_add]
-    rw [sorted_pair_sum h1]
-    refine if_congr ?_ rfl rfl
-    rw [chordPairCrossSym_iff, min_eq_left h1.le,
-      max_eq_right h1.le, min_eq_left h2.le, max_eq_right h2.le]
-    exact ⟨fun ⟨_, hc⟩ => hc.elim Or.inr Or.inl,
-      fun hc => ⟨h2, hc.elim Or.inr Or.inl⟩⟩
-  · -- a < b, d < c: survivors (u,q) and (q,u)
-    have z1 : (if a < b ∧ c < d ∧ a < c ∧ c < b ∧ b < d
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.2.1)
-    have z3 : (if b < a ∧ c < d ∧ b < c ∧ c < a ∧ a < d
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z4 : (if b < a ∧ d < c ∧ b < d ∧ d < a ∧ a < c
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z5 : (if c < d ∧ a < b ∧ c < a ∧ a < d ∧ d < b
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    have z6 : (if c < d ∧ b < a ∧ c < b ∧ b < d ∧ d < a
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    have z8 : (if d < c ∧ b < a ∧ d < b ∧ b < c ∧ c < a
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.2.1)
-    rw [z1, z3, z4, z5, z6, z8]
-    simp only [add_zero, zero_add]
-    rw [sorted_pair_sum h1]
-    refine if_congr ?_ rfl rfl
-    rw [chordPairCrossSym_iff, min_eq_left h1.le,
-      max_eq_right h1.le, min_eq_right h2.le, max_eq_left h2.le]
-    exact ⟨fun ⟨_, hc⟩ => hc.elim Or.inr Or.inl,
-      fun hc => ⟨h2, hc.elim Or.inr Or.inl⟩⟩
-  · -- b < a, c < d: survivors (w,p) and (p,w)
-    have z1 : (if a < b ∧ c < d ∧ a < c ∧ c < b ∧ b < d
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z2 : (if a < b ∧ d < c ∧ a < d ∧ d < b ∧ b < c
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z4 : (if b < a ∧ d < c ∧ b < d ∧ d < a ∧ a < c
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.2.1)
-    have z5 : (if c < d ∧ a < b ∧ c < a ∧ a < d ∧ d < b
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.2.1)
-    have z7 : (if d < c ∧ a < b ∧ d < a ∧ a < c ∧ c < b
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    have z8 : (if d < c ∧ b < a ∧ d < b ∧ b < c ∧ c < a
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    rw [z1, z2, z4, z5, z7, z8]
-    simp only [add_zero, zero_add]
-    rw [sorted_pair_sum h1]
-    refine if_congr ?_ rfl rfl
-    rw [chordPairCrossSym_iff, min_eq_right h1.le,
-      max_eq_left h1.le, min_eq_left h2.le, max_eq_right h2.le]
-    exact ⟨fun ⟨_, hc⟩ => hc.elim Or.inr Or.inl,
-      fun hc => ⟨h2, hc.elim Or.inr Or.inl⟩⟩
-  · -- b < a, d < c: survivors (w,q) and (q,w)
-    have z1 : (if a < b ∧ c < d ∧ a < c ∧ c < b ∧ b < d
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z2 : (if a < b ∧ d < c ∧ a < d ∧ d < b ∧ b < c
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.1)
-    have z3 : (if b < a ∧ c < d ∧ b < c ∧ c < a ∧ a < d
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.2.1)
-    have z5 : (if c < d ∧ a < b ∧ c < a ∧ a < d ∧ d < b
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    have z6 : (if c < d ∧ b < a ∧ c < b ∧ b < d ∧ d < a
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h2 hc.1)
-    have z7 : (if d < c ∧ a < b ∧ d < a ∧ a < c ∧ c < b
-        then (1 : ℕ) else 0) = 0 :=
-      if_neg (fun hc => lt_asymm h1 hc.2.1)
-    rw [z1, z2, z3, z5, z6, z7]
-    simp only [add_zero, zero_add]
-    rw [sorted_pair_sum h1]
-    refine if_congr ?_ rfl rfl
-    rw [chordPairCrossSym_iff, min_eq_right h1.le,
-      max_eq_left h1.le, min_eq_right h2.le, max_eq_left h2.le]
-    exact ⟨fun ⟨_, hc⟩ => hc.elim Or.inr Or.inl,
-      fun hc => ⟨h2, hc.elim Or.inr Or.inl⟩⟩
+  have h₁ := side_label_sum (x := c) (y := d) hab
+  have h₂ := side_label_sum (x := d) (y := c) hab
+  have hsum :
+      (if c < d ∧ ChordPairCross c d (min a b) (max a b)
+        then (1 : ℕ) else 0) +
+      (if d < c ∧ ChordPairCross d c (min a b) (max a b)
+        then (1 : ℕ) else 0) =
+      if chordPairCrossSym (a, b) (c, d) then (1 : ℕ) else 0 := by
+    rw [chordPairCrossSym_iff]
+    rcases lt_or_gt_of_ne hcd with h | h
+    · simp [h, lt_asymm h, min_eq_left h.le, max_eq_right h.le,
+        ChordPairCross, or_comm]
+    · simp [h, lt_asymm h, min_eq_right h.le, max_eq_left h.le,
+        ChordPairCross, or_comm]
+  convert (congrArg₂ (· + ·) h₁ h₂).trans hsum using 1
+  ac_rfl
 
 /-- Sorting a chord in a cons-pair leaves the multiset unchanged. -/
-private theorem minmax_cons (u v : α) (s : Multiset α) :
+private theorem minmax_cons [LinearOrder α]
+    (u v : α) (s : Multiset α) :
     (min u v ::ₘ max u v ::ₘ s) = u ::ₘ v ::ₘ s := by
   rcases le_total u v with h | h
   · rw [min_eq_left h, max_eq_right h]
@@ -242,7 +151,8 @@ private theorem minmax_cons (u v : α) (s : Multiset α) :
 
 /-- The endpoint multisets of the two normalized re-pairings of four
 labels agree. -/
-private theorem minmax_multiset (a b c d : α) :
+private theorem minmax_multiset [LinearOrder α]
+    (a b c d : α) :
     ({min a b, max a b, min c d, max c d} : Multiset α) =
       {min a c, max a c, min b d, max b d} := by
   simp only [Multiset.insert_eq_cons, ← Multiset.cons_zero]
@@ -250,7 +160,8 @@ private theorem minmax_multiset (a b c d : α) :
   exact congrArg (a ::ₘ ·) (Multiset.cons_swap b c _)
 
 /-- Avoidance transfer to the normalized endpoint multiset. -/
-private theorem minmax_multiset_forall {a b c d x y : α}
+private theorem minmax_multiset_forall [LinearOrder α]
+    {a b c d x y : α}
     (hax : a ≠ x) (hay : a ≠ y) (hbx : b ≠ x) (hby : b ≠ y)
     (hcx : c ≠ x) (hcy : c ≠ y) (hdx : d ≠ x) (hdy : d ≠ y) :
     ∀ p ∈ ({min a b, max a b, min c d, max c d} : Multiset α),
@@ -297,13 +208,13 @@ private theorem sum_split_four {β : Type} (S : Finset β)
   rw [← Finset.sum_filter_add_sum_filter_not S pr
     (fun z => ∑ z' ∈ S, g z z'), h1, h1]
 
-variable {W : Fragment α} {F : EdgeSubset W}
-
 namespace EdgeSubset
 
 /-- The crossing indicator of two boundary ends, in terms of the
 four labels, with designated matching partners. -/
-private theorem chordCross_ite_eq (κ : F.RelTransitionSystem)
+private theorem chordCross_ite_eq
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {x y mx my : W.Flag}
     (hx : x ∈ F.boundaryFlags) (hy : y ∈ F.boundaryFlags)
     (hmx : mx ∈ F.boundaryFlags) (hmy : my ∈ F.boundaryFlags)
@@ -325,7 +236,9 @@ private theorem chordCross_ite_eq (κ : F.RelTransitionSystem)
     (by rw [h1, h2])) rfl rfl
 
 /-- A boundary end never crosses itself. -/
-private theorem chordCross_self_ite (κ : F.RelTransitionSystem)
+private theorem chordCross_self_ite
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {x : W.Flag} (hx : x ∈ F.boundaryFlags) :
     (if ChordCross κ ⟨x, hx⟩ ⟨x, hx⟩ then (1 : ℕ) else 0) = 0 :=
   if_neg fun h => by
@@ -333,7 +246,9 @@ private theorem chordCross_self_ite (κ : F.RelTransitionSystem)
     exact lt_irrefl _ hlt
 
 /-- The two ends of one chord never cross each other. -/
-private theorem chordCross_partner_ite (κ : F.RelTransitionSystem)
+private theorem chordCross_partner_ite
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {x y : W.Flag} (hx : x ∈ F.boundaryFlags)
     (hy : y ∈ F.boundaryFlags)
     (hyx : κ.pathMatch y hy = x) :
@@ -348,7 +263,9 @@ private theorem chordCross_partner_ite (κ : F.RelTransitionSystem)
 /-- **The four-end block**: the full ordered-pair crossing sum over
 the four ends of two disjoint chords is the symmetrized
 mutual-crossing indicator of their label chords. -/
-private theorem chordCross_quad_sum (κ : F.RelTransitionSystem)
+private theorem chordCross_quad_sum
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {u w p q : W.Flag}
     (hu : u ∈ F.boundaryFlags) (hw : w ∈ F.boundaryFlags)
     (hp : p ∈ F.boundaryFlags) (hq : q ∈ F.boundaryFlags)
@@ -400,7 +317,9 @@ private theorem chordCross_quad_sum (κ : F.RelTransitionSystem)
 /-- **One chord against a third end**: the four ordered crossing
 indicators between the two ends of one chord and a fixed third end
 sum to the gated interleaving indicator. -/
-private theorem chordCross_side_sum (κ : F.RelTransitionSystem)
+private theorem chordCross_side_sum
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {u w tv tm : W.Flag}
     (hu : u ∈ F.boundaryFlags) (hw : w ∈ F.boundaryFlags)
     (ht : tv ∈ F.boundaryFlags) (htmm : tm ∈ F.boundaryFlags)
@@ -427,6 +346,7 @@ the eight ordered crossing indicators against the four touched ends
 have the same parity before and after the transposition
 (`third_chord_reparity` on the label chords). -/
 private theorem touched_line_parity
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     (κ κ' : F.RelTransitionSystem) {g₁ g₂ g₃ g₄ tv tm : W.Flag}
     (h₁ : g₁ ∈ F.boundaryFlags) (h₂ : g₂ ∈ F.boundaryFlags)
     (h₃ : g₃ ∈ F.boundaryFlags) (h₄ : g₄ ∈ F.boundaryFlags)
@@ -575,10 +495,10 @@ private theorem touched_line_parity
       if_neg (fun hc => hxy hc.1)
     rw [z₁, z₂, z₃, z₄]
 
-omit [LinearOrder α] in
 /-- The touched part of the boundary is exactly the four ends of the
 two re-paired chords. -/
-private theorem filter_touched_eq (κ : F.RelTransitionSystem)
+private theorem filter_touched_eq {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem)
     {e₁ e₂ : W.Flag} (he₁ : e₁ ∈ F.boundaryFlags)
     (he₂ : e₂ ∈ F.boundaryFlags) :
     F.boundaryFlags.attach.filter
@@ -598,6 +518,7 @@ re-pair with each other, everything else is preserved), the crossing
 count changes mod 2 exactly by the mutual-crossing change of the two
 re-paired chords. -/
 theorem chordCrossingCount_repair_parity
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     {κ κ' : F.RelTransitionSystem} {e₁ e₂ : W.Flag}
     (he₁ : e₁ ∈ F.boundaryFlags) (he₂ : e₂ ∈ F.boundaryFlags)
     (hne : e₁ ≠ e₂) (hPne : κ.pathMatch e₁ he₁ ≠ e₂)

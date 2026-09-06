@@ -22,11 +22,12 @@ namespace EdgeSubset
 
 open Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
+variable {α : Type}
 
 /-- **The vertex sum**: over colourings extending the boundary
 state, the product of the functional's vertex values. -/
-noncomputable def vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
+noncomputable def vertexSum {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation) : ℂ :=
@@ -44,7 +45,8 @@ noncomputable def vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
 /-- **The summand is the vertex sum, weighted.**  The circuit sign
 and the through-edge product are the flag model's own factors; what
 is left is RS21's sum over colourings. -/
-theorem throughSummand_eq_vertexSum (F : EdgeSubset W) {k ℓ : ℕ}
+theorem throughSummand_eq_vertexSum [LinearOrder α] {W : Fragment α}
+    (F : EdgeSubset W) {k ℓ : ℕ}
     (h : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ : F.RelTransitionSystem} (o : κ.Orientation) (c : ℕ) :

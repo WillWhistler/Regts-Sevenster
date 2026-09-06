@@ -1,3 +1,4 @@
+import RS.Classical.CatTheory.Intertwine
 import RS.Novel.Envelope.SymPerm
 
 /-!
@@ -25,14 +26,15 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A]
+variable {A : Type u}
 
 /-! ## The distribution isomorphism -/
 
 /-- **The middle-four interchange as an isomorphism**: `tensorμ` and
 `tensorδ` are mutually inverse. -/
-noncomputable def tensorμIso (P Q X Y : A) :
+noncomputable def tensorμIso
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P Q X Y : A) :
     (P ⊗ Q) ⊗ (X ⊗ Y) ≅ (P ⊗ X) ⊗ (Q ⊗ Y) where
   hom := tensorμ P Q X Y
   inv := tensorδ P Q X Y
@@ -43,7 +45,9 @@ noncomputable def tensorμIso (P Q X Y : A) :
 `(X ⊗ Y) ^ ⊗ n ≅ X ^ ⊗ n ⊗ Y ^ ⊗ n`: at each stage the previous
 stage sorts all but the newest pair of factors, and the middle-four
 interchange routes that pair to its two destinations. -/
-noncomputable def tensorPowDistrib (X Y : A) : (n : ℕ) →
+noncomputable def tensorPowDistrib
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) : (n : ℕ) →
     (tensorPow A (X ⊗ Y) n ≅ tensorPow A X n ⊗ tensorPow A Y n)
   | 0 => (λ_ (𝟙_ A)).symm
   | n + 1 =>
@@ -52,7 +56,9 @@ noncomputable def tensorPowDistrib (X Y : A) : (n : ℕ) →
 
 /-- The distribution at arity zero is the inverse unitor. -/
 @[simp]
-theorem tensorPowDistrib_zero (X Y : A) :
+theorem tensorPowDistrib_zero
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) :
     tensorPowDistrib X Y 0 = (λ_ (𝟙_ A)).symm := rfl
 
 /-! ## The top braiding distributes
@@ -70,7 +76,9 @@ compatibility `tensorμ_braid_swap`.
 /-- In a symmetric category the interchange with the two middle
 factors swapped is the inverse interchange: the single braiding they
 contain differs by `braiding_swap_eq_inv_braiding`. -/
-private theorem tensorμ_swap_eq_tensorδ (X₁ X₂ Y₁ Y₂ : A) :
+private theorem tensorμ_swap_eq_tensorδ
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X₁ X₂ Y₁ Y₂ : A) :
     tensorμ X₁ Y₁ X₂ Y₂ = tensorδ X₁ X₂ Y₁ Y₂ := by
   simp only [tensorμ, tensorδ,
     SymmetricCategory.braiding_swap_eq_inv_braiding]
@@ -79,7 +87,9 @@ private theorem tensorμ_swap_eq_tensorδ (X₁ X₂ Y₁ Y₂ : A) :
 compound factors corresponds, through the interchange, to braiding
 the two plain pairs.  This reads `tensorμ_braid_swap` through the
 inverse interchange. -/
-private theorem braiding_tensorμ (X Y : A) :
+private theorem braiding_tensorμ
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) :
     (β_ (X ⊗ Y) (X ⊗ Y)).hom ≫ tensorμ X Y X Y =
       tensorμ X Y X Y ≫ ((β_ X X).hom ⊗ₘ (β_ Y Y).hom) := by
   have h := SymmetricCategory.tensorμ_braid_swap (C := A) X Y
@@ -98,7 +108,9 @@ private theorem braiding_tensorμ (X Y : A) :
 single interchange against the paired factors, conjugated by
 associators.  This is `tensor_associativity` with the final
 associators moved across. -/
-private theorem interchange_assoc (P Q X Y : A) :
+private theorem interchange_assoc
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P Q X Y : A) :
     (tensorμ P Q X Y ▷ (X ⊗ Y)) ≫ tensorμ (P ⊗ X) (Q ⊗ Y) X Y =
       (α_ (P ⊗ Q) (X ⊗ Y) (X ⊗ Y)).hom ≫
         ((P ⊗ Q) ◁ tensorμ X Y X Y) ≫
@@ -109,7 +121,9 @@ private theorem interchange_assoc (P Q X Y : A) :
 
 /-- **The top braiding distributes through the interchange**, at
 general objects standing for the two sorted lower parts. -/
-private theorem swap_distrib_core (P Q X Y : A) :
+private theorem swap_distrib_core
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P Q X Y : A) :
     ((α_ (P ⊗ Q) (X ⊗ Y) (X ⊗ Y)).hom ≫
         ((P ⊗ Q) ◁ (β_ (X ⊗ Y) (X ⊗ Y)).hom) ≫
         (α_ (P ⊗ Q) (X ⊗ Y) (X ⊗ Y)).inv) ≫
@@ -127,7 +141,9 @@ private theorem swap_distrib_core (P Q X Y : A) :
 
 /-- The braiding conjugate that defines `swapTop` is natural in the
 base object.  Stated at general objects. -/
-private theorem swap_conj_base {B B' : A} (Z : A) (g : B ⟶ B') :
+private theorem swap_conj_base
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {B B' : A} (Z : A) (g : B ⟶ B') :
     ((g ▷ Z) ▷ Z) ≫
         ((α_ B' Z Z).hom ≫ (B' ◁ (β_ Z Z).hom) ≫ (α_ B' Z Z).inv) =
       ((α_ B Z Z).hom ≫ (B ◁ (β_ Z Z).hom) ≫ (α_ B Z Z).inv) ≫
@@ -137,11 +153,11 @@ private theorem swap_conj_base {B B' : A} (Z : A) (g : B ⟶ B') :
     MonoidalCategory.associator_inv_naturality_left]
   simp only [Category.assoc]
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
 /-- A conjugation step at general objects: what commutes with `s`
 across `W` and intertwines across `T` intertwines across the
 composite. -/
-private theorem conj_step {P₁ P₂ P₃ : A} {W : P₁ ⟶ P₂} {s : P₁ ⟶ P₁}
+private theorem conj_step [Category.{v} A]
+    {P₁ P₂ P₃ : A} {W : P₁ ⟶ P₂} {s : P₁ ⟶ P₁}
     {s' : P₂ ⟶ P₂} {T : P₂ ⟶ P₃} {u : P₃ ⟶ P₃}
     (h1 : W ≫ s' = s ≫ W) (h2 : s' ≫ T = T ≫ u) :
     s ≫ W ≫ T = (W ≫ T) ≫ u := by
@@ -152,7 +168,9 @@ private theorem conj_step {P₁ P₂ P₃ : A} {W : P₁ ⟶ P₂} {s : P₁ ⟶
 /-- **The distribution intertwines the top braiding**: braiding the
 top two factors of `(X ⊗ Y) ^ ⊗ (n + 2)` corresponds to braiding the
 top two factors on each side simultaneously. -/
-theorem tensorPowDistrib_swapTop (X Y : A) (n : ℕ) :
+theorem tensorPowDistrib_swapTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) (n : ℕ) :
     swapTop (X ⊗ Y) n ≫ (tensorPowDistrib X Y (n + 2)).hom =
       (tensorPowDistrib X Y (n + 2)).hom ≫
         (swapTop X n ⊗ₘ swapTop Y n) := by
@@ -188,7 +206,9 @@ interchange, and each top braiding by the coherence above.
 /-- A morphism intertwining the distribution one arity down still
 intertwines after whiskering by the newest pair, by naturality of the
 interchange.  Stated at general objects. -/
-private theorem whisker_pass_distrib {P Q R : A} (X Y : A)
+private theorem whisker_pass_distrib
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {P Q R : A} (X Y : A)
     {u : P ⟶ P} {v : Q ⟶ Q} {w : R ⟶ R} {T : P ⟶ Q ⊗ R}
     (h : u ≫ T = T ≫ (v ⊗ₘ w)) :
     (u ▷ (X ⊗ Y)) ≫ ((T ▷ (X ⊗ Y)) ≫ tensorμ Q R X Y) =
@@ -208,19 +228,19 @@ private theorem whisker_pass_distrib {P Q R : A} (X Y : A)
           ((v ▷ X) ⊗ₘ (w ▷ Y)) := by
         rw [Category.assoc]
 
-omit [MonoidalCategory A] [SymmetricCategory A] in
 /-- Two morphisms that each intertwine `T` compose to a morphism
 intertwining `T`.  Stated at general objects, so that no tensor-power
 arity enters the rewriting. -/
-private theorem step_shuffle {P Q : A} {s u : P ⟶ P} {T : P ⟶ Q}
+private theorem step_shuffle [Category.{v} A]
+    {P Q : A} {s u : P ⟶ P} {T : P ⟶ Q}
     {s' u' : Q ⟶ Q} (hs : s ≫ T = T ≫ s') (hu : u ≫ T = T ≫ u') :
     (s ≫ u) ≫ T = T ≫ (s' ≫ u') := by
   rw [Category.assoc, hu, ← Category.assoc, hs, Category.assoc]
 
-omit [SymmetricCategory A] in
 /-- The identity intertwines any morphism into a tensor product with
 the tensor product of identities.  Stated at general objects. -/
-private theorem id_pass {P Q R : A} (T : P ⟶ Q ⊗ R) :
+private theorem id_pass [Category.{v} A] [MonoidalCategory A]
+    {P Q R : A} (T : P ⟶ Q ⊗ R) :
     𝟙 P ≫ T = T ≫ (𝟙 Q ⊗ₘ 𝟙 R) := by
   rw [MonoidalCategory.id_tensorHom_id, Category.id_comp,
     Category.comp_id]
@@ -229,7 +249,9 @@ private theorem id_pass {P Q R : A} (T : P ⟶ Q ⊗ R) :
 the top compound factor down corresponds to bubbling the top factor
 on each side simultaneously.  The proof follows the recursion of
 `insertTop`. -/
-theorem tensorPowDistrib_insertTop (X Y : A) :
+theorem tensorPowDistrib_insertTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) :
     ∀ n k : ℕ,
       insertTop (X ⊗ Y) n k ≫ (tensorPowDistrib X Y (n + 1)).hom =
         (tensorPowDistrib X Y (n + 1)).hom ≫
@@ -265,7 +287,9 @@ theorem tensorPowDistrib_insertTop (X Y : A) :
 diagonal action of `σ` on `(X ⊗ Y) ^ ⊗ n` corresponds to the
 simultaneous action of `σ` on the two sides.  The proof is the
 recursion of `permMor` itself. -/
-theorem tensorPowDistrib_permMor (X Y : A) :
+theorem tensorPowDistrib_permMor
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) :
     ∀ (n : ℕ) (σ : Equiv.Perm (Fin n)),
       permMor (X ⊗ Y) n σ ≫ (tensorPowDistrib X Y n).hom =
         (tensorPowDistrib X Y n).hom ≫
@@ -300,7 +324,9 @@ theorem tensorPowDistrib_permMor (X Y : A) :
 `X ^ ⊗ n ⊗ Y ^ ⊗ n`, as a monoid homomorphism: `σ` acts by its two
 actions tensored together. -/
 @[simps]
-noncomputable def diagPermHom (X Y : A) (n : ℕ) :
+noncomputable def diagPermHom
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X Y : A) (n : ℕ) :
     Equiv.Perm (Fin n) →* End (tensorPow A X n ⊗ tensorPow A Y n)
     where
   toFun σ := permMor X n σ ⊗ₘ permMor Y n σ
@@ -317,12 +343,13 @@ noncomputable def diagPermHom (X Y : A) (n : ℕ) :
 
 section Linear
 
-variable [Preadditive A] [Linear ℂ A]
-
 /-- **The diagonal double action of the symmetric-group algebra** on
 `X ^ ⊗ n ⊗ Y ^ ⊗ n`: the linear extension of
 `σ ↦ permMor X n σ ⊗ₘ permMor Y n σ`. -/
-noncomputable def diagAlg (X Y : A) (n : ℕ) :
+noncomputable def diagAlg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) (n : ℕ) :
     SymGroupAlgebra n →ₐ[ℂ] End (tensorPow A X n ⊗ tensorPow A Y n) :=
   MonoidAlgebra.lift ℂ (End (tensorPow A X n ⊗ tensorPow A Y n))
     (Equiv.Perm (Fin n)) (diagPermHom X Y n)
@@ -330,7 +357,10 @@ noncomputable def diagAlg (X Y : A) (n : ℕ) :
 /-- The diagonal algebra map sends a group element to the tensor
 product of its two actions. -/
 @[simp]
-theorem diagAlg_single (X Y : A) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
+theorem diagAlg_single
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
     diagAlg X Y n (MonoidAlgebra.single σ (1 : ℂ)) =
       permMor X n σ ⊗ₘ permMor Y n σ := by
   rw [diagAlg, MonoidAlgebra.lift_single, one_smul]
@@ -338,29 +368,15 @@ theorem diagAlg_single (X Y : A) (n : ℕ) (σ : Equiv.Perm (Fin n)) :
 
 /-- The diagonal algebra map written out as a sum over the support:
 `x` acts by `Σ_σ x_σ • (permMor X n σ ⊗ₘ permMor Y n σ)`. -/
-theorem diagAlg_apply (X Y : A) (n : ℕ) (x : SymGroupAlgebra n) :
+theorem diagAlg_apply
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) (n : ℕ) (x : SymGroupAlgebra n) :
     diagAlg X Y n x =
       Finsupp.sum x fun σ c =>
         c • (permMor X n σ ⊗ₘ permMor Y n σ) := by
   rw [diagAlg, MonoidAlgebra.lift_apply]
   rfl
-
-omit [MonoidalCategory A] [SymmetricCategory A] [Linear ℂ A] in
-/-- Intertwining `T` is closed under sums.  Stated at general
-objects and applied by `exact`, so the endomorphism-ring structure
-never enters the rewriting. -/
-private theorem add_pass {P Q : A} {a b : P ⟶ P} {a' b' : Q ⟶ Q}
-    {T : P ⟶ Q} (ha : a ≫ T = T ≫ a') (hb : b ≫ T = T ≫ b') :
-    (a + b) ≫ T = T ≫ (a' + b') := by
-  rw [Preadditive.add_comp, Preadditive.comp_add, ha, hb]
-
-omit [MonoidalCategory A] [SymmetricCategory A] in
-/-- Intertwining `T` is closed under scalars.  Stated at general
-objects and applied by `exact`. -/
-private theorem smul_pass {P Q : A} {a : P ⟶ P} {a' : Q ⟶ Q}
-    {T : P ⟶ Q} (r : ℂ) (h : a ≫ T = T ≫ a') :
-    (r • a) ≫ T = T ≫ (r • a') := by
-  rw [Linear.smul_comp, Linear.comp_smul, h]
 
 /-- **The distribution intertwines the group-algebra action**: the
 diagonal action of any group-algebra element on `(X ⊗ Y) ^ ⊗ n`
@@ -369,7 +385,10 @@ double action on
 `X ^ ⊗ n ⊗ Y ^ ⊗ n`.  Both sides are `ℂ`-linear in the element, so
 the statement reduces to basis permutations, where it is
 `tensorPowDistrib_permMor`. -/
-theorem tensorPowDistrib_permAlg (X Y : A) {n : ℕ}
+theorem tensorPowDistrib_permAlg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (X Y : A) {n : ℕ}
     (x : SymGroupAlgebra n) :
     permAlg (X ⊗ Y) n x ≫ (tensorPowDistrib X Y n).hom =
       (tensorPowDistrib X Y n).hom ≫ diagAlg X Y n x := by
@@ -381,10 +400,10 @@ theorem tensorPowDistrib_permAlg (X Y : A) {n : ℕ}
     exact tensorPowDistrib_permMor X Y n σ
   | hadd x y hx hy =>
     rw [map_add, map_add]
-    exact add_pass hx hy
+    exact intertwine_add hx hy
   | hsmul r x hx =>
     rw [map_smul, map_smul]
-    exact smul_pass r hx
+    exact intertwine_smul r hx
 
 end Linear
 

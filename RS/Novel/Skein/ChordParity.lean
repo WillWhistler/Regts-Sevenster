@@ -15,11 +15,12 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α]
+variable {α : Type}
 
 /-- A chord crosses the cut when exactly one endpoint lies
 between the cut labels. -/
-def CrossesCut (i j : α) (p : α × α) : Prop :=
+def CrossesCut [LinearOrder α]
+    (i j : α) (p : α × α) : Prop :=
   Xor (i < p.1 ∧ p.1 < j) (i < p.2 ∧ p.2 < j)
 
 end RS

@@ -45,14 +45,15 @@ noncomputable section
 
 section SmulConj
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [Preadditive D] [Linear ℂ D] [MonoidalPreadditive D]
-  [MonoidalLinear ℂ D]
+variable {D : Type u}
 
 /-- **The scalar action is a unitor conjugate**: `c • f` is
 precomposition with the left-unitor conjugate of the unit
 endomorphism `c • 𝟙`. -/
-theorem smul_eq_unitConj (c : ℂ) {X Y : D} (f : X ⟶ Y) :
+theorem smul_eq_unitConj
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D] [Linear ℂ D]
+    [MonoidalPreadditive D] [MonoidalLinear ℂ D]
+    (c : ℂ) {X Y : D} (f : X ⟶ Y) :
     c • f =
       (λ_ X).inv ≫ ((c • 𝟙 (𝟙_ D)) ▷ X) ≫ (λ_ X).hom ≫ f := by
   rw [MonoidalLinear.smul_whiskerRight, MonoidalCategory.id_whiskerRight,
@@ -68,11 +69,11 @@ section DayUnitCalculus
 attribute [local instance] dayConv
 attribute [local instance] dayConvPlain
 
-variable {D : Type v} [SmallCategory D] [MonoidalCategory D]
+variable {D : Type v}
 
 /-- The Day unit comparison carries the canonical unit element to
 the identity. -/
-lemma dayUnitIso_hom_app_nu :
+lemma dayUnitIso_hom_app_nu [SmallCategory D] [MonoidalCategory D] :
     (dayUnitIso D).hom.natTrans.app (𝟙_ D)
       (ν D (Type v) PUnit.unit) = 𝟙 (𝟙_ D) := by
   have h := corepresentableBy_homEquiv_uniqueUpToIso_hom
@@ -88,7 +89,7 @@ lemma dayUnitIso_hom_app_nu :
 
 /-- The inverse of the Day unit comparison carries the identity to
 the canonical unit element. -/
-lemma dayUnitIso_inv_app_id :
+lemma dayUnitIso_inv_app_id [SmallCategory D] [MonoidalCategory D] :
     (dayUnitIso D).inv.natTrans.app (𝟙_ D) (𝟙 (𝟙_ D)) =
       ν D (Type v) PUnit.unit := by
   have h₀ := congrArg (fun t => t.natTrans.app (𝟙_ D))
@@ -101,7 +102,9 @@ lemma dayUnitIso_inv_app_id :
 /-- Right-whiskering the inverse Day unit comparison carries the
 canonical element of the Day tensor to the Kan-extension unit
 evaluated on the canonical unit element. -/
-lemma whiskerRight_dayUnitIso_inv_app_unitElt (a : D) :
+lemma whiskerRight_dayUnitIso_inv_app_unitElt
+    [SmallCategory D] [MonoidalCategory D]
+    (a : D) :
     ((dayUnitIso D).inv ▷
         DayFunctor.mk (coyoneda.obj (op a))).natTrans.app (𝟙_ D ⊗ a)
       (dayCoyonedaUnitElt (𝟙_ D) a) =
@@ -135,7 +138,8 @@ lemma whiskerRight_dayUnitIso_inv_app_unitElt (a : D) :
 /-- **The Day left unitor, evaluated on a Kan-extension unit
 element**: it strips the canonical unit element and applies the
 inverse base left unitor. -/
-lemma day_leftUnitor_hom_app_eta (F : D ⊛⥤ Type v) (y : D)
+lemma day_leftUnitor_hom_app_eta [SmallCategory D] [MonoidalCategory D]
+    (F : D ⊛⥤ Type v) (y : D)
     (x : F.functor.obj y) :
     (λ_ F).hom.natTrans.app (𝟙_ D ⊗ y)
       ((η (𝟙_ (D ⊛⥤ Type v)) F).app (𝟙_ D, y)
@@ -151,7 +155,8 @@ lemma day_leftUnitor_hom_app_eta (F : D ⊛⥤ Type v) (y : D)
 corepresentables**: under the co-Yoneda identifications, the Day
 left unitor at a corepresentable is precomposition with the inverse
 base left unitor. -/
-lemma dayCoyonedaIso_hom_leftUnitor (a : D) :
+lemma dayCoyonedaIso_hom_leftUnitor [SmallCategory D] [MonoidalCategory D]
+    (a : D) :
     ((dayUnitIso D).hom ▷ DayFunctor.mk (coyoneda.obj (op a))) ≫
         (dayCoyonedaIso (𝟙_ D) a).hom ≫
         (⟨coyoneda.map ((λ_ a).inv.op)⟩ :
@@ -185,11 +190,12 @@ end DayUnitCalculus
 
 section IndUnit
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- Composing the transports of an isomorphism and of its reverse
 along `RS.dayMkIso`, in the reversed order. -/
-lemma dayMkIso_symm_hom_hom {A B : Cᵒᵖ ⥤ Type v} (e : A ≅ B) :
+lemma dayMkIso_symm_hom_hom [SmallCategory C] [MonoidalCategory C]
+    {A B : Cᵒᵖ ⥤ Type v} (e : A ≅ B) :
     (dayMkIso e.symm).hom ≫ (dayMkIso e).hom =
       𝟙 (DayFunctor.mk B : Cᵒᵖ ⊛⥤ Type v) :=
   (dayMkIso e).inv_hom_id
@@ -198,7 +204,8 @@ lemma dayMkIso_symm_hom_hom {A B : Cᵒᵖ ⥤ Type v} (e : A ≅ B) :
 unitor**: the Yoneda form of `RS.dayCoyonedaIso_hom_leftUnitor`.
 The unit leg is the composite identification of the Day unit with
 the representable at `𝟙_ C`, as in `RS.indOfUnitIso`. -/
-lemma dayYonedaIso_hom_leftUnitor (x : C) :
+lemma dayYonedaIso_hom_leftUnitor [SmallCategory C] [MonoidalCategory C]
+    (x : C) :
     (((dayUnitIso Cᵒᵖ).hom ≫
         (dayMkIso (Coyoneda.objOpOp (𝟙_ C))).hom) ▷
         DayFunctor.mk (yoneda.obj x)) ≫
@@ -241,7 +248,7 @@ lemma dayYonedaIso_hom_leftUnitor (x : C) :
 
 /-- The embedding into the Day presheaf category carries the unit
 comparison to its Day-level composite. -/
-lemma indToDay_map_indOfUnitIso_hom :
+lemma indToDay_map_indOfUnitIso_hom [SmallCategory C] [MonoidalCategory C] :
     (indToDay (C := C)).map (indOfUnitIso (C := C)).hom =
       (Functor.Monoidal.εIso (indToDay (C := C))).inv ≫
         (dayUnitIso Cᵒᵖ).hom ≫
@@ -256,7 +263,8 @@ of an embedded object factors as the unit comparison, the
 embedding-tensor comparison, and the embedded left unitor.  This is
 the unit axiom of the monoidal-functor-up-to-isomorphism structure
 of `indOf`. -/
-lemma indOf_leftUnitor_hom (X : C) :
+lemma indOf_leftUnitor_hom [SmallCategory C] [MonoidalCategory C]
+    (X : C) :
     (λ_ (indOf.obj X)).hom =
       ((indOfUnitIso (C := C)).hom ▷ indOf.obj X) ≫
         (indOfTensorIso (𝟙_ C) X).hom ≫ indOf.map (λ_ X).hom := by
@@ -293,14 +301,16 @@ lemma indOf_leftUnitor_hom (X : C) :
     Category.comp_id, Functor.Monoidal.εIso_inv]
 
 /-- Iso form of `RS.indOf_leftUnitor_hom`. -/
-lemma indOf_leftUnitorIso (X : C) :
+lemma indOf_leftUnitorIso [SmallCategory C] [MonoidalCategory C]
+    (X : C) :
     λ_ (indOf.obj X) =
       whiskerRightIso (indOfUnitIso (C := C)) (indOf.obj X) ≪≫
         indOfTensorIso (𝟙_ C) X ≪≫ indOf.mapIso (λ_ X) :=
   Iso.ext (by simpa using indOf_leftUnitor_hom X)
 
 /-- Inverse form of `RS.indOf_leftUnitor_hom`. -/
-lemma indOf_leftUnitor_inv (X : C) :
+lemma indOf_leftUnitor_inv [SmallCategory C] [MonoidalCategory C]
+    (X : C) :
     (λ_ (indOf.obj X)).inv =
       indOf.map (λ_ X).inv ≫ (indOfTensorIso (𝟙_ C) X).inv ≫
         ((indOfUnitIso (C := C)).inv ▷ indOf.obj X) := by
@@ -311,7 +321,8 @@ lemma indOf_leftUnitor_inv (X : C) :
 `indOfUnitIso`-transport of a unit endomorphism through the left
 unitor of an embedded object is the image of the conjugate
 downstairs. -/
-theorem indOf_map_unitConj (X : C) (u : 𝟙_ C ⟶ 𝟙_ C) :
+theorem indOf_map_unitConj [SmallCategory C] [MonoidalCategory C]
+    (X : C) (u : 𝟙_ C ⟶ 𝟙_ C) :
     (λ_ (indOf.obj X)).inv ≫
         (((indOfUnitIso (C := C)).hom ≫ indOf.map u ≫
           (indOfUnitIso (C := C)).inv) ▷ indOf.obj X) ≫
@@ -329,23 +340,25 @@ end IndUnit
 
 section ScalarTransport
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Preadditive C] [HasFiniteColimits C]
+variable {C : Type v}
 
 /-- The scalar unit of `Ind C`, evaluated: the
 `indOfUnitIso`-conjugate of the embedded unit endomorphism. -/
-lemma indScalarUnit_apply (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) :
+lemma indScalarUnit_apply [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C]
+    (ψ : ℂ ≃+* End (𝟙_ C)) (c : ℂ) :
     scalarHom (indScalarUnit ψ) c =
       (indOfUnitIso (C := C)).hom ≫ indOf.map (ψ c) ≫
         (indOfUnitIso (C := C)).inv :=
   rfl
 
-variable [Linear ℂ C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
-
 /-- **The embedding intertwines the scalar actions**: `indOf`
 carries `c • f` to the `RS.scalarSmul` action of `c` on the image,
 for the scalar unit transported by `RS.indScalarUnit`. -/
-theorem indOf_map_smul (ψ : ℂ ≃+* End (𝟙_ C))
+theorem indOf_map_smul [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C] [Linear ℂ C] [MonoidalPreadditive C]
+    [MonoidalLinear ℂ C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (hψ : ∀ c : ℂ, ψ c = c • 𝟙 (𝟙_ C)) (c : ℂ) {X Y : C}
     (f : X ⟶ Y) :
     indOf.map (c • f) =
@@ -363,12 +376,13 @@ end ScalarTransport
 
 section AlgebraTransport
 
-variable {E : Type u} [Category.{v} E]
+variable {E : Type u}
 
 /-- Intertwining `T` is closed under sums.  Stated at general
 objects and applied by `exact`, so the endomorphism-ring structure
 never enters the rewriting. -/
-private theorem add_pass [Preadditive E] {P Q : E} {a b : P ⟶ P}
+private theorem add_pass [Category.{v} E]
+    [Preadditive E] {P Q : E} {a b : P ⟶ P}
     {a' b' : Q ⟶ Q} {T : P ⟶ Q} (ha : a ≫ T = T ≫ a')
     (hb : b ≫ T = T ≫ b') :
     (a + b) ≫ T = T ≫ (a' + b') := by
@@ -376,22 +390,22 @@ private theorem add_pass [Preadditive E] {P Q : E} {a b : P ⟶ P}
 
 /-- Intertwining `T` is closed under scalars.  Stated at general
 objects and applied by `exact`. -/
-private theorem smul_pass [Preadditive E] [Linear ℂ E] {P Q : E}
+private theorem smul_pass [Category.{v} E]
+    [Preadditive E] [Linear ℂ E] {P Q : E}
     {a : P ⟶ P} {a' : Q ⟶ Q} {T : P ⟶ Q} (r : ℂ)
     (h : a ≫ T = T ≫ a') :
     (r • a) ≫ T = T ≫ (r • a') := by
   rw [Linear.smul_comp, Linear.comp_smul, h]
-
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Preadditive C] [Linear ℂ C]
-  [HasFiniteColimits C] [MonoidalPreadditive C] [MonoidalLinear ℂ C]
 
 /-- **Transport of the group-algebra action**: under the ℂ-linear
 structure induced on `Ind C` by a scalar unit `ψ` for `C`, the
 action of the symmetric-group algebra on the tensor powers of an
 embedded object is conjugate, under `RS.indOfPowIso`, to the
 embedded action. -/
-theorem permAlg_indOf_conj (ψ : ℂ ≃+* End (𝟙_ C))
+theorem permAlg_indOf_conj {C : Type v} [SmallCategory C] [MonoidalCategory C]
+    [SymmetricCategory C] [Preadditive C] [Linear ℂ C] [HasFiniteColimits C]
+    [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (hψ : ∀ c : ℂ, ψ c = c • 𝟙 (𝟙_ C)) (X : C) {n : ℕ}
     (x : SymGroupAlgebra n) :
     letI := linearOfScalarUnit (indScalarUnit ψ)
@@ -418,7 +432,11 @@ theorem permAlg_indOf_conj (ψ : ℂ ≃+* End (𝟙_ C))
 with the ℂ-linear structure induced on `Ind C` by a scalar unit for
 `C`, a shape kills an embedded object precisely when it kills the
 object downstairs. -/
-theorem schurKilled_indOf_iff (P : SchurPackage.{v})
+theorem schurKilled_indOf_iff
+    {C : Type v} [SmallCategory C] [MonoidalCategory C]
+    [SymmetricCategory C] [Preadditive C] [Linear ℂ C] [HasFiniteColimits C]
+    [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    (P : SchurPackage.{v})
     (ψ : ℂ ≃+* End (𝟙_ C)) (hψ : ∀ c : ℂ, ψ c = c • 𝟙 (𝟙_ C))
     {X : C} {μ : YoungDiagram} :
     letI := linearOfScalarUnit (indScalarUnit ψ)
@@ -448,7 +466,11 @@ theorem schurKilled_indOf_iff (P : SchurPackage.{v})
 
 /-- `RS.schurKilled_indOf_iff`, instantiated at the scalar unit of
 a category whose unit endomorphisms are exactly the scalars. -/
-theorem schurKilled_indOf_iff_of_hasScalarUnit (P : SchurPackage.{v})
+theorem schurKilled_indOf_iff_of_hasScalarUnit
+    {C : Type v} [SmallCategory C] [MonoidalCategory C]
+    [SymmetricCategory C] [Preadditive C] [Linear ℂ C] [HasFiniteColimits C]
+    [MonoidalPreadditive C] [MonoidalLinear ℂ C]
+    (P : SchurPackage.{v})
     (hu : HasScalarUnit C) {X : C} {μ : YoungDiagram} :
     letI := linearOfScalarUnit
       (indScalarUnit (unitScalarEquiv hu).toRingEquiv)

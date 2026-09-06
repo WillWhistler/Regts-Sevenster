@@ -22,35 +22,28 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
+variable {D : Type u}
 
 section Equivariance
-
-variable {M N : Mod D A}
 
 end Equivariance
 
 section Transfer
 
-variable {P P' Q Q' : Mod D A}
-variable (d₀ : ModDualityDatum A P P')
-variable (s : Q ⟶ P) (s' : Q' ⟶ P') (r : P ⟶ Q) (r' : P' ⟶ Q')
-
-omit [MonoidalPreadditive D] in
 /-- **Retraction images contract through the transferred
 contraction**: precomposing the transferred zig contraction with
 the retraction image is the section, the original contraction,
 and the retraction — the idempotent slides across the pairing
 and dissolves into the retraction. -/
-theorem map_zigContract (hsr : s ≫ r = 𝟙 Q)
+theorem map_zigContract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A} (d₀ : ModDualityDatum A P P') (s : Q ⟶ P)
+    (s' : Q' ⟶ P') (r : P ⟶ Q) (r' : P' ⟶ Q')
+    (hsr : s ≫ r = 𝟙 Q)
     (hadj : modTensorMap A (r' ≫ s') (𝟙 P) ≫ d₀.pair =
       modTensorMap A (𝟙 P') (r ≫ s) ≫ d₀.pair) :
     (modTensorMap A r r' ▷ Q.X) ≫
@@ -131,7 +124,16 @@ theorem map_zigContract (hsr : s ≫ r = 𝟙 Q)
 
 /-- **The transferred carrier zig identity**: the zig of the
 transferred datum factors as section, original zig, retraction. -/
-theorem transfer_carrier_zig (hz₀ : ModZigzagDatum A d₀)
+theorem transfer_carrier_zig
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A} (d₀ : ModDualityDatum A P P') (s : Q ⟶ P)
+    (s' : Q' ⟶ P') (r : P ⟶ Q) (r' : P' ⟶ Q')
+    (hz₀ : ModZigzagDatum A d₀)
     (hsr : s ≫ r = 𝟙 Q)
     (hadj : modTensorMap A (r' ≫ s') (𝟙 P) ≫ d₀.pair =
       modTensorMap A (𝟙 P') (r ≫ s) ≫ d₀.pair) :
@@ -156,12 +158,16 @@ theorem transfer_carrier_zig (hz₀ : ModZigzagDatum A d₀)
     simpa using h2
   exact this
 
-omit [MonoidalPreadditive D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)] in
 /-- **Retraction images contract through the transferred zag
 contraction**: the mirror of `map_zigContract`. -/
-theorem map_zagContract (hsr' : s' ≫ r' = 𝟙 Q')
+theorem map_zagContract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A} (d₀ : ModDualityDatum A P P') (s : Q ⟶ P)
+    (s' : Q' ⟶ P') (r : P ⟶ Q) (r' : P' ⟶ Q')
+    (hsr' : s' ≫ r' = 𝟙 Q')
     (hadj : modTensorMap A (r' ≫ s') (𝟙 P) ≫ d₀.pair =
       modTensorMap A (𝟙 P') (r ≫ s) ≫ d₀.pair) :
     (Q'.X ◁ modTensorMap A r r') ≫
@@ -242,7 +248,16 @@ theorem map_zagContract (hsr' : s' ≫ r' = 𝟙 Q')
 
 /-- **The transferred carrier zag identity**: the mirror
 factorization through the dual-side section and retraction. -/
-theorem transfer_carrier_zag (hz₀ : ModZigzagDatum A d₀)
+theorem transfer_carrier_zag
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A} (d₀ : ModDualityDatum A P P') (s : Q ⟶ P)
+    (s' : Q' ⟶ P') (r : P ⟶ Q) (r' : P' ⟶ Q')
+    (hz₀ : ModZigzagDatum A d₀)
     (hsr' : s' ≫ r' = 𝟙 Q')
     (hadj : modTensorMap A (r' ≫ s') (𝟙 P) ≫ d₀.pair =
       modTensorMap A (𝟙 P') (r ≫ s) ≫ d₀.pair) :
@@ -272,7 +287,16 @@ theorem transfer_carrier_zag (hz₀ : ModZigzagDatum A d₀)
 /-- **The zigzag laws transfer along retractions**: given the
 self-adjointness of the composite idempotents across the pairing,
 the transferred datum satisfies the zigzag laws. -/
-theorem modZigzagDatum_transfer (hz₀ : ModZigzagDatum A d₀)
+theorem modZigzagDatum_transfer
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] {P : Mod D A} {P' : Mod D A}
+    {Q : Mod D A} {Q' : Mod D A} (d₀ : ModDualityDatum A P P') (s : Q ⟶ P)
+    (s' : Q' ⟶ P') (r : P ⟶ Q) (r' : P' ⟶ Q')
+    (hz₀ : ModZigzagDatum A d₀)
     (hsr : s ≫ r = 𝟙 Q) (hsr' : s' ≫ r' = 𝟙 Q')
     (hadj : modTensorMap A (r' ≫ s') (𝟙 P) ≫ d₀.pair =
       modTensorMap A (𝟙 P') (r ≫ s) ≫ d₀.pair) :
@@ -285,14 +309,19 @@ end Transfer
 
 section SymInstance
 
-variable (M M' : Mod D A)
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-
 /-- **The symmetric-power datum inherits the zigzag laws**
 (Deligne 1.15.1): the transfer along the symmetriser section and
 projection, with the self-adjointness of the symmetriser across
 the nested pairing as the idempotent-slide input. -/
-theorem symDualityDatum_zigzag (d : ModDualityDatum A M M')
+theorem symDualityDatum_zigzag
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
+    (d : ModDualityDatum A M M')
     (n : ℕ)
     (hz : ModZigzagDatum A (powDualityDatum A M M' d n)) :
     ModZigzagDatum A (symDualityDatum A M M' d n) := by

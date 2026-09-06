@@ -53,12 +53,14 @@ section DayRightUnitCalculus
 
 attribute [local instance] dayConv dayConvPlain
 
-variable {D : Type v} [SmallCategory D] [MonoidalCategory D]
+variable {D : Type v}
 
 /-- Left-whiskering the inverse of `RS.dayUnitIso` carries the canonical
 element at `(a, 𝟙_ D)` to the Kan-extension unit element assembled from
 the Day-unit element. -/
-lemma whiskerLeft_dayUnitIso_inv_app_unitElt (a : D) :
+lemma whiskerLeft_dayUnitIso_inv_app_unitElt
+    [SmallCategory D] [MonoidalCategory D]
+    (a : D) :
     (DayFunctor.mk (coyoneda.obj (op a)) ◁
         (dayUnitIso D).inv).natTrans.app (a ⊗ 𝟙_ D)
       (dayCoyonedaUnitElt a (𝟙_ D)) =
@@ -92,7 +94,8 @@ lemma whiskerLeft_dayUnitIso_inv_app_unitElt (a : D) :
     dayUnitIso_inv_app_id
 
 /-- The Day right unitor, characterised on the Kan-extension unit. -/
-lemma dayRightUnitor_hom_unit (K : D ⊛⥤ Type v) (y : D) :
+lemma dayRightUnitor_hom_unit [SmallCategory D] [MonoidalCategory D]
+    (K : D ⊛⥤ Type v) (y : D) :
     (K.functor.obj y ◁ ν D (Type v)) ≫
         (η K (𝟙_ (D ⊛⥤ Type v))).app (y, 𝟙_ D) ≫
         (ρ_ K).hom.natTrans.app (y ⊗ 𝟙_ D) =
@@ -102,7 +105,8 @@ lemma dayRightUnitor_hom_unit (K : D ⊛⥤ Type v) (y : D) :
 
 /-- Evaluation of the Day right unitor on the canonical element built
 from the Day-unit element. -/
-lemma dayRightUnitor_hom_app_unitElt (a : D) :
+lemma dayRightUnitor_hom_app_unitElt [SmallCategory D] [MonoidalCategory D]
+    (a : D) :
     (ρ_ (DayFunctor.mk (coyoneda.obj (op a)) :
         D ⊛⥤ Type v)).hom.natTrans.app (a ⊗ 𝟙_ D)
       ((η (DayFunctor.mk (coyoneda.obj (op a)))
@@ -115,7 +119,8 @@ lemma dayRightUnitor_hom_app_unitElt (a : D) :
 
 /-- **Day convolution of corepresentables intertwines the right
 unitor**. -/
-lemma dayCoyonedaIso_hom_rightUnitor (a : D) :
+lemma dayCoyonedaIso_hom_rightUnitor [SmallCategory D] [MonoidalCategory D]
+    (a : D) :
     (dayCoyonedaIso a (𝟙_ D)).hom ≫
         (⟨coyoneda.map ((ρ_ a).inv.op)⟩ :
           DayFunctor.mk (coyoneda.obj (op (a ⊗ 𝟙_ D))) ⟶
@@ -136,17 +141,18 @@ end DayRightUnitCalculus
 
 section YonedaUnitTransport
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- The Day unit is the representable presheaf at the unit of `C`: the
 Yoneda form of `RS.dayUnitIso`. -/
-def dayYonedaUnitIso :
+def dayYonedaUnitIso [SmallCategory C] [MonoidalCategory C] :
     𝟙_ (Cᵒᵖ ⊛⥤ Type v) ≅ DayFunctor.mk (yoneda.obj (𝟙_ C)) :=
   dayUnitIso Cᵒᵖ ≪≫ dayMkIso (Coyoneda.objOpOp (𝟙_ C))
 
 /-- **The Day tensor of representables intertwines the right unitor**:
 the Yoneda form of `RS.dayCoyonedaIso_hom_rightUnitor`. -/
-lemma dayYonedaIso_hom_rightUnitor (x : C) :
+lemma dayYonedaIso_hom_rightUnitor [SmallCategory C] [MonoidalCategory C]
+    (x : C) :
     (DayFunctor.mk (yoneda.obj x) ◁ (dayYonedaUnitIso (C := C)).hom) ≫
         (dayYonedaIso x (𝟙_ C)).hom ≫ ⟨yoneda.map (ρ_ x).hom⟩ =
       (ρ_ (DayFunctor.mk (yoneda.obj x) : Cᵒᵖ ⊛⥤ Type v)).hom := by
@@ -205,12 +211,13 @@ end YonedaUnitTransport
 
 section IndUnitality
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- The embedding into the Day presheaf category carries the unit
 comparison to the Day unit: the `RS.dayYonedaUnitIso` reading of
 `RS.indToDay_map_indOfUnitIso_hom`. -/
-lemma indToDay_map_indOfUnitIso_hom_dayYonedaUnitIso :
+lemma indToDay_map_indOfUnitIso_hom_dayYonedaUnitIso
+    [SmallCategory C] [MonoidalCategory C] :
     (indToDay (C := C)).map indOfUnitIso.hom =
       Functor.OplaxMonoidal.η (indToDay (C := C)) ≫
         (dayYonedaUnitIso (C := C)).hom ≫
@@ -222,7 +229,8 @@ lemma indToDay_map_indOfUnitIso_hom_dayYonedaUnitIso :
 left-unitality axiom of the monoidal structure of `indOf`.  This is
 `RS.indOf_leftUnitor_hom` read in the direction the `LaxMonoidal`
 field wants. -/
-lemma indOfUnitIso_hom_leftUnitor (x : C) :
+lemma indOfUnitIso_hom_leftUnitor [SmallCategory C] [MonoidalCategory C]
+    (x : C) :
     (indOfUnitIso.hom ▷ indOf.obj x) ≫
         (indOfTensorIso (𝟙_ C) x).hom ≫ indOf.map (λ_ x).hom =
       (λ_ (indOf.obj x)).hom :=
@@ -230,7 +238,8 @@ lemma indOfUnitIso_hom_leftUnitor (x : C) :
 
 /-- **The unit and tensor comparisons satisfy right unitality**: the
 right-unitality axiom of the monoidal structure of `indOf`. -/
-lemma indOfUnitIso_hom_rightUnitor (x : C) :
+lemma indOfUnitIso_hom_rightUnitor [SmallCategory C] [MonoidalCategory C]
+    (x : C) :
     (indOf.obj x ◁ indOfUnitIso.hom) ≫
         (indOfTensorIso x (𝟙_ C)).hom ≫ indOf.map (ρ_ x).hom =
       (ρ_ (indOf.obj x)).hom := by
@@ -277,12 +286,12 @@ end IndUnitality
 
 section Instances
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- **The embedding `C ⥤ Ind C` is lax monoidal**: the unit comparison
 `RS.indOfUnitIso` and the tensor comparison `RS.indOfTensorIso` satisfy
 the five coherences. -/
-noncomputable instance indOfLaxMonoidal :
+noncomputable instance indOfLaxMonoidal [SmallCategory C] [MonoidalCategory C] :
     (indOf (C := C)).LaxMonoidal where
   ε := indOfUnitIso.hom
   μ x y := (indOfTensorIso x y).hom
@@ -294,7 +303,8 @@ noncomputable instance indOfLaxMonoidal :
 
 /-- **The embedding `C ⥤ Ind C` is strong monoidal**: both comparisons
 are isomorphisms by construction. -/
-noncomputable instance indOfMonoidal : (indOf (C := C)).Monoidal :=
+noncomputable instance indOfMonoidal
+    [SmallCategory C] [MonoidalCategory C] : (indOf (C := C)).Monoidal :=
   haveI : IsIso (Functor.LaxMonoidal.ε (indOf (C := C))) :=
     (indOfUnitIso (C := C)).isIso_hom
   haveI : ∀ x y : C,
@@ -303,32 +313,35 @@ noncomputable instance indOfMonoidal : (indOf (C := C)).Monoidal :=
   Functor.Monoidal.ofLaxMonoidal _
 
 /-- **The embedding `C ⥤ Ind C` is braided**. -/
-noncomputable instance indOfBraided [BraidedCategory C] :
+noncomputable instance indOfBraided [SmallCategory C] [MonoidalCategory C]
+    [BraidedCategory C] :
     (indOf (C := C)).Braided where
   toMonoidal := indOfMonoidal
   braided x y := (indOfTensorIso_hom_braiding x y).symm
 
 /-- The unit comparison of the strong monoidal structure is
 `RS.indOfUnitIso`. -/
-lemma indOfMonoidal_εIso :
+lemma indOfMonoidal_εIso [SmallCategory C] [MonoidalCategory C] :
     Functor.Monoidal.εIso (indOf (C := C)) = indOfUnitIso :=
   Iso.ext rfl
 
 /-- The tensor comparison of the strong monoidal structure is
 `RS.indOfTensorIso`. -/
-lemma indOfMonoidal_μIso (x y : C) :
+lemma indOfMonoidal_μIso [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     Functor.Monoidal.μIso (indOf (C := C)) x y = indOfTensorIso x y :=
   Iso.ext rfl
 
 /-- The counit of the strong monoidal structure is the inverse of
 `RS.indOfUnitIso`. -/
-lemma indOf_oplax_η :
+lemma indOf_oplax_η [SmallCategory C] [MonoidalCategory C] :
     Functor.OplaxMonoidal.η (indOf (C := C)) = indOfUnitIso.inv := by
   rw [← Functor.Monoidal.εIso_inv, indOfMonoidal_εIso]
 
 /-- The cotensorator of the strong monoidal structure is the inverse of
 `RS.indOfTensorIso`. -/
-lemma indOf_oplax_δ (x y : C) :
+lemma indOf_oplax_δ [SmallCategory C] [MonoidalCategory C]
+    (x y : C) :
     Functor.OplaxMonoidal.δ (indOf (C := C)) x y =
       (indOfTensorIso x y).inv := by
   rw [← Functor.Monoidal.μIso_inv, indOfMonoidal_μIso]

@@ -23,22 +23,26 @@ open CategoryTheory MonoidalCategory
 
 universe v u
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
-  [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+variable {A : Type u}
 
 /-- **Schur vanishing**: the shape `μ` kills `X` when the central
 idempotent of its block acts as zero on the `μ.card`-th tensor
 power of `X`.  This is the vanishing of the `μ`-isotypic summand
 of `X ^ ⊗ μ.card`, i.e. of Deligne's Schur functor `S_μ(X)`. -/
-def SchurKilled (P : SchurPackage.{v}) (X : A) (μ : YoungDiagram) :
+def SchurKilled [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A]
+    (P : SchurPackage.{v}) (X : A) (μ : YoungDiagram) :
     Prop :=
   permAlg X μ.card (P.e μ) = 0
 
 /-- **Upward closure of Schur vanishing** (Catégories
 tensorielles, 1.7): if the shape `λ` kills `X` then so does every
 shape containing it. -/
-theorem SchurKilled.mono (P : SchurPackage.{v}) {X : A}
+theorem SchurKilled.mono
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (P : SchurPackage.{v}) {X : A}
     {lam mu : YoungDiagram} (hle : lam ≤ mu)
     (h : SchurKilled P X lam) : SchurKilled P X mu := by
   by_contra hne

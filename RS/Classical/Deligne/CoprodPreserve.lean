@@ -19,28 +19,30 @@ open CategoryTheory Limits CoproductsFromFiniteFiltered
 
 universe w v u v' u'
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-variable {α : Type w}
+variable {C : Type u}
 
 section
 
-variable [HasFiniteCoproducts C] [HasFiniteCoproducts D]
-variable (G : C ⥤ D) [PreservesFiniteCoproducts G]
-
 /-- The stagewise comparison morphism at a finite stage is
 invertible for a functor preserving finite coproducts. -/
-instance isIso_sigmaComparison_stage (f : α → C)
+instance isIso_sigmaComparison_stage
+    [Category.{v} C] {D : Type u'} [Category.{v'} D] {α : Type w}
+    [HasFiniteCoproducts C] [HasFiniteCoproducts D] (G : C ⥤ D)
+    [PreservesFiniteCoproducts G]
+    (f : α → C)
     (S : Finset (Discrete α)) :
     IsIso (sigmaComparison G fun x : S =>
       (Discrete.functor f).obj x) := by
   rw [← PreservesCoproduct.inv_hom]
   infer_instance
 
-omit [PreservesFiniteCoproducts G] in
 /-- The stage-level comparison computation, restated at the exact
 syntactic form of the `Finset` diagram's coproduct families. -/
 @[reassoc]
-theorem stage_ι_comp (f : α → C) (S : Finset (Discrete α))
+theorem stage_ι_comp
+    [Category.{v} C] {D : Type u'} [Category.{v'} D] {α : Type w}
+    [HasFiniteCoproducts C] [HasFiniteCoproducts D] (G : C ⥤ D)
+    (f : α → C) (S : Finset (Discrete α))
     (x : S) :
     Sigma.ι (fun y : S =>
         (Discrete.functor fun z => G.obj (f z)).obj y) x ≫
@@ -52,7 +54,11 @@ theorem stage_ι_comp (f : α → C) (S : Finset (Discrete α))
 /-- The stagewise coproduct comparisons of a functor preserving
 finite coproducts, assembled into an isomorphism of `Finset`
 diagrams. -/
-noncomputable def liftToFinsetComparison (f : α → C) :
+noncomputable def liftToFinsetComparison
+    [Category.{v} C] {D : Type u'} [Category.{v'} D] {α : Type w}
+    [HasFiniteCoproducts C] [HasFiniteCoproducts D] (G : C ⥤ D)
+    [PreservesFiniteCoproducts G]
+    (f : α → C) :
     liftToFinsetObj (Discrete.functor fun x => G.obj (f x)) ≅
       liftToFinsetObj (Discrete.functor f) ⋙ G := by
   refine NatIso.ofComponents
@@ -80,14 +86,17 @@ noncomputable def liftToFinsetComparison (f : α → C) :
   erw [stage_ι_comp_assoc, ← G.map_comp, Sigma.ι_desc,
     Sigma.ι_desc_assoc, stage_ι_comp]
 
-variable [HasColimitsOfShape (Finset (Discrete α)) C]
-  [HasColimitsOfShape (Finset (Discrete α)) D]
-  [PreservesColimitsOfShape (Finset (Discrete α)) G]
-
 /-- **Preservation of coproducts from finite and filtered**: a
 functor preserving finite coproducts and `Finset`-shaped colimits
 preserves every coproduct indexed by `α`. -/
-theorem preservesCoproduct_of_finite_and_filtered (f : α → C) :
+theorem preservesCoproduct_of_finite_and_filtered
+    [Category.{v} C] {D : Type u'} [Category.{v'} D] {α : Type w}
+    [HasFiniteCoproducts C] [HasFiniteCoproducts D] (G : C ⥤ D)
+    [PreservesFiniteCoproducts G]
+    [HasColimitsOfShape (Finset (Discrete α)) C]
+    [HasColimitsOfShape (Finset (Discrete α)) D]
+    [PreservesColimitsOfShape (Finset (Discrete α)) G]
+    (f : α → C) :
     PreservesColimit (Discrete.functor f) G := by
   haveI : HasCoproduct f :=
     HasColimit.mk (liftToFinsetColimitCocone (Discrete.functor f))
@@ -129,7 +138,13 @@ theorem preservesCoproduct_of_finite_and_filtered (f : α → C) :
 
 /-- Shape form of the preservation of coproducts from finite and
 filtered. -/
-theorem preservesColimitsOfShape_discrete_of_finite_and_filtered :
+theorem preservesColimitsOfShape_discrete_of_finite_and_filtered
+    [Category.{v} C] {D : Type u'} [Category.{v'} D] {α : Type w}
+    [HasFiniteCoproducts C] [HasFiniteCoproducts D] (G : C ⥤ D)
+    [PreservesFiniteCoproducts G]
+    [HasColimitsOfShape (Finset (Discrete α)) C]
+    [HasColimitsOfShape (Finset (Discrete α)) D]
+    [PreservesColimitsOfShape (Finset (Discrete α)) G] :
     PreservesColimitsOfShape (Discrete α) G := by
   constructor
   intro F

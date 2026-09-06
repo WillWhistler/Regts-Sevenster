@@ -18,12 +18,13 @@ open scoped MonObj
 
 universe v
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [SymmetricCategory C] [Abelian C] [RigidCategory C]
-  [MonoidalPreadditive C]
+variable {C : Type v}
 
 /-- **Embedded Schur-killed objects are locally mixed.** -/
-theorem locallyMixed_indOf (ψ : ℂ ≃+* End (𝟙_ C))
+theorem locallyMixed_indOf
+    [SmallCategory C] [MonoidalCategory C] [SymmetricCategory C] [Abelian C]
+    [RigidCategory C] [MonoidalPreadditive C]
+    (ψ : ℂ ≃+* End (𝟙_ C))
     (P : SchurPackage.{v}) (P₀ : SchurPackage.{0}) (Z : C)
     (lam : YoungDiagram)
     (hkill : letI := linearOfScalarUnit ψ; SchurKilled P Z lam) :

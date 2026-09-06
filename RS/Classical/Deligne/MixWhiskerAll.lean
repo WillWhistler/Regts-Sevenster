@@ -20,15 +20,16 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D] [Preadditive D] [Linear ℂ D]
-  [MonoidalPreadditive D] [MonoidalLinear ℂ D]
-  [HasFiniteBiproducts D]
+variable {D : Type u}
 
 /-- **Nonvanishing of the whiskered mixed sum at arbitrary
 counts**: no positivity of either count is needed, and the
 nontriviality hypothesis is carried by the whiskering object. -/
-theorem OddLine.whisker_permAlg_mix_ne_zero' (P : SchurPackage.{v})
+theorem OddLine.whisker_permAlg_mix_ne_zero'
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [Linear ℂ D] [MonoidalPreadditive D]
+    [MonoidalLinear ℂ D] [HasFiniteBiproducts D]
+    (P : SchurPackage.{v})
     (P₀ : SchurPackage.{0}) (W : D) (L : OddLine D) (r s : ℕ)
     {lam : YoungDiagram}
     (hW : ∀ k : ℕ, 𝟙 (W ⊗ tensorPow D L.obj k) ≠ 0)

@@ -1,4 +1,4 @@
-import RS.Novel.Envelope.BlockAssembly
+import RS.Novel.Envelope.BlockFactorialTrace
 import RS.Novel.Envelope.SemisimpleEnd
 
 /-!
@@ -10,7 +10,7 @@ where the closure partner ranges over morphisms rather than
 fragments.  Both forms are the same statement read through
 `HomSpace.ofFragment`.
 
-With the nilpotent-trace vanishing of `BlockAssembly.lean`, this is
+With the nilpotent-trace vanishing of `BlockFactorialTrace`, this is
 what `isSemisimpleRing_of_trace` consumes to make every skein
 endomorphism algebra semisimple.
 -/

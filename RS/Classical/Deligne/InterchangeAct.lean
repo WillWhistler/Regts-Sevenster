@@ -20,20 +20,18 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (N₁ N₂ P₁ P₂ : Mod D A)
+variable {D : Type u}
 
 /-- **The interchange is linear over the base**: the action on
 the first factor interchanges to the action on the nested module
 tensor product. -/
-theorem interchange_actLeft :
+theorem interchange_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensorAct A N₁ N₂ ▷ modTensor A P₁ P₂) ≫
         interchange A N₁ N₂ P₁ P₂ =
       (α_ A (modTensor A N₁ N₂) (modTensor A P₁ P₂)).hom ≫
@@ -137,7 +135,13 @@ theorem interchange_actLeft :
 /-- **Commutativity of the interchange**: the block braiding
 interchanges to the nested braidings, by the braiding law of the
 crossing. -/
-theorem interchange_comm :
+theorem interchange_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (β_ (modTensor A N₁ N₂) (modTensor A P₁ P₂)).hom ≫
         interchange A P₁ P₂ N₁ N₂ =
       interchange A N₁ N₂ P₁ P₂ ≫
@@ -198,7 +202,13 @@ theorem interchange_comm :
 /-- **The interchange is linear in the second factor**: the
 middle action braids to the front and the first-factor linearity
 applies through commutativity. -/
-theorem interchange_actMid :
+theorem interchange_actMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (N₁ : Mod D A) (N₂ : Mod D A)
+    (P₁ : Mod D A) (P₂ : Mod D A) :
     (modTensor A N₁ N₂ ◁ modTensorAct A P₁ P₂) ≫
         interchange A N₁ N₂ P₁ P₂ =
       (α_ (modTensor A N₁ N₂) A (modTensor A P₁ P₂)).inv ≫
@@ -244,17 +254,21 @@ theorem interchange_actMid :
 
 section ChainMulAct
 
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D]
-variable [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D]
-variable (M M' : Mod D A)
-
 /-- **The chain multiplication is linear over the base in the
 first stage**: the interchange linearity composed with the
 functoriality of the module tensor product.  Stated at the
 unwrapped module tensor products; the stage forms follow by
 definitional unfolding. -/
-theorem chainMul_actLeft (m n : ℕ) :
+theorem chainMul_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D] (M : Mod D A)
+    (M' : Mod D A)
+    (m n : ℕ) :
     (modTensorAct A (symPowMod A M'.X m) (symPowMod A M.X m) ▷
         modTensor A (symPowMod A M'.X n) (symPowMod A M.X n)) ≫
       chainMul A M M' m n =
@@ -292,7 +306,16 @@ functoriality of the module tensor product, at four independent
 symmetric-power arities.  Stated at the unwrapped module tensor
 products; the two-index stage forms follow by definitional
 unfolding.  The diagonal `p = q`, `r = s` is `chainMul_actLeft`. -/
-theorem chainMul2_actLeft (p q r s : ℕ) :
+theorem chainMul2_actLeft
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D] (M : Mod D A)
+    (M' : Mod D A)
+    (p q r s : ℕ) :
     (modTensorAct A (symPowMod A M'.X p) (symPowMod A M.X q) ▷
         modTensor A (symPowMod A M'.X r) (symPowMod A M.X s)) ≫
       chainMul2 A M M' p q r s =
@@ -330,7 +353,16 @@ in the second factor**: the middle action braids to the front and
 the interchange linearity applies.  Stated at the unwrapped module
 tensor products; the stage forms follow by definitional
 unfolding. -/
-theorem chainMul2_actMid (p q r s : ℕ) :
+theorem chainMul2_actMid
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [CategoryTheory.Linear ℂ D] [MonoidalLinear ℂ D] (M : Mod D A)
+    (M' : Mod D A)
+    (p q r s : ℕ) :
     (modTensor A (symPowMod A M'.X p) (symPowMod A M.X q) ◁
         modTensorAct A (symPowMod A M'.X r)
           (symPowMod A M.X s)) ≫

@@ -25,17 +25,16 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D]
-variable [MonoidalPreadditive D]
-variable (L : OddLine D) (R : D) [MonObj R]
+variable {D : Type u}
 
-omit [MonoidalPreadditive D] in
 /-- **Splitting off the algebra factors.**  If two morphisms into
 `R ⊗ 1̄` are a morphism into `R` with an odd leg attached, then
 shuffling them and contracting the two odd legs multiplies the two
 morphisms into `R`, after a pure contraction of the odd legs. -/
-theorem shuffle_contract {A B A' B' : D} (y : A' ⟶ R) (z : B' ⟶ R)
+theorem shuffle_contract
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) (R : D) [MonObj R]
+    {A B A' B' : D} (y : A' ⟶ R) (z : B' ⟶ R)
     (pA : A ⟶ A' ⊗ L.obj) (pB : B ⟶ B' ⊗ L.obj) :
     ((pA ≫ (y ▷ L.obj)) ⊗ₘ (pB ≫ (z ▷ L.obj))) ≫
         freeModShuffle R L.obj L.obj ≫ (R ◁ L.sq.hom) ≫
@@ -84,7 +83,10 @@ theorem shuffle_contract {A B A' B' : D} (y : A' ⟶ R) (z : B' ⟶ R)
 
 /-- **The middle-four interchange across two odd lines is minus the
 identity**: its only braiding is the self-braiding of the line. -/
-theorem tensorμ_oddLine (A : D) :
+theorem tensorμ_oddLine
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D)
+    (A : D) :
     tensorμ A L.obj L.obj L.obj =
       -𝟙 ((A ⊗ L.obj) ⊗ (L.obj ⊗ L.obj)) := by
   show (α_ A L.obj (L.obj ⊗ L.obj)).hom ≫
@@ -101,7 +103,10 @@ theorem tensorμ_oddLine (A : D) :
 
 /-- **Contraction against a coevaluation carries a sign**: the two
 odd legs cross. -/
-theorem oddContract_neg {A A' : D} (pA : A ⟶ A' ⊗ L.obj) :
+theorem oddContract_neg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D)
+    {A A' : D} (pA : A ⟶ A' ⊗ L.obj) :
     (ρ_ A).inv ≫ (pA ⊗ₘ L.sq.inv) ≫
         tensorμ A' L.obj L.obj L.obj ≫
         ((A' ⊗ L.obj) ◁ L.sq.hom) ≫
@@ -116,10 +121,12 @@ theorem oddContract_neg {A A' : D} (pA : A ⟶ A' ⊗ L.obj) :
     Category.id_comp, rightUnitor_naturality, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
 
-omit [MonoidalPreadditive D] in
 /-- **Contraction against a unitor carries no sign**: the free odd
 leg passes only the unit. -/
-theorem oddContract_pos {A A' : D} (pA : A ⟶ A' ⊗ L.obj) :
+theorem oddContract_pos
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D)
+    {A A' : D} (pA : A ⟶ A' ⊗ L.obj) :
     (pA ⊗ₘ (λ_ L.obj).inv) ≫ tensorμ A' L.obj (𝟙_ D) L.obj ≫
         ((A' ⊗ 𝟙_ D) ◁ L.sq.hom) ≫ (ρ_ (A' ⊗ 𝟙_ D)).hom =
       (pA ▷ L.obj) ≫ (α_ A' L.obj L.obj).hom ≫
@@ -133,7 +140,9 @@ theorem oddContract_pos {A A' : D} (pA : A ⟶ A' ⊗ L.obj) :
   rw [tensorHom_def, Category.assoc, hk]
 
 /-- The even–even contraction: a sign. -/
-theorem oddContract_ee :
+theorem oddContract_ee
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     (λ_ (𝟙_ D)).inv ≫ (L.sq.inv ⊗ₘ L.sq.inv) ≫
         tensorμ L.obj L.obj L.obj L.obj ≫
         ((L.obj ⊗ L.obj) ◁ L.sq.hom) ≫
@@ -142,16 +151,19 @@ theorem oddContract_ee :
   exact oddContract_neg L L.sq.inv
 
 /-- The odd–even contraction: a sign. -/
-theorem oddContract_oe :
+theorem oddContract_oe
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     (ρ_ L.obj).inv ≫ ((λ_ L.obj).inv ⊗ₘ L.sq.inv) ≫
         tensorμ (𝟙_ D) L.obj L.obj L.obj ≫
         ((𝟙_ D ⊗ L.obj) ◁ L.sq.hom) ≫
           (ρ_ (𝟙_ D ⊗ L.obj)).hom = -(λ_ L.obj).inv :=
   oddContract_neg L (λ_ L.obj).inv
 
-omit [MonoidalPreadditive D] in
 /-- The odd–odd contraction: no sign. -/
-theorem oddContract_oo :
+theorem oddContract_oo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] (L : OddLine D) :
     L.sq.inv ≫ ((λ_ L.obj).inv ⊗ₘ (λ_ L.obj).inv) ≫
         tensorμ (𝟙_ D) L.obj (𝟙_ D) L.obj ≫
         ((𝟙_ D ⊗ 𝟙_ D) ◁ L.sq.hom) ≫
@@ -166,7 +178,9 @@ theorem oddContract_oo :
 
 /-- The even–odd contraction: no sign; it is the triangle identity
 of the odd line. -/
-theorem oddContract_eo :
+theorem oddContract_eo
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] (L : OddLine D) :
     (λ_ L.obj).inv ≫ (L.sq.inv ⊗ₘ (λ_ L.obj).inv) ≫
         tensorμ L.obj L.obj (𝟙_ D) L.obj ≫
         ((L.obj ⊗ 𝟙_ D) ◁ L.sq.hom) ≫

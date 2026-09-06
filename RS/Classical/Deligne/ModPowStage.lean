@@ -28,7 +28,7 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## One further letter of tail
 
@@ -43,7 +43,8 @@ rewriting.
 section LegSucc
 
 /-- Lengthening the tail by one letter, at general objects. -/
-private theorem glue_succ_aux {S T Q : D} (v : S ⟶ T) (P : D)
+private theorem glue_succ_aux [Category.{v} D] [MonoidalCategory D]
+    {S T Q : D} (v : S ⟶ T) (P : D)
     (c : T ⊗ P ⟶ Q) (W : D) :
     (v ▷ (P ⊗ W)) ≫ ((α_ T P W).inv ≫ (c ▷ W)) =
       (α_ S P W).inv ≫ (((v ▷ P) ≫ c) ▷ W) := by
@@ -51,11 +52,10 @@ private theorem glue_succ_aux {S T Q : D} (v : S ⟶ T) (P : D)
     MonoidalCategory.comp_whiskerRight]
   simp only [Category.assoc, Iso.hom_inv_id_assoc]
 
-variable (X : D)
-
 /-- **Gluing a longer tail**: the glue at tail length `b + 1` is the
 glue at tail length `b`, whiskered by the extra letter. -/
-theorem modPowGlue_succ (a b : ℕ) :
+theorem modPowGlue_succ [Category.{v} D] [MonoidalCategory D] (X : D)
+    (a b : ℕ) :
     modPowGlue X a (b + 1) =
       (α_ (tensorPow D X a ⊗ (X ⊗ X)) (tensorPow D X b) X).inv ≫
         (modPowGlue X a b ▷ X) :=
@@ -66,12 +66,13 @@ end LegSucc
 
 section LegSuccMod
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-
 /-- **The first leg with a longer tail**: acting on the left module
 factor over a tail of length `b + 1` is doing so over a tail of
 length `b`, whiskered by the extra letter. -/
-theorem modPowLegM_succ (a b : ℕ) :
+theorem modPowLegM_succ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X]
+    (a b : ℕ) :
     modPowLegM A X a (b + 1) =
       (α_ (tensorPow D X a ⊗ ((X ⊗ A) ⊗ X)) (tensorPow D X b) X).inv ≫
         (modPowLegM A X a b ▷ X) := by
@@ -81,11 +82,13 @@ theorem modPowLegM_succ (a b : ℕ) :
   exact glue_succ_aux (tensorPow D X a ◁ winLegM A X)
     (tensorPow D X b) (modPowGlue X a b) X
 
-omit [BraidedCategory D] in
 /-- **The second leg with a longer tail**: acting on the right
 module factor over a tail of length `b + 1` is doing so over a tail
 of length `b`, whiskered by the extra letter. -/
-theorem modPowLegN_succ (a b : ℕ) :
+theorem modPowLegN_succ
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A] (X : D)
+    [ModObj A X]
+    (a b : ℕ) :
     modPowLegN A X a (b + 1) =
       (α_ (tensorPow D X a ⊗ ((X ⊗ A) ⊗ X)) (tensorPow D X b) X).inv ≫
         (modPowLegN A X a b ▷ X) := by
@@ -107,11 +110,12 @@ longer arity with one more letter of tail.
 
 section BiproductWhisker
 
-variable [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
-
 /-- Whiskering a biproduct descent: tensoring on the right is an
 additive functor, so it distributes over the slot decomposition. -/
-private theorem desc_whiskerRight {J : Type} [Fintype J]
+private theorem desc_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    {J : Type} [Fintype J]
     {f : J → D} {T : D} (g : ∀ i, f i ⟶ T) (W : D) :
     biproduct.desc g ▷ W =
       ∑ i : J, (biproduct.π f i ▷ W) ≫ (g i ▷ W) := by
@@ -127,17 +131,13 @@ end BiproductWhisker
 
 section Stage
 
-variable [BraidedCategory D] (A : D) [MonObj A] (X : D) [ModObj A X]
-variable [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
-  [HasCoequalizers D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-
-omit [MonoidalPreadditive D] [∀ Z : D, PreservesColimitsOfShape
-  WalkingParallelPair (tensorRight Z)] in
 /-- One slot of the whiskered relation pair is the slot relation of
 the longer arity, with one more letter of tail. -/
-private theorem slot_whiskerRight {n : ℕ} (a b : ℕ)
+private theorem slot_whiskerRight
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    {n : ℕ} (a b : ℕ)
     (h : a + 2 + b = n) :
     ((modPowLegM A X a b ≫ powCast X h) ▷ X) ≫
         modPowπ A X (n + 1) =
@@ -154,12 +154,14 @@ private theorem slot_whiskerRight {n : ℕ} (a b : ℕ)
   exact ((Category.assoc _ _ _).symm.trans key).trans
     (Category.assoc _ _ _)
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)] in
 /-- **The whiskered relation pair coequalizes one arity up**: the
 assembled legs at arity `n`, whiskered by one letter, agree after
 the projection at arity `n + 1`. -/
-theorem modPow_condition_succ (n : ℕ) :
+theorem modPow_condition_succ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    (n : ℕ) :
     (modPowLegFst A X n ▷ X) ≫ modPowπ A X (n + 1) =
       (modPowLegSnd A X n ▷ X) ≫ modPowπ A X (n + 1) := by
   rw [modPowLegFst, modPowLegSnd, desc_whiskerRight,
@@ -171,7 +173,12 @@ theorem modPow_condition_succ (n : ℕ) :
 
 /-- **The stage map**: the projection at arity `n + 1` factors
 through the projection at arity `n` whiskered by one letter. -/
-noncomputable def modPowStage (n : ℕ) :
+noncomputable def modPowStage
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (n : ℕ) :
     modPow A X n ⊗ X ⟶ modPow A X (n + 1) :=
   modPowWhiskerRightDesc A X n X (modPowπ A X (n + 1))
     (modPow_condition_succ A X n)
@@ -179,13 +186,23 @@ noncomputable def modPowStage (n : ℕ) :
 /-- The stage map is the factorisation of the projection at arity
 `n + 1` through the whiskered projection at arity `n`. -/
 @[reassoc (attr := simp)]
-theorem modPowπ_whiskerRight_stage (n : ℕ) :
+theorem modPowπ_whiskerRight_stage
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (n : ℕ) :
     (modPowπ A X n ▷ X) ≫ modPowStage A X n = modPowπ A X (n + 1) :=
   modPowπ_whiskerRight_desc A X n X _ _
 
 /-- **An identity invisible at one arity is invisible at the
 next**: whiskering by a further letter keeps it invisible. -/
-theorem modPow_invisible_succ (n : ℕ)
+theorem modPow_invisible_succ
+    [Category.{v} D] [MonoidalCategory D] [BraidedCategory D] (A : D)
+    [MonObj A] (X : D) [ModObj A X] [Preadditive D] [MonoidalPreadditive D]
+    [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (n : ℕ)
     {g : tensorPow D X n ⟶ tensorPow D X n}
     (hg : g ≫ modPowπ A X n = modPowπ A X n) :
     (g ▷ X) ≫ modPowπ A X (n + 1) = modPowπ A X (n + 1) := by

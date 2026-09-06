@@ -30,10 +30,11 @@ noncomputable def smallNatEquiv : ℕ ≌ SmallNat.{v} :=
 instance : IsFiltered SmallNat.{v} :=
   IsFiltered.of_equivalence smallNatEquiv
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 /-- Compatible unit maps ride along the chain morphisms. -/
-theorem unit_chainMap (B : ℕ → Ind C) (δ : ∀ n, B n ⟶ B (n + 1))
+theorem unit_chainMap [SmallCategory C] [MonoidalCategory C]
+    (B : ℕ → Ind C) (δ : ∀ n, B n ⟶ B (n + 1))
     (u : ∀ n, 𝟙_ (Ind C) ⟶ B n)
     (hu : ∀ n, u n ≫ δ n = u (n + 1)) {m n : ℕ} (h : m ≤ n) :
     u m ≫ chainMap B δ h = u n := by
@@ -43,16 +44,18 @@ theorem unit_chainMap (B : ℕ → Ind C) (δ : ∀ n, B n ⟶ B (n + 1))
     rw [chainMap_succ_of_le B δ hmn, ← Category.assoc, ih, hu]
 
 /-- The chain functor over the `v`-small copy of `ℕ`. -/
-noncomputable def chainFunctorSmall (B : ℕ → Ind C)
+noncomputable def chainFunctorSmall [SmallCategory C]
+    (B : ℕ → Ind C)
     (δ : ∀ n, B n ⟶ B (n + 1)) : SmallNat.{v} ⥤ Ind C :=
   smallNatEquiv.inverse ⋙ chainFunctor B δ
-
-variable [Preadditive C] [HasFiniteColimits C]
 
 /-- **Nonvanishing of the unit in a chain colimit**: with
 compatible unit maps along the chain, the image of the unit in the
 colimit is zero exactly when the unit dies at some stage. -/
-theorem unit_chain_colimit_eq_zero_iff (B : ℕ → Ind C)
+theorem unit_chain_colimit_eq_zero_iff
+    [SmallCategory C] [MonoidalCategory C] [Preadditive C]
+    [HasFiniteColimits C]
+    (B : ℕ → Ind C)
     (δ : ∀ n, B n ⟶ B (n + 1)) (u : ∀ n, 𝟙_ (Ind C) ⟶ B n)
     (hu : ∀ n, u n ≫ δ n = u (n + 1)) (m : ℕ) :
     u m ≫ colimit.ι (chainFunctorSmall B δ)

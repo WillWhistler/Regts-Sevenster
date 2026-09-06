@@ -34,17 +34,19 @@ universe v
 
 noncomputable section
 
-variable {D : Type v} [SmallCategory D] [MonoidalCategory D]
+variable {D : Type v}
 
 /-- Evaluation at `d` of the underlying functor, as a `Type`-valued
 functor on `D ⊛⥤ Type v`.  Every corepresentability statement in this
 file corepresents a functor of this shape. -/
-def dayEvaluation (d : D) : (D ⊛⥤ Type v) ⥤ Type v :=
+def dayEvaluation [SmallCategory D] [MonoidalCategory D]
+    (d : D) : (D ⊛⥤ Type v) ⥤ Type v :=
   (equiv D (Type v)).functor ⋙ (evaluation D (Type v)).obj d
 
 /-- The corepresentable Day functor at `c` corepresents evaluation at
 `c`: the Yoneda lemma, read through the `DayFunctor` synonym. -/
-def coyonedaDayCorepresentableBy (c : D) :
+def coyonedaDayCorepresentableBy [SmallCategory D] [MonoidalCategory D]
+    (c : D) :
     (dayEvaluation c).CorepresentableBy
       (DayFunctor.mk (coyoneda.obj (Opposite.op c))) where
   homEquiv {F} :=
@@ -67,7 +69,8 @@ external product of the two corepresentables, which is definitionally
 the corepresentable of the product category at `(a, b)`, so the Yoneda
 lemma evaluates.  This is the co-Yoneda computation for Day
 convolution. -/
-def dayCoyonedaCorepresentableBy (a b : D) :
+def dayCoyonedaCorepresentableBy [SmallCategory D] [MonoidalCategory D]
+    (a b : D) :
     (dayEvaluation (a ⊗ b)).CorepresentableBy
       (DayFunctor.mk (coyoneda.obj (Opposite.op a)) ⊗
         DayFunctor.mk (coyoneda.obj (Opposite.op b))) where
@@ -100,7 +103,8 @@ def dayCoyonedaCorepresentableBy (a b : D) :
 /-- Day convolution of corepresentables: the Day tensor of the
 corepresentable functors at `a` and `b` is the corepresentable functor
 at `a ⊗ b`. -/
-def dayCoyonedaIso (a b : D) :
+def dayCoyonedaIso [SmallCategory D] [MonoidalCategory D]
+    (a b : D) :
     DayFunctor.mk (coyoneda.obj (Opposite.op a)) ⊗
       DayFunctor.mk (coyoneda.obj (Opposite.op b)) ≅
     DayFunctor.mk (coyoneda.obj (Opposite.op (a ⊗ b))) :=
@@ -111,7 +115,7 @@ def dayCoyonedaIso (a b : D) :
 determined by an element of `F.functor.obj (𝟙_ D)`, via the universal
 property of the unit as a left Kan extension along
 `fromPUnit (𝟙_ D)`. -/
-def dayUnitCorepresentableBy :
+def dayUnitCorepresentableBy [SmallCategory D] [MonoidalCategory D] :
     (dayEvaluation (𝟙_ D)).CorepresentableBy (𝟙_ (D ⊛⥤ Type v)) where
   homEquiv {F} :=
     { toFun f := f.natTrans.app (𝟙_ D) (ν D (Type v) PUnit.unit)
@@ -129,7 +133,7 @@ def dayUnitCorepresentableBy :
 variable (D) in
 /-- The Day unit is the corepresentable functor at the monoidal unit of
 `D`. -/
-def dayUnitIso :
+def dayUnitIso [SmallCategory D] [MonoidalCategory D] :
     𝟙_ (MonoidalCategory.DayFunctor D (Type v)) ≅
       DayFunctor.mk (coyoneda.obj (Opposite.op (𝟙_ D))) :=
   dayUnitCorepresentableBy.uniqueUpToIso
@@ -141,19 +145,22 @@ attribute [local instance] dayConv
 
 /-- Fixing the left factor of the external product gives a functor in
 the right factor. -/
-def externalLeftFunctor (K : D ⥤ Type v) :
+def externalLeftFunctor [SmallCategory D]
+    (K : D ⥤ Type v) :
     (D ⥤ Type v) ⥤ D × D ⥤ Type v :=
   Prod.sectR K (D ⥤ Type v) ⋙ externalProductBifunctor D D (Type v)
 
 /-- Fixing the right factor of the external product gives a functor in
 the left factor. -/
-def externalRightFunctor (K : D ⥤ Type v) :
+def externalRightFunctor [SmallCategory D]
+    (K : D ⥤ Type v) :
     (D ⥤ Type v) ⥤ D × D ⥤ Type v :=
   Prod.sectL (D ⥤ Type v) K ⋙ externalProductBifunctor D D (Type v)
 
 /-- Pointwise, the external product with a fixed left factor is
 tensoring on the left in `Type v`. -/
-def externalLeftFunctorEvaluationIso (K : D ⥤ Type v) (p : D × D) :
+def externalLeftFunctorEvaluationIso [SmallCategory D]
+    (K : D ⥤ Type v) (p : D × D) :
     (evaluation D (Type v)).obj p.2 ⋙ tensorLeft (K.obj p.1) ≅
       externalLeftFunctor K ⋙ (evaluation (D × D) (Type v)).obj p :=
   NatIso.ofComponents (fun G => Iso.refl _) (by
@@ -163,7 +170,8 @@ def externalLeftFunctorEvaluationIso (K : D ⥤ Type v) (p : D × D) :
 
 /-- Pointwise, the external product with a fixed right factor is
 tensoring on the right in `Type v`. -/
-def externalRightFunctorEvaluationIso (K : D ⥤ Type v) (p : D × D) :
+def externalRightFunctorEvaluationIso [SmallCategory D]
+    (K : D ⥤ Type v) (p : D × D) :
     (evaluation D (Type v)).obj p.1 ⋙ tensorRight (K.obj p.2) ≅
       externalRightFunctor K ⋙ (evaluation (D × D) (Type v)).obj p :=
   NatIso.ofComponents (fun G => Iso.refl _) (by
@@ -173,7 +181,8 @@ def externalRightFunctorEvaluationIso (K : D ⥤ Type v) (p : D × D) :
 
 /-- The external product with a fixed left factor preserves colimits in
 the right factor. -/
-instance externalLeftFunctor_preservesColimits (K : D ⥤ Type v) :
+instance externalLeftFunctor_preservesColimits [SmallCategory D]
+    (K : D ⥤ Type v) :
     PreservesColimitsOfSize.{v, v} (externalLeftFunctor K) where
   preservesColimitsOfShape {J} _ :=
     preservesColimitsOfShape_of_evaluation _ J fun p =>
@@ -182,7 +191,8 @@ instance externalLeftFunctor_preservesColimits (K : D ⥤ Type v) :
 
 /-- The external product with a fixed right factor preserves colimits
 in the left factor. -/
-instance externalRightFunctor_preservesColimits (K : D ⥤ Type v) :
+instance externalRightFunctor_preservesColimits [SmallCategory D]
+    (K : D ⥤ Type v) :
     PreservesColimitsOfSize.{v, v} (externalRightFunctor K) where
   preservesColimitsOfShape {J} _ :=
     preservesColimitsOfShape_of_evaluation _ J fun p =>
@@ -192,7 +202,8 @@ instance externalRightFunctor_preservesColimits (K : D ⥤ Type v) :
 /-- The Day tensor, on underlying functors, is the left Kan extension
 of the external product along `tensor D`. -/
 @[simps]
-def tensorObjLanIso (F G : D ⊛⥤ Type v) :
+def tensorObjLanIso [SmallCategory D] [MonoidalCategory D]
+    (F G : D ⊛⥤ Type v) :
     (F ⊗ G).functor ≅ (tensor D).lan.obj (F.functor ⊠ G.functor) where
   hom := Functor.descOfIsLeftKanExtension _ (η F G) _
     ((tensor D).lanUnit.app (F.functor ⊠ G.functor))
@@ -205,7 +216,9 @@ def tensorObjLanIso (F G : D ⊛⥤ Type v) :
 
 open scoped CategoryTheory.Prod in
 /-- Naturality in the right variable of `RS.tensorObjLanIso`. -/
-lemma whiskerLeft_natTrans_tensorObjLanIso_hom (F : D ⊛⥤ Type v)
+lemma whiskerLeft_natTrans_tensorObjLanIso_hom
+    [SmallCategory D] [MonoidalCategory D]
+    (F : D ⊛⥤ Type v)
     {G G' : D ⊛⥤ Type v} (g : G ⟶ G') :
     (F ◁ g).natTrans ≫ (tensorObjLanIso F G').hom =
       (tensorObjLanIso F G).hom ≫ (tensor D).lan.map
@@ -231,7 +244,9 @@ lemma whiskerLeft_natTrans_tensorObjLanIso_hom (F : D ⊛⥤ Type v)
 
 open scoped CategoryTheory.Prod in
 /-- Naturality in the left variable of `RS.tensorObjLanIso`. -/
-lemma whiskerRight_natTrans_tensorObjLanIso_hom (F : D ⊛⥤ Type v)
+lemma whiskerRight_natTrans_tensorObjLanIso_hom
+    [SmallCategory D] [MonoidalCategory D]
+    (F : D ⊛⥤ Type v)
     {G G' : D ⊛⥤ Type v} (g : G ⟶ G') :
     (g ▷ F).natTrans ≫ (tensorObjLanIso G' F).hom =
       (tensorObjLanIso G F).hom ≫ (tensor D).lan.map
@@ -258,7 +273,8 @@ lemma whiskerRight_natTrans_tensorObjLanIso_hom (F : D ⊛⥤ Type v)
 /-- Day tensoring on the left, transported to the plain functor
 category, is the external product followed by left Kan extension along
 `tensor D`. -/
-def tensorLeftCompIso (F : D ⊛⥤ Type v) :
+def tensorLeftCompIso [SmallCategory D] [MonoidalCategory D]
+    (F : D ⊛⥤ Type v) :
     tensorLeft F ⋙ (equiv D (Type v)).functor ≅
       (equiv D (Type v)).functor ⋙
         externalLeftFunctor F.functor ⋙ (tensor D).lan :=
@@ -268,7 +284,8 @@ def tensorLeftCompIso (F : D ⊛⥤ Type v) :
 /-- Day tensoring on the right, transported to the plain functor
 category, is the external product followed by left Kan extension along
 `tensor D`. -/
-def tensorRightCompIso (F : D ⊛⥤ Type v) :
+def tensorRightCompIso [SmallCategory D] [MonoidalCategory D]
+    (F : D ⊛⥤ Type v) :
     tensorRight F ⋙ (equiv D (Type v)).functor ≅
       (equiv D (Type v)).functor ⋙
         externalRightFunctor F.functor ⋙ (tensor D).lan :=
@@ -279,7 +296,8 @@ def tensorRightCompIso (F : D ⊛⥤ Type v) :
 `RS.tensorLeftCompIso` it is, up to the tautological equivalence, an
 external product followed by a left Kan extension, and both preserve
 colimits. -/
-noncomputable instance (F : MonoidalCategory.DayFunctor D (Type v)) :
+noncomputable instance [SmallCategory D] [MonoidalCategory D]
+    (F : MonoidalCategory.DayFunctor D (Type v)) :
     Limits.PreservesColimitsOfSize.{v, v} (tensorLeft F) := by
   haveI : PreservesColimitsOfSize.{v, v}
       ((tensor D).lan (H := Type v)) :=
@@ -294,7 +312,8 @@ noncomputable instance (F : MonoidalCategory.DayFunctor D (Type v)) :
 `RS.tensorRightCompIso` it is, up to the tautological equivalence, an
 external product followed by a left Kan extension, and both preserve
 colimits. -/
-noncomputable instance (F : MonoidalCategory.DayFunctor D (Type v)) :
+noncomputable instance [SmallCategory D] [MonoidalCategory D]
+    (F : MonoidalCategory.DayFunctor D (Type v)) :
     Limits.PreservesColimitsOfSize.{v, v} (tensorRight F) := by
   haveI : PreservesColimitsOfSize.{v, v}
       ((tensor D).lan (H := Type v)) :=

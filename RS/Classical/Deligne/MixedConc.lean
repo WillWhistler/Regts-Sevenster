@@ -192,14 +192,15 @@ end BlockEmbed
 
 /-! ## The concatenation isomorphism -/
 
-variable {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {A : Type u}
 
 /-- **The concatenation isomorphism**
 `X ^ ⊗ a ⊗ X ^ ⊗ b ≅ X ^ ⊗ (a + b)`, by the recursion of
 `tensorPow` itself: the empty second power is absorbed by the right
 unitor, and one further factor reassociates off the second power and
 whiskers the previous stage. -/
-noncomputable def tensorPowConcat (X : A) (a : ℕ) :
+noncomputable def tensorPowConcat [Category.{v} A] [MonoidalCategory A]
+    (X : A) (a : ℕ) :
     (b : ℕ) → (tensorPow A X a ⊗ tensorPow A X b ≅ tensorPow A X (a + b))
   | 0 => ρ_ (tensorPow A X a)
   | b + 1 =>
@@ -207,11 +208,13 @@ noncomputable def tensorPowConcat (X : A) (a : ℕ) :
         whiskerRightIso (tensorPowConcat X a b) X
 
 /-- Concatenating with the empty power is the right unitor. -/
-theorem tensorPowConcat_zero (X : A) (a : ℕ) :
+theorem tensorPowConcat_zero [Category.{v} A] [MonoidalCategory A]
+    (X : A) (a : ℕ) :
     tensorPowConcat X a 0 = ρ_ (tensorPow A X a) := rfl
 
 /-- The defining recursion of `tensorPowConcat`. -/
-theorem tensorPowConcat_succ (X : A) (a b : ℕ) :
+theorem tensorPowConcat_succ [Category.{v} A] [MonoidalCategory A]
+    (X : A) (a b : ℕ) :
     tensorPowConcat X a (b + 1) =
       (α_ (tensorPow A X a) (tensorPow A X b) X).symm ≪≫
         whiskerRightIso (tensorPowConcat X a b) X := rfl
@@ -224,22 +227,23 @@ general objects and applied by `exact`, so that no tensor-power
 arity enters the rewriting.
 -/
 
-omit [MonoidalCategory A] in
 /-- Two morphisms passed one at a time across `T`. -/
-private theorem pull_pair {P Q : A} {T : P ⟶ Q} {u v : Q ⟶ Q}
+private theorem pull_pair [Category.{v} A]
+    {P Q : A} {T : P ⟶ Q} {u v : Q ⟶ Q}
     {u' v' : P ⟶ P} (hu : T ≫ u = u' ≫ T) (hv : T ≫ v = v' ≫ T) :
     T ≫ (u ≫ v) = (u' ≫ v') ≫ T := by
   rw [← Category.assoc, hu, Category.assoc, hv, ← Category.assoc]
 
-omit [MonoidalCategory A] in
 /-- Identities pass across `T`. -/
-private theorem id_pass {P Q : A} (T : P ⟶ Q) :
+private theorem id_pass [Category.{v} A]
+    {P Q : A} (T : P ⟶ Q) :
     T ≫ 𝟙 Q = 𝟙 P ≫ T := by
   rw [Category.comp_id, Category.id_comp]
 
 /-- A morphism of the second tensorand passed across one stage of
 the concatenation. -/
-private theorem concat_left_glue {P Q R Y : A} (c : P ⊗ Q ⟶ R)
+private theorem concat_left_glue [Category.{v} A] [MonoidalCategory A]
+    {P Q R Y : A} (c : P ⊗ Q ⟶ R)
     (u : R ⟶ R) (g : Q ⟶ Q) (h : c ≫ u = (P ◁ g) ≫ c) :
     ((α_ P Q Y).inv ≫ (c ▷ Y)) ≫ (u ▷ Y) =
       (P ◁ (g ▷ Y)) ≫ (α_ P Q Y).inv ≫ (c ▷ Y) := by
@@ -249,7 +253,8 @@ private theorem concat_left_glue {P Q R Y : A} (c : P ⊗ Q ⟶ R)
 
 /-- A morphism of the first tensorand passed across one stage of
 the concatenation. -/
-private theorem concat_right_glue {P Q R Y : A} (c : P ⊗ Q ⟶ R)
+private theorem concat_right_glue [Category.{v} A] [MonoidalCategory A]
+    {P Q R Y : A} (c : P ⊗ Q ⟶ R)
     (u : R ⟶ R) (f : P ⟶ P) (h : c ≫ u = (f ▷ Q) ≫ c) :
     ((α_ P Q Y).inv ≫ (c ▷ Y)) ≫ (u ▷ Y) =
       (f ▷ (Q ⊗ Y)) ≫ (α_ P Q Y).inv ≫ (c ▷ Y) := by
@@ -259,11 +264,11 @@ private theorem concat_right_glue {P Q R Y : A} (c : P ⊗ Q ⟶ R)
 
 section Symmetric
 
-variable [SymmetricCategory A]
-
 /-- The braiding conjugate defining `swapTop` commutes with a doubly
 whiskered morphism of the base, at general objects. -/
-private theorem swap_conj_whisker {P R : A} (Y : A) (g : P ⟶ R) :
+private theorem swap_conj_whisker
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {P R : A} (Y : A) (g : P ⟶ R) :
     ((g ▷ Y) ▷ Y) ≫
         ((α_ R Y Y).hom ≫ (R ◁ (β_ Y Y).hom) ≫ (α_ R Y Y).inv) =
       ((α_ P Y Y).hom ≫ (P ◁ (β_ Y Y).hom) ≫ (α_ P Y Y).inv) ≫
@@ -277,7 +282,9 @@ private theorem swap_conj_whisker {P R : A} (Y : A) (g : P ⟶ R) :
 braiding at the joint base against conjugating it inside the second
 tensorand.  Pure coherence and naturality, discharged by
 `monoidal`. -/
-private theorem concat_swap_structural (P Q Y : A) :
+private theorem concat_swap_structural
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (P Q Y : A) :
     (α_ P (Q ⊗ Y) Y).inv ≫ ((α_ P Q Y).inv ▷ Y) ≫
         (α_ (P ⊗ Q) Y Y).hom ≫ ((P ⊗ Q) ◁ (β_ Y Y).hom) ≫
         (α_ (P ⊗ Q) Y Y).inv =
@@ -289,7 +296,9 @@ private theorem concat_swap_structural (P Q Y : A) :
 /-- The swap intertwining at general objects: the top braiding after
 two stages of concatenation is the whiskered top braiding of the
 second tensorand. -/
-private theorem concat_swap_aux {P Q R : A} (Y : A) (c : P ⊗ Q ⟶ R) :
+private theorem concat_swap_aux
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    {P Q R : A} (Y : A) (c : P ⊗ Q ⟶ R) :
     ((α_ P (Q ⊗ Y) Y).inv ≫ (((α_ P Q Y).inv ≫ (c ▷ Y)) ▷ Y)) ≫
         ((α_ R Y Y).hom ≫ (R ◁ (β_ Y Y).hom) ≫ (α_ R Y Y).inv) =
       (P ◁ ((α_ Q Y Y).hom ≫ (Q ◁ (β_ Y Y).hom) ≫ (α_ Q Y Y).inv)) ≫
@@ -303,7 +312,9 @@ private theorem concat_swap_aux {P Q R : A} (Y : A) (c : P ⊗ Q ⟶ R) :
 /-- **The concatenation isomorphism intertwines the top braiding**
 of the last block: braiding the top two slots of `X ^ ⊗ (a + b + 2)`
 corresponds to braiding the top two slots of the second factor. -/
-theorem tensorPowConcat_swapTop (X : A) (a b : ℕ) :
+theorem tensorPowConcat_swapTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (a b : ℕ) :
     (tensorPowConcat X a (b + 2)).hom ≫ swapTop X (a + b) =
       (tensorPow A X a ◁ swapTop X b) ≫ (tensorPowConcat X a (b + 2)).hom :=
   concat_swap_aux X ((tensorPowConcat X a b).hom)
@@ -311,7 +322,9 @@ theorem tensorPowConcat_swapTop (X : A) (a b : ℕ) :
 /-- **The concatenation isomorphism intertwines bubbling** inside
 the last block: as long as the insertion distance stays within the
 second factor, inserting the top slot commutes with concatenation. -/
-theorem tensorPowConcat_insertTop (X : A) (a : ℕ) :
+theorem tensorPowConcat_insertTop
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (a : ℕ) :
     ∀ b k : ℕ, k ≤ b →
       (tensorPowConcat X a (b + 1)).hom ≫ insertTop X (a + b) k =
         (tensorPow A X a ◁ insertTop X b k) ≫
@@ -353,7 +366,9 @@ theorem tensorPowConcat_insertTop (X : A) (a : ℕ) :
 /-- **The intertwining on the first generator family**: a
 permutation of the first block acts on the first tensor factor
 alone. -/
-theorem tensorPowConcat_permMor_fst (X : A) (a : ℕ)
+theorem tensorPowConcat_permMor_fst
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (a : ℕ)
     (σ : Equiv.Perm (Fin a)) :
     ∀ b : ℕ,
       (tensorPowConcat X a b).hom ≫ permMor X (a + b) (blockEmbed σ 1) =
@@ -377,7 +392,9 @@ theorem tensorPowConcat_permMor_fst (X : A) (a : ℕ)
 permutation of the last block acts on the second tensor factor
 alone.  The proof mirrors the recursion of `permMor`, shifted into
 the last block by `restPerm_blockEmbed` and `topImage_blockEmbed`. -/
-theorem tensorPowConcat_permMor_snd (X : A) (a : ℕ) :
+theorem tensorPowConcat_permMor_snd
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) (a : ℕ) :
     ∀ (b : ℕ) (τ : Equiv.Perm (Fin b)),
       (tensorPowConcat X a b).hom ≫ permMor X (a + b) (blockEmbed 1 τ) =
         (tensorPow A X a ◁ permMor X b τ) ≫ (tensorPowConcat X a b).hom := by
@@ -429,7 +446,9 @@ theorem tensorPowConcat_permMor_snd (X : A) (a : ℕ) :
 embedding**: under `tensorPowConcat`, the action of
 `blockEmbed σ τ` on `X ^ ⊗ (a + b)` is the tensor product of the
 actions of `σ` and `τ` on the two factors. -/
-theorem tensorPowConcat_permMor (X : A) {a b : ℕ}
+theorem tensorPowConcat_permMor
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    (X : A) {a b : ℕ}
     (σ : Equiv.Perm (Fin a)) (τ : Equiv.Perm (Fin b)) :
     (tensorPowConcat X a b).hom ≫ permMor X (a + b) (blockEmbed σ τ) =
       (permMor X a σ ⊗ₘ permMor X b τ) ≫ (tensorPowConcat X a b).hom := by
@@ -442,9 +461,6 @@ end Symmetric
 /-! ## The linear extension -/
 
 section Linear
-
-variable [SymmetricCategory A] [Preadditive A] [Linear ℂ A]
-  [MonoidalPreadditive A] [MonoidalLinear ℂ A]
 
 /-- The first-block embedding as a monoid homomorphism. -/
 noncomputable def blockEmbedFstHom (a b : ℕ) :
@@ -516,60 +532,72 @@ theorem blockAlgEmbed_smul_snd {a b : ℕ} (r : ℂ) (x : SymGroupAlgebra a)
   unfold blockAlgEmbed
   rw [map_smul, mul_smul_comm]
 
-omit [SymmetricCategory A] in
 /-- The tensor product of morphisms is homogeneous in the second
 factor. -/
-private theorem tensorHom_smul {P Q R S : A} (f : P ⟶ Q) (r : ℂ)
+private theorem tensorHom_smul
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    {P Q R S : A} (f : P ⟶ Q) (r : ℂ)
     (g : R ⟶ S) : f ⊗ₘ (r • g) = r • (f ⊗ₘ g) := by
   rw [MonoidalCategory.tensorHom_def, MonoidalCategory.tensorHom_def,
     MonoidalLinear.whiskerLeft_smul, Linear.comp_smul]
 
-omit [SymmetricCategory A] in
 /-- The tensor product of morphisms is homogeneous in the first
 factor. -/
-private theorem smul_tensorHom {P Q R S : A} (r : ℂ) (f : P ⟶ Q)
+private theorem smul_tensorHom
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    {P Q R S : A} (r : ℂ) (f : P ⟶ Q)
     (g : R ⟶ S) : (r • f) ⊗ₘ g = r • (f ⊗ₘ g) := by
   rw [MonoidalCategory.tensorHom_def, MonoidalCategory.tensorHom_def,
     MonoidalLinear.smul_whiskerRight, Linear.smul_comp]
 
-omit [SymmetricCategory A] [Linear ℂ A] [MonoidalLinear ℂ A] in
 /-- Intertwining a tensor product across `T` is closed under sums in
 the second factor.  Stated at general objects and applied by
 `exact`, so that the endomorphism-ring structure never enters the
 rewriting. -/
-private theorem tensor_add_glue {P Q R : A} {T : P ⊗ Q ⟶ R}
+private theorem tensor_add_glue
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    {P Q R : A} {T : P ⊗ Q ⟶ R}
     {u v : R ⟶ R} {f : P ⟶ P} {g h : Q ⟶ Q}
     (hu : T ≫ u = (f ⊗ₘ g) ≫ T) (hv : T ≫ v = (f ⊗ₘ h) ≫ T) :
     T ≫ (u + v) = (f ⊗ₘ (g + h)) ≫ T := by
   rw [MonoidalPreadditive.tensor_add, Preadditive.comp_add,
     Preadditive.add_comp, hu, hv]
 
-omit [SymmetricCategory A] [Linear ℂ A] [MonoidalLinear ℂ A] in
 /-- Intertwining a tensor product across `T` is closed under sums in
 the first factor.  Stated at general objects and applied by
 `exact`. -/
-private theorem add_tensor_glue {P Q R : A} {T : P ⊗ Q ⟶ R}
+private theorem add_tensor_glue
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A]
+    [MonoidalPreadditive A]
+    {P Q R : A} {T : P ⊗ Q ⟶ R}
     {u v : R ⟶ R} {f g : P ⟶ P} {h : Q ⟶ Q}
     (hu : T ≫ u = (f ⊗ₘ h) ≫ T) (hv : T ≫ v = (g ⊗ₘ h) ≫ T) :
     T ≫ (u + v) = ((f + g) ⊗ₘ h) ≫ T := by
   rw [MonoidalPreadditive.add_tensor, Preadditive.comp_add,
     Preadditive.add_comp, hu, hv]
 
-omit [SymmetricCategory A] in
 /-- Intertwining a tensor product across `T` is closed under scalars
 in the second factor.  Stated at general objects and applied by
 `exact`. -/
-private theorem tensor_smul_glue {P Q R : A} {T : P ⊗ Q ⟶ R}
+private theorem tensor_smul_glue
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    {P Q R : A} {T : P ⊗ Q ⟶ R}
     {u : R ⟶ R} {f : P ⟶ P} {g : Q ⟶ Q} (r : ℂ)
     (h : T ≫ u = (f ⊗ₘ g) ≫ T) :
     T ≫ (r • u) = (f ⊗ₘ (r • g)) ≫ T := by
   rw [tensorHom_smul, Linear.comp_smul, Linear.smul_comp, h]
 
-omit [SymmetricCategory A] in
 /-- Intertwining a tensor product across `T` is closed under scalars
 in the first factor.  Stated at general objects and applied by
 `exact`. -/
-private theorem smul_tensor_glue {P Q R : A} {T : P ⊗ Q ⟶ R}
+private theorem smul_tensor_glue
+    [Category.{v} A] [MonoidalCategory A] [Preadditive A] [Linear ℂ A]
+    [MonoidalPreadditive A] [MonoidalLinear ℂ A]
+    {P Q R : A} {T : P ⊗ Q ⟶ R}
     {u : R ⟶ R} {f : P ⟶ P} {g : Q ⟶ Q} (r : ℂ)
     (h : T ≫ u = (f ⊗ₘ g) ≫ T) :
     T ≫ (r • u) = ((r • f) ⊗ₘ g) ≫ T := by
@@ -579,7 +607,11 @@ private theorem smul_tensor_glue {P Q R : A} {T : P ⊗ Q ⟶ R}
 of group algebras**: the `ℂ`-bilinear extension of the intertwining
 on basis permutations.  Both sides are bilinear in `(x, y)`, so the
 statement reduces to `tensorPowConcat_permMor`. -/
-theorem tensorPowConcat_permAlg (X : A) {a b : ℕ}
+theorem tensorPowConcat_permAlg
+    [Category.{v} A] [MonoidalCategory A] [SymmetricCategory A]
+    [Preadditive A] [Linear ℂ A] [MonoidalPreadditive A]
+    [MonoidalLinear ℂ A]
+    (X : A) {a b : ℕ}
     (x : SymGroupAlgebra a) (y : SymGroupAlgebra b) :
     (tensorPowConcat X a b).hom ≫ permAlg X (a + b) (blockAlgEmbed x y) =
       (permAlg X a x ⊗ₘ permAlg X b y) ≫ (tensorPowConcat X a b).hom := by

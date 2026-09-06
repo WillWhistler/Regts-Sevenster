@@ -15,36 +15,37 @@ namespace RS
 
 open scoped Classical
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 namespace EdgeSubset
 
 /-- Two systems induce the same boundary pairing. -/
-def SamePairing (κ κ' : F.RelTransitionSystem) : Prop :=
+def SamePairing {W : Fragment α} {F : EdgeSubset W}
+    (κ κ' : F.RelTransitionSystem) : Prop :=
   ∀ (δ : W.Flag) (hδ : δ ∈ F.boundaryFlags),
     κ.pathMatch δ hδ = κ'.pathMatch δ hδ
 
-omit [LinearOrder α] in
 /-- Inducing the same boundary pairing is reflexive. -/
-theorem SamePairing.refl (κ : F.RelTransitionSystem) :
+theorem SamePairing.refl {W : Fragment α} {F : EdgeSubset W}
+    (κ : F.RelTransitionSystem) :
     SamePairing κ κ := fun _ _ => rfl
 
-omit [LinearOrder α] in
 /-- It is symmetric. -/
-theorem SamePairing.symm {κ κ' : F.RelTransitionSystem}
+theorem SamePairing.symm {W : Fragment α} {F : EdgeSubset W}
+    {κ κ' : F.RelTransitionSystem}
     (h : SamePairing κ κ') : SamePairing κ' κ :=
   fun δ hδ => (h δ hδ).symm
 
-omit [LinearOrder α] in
 /-- And transitive — an equivalence on transition systems. -/
-theorem SamePairing.trans {κ₁ κ₂ κ₃ : F.RelTransitionSystem}
+theorem SamePairing.trans {W : Fragment α} {F : EdgeSubset W}
+    {κ₁ κ₂ κ₃ : F.RelTransitionSystem}
     (h : SamePairing κ₁ κ₂) (h' : SamePairing κ₂ κ₃) :
     SamePairing κ₁ κ₃ :=
   fun δ hδ => (h δ hδ).trans (h' δ hδ)
 
 /-- A repair step that preserves the boundary pairing. -/
-def MatchPreservingStep (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
+def MatchPreservingStep {W : Fragment α} {F : EdgeSubset W}
+    (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
   ∃ (a b c d : W.Flag) (v : W.Vertex)
     (hsq : RepairSquare κ₁ a b c d v),
     κ₂.MatchEq (κ₁.repair a b c d v hsq) ∧
@@ -52,9 +53,9 @@ def MatchPreservingStep (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
       (κ₁.repair a b c d v hsq).pathMatch δ hδ =
         κ₁.pathMatch δ hδ
 
-omit [LinearOrder α] in
 /-- A pairing-preserving step indeed preserves the pairing. -/
-theorem samePairing_of_step {κ₁ κ₂ : F.RelTransitionSystem}
+theorem samePairing_of_step {W : Fragment α} {F : EdgeSubset W}
+    {κ₁ κ₂ : F.RelTransitionSystem}
     (h : MatchPreservingStep κ₁ κ₂) : SamePairing κ₁ κ₂ := by
   obtain ⟨a, b, c, d, v, hsq, heq, hpres⟩ := h
   intro δ hδ
@@ -66,7 +67,8 @@ the boundary pairing (individual repairs may cross two chains and
 change it; the double-crossing example shows single-step
 connectivity fails, and non-adjacent restorations force general
 blocks rather than pairs). -/
-def PairedStep (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
+def PairedStep {W : Fragment α} {F : EdgeSubset W}
+    (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
   (∃ (n : ℕ) (chain : Fin (n + 1) → F.RelTransitionSystem),
     (chain 0).MatchEq κ₁ ∧ (chain (Fin.last n)).MatchEq κ₂ ∧
     ∀ r : Fin n, IsRepairStep (chain r.castSucc) (chain r.succ)) ∧
@@ -74,7 +76,8 @@ def PairedStep (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
 
 /-- A pairing-preserving move: a single preserved step or a
 π-restoring pair. -/
-def MatchPreservingMove (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
+def MatchPreservingMove {W : Fragment α} {F : EdgeSubset W}
+    (κ₁ κ₂ : F.RelTransitionSystem) : Prop :=
   MatchPreservingStep κ₁ κ₂ ∨ PairedStep κ₁ κ₂
 
 /-- **The connectivity statement** (the keystone, move form):
@@ -126,7 +129,9 @@ def MatchPreservingLedger : Prop :=
           F.throughSummand hM st hbnd o₁ κ₁.openCircuitCount
 
 /-- The `MatchEq` layer for the signed canonical summand. -/
-theorem signed_summand_matchEq {k ℓ : ℕ}
+theorem signed_summand_matchEq
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ₁ κ₂ : F.RelTransitionSystem}
@@ -145,7 +150,7 @@ theorem signed_summand_matchEq {k ℓ : ℕ}
 /-- The forward-carried chain induction: along a chain of
 pairing-preserving steps, a canonical orientation and the signed
 value propagate from the base. -/
-theorem chain_carry
+theorem chain_carry [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     (HLedger : MatchPreservingLedger)
     {k ℓ : ℕ} (hM : MixedFunctional k ℓ)
     (st : GenBoundaryState k ℓ α)
@@ -189,7 +194,8 @@ theorem chain_carry
 
 /-- The endpoint transfer: a canonical orientation and the signed
 value cross a `MatchEq` to the target system. -/
-theorem endpoint_transfer {k ℓ : ℕ}
+theorem endpoint_transfer [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ₁ κ' : F.RelTransitionSystem} (hlast : κ₁.MatchEq κ')
@@ -216,6 +222,7 @@ ledger**: with these two inputs the signed canonical summand
 depends only on the boundary pairing — the well-definedness of the
 pairing-resolved value. -/
 theorem samePairing_invariance_of
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
     (HConn : PairingConnectivity)
     (HLedger : MatchPreservingLedger)
     {k ℓ : ℕ} (hM : MixedFunctional k ℓ)

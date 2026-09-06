@@ -75,14 +75,16 @@ section CompositeDiagram
 
 universe w₁ w₂ w₃ w₄ w₅ w₆ w₇ w₈ w₉ w₁₀
 
-variable {J : Type w₁} [Category.{w₂} J] {𝒜 : Type w₃} [Category.{w₄} 𝒜]
-variable {ℬ : Type w₅} [Category.{w₆} ℬ] {𝒞 : Type w₇} [Category.{w₈} 𝒞]
+variable {J : Type w₁}
 
 /-- Preservation of the colimit of a composed diagram `K ⋙ F` by
 `T`, given that `F` preserves the colimit of `K` and the composite
 functor `F ⋙ T` does: the colimit cocone of `K ⋙ F` may be taken to
 be the image under `F` of the colimit cocone of `K`. -/
-lemma preservesColimit_comp_diagram (K : J ⥤ 𝒜) (F : 𝒜 ⥤ ℬ)
+lemma preservesColimit_comp_diagram
+    [Category.{w₂} J] {𝒜 : Type w₃} [Category.{w₄} 𝒜] {ℬ : Type w₅}
+    [Category.{w₆} ℬ] {𝒞 : Type w₇} [Category.{w₈} 𝒞]
+    (K : J ⥤ 𝒜) (F : 𝒜 ⥤ ℬ)
     (T : ℬ ⥤ 𝒞) [HasColimit K] [PreservesColimit K F]
     [PreservesColimit K (F ⋙ T)] : PreservesColimit (K ⋙ F) T :=
   preservesColimit_of_preserves_colimit_cocone
@@ -90,7 +92,10 @@ lemma preservesColimit_comp_diagram (K : J ⥤ 𝒜) (F : 𝒜 ⥤ ℬ)
     (isColimitOfPreserves (F ⋙ T) (colimit.isColimit K))
 
 /-- Dual of `RS.preservesColimit_comp_diagram`. -/
-lemma preservesLimit_comp_diagram (K : J ⥤ 𝒜) (F : 𝒜 ⥤ ℬ)
+lemma preservesLimit_comp_diagram
+    [Category.{w₂} J] {𝒜 : Type w₃} [Category.{w₄} 𝒜] {ℬ : Type w₅}
+    [Category.{w₆} ℬ] {𝒞 : Type w₇} [Category.{w₈} 𝒞]
+    (K : J ⥤ 𝒜) (F : 𝒜 ⥤ ℬ)
     (T : ℬ ⥤ 𝒞) [HasLimit K] [PreservesLimit K F]
     [PreservesLimit K (F ⋙ T)] : PreservesLimit (K ⋙ F) T :=
   preservesLimit_of_preserves_limit_cone
@@ -103,17 +108,18 @@ section InterchangeBridge
 
 universe x₁ x₂ x₃ x₄ x₅ x₆
 
-variable {J : Type x₁} [Category.{x₂} J] {K : Type x₃} [Category.{x₄} K]
-variable {𝒟 : Type x₅} [Category.{x₆} 𝒟]
-variable [HasLimitsOfShape J 𝒟] [HasColimitsOfShape K 𝒟]
-variable [PreservesLimitsOfShape J (colim : (K ⥤ 𝒟) ⥤ 𝒟)]
+variable {J : Type x₁}
 
 /-- Transpose of the interchange property, flipped-diagram form: if
 `K`-indexed colimits preserve `J`-limits, the `J`-limit functor
 preserves the colimit of `G.flip` for any bifunctor `G`.  The
 colimit comparison is identified with the canonical interchange
 isomorphism `Limits.colimitLimitIso`. -/
-lemma preservesColimit_flip_lim (G : J ⥤ K ⥤ 𝒟) :
+lemma preservesColimit_flip_lim
+    [Category.{x₂} J] {K : Type x₃} [Category.{x₄} K] {𝒟 : Type x₅}
+    [Category.{x₆} 𝒟] [HasLimitsOfShape J 𝒟] [HasColimitsOfShape K 𝒟]
+    [PreservesLimitsOfShape J (colim : (K ⥤ 𝒟) ⥤ 𝒟)]
+    (G : J ⥤ K ⥤ 𝒟) :
     PreservesColimit G.flip (lim : (J ⥤ 𝒟) ⥤ 𝒟) := by
   have key : colimit.post G.flip lim =
       (HasColimit.isoOfNatIso (limitIsoFlipCompLim G).symm).hom ≫
@@ -155,20 +161,24 @@ lemma preservesColimit_flip_lim (G : J ⥤ K ⥤ 𝒟) :
 /-- Transpose of the interchange property: if `K`-indexed colimits
 preserve `J`-limits, then the `J`-limit functor preserves
 `K`-colimits. -/
-lemma preservesColimitsOfShape_lim :
+lemma preservesColimitsOfShape_lim
+    [Category.{x₂} J] {K : Type x₃} [Category.{x₄} K] {𝒟 : Type x₅}
+    [Category.{x₆} 𝒟] [HasLimitsOfShape J 𝒟] [HasColimitsOfShape K 𝒟]
+    [PreservesLimitsOfShape J (colim : (K ⥤ 𝒟) ⥤ 𝒟)] :
     PreservesColimitsOfShape K (lim : (J ⥤ 𝒟) ⥤ 𝒟) where
   preservesColimit {D} := preservesColimit_flip_lim D.flip
 
 end InterchangeBridge
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
+variable {C : Type v}
 
 section IndLimTensor
 
 /-- The embedding-tensor comparison as a natural isomorphism, left
 version: composing the embedding with left tensoring by an embedded
 object is left tensoring in `C` followed by the embedding. -/
-def indOfCompTensorLeftIso (a : C) :
+def indOfCompTensorLeftIso [SmallCategory C] [MonoidalCategory C]
+    (a : C) :
     indOf ⋙ tensorLeft (indOf.obj a) ≅
       tensorLeft a ⋙ (indOf : C ⥤ Ind C) :=
   NatIso.ofComponents (fun x => indOfTensorIso a x)
@@ -176,7 +186,8 @@ def indOfCompTensorLeftIso (a : C) :
 
 /-- The embedding-tensor comparison as a natural isomorphism, right
 version. -/
-def indOfCompTensorRightIso (a : C) :
+def indOfCompTensorRightIso [SmallCategory C] [MonoidalCategory C]
+    (a : C) :
     indOf ⋙ tensorRight (indOf.obj a) ≅
       tensorRight a ⋙ (indOf : C ⥤ Ind C) :=
   NatIso.ofComponents (fun x => indOfTensorIso x a)
@@ -187,7 +198,8 @@ the composite `Ind.lim I ⋙ tensorLeft (indOf.obj a)` is the
 whiskering of `tensorLeft a` followed by `Ind.lim I`.  The chain
 mirrors Mathlib's `Ind.limCompInclusion`, with the embedded-tensor
 isomorphism in place of `Ind.yonedaCompInclusion`. -/
-def indLimCompTensorLeftIso (a : C) (I : Type v) [SmallCategory I]
+def indLimCompTensorLeftIso [SmallCategory C] [MonoidalCategory C]
+    (a : C) (I : Type v) [SmallCategory I]
     [IsFiltered I] :
     Ind.lim I ⋙ tensorLeft (indOf.obj a) ≅
       (Functor.whiskeringRight I C C).obj (tensorLeft a) ⋙
@@ -223,7 +235,8 @@ def indLimCompTensorLeftIso (a : C) (I : Type v) [SmallCategory I]
 
 /-- Right tensoring by an embedded object commutes with
 `Ind.lim`. -/
-def indLimCompTensorRightIso (a : C) (I : Type v) [SmallCategory I]
+def indLimCompTensorRightIso [SmallCategory C] [MonoidalCategory C]
+    (a : C) (I : Type v) [SmallCategory I]
     [IsFiltered I] :
     Ind.lim I ⋙ tensorRight (indOf.obj a) ≅
       (Functor.whiskeringRight I C C).obj (tensorRight a) ⋙
@@ -261,8 +274,6 @@ end IndLimTensor
 
 section EmbeddedBase
 
-variable [Abelian C] [RigidCategory C]
-
 /-- Embedded stage, left version: left tensoring by an embedded
 object preserves the colimit of every parallel pair of `Ind C`.  The
 pair is presented as a filtered colimit of parallel pairs of `C`;
@@ -270,7 +281,9 @@ tensoring commutes with the presentation by
 `RS.indLimCompTensorLeftIso`, and on the functor-category side the
 whiskered `tensorLeft a` preserves coequalizers pointwise since the
 tensor of the rigid `C` is exact. -/
-lemma preservesColimit_parallelPair_tensorLeft_indOf (a : C)
+lemma preservesColimit_parallelPair_tensorLeft_indOf
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (a : C)
     {X Y : Ind C} (f g : X ⟶ Y) :
     PreservesColimit (parallelPair f g) (tensorLeft (indOf.obj a)) := by
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation
@@ -292,7 +305,9 @@ embedded object preserves the limit of every parallel pair of
 `Ind C` — the dual of the coequalizer argument, using that
 `Ind.lim` preserves finite limits and that the tensor of the rigid
 `C` is left exact. -/
-lemma preservesLimit_parallelPair_tensorLeft_indOf (a : C)
+lemma preservesLimit_parallelPair_tensorLeft_indOf
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (a : C)
     {X Y : Ind C} (f g : X ⟶ Y) :
     PreservesLimit (parallelPair f g) (tensorLeft (indOf.obj a)) := by
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation
@@ -310,7 +325,9 @@ lemma preservesLimit_parallelPair_tensorLeft_indOf (a : C)
     P.parallelPairIsoParallelPairCompIndYoneda.symm
 
 /-- Embedded stage for limits, right version. -/
-lemma preservesLimit_parallelPair_tensorRight_indOf (a : C)
+lemma preservesLimit_parallelPair_tensorRight_indOf
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (a : C)
     {X Y : Ind C} (f g : X ⟶ Y) :
     PreservesLimit (parallelPair f g) (tensorRight (indOf.obj a)) := by
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation
@@ -328,7 +345,9 @@ lemma preservesLimit_parallelPair_tensorRight_indOf (a : C)
     P.parallelPairIsoParallelPairCompIndYoneda.symm
 
 /-- Embedded stage, right version. -/
-lemma preservesColimit_parallelPair_tensorRight_indOf (a : C)
+lemma preservesColimit_parallelPair_tensorRight_indOf
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (a : C)
     {X Y : Ind C} (f g : X ⟶ Y) :
     PreservesColimit (parallelPair f g) (tensorRight (indOf.obj a)) := by
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation
@@ -349,15 +368,14 @@ end EmbeddedBase
 
 section CoequalizerDescent
 
-variable [Abelian C] [RigidCategory C]
-variable {X Y : Ind C}
-
 /-- The parallel pair `(A ◁ f, A ◁ g)` as a functor of the tensoring
 object `A`.  The `@[reducible]` marking is deliberate: the object
 field must reduce at instance transparency for the `show`-retyped
 colimit proofs below to be stateable. -/
 @[reducible]
-def whiskerLeftPairFunctor (f g : X ⟶ Y) :
+def whiskerLeftPairFunctor
+    [SmallCategory C] [MonoidalCategory C] {X : Ind C} {Y : Ind C}
+    (f g : X ⟶ Y) :
     Ind C ⥤ WalkingParallelPair ⥤ Ind C where
   obj A := parallelPair f g ⋙ tensorLeft A
   map {A B} u :=
@@ -375,7 +393,9 @@ def whiskerLeftPairFunctor (f g : X ⟶ Y) :
 /-- The parallel pair `(f ▷ A, g ▷ A)` as a functor of the tensoring
 object `A`. -/
 @[reducible]
-def whiskerRightPairFunctor (f g : X ⟶ Y) :
+def whiskerRightPairFunctor
+    [SmallCategory C] [MonoidalCategory C] {X : Ind C} {Y : Ind C}
+    (f g : X ⟶ Y) :
     Ind C ⥤ WalkingParallelPair ⥤ Ind C where
   obj A := parallelPair f g ⋙ tensorRight A
   map {A B} u :=
@@ -392,7 +412,9 @@ def whiskerRightPairFunctor (f g : X ⟶ Y) :
 
 /-- Evaluating `RS.whiskerLeftPairFunctor` at a stage of the walking
 parallel pair gives right tensoring by the corresponding object. -/
-def whiskerLeftPairFunctorEvalIso (f g : X ⟶ Y)
+def whiskerLeftPairFunctorEvalIso
+    [SmallCategory C] [MonoidalCategory C] {X : Ind C} {Y : Ind C}
+    (f g : X ⟶ Y)
     (k : WalkingParallelPair) :
     whiskerLeftPairFunctor f g ⋙ (evaluation _ _).obj k ≅
       tensorRight ((parallelPair f g).obj k) :=
@@ -404,7 +426,9 @@ def whiskerLeftPairFunctorEvalIso (f g : X ⟶ Y)
 
 /-- Evaluating `RS.whiskerRightPairFunctor` at a stage gives left
 tensoring by the corresponding object. -/
-def whiskerRightPairFunctorEvalIso (f g : X ⟶ Y)
+def whiskerRightPairFunctorEvalIso
+    [SmallCategory C] [MonoidalCategory C] {X : Ind C} {Y : Ind C}
+    (f g : X ⟶ Y)
     (k : WalkingParallelPair) :
     whiskerRightPairFunctor f g ⋙ (evaluation _ _).obj k ≅
       tensorLeft ((parallelPair f g).obj k) :=
@@ -414,9 +438,9 @@ def whiskerRightPairFunctorEvalIso (f g : X ⟶ Y)
         𝟙 _ ≫ (parallelPair f g).obj k ◁ u
       rw [Category.comp_id, Category.id_comp])
 
-omit [Abelian C] [RigidCategory C] in
 /-- The pair functor preserves filtered colimits, pointwise. -/
 lemma preservesFilteredColimits_whiskerLeftPairFunctor
+    [SmallCategory C] [MonoidalCategory C] {X : Ind C} {Y : Ind C}
     (f g : X ⟶ Y) :
     PreservesFilteredColimits (whiskerLeftPairFunctor f g) where
   preserves_filtered_colimits _ _ _ :=
@@ -424,9 +448,9 @@ lemma preservesFilteredColimits_whiskerLeftPairFunctor
       preservesColimitsOfShape_of_natIso
         (whiskerLeftPairFunctorEvalIso f g k).symm
 
-omit [Abelian C] [RigidCategory C] in
 /-- The right-hand pair functor preserves filtered colimits. -/
 lemma preservesFilteredColimits_whiskerRightPairFunctor
+    [SmallCategory C] [MonoidalCategory C] {X : Ind C} {Y : Ind C}
     (f g : X ⟶ Y) :
     PreservesFilteredColimits (whiskerRightPairFunctor f g) where
   preserves_filtered_colimits _ _ _ :=
@@ -437,7 +461,10 @@ lemma preservesFilteredColimits_whiskerRightPairFunctor
 /-- The coequalizer comparison for left tensoring, naturally in the
 tensoring object: at `A` it is the canonical morphism from the
 colimit of the pair `(A ◁ f, A ◁ g)` to `A ⊗ coeq (f, g)`. -/
-def whiskerLeftCoeqComparison (f g : X ⟶ Y) :
+def whiskerLeftCoeqComparison
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] {X : Ind C}
+    {Y : Ind C}
+    (f g : X ⟶ Y) :
     whiskerLeftPairFunctor f g ⋙ colim ⟶
       tensorRight (colimit (parallelPair f g)) where
   app A := colimit.post (parallelPair f g) (tensorLeft A)
@@ -464,7 +491,10 @@ def whiskerLeftCoeqComparison (f g : X ⟶ Y) :
 
 /-- The coequalizer comparison for right tensoring, naturally in the
 tensoring object. -/
-def whiskerRightCoeqComparison (f g : X ⟶ Y) :
+def whiskerRightCoeqComparison
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] {X : Ind C}
+    {Y : Ind C}
+    (f g : X ⟶ Y) :
     whiskerRightPairFunctor f g ⋙ colim ⟶
       tensorLeft (colimit (parallelPair f g)) where
   app A := colimit.post (parallelPair f g) (tensorRight A)
@@ -492,7 +522,10 @@ def whiskerRightCoeqComparison (f g : X ⟶ Y) :
 /-- Descent stage, left version: the colimit comparison of any
 parallel pair under left tensoring is invertible, for every
 tensoring ind-object.  Filtered descent from the embedded stage. -/
-lemma isIso_post_parallelPair_tensorLeft (A : Ind C) (f g : X ⟶ Y) :
+lemma isIso_post_parallelPair_tensorLeft
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    {X : Ind C} {Y : Ind C}
+    (A : Ind C) (f g : X ⟶ Y) :
     IsIso (colimit.post (parallelPair f g) (tensorLeft A)) := by
   haveI : PreservesFilteredColimits (whiskerLeftPairFunctor f g) :=
     preservesFilteredColimits_whiskerLeftPairFunctor f g
@@ -510,7 +543,10 @@ lemma isIso_post_parallelPair_tensorLeft (A : Ind C) (f g : X ⟶ Y) :
   exact h
 
 /-- Descent stage, right version. -/
-lemma isIso_post_parallelPair_tensorRight (A : Ind C) (f g : X ⟶ Y) :
+lemma isIso_post_parallelPair_tensorRight
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    {X : Ind C} {Y : Ind C}
+    (A : Ind C) (f g : X ⟶ Y) :
     IsIso (colimit.post (parallelPair f g) (tensorRight A)) := by
   haveI : PreservesFilteredColimits (whiskerRightPairFunctor f g) :=
     preservesFilteredColimits_whiskerRightPairFunctor f g
@@ -531,10 +567,10 @@ end CoequalizerDescent
 
 section Coequalizers
 
-variable [Abelian C] [RigidCategory C]
-
 /-- **Left tensoring on `Ind C` preserves coequalizers.** -/
-instance tensorLeft_ind_preservesCoequalizers (A : Ind C) :
+instance tensorLeft_ind_preservesCoequalizers
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (A : Ind C) :
     PreservesColimitsOfShape WalkingParallelPair (tensorLeft A) where
   preservesColimit {K} := by
     haveI := isIso_post_parallelPair_tensorLeft A
@@ -548,7 +584,9 @@ instance tensorLeft_ind_preservesCoequalizers (A : Ind C) :
       (diagramIsoParallelPair K).symm
 
 /-- **Right tensoring on `Ind C` preserves coequalizers.** -/
-instance tensorRight_ind_preservesCoequalizers (A : Ind C) :
+instance tensorRight_ind_preservesCoequalizers
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (A : Ind C) :
     PreservesColimitsOfShape WalkingParallelPair (tensorRight A) where
   preservesColimit {K} := by
     haveI := isIso_post_parallelPair_tensorRight A
@@ -565,17 +603,13 @@ end Coequalizers
 
 section EqualizerDescent
 
-variable [Abelian C] [RigidCategory C]
-variable {X Y : Ind C}
-
-omit [MonoidalCategory C] [RigidCategory C] in
 /-- Filtered colimits commute with `WalkingParallelPair`-limits in
 `Ind C`: the parallel-pair limit functor preserves filtered
 colimits.  The property holds for types, lifts to presheaves
 pointwise, transposes through `RS.preservesColimitsOfShape_lim`,
 and transports to `Ind C` along the inclusion, which creates the
 limits and preserves the filtered colimits involved. -/
-lemma preservesColimitsOfShape_parallelPairLim_ind
+lemma preservesColimitsOfShape_parallelPairLim_ind [SmallCategory C] [Abelian C]
     (I : Type v) [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape I
       (lim : (WalkingParallelPair ⥤ Ind C) ⥤ Ind C) := by
@@ -593,7 +627,10 @@ lemma preservesColimitsOfShape_parallelPairLim_ind
 /-- The equalizer comparison for left tensoring, naturally in the
 tensoring object: at `A` it is the canonical morphism from
 `A ⊗ lim (f, g)` to the limit of the pair `(A ◁ f, A ◁ g)`. -/
-def whiskerLeftEqComparison (f g : X ⟶ Y) :
+def whiskerLeftEqComparison
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] {X : Ind C}
+    {Y : Ind C}
+    (f g : X ⟶ Y) :
     tensorRight (limit (parallelPair f g)) ⟶
       whiskerLeftPairFunctor f g ⋙ lim where
   app A := limit.post (parallelPair f g) (tensorLeft A)
@@ -628,7 +665,10 @@ def whiskerLeftEqComparison (f g : X ⟶ Y) :
 
 /-- The equalizer comparison for right tensoring, naturally in the
 tensoring object. -/
-def whiskerRightEqComparison (f g : X ⟶ Y) :
+def whiskerRightEqComparison
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] {X : Ind C}
+    {Y : Ind C}
+    (f g : X ⟶ Y) :
     tensorLeft (limit (parallelPair f g)) ⟶
       whiskerRightPairFunctor f g ⋙ lim where
   app A := limit.post (parallelPair f g) (tensorRight A)
@@ -664,7 +704,10 @@ def whiskerRightEqComparison (f g : X ⟶ Y) :
 /-- Descent stage for limits, left version: the limit comparison of
 any parallel pair under left tensoring is invertible, for every
 tensoring ind-object. -/
-lemma isIso_limitPost_parallelPair_tensorLeft (A : Ind C)
+lemma isIso_limitPost_parallelPair_tensorLeft
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    {X : Ind C} {Y : Ind C}
+    (A : Ind C)
     (f g : X ⟶ Y) :
     IsIso (limit.post (parallelPair f g) (tensorLeft A)) := by
   haveI : PreservesFilteredColimits (whiskerLeftPairFunctor f g) :=
@@ -682,7 +725,10 @@ lemma isIso_limitPost_parallelPair_tensorLeft (A : Ind C)
   exact h
 
 /-- Descent stage for limits, right version. -/
-lemma isIso_limitPost_parallelPair_tensorRight (A : Ind C)
+lemma isIso_limitPost_parallelPair_tensorRight
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    {X : Ind C} {Y : Ind C}
+    (A : Ind C)
     (f g : X ⟶ Y) :
     IsIso (limit.post (parallelPair f g) (tensorRight A)) := by
   haveI : PreservesFilteredColimits (whiskerRightPairFunctor f g) :=
@@ -703,10 +749,10 @@ end EqualizerDescent
 
 section Equalizers
 
-variable [Abelian C] [RigidCategory C]
-
 /-- **Left tensoring on `Ind C` preserves equalizers.** -/
-instance tensorLeft_ind_preservesEqualizers (A : Ind C) :
+instance tensorLeft_ind_preservesEqualizers
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (A : Ind C) :
     PreservesLimitsOfShape WalkingParallelPair (tensorLeft A) where
   preservesLimit {K} := by
     haveI := isIso_limitPost_parallelPair_tensorLeft A
@@ -720,7 +766,9 @@ instance tensorLeft_ind_preservesEqualizers (A : Ind C) :
       (diagramIsoParallelPair K).symm
 
 /-- **Right tensoring on `Ind C` preserves equalizers.** -/
-instance tensorRight_ind_preservesEqualizers (A : Ind C) :
+instance tensorRight_ind_preservesEqualizers
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (A : Ind C) :
     PreservesLimitsOfShape WalkingParallelPair (tensorRight A) where
   preservesLimit {K} := by
     haveI := isIso_limitPost_parallelPair_tensorRight A
@@ -737,19 +785,23 @@ end Equalizers
 
 section RightExact
 
-variable [Abelian C] [RigidCategory C] [MonoidalPreadditive C]
-
 /-- **Deligne 2.2, right-exactness, left version**: left tensoring
 on `Ind C` preserves finite colimits — coequalizers by the descent
 above, finite coproducts by the additivity of
 `RS.Classical.Deligne.IndTensorExact`. -/
-instance tensorLeft_ind_preservesFiniteColimits (A : Ind C) :
+instance tensorLeft_ind_preservesFiniteColimits
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteColimits (tensorLeft A) :=
   preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts
     _
 
 /-- **Deligne 2.2, right-exactness, right version**. -/
-instance tensorRight_ind_preservesFiniteColimits (A : Ind C) :
+instance tensorRight_ind_preservesFiniteColimits
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteColimits (tensorRight A) :=
   preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts
     _
@@ -758,12 +810,18 @@ instance tensorRight_ind_preservesFiniteColimits (A : Ind C) :
 preserves finite limits — equalizers by the dual descent, finite
 products by additivity.  With the right-exactness above, the tensor
 of `Ind C` is exact in each variable. -/
-instance tensorLeft_ind_preservesFiniteLimits (A : Ind C) :
+instance tensorLeft_ind_preservesFiniteLimits
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteLimits (tensorLeft A) :=
   preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _
 
 /-- **Left-exactness, right version**. -/
-instance tensorRight_ind_preservesFiniteLimits (A : Ind C) :
+instance tensorRight_ind_preservesFiniteLimits
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteLimits (tensorRight A) :=
   preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _
 
@@ -774,45 +832,71 @@ section AcceptanceTests
 /- Instance synthesis is what is being tested; the data is chosen by
 colimit machinery, hence `noncomputable`. -/
 
-variable [Abelian C] [RigidCategory C] [MonoidalPreadditive C]
-
-noncomputable example (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (A : Ind C) :
     PreservesColimitsOfShape WalkingParallelPair (tensorLeft A) :=
   inferInstance
 
-noncomputable example (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    (A : Ind C) :
     PreservesColimitsOfShape WalkingParallelPair (tensorRight A) :=
   inferInstance
 
-noncomputable example (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteColimits (tensorLeft A) :=
   inferInstance
 
-noncomputable example (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteColimits (tensorRight A) :=
   inferInstance
 
-noncomputable example {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
     IsIso (cokernelComparison h (tensorLeft A)) :=
   inferInstance
 
-noncomputable example {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
     IsIso (cokernelComparison h (tensorRight A)) :=
   inferInstance
 
-noncomputable example (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteLimits (tensorLeft A) :=
   inferInstance
 
-noncomputable example (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    (A : Ind C) :
     PreservesFiniteLimits (tensorRight A) :=
   inferInstance
 
-noncomputable example {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
     IsIso (kernelComparison h (tensorLeft A)) :=
   inferInstance
 
-noncomputable example {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
+noncomputable example
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] [RigidCategory C]
+    [MonoidalPreadditive C]
+    {X Y : Ind C} (h : X ⟶ Y) (A : Ind C) :
     IsIso (kernelComparison h (tensorRight A)) :=
   inferInstance
 

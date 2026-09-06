@@ -1,7 +1,7 @@
 import RS.Classical.Deligne.ScalarLinear
 
 /-!
-# Realization of ind-super-objects as honest super algebras
+# Realization of ind-super-objects as super algebras
 
 The §4 descent works with commutative algebra in genuine
 ℤ/2-graded ℂ-modules.  This file supplies the bridge in three
@@ -51,7 +51,7 @@ universe u u' v
 ℂ-modules — the even and odd components — with the four graded
 multiplication blocks, associativity at every parity pattern, and
 commutativity with the Koszul sign: even elements are central and
-odd elements anticommute.  This is the honest algebraic shadow of
+odd elements anticommute.  This is the algebraic realization of
 a commutative monoid object of the ind-completion of super vector
 spaces. -/
 -- `u` and `u'` are the universes of the even and odd components:
@@ -464,8 +464,7 @@ open CategoryTheory Limits Opposite ZeroObject
 
 attribute [local instance] HasFiniteBiproducts.of_hasFiniteCoproducts
 
-variable {C : Type v} [SmallCategory C] [Preadditive C]
-  [HasFiniteColimits C]
+variable {C : Type v}
 
 /-- **The realization functor** relative to a generator pair
 `g₀ g₁ : C` — the unit and the odd line of the small model of
@@ -474,7 +473,8 @@ as the ℤ/2-graded ℂ-module of morphisms out of the embedded
 generators: `Hom(indOf g₀, −)` in even degree and
 `Hom(indOf g₁, −)` in odd degree, with the ℂ-module structures
 given by the linear structure of `Ind C`. -/
-def superRealize (g₀ g₁ : C) [Linear ℂ (Ind C)] :
+def superRealize [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    (g₀ g₁ : C) [Linear ℂ (Ind C)] :
     Ind C ⥤ SuperMod.{v} where
   obj F :=
     { even := indOf.obj g₀ ⟶ F
@@ -491,14 +491,18 @@ def superRealize (g₀ g₁ : C) [Linear ℂ (Ind C)] :
 
 /-- The realization functor is additive: postcomposition
 distributes over sums of morphisms of ind-objects. -/
-instance superRealize_additive (g₀ g₁ : C) [Linear ℂ (Ind C)] :
+instance superRealize_additive
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    (g₀ g₁ : C) [Linear ℂ (Ind C)] :
     (superRealize g₀ g₁).Additive where
   map_add {F G φ ψ} := by
     apply SuperMod.hom_ext <;>
       exact LinearMap.ext fun f => Preadditive.comp_add _ _ _ f φ ψ
 
 /-- The realization functor is ℂ-linear. -/
-instance superRealize_linear (g₀ g₁ : C) [Linear ℂ (Ind C)] :
+instance superRealize_linear
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    (g₀ g₁ : C) [Linear ℂ (Ind C)] :
     Functor.Linear ℂ (superRealize g₀ g₁) where
   map_smul {F G φ} r := by
     apply SuperMod.hom_ext <;>
@@ -510,14 +514,17 @@ instance superRealize_linear (g₀ g₁ : C) [Linear ℂ (Ind C)] :
 object is isomorphic to a finite biproduct of members of the
 family.  For the small model of `SuperVect` the two-member family
 of the unit and the odd line generates in this sense. -/
-def BiproductGenerates {ι : Type*} (g : ι → C) : Prop :=
+def BiproductGenerates [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    {ι : Type*} (g : ι → C) : Prop :=
   ∀ X : C, ∃ (n : ℕ) (w : Fin n → ι), Nonempty (X ≅ ⨁ (g ∘ w))
 
 /-- Morphisms from an embedded object into an ind-object vanish
 once they vanish from the embedded generators, along a biproduct
 decomposition of the object: the embedding is additive, so the
 biproduct decomposition of the identity transports. -/
-theorem indOf_hom_eq_zero {ι : Type*} {g : ι → C} {F : Ind C}
+theorem indOf_hom_eq_zero
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    {ι : Type*} {g : ι → C} {F : Ind C}
     (hvan : ∀ (i : ι) (f : indOf.obj (g i) ⟶ F), f = 0)
     {n : ℕ} {w : Fin n → ι} {X : C} (φ : X ≅ ⨁ (g ∘ w))
     (f : indOf.obj X ⟶ F) : f = 0 := by
@@ -543,7 +550,9 @@ morphism from any embedded object is zero.  The underlying
 presheaf has singleton values, so it is isomorphic to the presheaf
 of the embedded zero object, and full faithfulness of the
 inclusion pulls the isomorphism back. -/
-theorem isZero_ind_of_hom_eq_zero {F : Ind C}
+theorem isZero_ind_of_hom_eq_zero
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    {F : Ind C}
     (h : ∀ (X : C) (f : indOf.obj X ⟶ F), f = 0) : IsZero F := by
   haveI : HasZeroObject C := hasZeroObject_of_hasInitial_object
   let e : ∀ (G : Ind C) (X : C),
@@ -593,7 +602,9 @@ theorem isZero_ind_of_hom_eq_zero {F : Ind C}
 /-- **Zero recognition by generators**: an ind-object with no
 nonzero morphism from the embedded members of a
 biproduct-generating family is zero. -/
-theorem isZero_of_generator_hom_eq_zero {ι : Type*} {g : ι → C}
+theorem isZero_of_generator_hom_eq_zero
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    {ι : Type*} {g : ι → C}
     (hgen : BiproductGenerates g) {F : Ind C}
     (hvan : ∀ (i : ι) (f : indOf.obj (g i) ⟶ F), f = 0) :
     IsZero F := by
@@ -610,7 +621,9 @@ def generatorPair (g₀ g₁ : C) : Bool → C :=
 /-- **The realization functor reflects zero objects**: over a
 biproduct-generating pair, an ind-object whose even and odd
 realizations vanish is zero. -/
-theorem isZero_of_isZero_superRealize (g₀ g₁ : C)
+theorem isZero_of_isZero_superRealize
+    [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
+    (g₀ g₁ : C)
     [Linear ℂ (Ind C)]
     (hgen : BiproductGenerates (generatorPair g₀ g₁))
     {F : Ind C}
@@ -639,27 +652,30 @@ section HomAlgebra
 open CategoryTheory MonoidalCategory MonObj
 open scoped MonObj
 
-variable {D : Type u} [Category.{u'} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-- The convolution product of morphisms from the unit into a
 monoid object. -/
-noncomputable def unitHomMul (R : D) [MonObj R]
+noncomputable def unitHomMul [Category.{u'} D] [MonoidalCategory D]
+    (R : D) [MonObj R]
     (a b : 𝟙_ D ⟶ R) : 𝟙_ D ⟶ R :=
   (λ_ (𝟙_ D)).inv ≫ (a ⊗ₘ b) ≫ μ
 
-variable (R : D) [MonObj R]
-
 /-- The monoid unit is a left unit for convolution. -/
-theorem one_unitHomMul (a : 𝟙_ D ⟶ R) : unitHomMul R η a = a := by
+theorem one_unitHomMul [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (a : 𝟙_ D ⟶ R) : unitHomMul R η a = a := by
   rw [unitHomMul, MonObj.one_mul_hom, Iso.inv_hom_id_assoc]
 
 /-- The monoid unit is a right unit for convolution. -/
-theorem unitHomMul_one (a : 𝟙_ D ⟶ R) : unitHomMul R a η = a := by
+theorem unitHomMul_one [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (a : 𝟙_ D ⟶ R) : unitHomMul R a η = a := by
   rw [unitHomMul, MonObj.mul_one_hom, ← unitors_equal,
     Iso.inv_hom_id_assoc]
 
 /-- Convolution is associative. -/
-theorem unitHomMul_assoc (a b c : 𝟙_ D ⟶ R) :
+theorem unitHomMul_assoc
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    (a b c : 𝟙_ D ⟶ R) :
     unitHomMul R (unitHomMul R a b) c =
       unitHomMul R a (unitHomMul R b c) := by
   have key : μ[R] ≫ (ρ_ R).inv ≫ R ◁ c ≫ μ[R] =
@@ -674,7 +690,9 @@ theorem unitHomMul_assoc (a b c : 𝟙_ D ⟶ R) :
 
 /-- Convolution against a commutative monoid object is
 commutative. -/
-theorem unitHomMul_comm [BraidedCategory D] [IsCommMonObj R]
+theorem unitHomMul_comm
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [BraidedCategory D] [IsCommMonObj R]
     (a b : 𝟙_ D ⟶ R) : unitHomMul R a b = unitHomMul R b a := by
   have h : (a ⊗ₘ b) ≫ μ[R] =
       (β_ (𝟙_ D) (𝟙_ D)).hom ≫ (b ⊗ₘ a) ≫ μ[R] := by
@@ -685,32 +703,43 @@ theorem unitHomMul_comm [BraidedCategory D] [IsCommMonObj R]
 
 section Bilinear
 
-variable [Preadditive D] [MonoidalPreadditive D]
-
 /-- Convolution is additive on the left. -/
-theorem add_unitHomMul (a a' b : 𝟙_ D ⟶ R) :
+theorem add_unitHomMul [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    (a a' b : 𝟙_ D ⟶ R) :
     unitHomMul R (a + a') b = unitHomMul R a b + unitHomMul R a' b := by
   rw [unitHomMul, unitHomMul, unitHomMul,
     MonoidalPreadditive.add_tensor, Preadditive.add_comp,
     Preadditive.comp_add]
 
 /-- Convolution is additive on the right. -/
-theorem unitHomMul_add (a b b' : 𝟙_ D ⟶ R) :
+theorem unitHomMul_add [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    (a b b' : 𝟙_ D ⟶ R) :
     unitHomMul R a (b + b') = unitHomMul R a b + unitHomMul R a b' := by
   rw [unitHomMul, unitHomMul, unitHomMul,
     MonoidalPreadditive.tensor_add, Preadditive.add_comp,
     Preadditive.comp_add]
 
 /-- Convolution kills zero on the left. -/
-theorem zero_unitHomMul (b : 𝟙_ D ⟶ R) : unitHomMul R 0 b = 0 := by
+theorem zero_unitHomMul
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    (b : 𝟙_ D ⟶ R) : unitHomMul R 0 b = 0 := by
   simp [unitHomMul]
 
 /-- Convolution kills zero on the right. -/
-theorem unitHomMul_zero (a : 𝟙_ D ⟶ R) : unitHomMul R a 0 = 0 := by
+theorem unitHomMul_zero
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    (a : 𝟙_ D ⟶ R) : unitHomMul R a 0 = 0 := by
   simp [unitHomMul]
 
 /-- Convolution is ℂ-homogeneous on the left. -/
-theorem smul_unitHomMul [Linear ℂ D] [MonoidalLinear ℂ D] (r : ℂ)
+theorem smul_unitHomMul
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    [Linear ℂ D] [MonoidalLinear ℂ D] (r : ℂ)
     (a b : 𝟙_ D ⟶ R) :
     unitHomMul R (r • a) b = r • unitHomMul R a b := by
   have h : (r • a) ⊗ₘ b = r • (a ⊗ₘ b) := by
@@ -719,7 +748,10 @@ theorem smul_unitHomMul [Linear ℂ D] [MonoidalLinear ℂ D] (r : ℂ)
   rw [unitHomMul, unitHomMul, h, Linear.smul_comp, Linear.comp_smul]
 
 /-- Convolution is ℂ-homogeneous on the right. -/
-theorem unitHomMul_smul [Linear ℂ D] [MonoidalLinear ℂ D] (r : ℂ)
+theorem unitHomMul_smul
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    [Linear ℂ D] [MonoidalLinear ℂ D] (r : ℂ)
     (a b : 𝟙_ D ⟶ R) :
     unitHomMul R a (r • b) = r • unitHomMul R a b := by
   have h : a ⊗ₘ (r • b) = r • (a ⊗ₘ b) := by
@@ -733,7 +765,10 @@ form a commutative ring under convolution.  Deliberately a
 definition rather than an instance: at `R = 𝟙` the type coincides
 with `End (𝟙_ D)`, whose composition monoid is a distinct (if
 Eckmann–Hilton-equal) multiplication. -/
-@[reducible] noncomputable def unitHomCommRing [BraidedCategory D]
+@[reducible] noncomputable def unitHomCommRing
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    [BraidedCategory D]
     [IsCommMonObj R] : CommRing (𝟙_ D ⟶ R) :=
   { (inferInstance : AddCommGroup (𝟙_ D ⟶ R)) with
     mul := unitHomMul R
@@ -752,7 +787,10 @@ convolution ring of a commutative monoid object is a commutative
 ℂ-algebra — the even Γ-algebra of the monoid transport once the
 unit of `Ind C` is identified with the embedded even generator
 (`indOfUnitIso`). -/
-@[reducible] noncomputable def unitHomAlgebra [BraidedCategory D]
+@[reducible] noncomputable def unitHomAlgebra
+    [Category.{u'} D] [MonoidalCategory D] (R : D) [MonObj R]
+    [Preadditive D] [MonoidalPreadditive D]
+    [BraidedCategory D]
     [Linear ℂ D] [MonoidalLinear ℂ D] [IsCommMonObj R] :
     letI := unitHomCommRing R
     Algebra ℂ (𝟙_ D ⟶ R) :=

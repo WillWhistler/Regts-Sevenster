@@ -32,12 +32,14 @@ components is unchanged too.
 
 section RelabelStep
 
-variable {α β : Type} [LinearOrder α] [LinearOrder β] [Fintype α]
-  [Fintype β] {W : Fragment α}
+variable {α β : Type}
+   {W : Fragment α}
 
 /-- **The relabel preserves the circuit count and the number of
 components.** -/
-theorem openCircuitCount_add_unionCount_relabel (e : α ≃o β)
+theorem openCircuitCount_add_unionCount_relabel
+    [LinearOrder α] [LinearOrder β] [Fintype α] [Fintype β]
+    (e : α ≃o β)
     (F : EdgeSubset W) (κ : F.RelTransitionSystem)
     {M N : DirMatching {a : α // W.boundaryFlag a ∈ F.boundaryFlags}}
     {M' N' : DirMatching {b : β //
@@ -56,7 +58,7 @@ end RelabelStep
 
 section GlueChord
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hij : i ≠ j)
   (hopen : W.pairing (W.boundaryFlag i) ≠ W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
@@ -76,6 +78,7 @@ local notation "Fl" =>
 /-- **The glued subset's used labels** are the lifted subset's, less
 the two glued ones. -/
 noncomputable def usedLabelGlueEquiv
+    [LinearOrder α]
     (hbi : W.boundaryFlag i ∈ (Fl).boundaryFlags)
     (hbj : W.boundaryFlag j ∈ (Fl).boundaryFlags) :
     {l : SurvivingLabel α i j //
@@ -101,7 +104,9 @@ noncomputable def usedLabelGlueEquiv
 chain of the glued subset that avoids the cut is a chain of the
 lifted subset; one that reaches the cut continues out of the other
 glued label. -/
-theorem chordInv_glueOpen (κ : (Fl).RelTransitionSystem)
+theorem chordInv_glueOpen
+    [LinearOrder α]
+    (κ : (Fl).RelTransitionSystem)
     (l : SurvivingLabel α i j)
     (hlg : (W.gluePairOpen i j hij hopen).boundaryFlag l ∈
       (Fg).boundaryFlags)
@@ -160,7 +165,9 @@ theorem chordInv_glueOpen (κ : (Fl).RelTransitionSystem)
 /-- **The glued cut matching's pairing is the lifted one's,
 contracted.**  Only the pairing is compared: the glued object fixes
 its own directions, and the number of components does not see them. -/
-theorem cutMatching_glueOpen_edge (κ : (Fl).RelTransitionSystem)
+theorem cutMatching_glueOpen_edge
+    [LinearOrder α]
+    (κ : (Fl).RelTransitionSystem)
     (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueOpen hij hopen s' hc'
       hc κ).Orientation)
@@ -208,7 +215,6 @@ theorem cutMatching_glueOpen_edge (κ : (Fl).RelTransitionSystem)
         if_neg (fun hx => h2 (congrArg Subtype.val hx))]
       rfl
 
-omit [LinearOrder α] in
 /-- **The interface is linked exactly when the two glued labels are
 chord partners.**  This is the case split of the glue: linked means
 the chain from one glued label ends at the other, so gluing closes
@@ -245,7 +251,9 @@ nothing.  So their sum is unchanged.
 /-- **One glue step preserves `ĉ + c`** — RS21's circuit-count
 bookkeeping, in the form that needs neither an ordering of the
 interface nor the Eulerian position: only the two pairings. -/
-theorem openCircuitCount_add_unionCount_glueOpen [Fintype α]
+theorem openCircuitCount_add_unionCount_glueOpen
+    [LinearOrder α]
+    [Fintype α]
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
     (o' : (RelTransitionSystem.glueOpen hij hopen s' hc'
       hc κ).Orientation)
@@ -360,7 +368,9 @@ number of components is unchanged across it.
 -/
 
 /-- **One stage of the interface recursion preserves `ĉ + c`.** -/
-theorem openCircuitCount_add_unionCount_stage [Fintype α]
+theorem openCircuitCount_add_unionCount_stage
+    [LinearOrder α]
+    [Fintype α]
     {γ : Type} [LinearOrder γ] [Fintype γ]
     (e : SurvivingLabel α i j ≃o γ)
     (κ : (Fl).RelTransitionSystem) (o : κ.Orientation)
@@ -415,7 +425,6 @@ def AgreeingSubset (i j : α) (s : Finset W.Flag) : Prop :=
   (∀ f ∈ s, W.pairing f ∈ s)
     ∧ (W.boundaryFlag i ∈ s ↔ W.boundaryFlag j ∈ s)
 
-omit [LinearOrder α] in
 /-- **The drop of a subfamily member is closed under the
 rewire.** -/
 theorem dropSubset_rewire_closed (s : Finset W.Flag)
@@ -456,7 +465,7 @@ into a circuit.
 
 section GlueChordClosed
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (b : Bool)
   (s' : Finset (SurvivingFlag W i j))
@@ -470,7 +479,6 @@ local notation "Fgc" =>
 local notation "Flc" =>
   (EdgeSubset.mk (liftSubsetClosed s' b) hc : EdgeSubset W)
 
-omit [LinearOrder α] in
 /-- **The chord matching restricts across a closed glue.** -/
 theorem chordInv_glueClosed
     (κ' : (Fgc).RelTransitionSystem) (l : SurvivingLabel α i j)
@@ -503,7 +511,7 @@ end GlueChordClosed
 
 section GlueChordClosedPair
 
-variable {α : Type} [LinearOrder α] {W : Fragment α} {i j : α}
+variable {α : Type} {W : Fragment α} {i j : α}
   (hclosed : W.pairing (W.boundaryFlag i) = W.boundaryFlag j)
   (s' : Finset (SurvivingFlag W i j))
   (hc' : ∀ f ∈ s', (W.gluePairClosed i j hclosed).pairing f ∈ s')
@@ -520,6 +528,7 @@ include hclosed in
 /-- **The two glued labels are chord partners** when the closed-off
 edge lies in the subset: the chain from one is the edge itself. -/
 theorem chordInv_closed_pair
+    [LinearOrder α]
     (κ : (EdgeSubset.mk (liftSubsetClosed s' true) hcT :
       EdgeSubset W).RelTransitionSystem)
     (hbi : W.boundaryFlag i ∈ (EdgeSubset.mk
@@ -569,7 +578,9 @@ noncomputable def usedLabelGlueClosedEquiv
 /-- **A closed glue drops one component.**  The chord matching
 restricts, and the two glued labels were partners, so the component
 they formed disappears — into the free circle the glue creates. -/
-theorem unionCount_glueClosed [Fintype α]
+theorem unionCount_glueClosed
+    [LinearOrder α]
+    [Fintype α]
     (κ' : (FgT).RelTransitionSystem) (o' : κ'.Orientation)
     (o : (RelTransitionSystem.unglueClosed hclosed true s' hc'
       hcT κ').Orientation)
@@ -631,7 +642,9 @@ theorem unionCount_glueClosed [Fintype α]
 /-- **The closed glue's ledger**: the circuit count is unchanged and
 one component disappears, the free circle the glue creates taking
 its place. -/
-theorem openCircuitCount_add_unionCount_glueClosed [Fintype α]
+theorem openCircuitCount_add_unionCount_glueClosed
+    [LinearOrder α]
+    [Fintype α]
     (κ' : (FgT).RelTransitionSystem) (o' : κ'.Orientation)
     (o : (RelTransitionSystem.unglueClosed hclosed true s' hc'
       hcT κ').Orientation)

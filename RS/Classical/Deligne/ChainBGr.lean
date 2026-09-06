@@ -17,47 +17,67 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
+variable {D : Type u}
 
 /-- **The graded component at an integer degree**: the line
 through `((−a)⁺, a⁺)` — nonnegative degrees raise the `M`-arity,
 negative degrees the `M'`-arity. -/
-noncomputable def chainBGrComponent (d : ModDualityDatum A M M')
+noncomputable def chainBGrComponent
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (a : ℤ) : D :=
   chainBdeg A M M' d (-a).toNat a.toNat
 
 /-- The degree-zero component is the splitting-chain algebra. -/
 noncomputable def chainBGrComponentZeroIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') :
     chainBGrComponent A M M' d 0 ≅ chainB A M M' d :=
   chainBdegZeroIso A M M' d
 
 /-- The iterated line shift: raising both offsets `n` times is
 the identity on the colimit. -/
-noncomputable def chainBdegShiftIso (d : ModDualityDatum A M M')
+noncomputable def chainBdegShiftIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) : (n : ℕ) →
     (chainBdeg A M M' d (p₀ + n) (q₀ + n) ≅
       chainBdeg A M M' d p₀ q₀)
   | 0 => Iso.refl _
   | (n + 1) =>
     chainBdegSuccIso A M M' d (p₀ + n) (q₀ + n) ≪≫
-      chainBdegShiftIso d p₀ q₀ n
+      chainBdegShiftIso A M M' d p₀ q₀ n
 
 /-- **The pairwise offsets normalise to the sum degree**: the
 line through the sum of two components' offsets is the raised
 line of the sum-degree component. -/
-noncomputable def chainBGrCompNormIso (d : ModDualityDatum A M M')
+noncomputable def chainBGrCompNormIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) :
     chainBdeg A M M' d ((-a).toNat + (-b).toNat)
         (a.toNat + b.toNat) ≅
@@ -73,14 +93,19 @@ noncomputable def chainBGrCompNormIso (d : ModDualityDatum A M M')
 
 section MulColimit
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
 /-- **The pairwise graded product**: two components multiply into
 the sum-degree component through the offset normalisation. -/
-noncomputable def chainBGrCompMul (d : ModDualityDatum A M M')
+noncomputable def chainBGrCompMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) :
     chainBGrComponent A M M' d a ⊗ chainBGrComponent A M M' d b ⟶
       chainBGrComponent A M M' d (a + b) :=
@@ -91,21 +116,43 @@ end MulColimit
 
 section Carrier
 
-variable [HasColimitsOfShape (Discrete ℤ) D]
-
 /-- **The graded splitting algebra carrier**: the sum of the
 graded components over all integer degrees. -/
-noncomputable def chainBGr (d : ModDualityDatum A M M') : D :=
+noncomputable def chainBGr
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') : D :=
   ∐ fun a : ℤ => chainBGrComponent A M M' d a
 
 /-- The inclusion of a graded component. -/
-noncomputable def chainBGrι (d : ModDualityDatum A M M')
+noncomputable def chainBGrι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M')
     (a : ℤ) : chainBGrComponent A M M' d a ⟶ chainBGr A M M' d :=
   Sigma.ι (fun a : ℤ => chainBGrComponent A M M' d a) a
 
 /-- **The unit of the graded splitting algebra**: the unit of the
 balanced algebra, in degree zero. -/
-noncomputable def chainBGrUnit (d : ModDualityDatum A M M') :
+noncomputable def chainBGrUnit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     𝟙_ D ⟶ chainBGr A M M' d :=
   chainBUnit A M M' d ≫
     (chainBGrComponentZeroIso A M M' d).inv ≫
@@ -113,7 +160,15 @@ noncomputable def chainBGrUnit (d : ModDualityDatum A M M') :
 
 /-- The projection onto the degree-zero component: the identity
 in degree zero and zero elsewhere. -/
-noncomputable def chainBGrProjZero (d : ModDualityDatum A M M') :
+noncomputable def chainBGrProjZero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     chainBGr A M M' d ⟶ chainBGrComponent A M M' d 0 :=
   Sigma.desc fun b =>
     if h : b = 0 then
@@ -122,7 +177,15 @@ noncomputable def chainBGrProjZero (d : ModDualityDatum A M M') :
 
 /-- The degree-zero inclusion is split by the projection. -/
 @[reassoc (attr := simp)]
-theorem chainBGrι_projZero (d : ModDualityDatum A M M') :
+theorem chainBGrι_projZero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M') :
     chainBGrι A M M' d 0 ≫ chainBGrProjZero A M M' d =
       𝟙 (chainBGrComponent A M M' d 0) := by
   rw [chainBGrι, chainBGrProjZero]
@@ -131,7 +194,15 @@ theorem chainBGrι_projZero (d : ModDualityDatum A M M') :
 
 /-- **The graded unit does not vanish** when the balanced unit
 does not: the degree-zero retraction detects it. -/
-theorem chainBGrUnit_ne_zero (d : ModDualityDatum A M M')
+theorem chainBGrUnit_ne_zero
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M')
     (h : chainBUnit A M M' d ≠ 0) :
     chainBGrUnit A M M' d ≠ 0 := by
   intro h0
@@ -144,19 +215,19 @@ end Carrier
 
 section GradedMul
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [HasColimitsOfShape (Discrete ℤ) D]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)]
-
 /-- The multiply-then-include maps against a fixed left component
 form a cocone over the right degree. -/
 noncomputable def chainBGrMulStageCocone
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
     (d : ModDualityDatum A M M') (a : ℤ) :
     Cocone (Discrete.functor
         (fun b : ℤ => chainBGrComponent A M M' d b) ⋙
@@ -168,7 +239,19 @@ noncomputable def chainBGrMulStageCocone
 
 /-- The left-component stage of the graded multiplication: a fixed
 component multiplies the whole carrier degreewise. -/
-noncomputable def chainBGrMulStage (d : ModDualityDatum A M M')
+noncomputable def chainBGrMulStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a : ℤ) :
     chainBGrComponent A M M' d a ⊗ chainBGr A M M' d ⟶
       chainBGr A M M' d :=
@@ -182,12 +265,21 @@ noncomputable def chainBGrMulStage (d : ModDualityDatum A M M')
           fun b : ℤ => chainBGrComponent A M M' d b)) ⟶
       chainBGr A M M' d)
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- On a right component, the stage multiplication is the pairwise
 product followed by the sum-degree inclusion. -/
 @[reassoc]
 theorem whiskerLeft_ι_chainBGrMulStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
     (d : ModDualityDatum A M M') (a b : ℤ) :
     (chainBGrComponent A M M' d a ◁ chainBGrι A M M' d b) ≫
         chainBGrMulStage A M M' d a =
@@ -203,7 +295,19 @@ theorem whiskerLeft_ι_chainBGrMulStage
 
 /-- The stage multiplications form a cocone over the left
 degree. -/
-noncomputable def chainBGrMulCocone (d : ModDualityDatum A M M') :
+noncomputable def chainBGrMulCocone
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     Cocone (Discrete.functor
         (fun a : ℤ => chainBGrComponent A M M' d a) ⋙
       tensorRight (chainBGr A M M' d)) :=
@@ -212,7 +316,19 @@ noncomputable def chainBGrMulCocone (d : ModDualityDatum A M M') :
 
 /-- **The multiplication of the graded splitting algebra**: the
 pairwise graded products assembled over both degrees. -/
-noncomputable def chainBGrMul (d : ModDualityDatum A M M') :
+noncomputable def chainBGrMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     chainBGr A M M' d ⊗ chainBGr A M M' d ⟶ chainBGr A M M' d :=
   ((preservesColimitIso (tensorRight (chainBGr A M M' d))
       (Discrete.functor
@@ -223,12 +339,22 @@ noncomputable def chainBGrMul (d : ModDualityDatum A M M') :
           fun a : ℤ => chainBGrComponent A M M' d a)) ⟶
       chainBGr A M M' d)
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- On a left component, the multiplication is the stage
 multiplication. -/
 @[reassoc]
-theorem ι_whiskerRight_chainBGrMul (d : ModDualityDatum A M M')
+theorem ι_whiskerRight_chainBGrMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a : ℤ) :
     (chainBGrι A M M' d a ▷ chainBGr A M M' d) ≫
         chainBGrMul A M M' d =
@@ -241,13 +367,23 @@ theorem ι_whiskerRight_chainBGrMul (d : ModDualityDatum A M M')
   rw [chainBGrMul, ι_preservesColimitIso_hom_assoc]
   exact colimit.ι_desc (chainBGrMulCocone A M M' d) ⟨a⟩
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **Defining equation of the graded multiplication**: on a pair
 of components it is the pairwise product followed by the
 sum-degree inclusion. -/
 @[reassoc]
-theorem ι_tensorHom_chainBGrMul (d : ModDualityDatum A M M')
+theorem ι_tensorHom_chainBGrMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) :
     (chainBGrι A M M' d a ⊗ₘ chainBGrι A M M' d b) ≫
         chainBGrMul A M M' d =
@@ -260,15 +396,6 @@ end GradedMul
 
 section ZeroDegreeMul
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)] in
 -- Raised budget: the graded chain's structure maps unfold
 -- through the colimit cocone and the duality datum together.
 set_option maxHeartbeats 1600000 in
@@ -277,6 +404,13 @@ the balanced line are the stage transports followed by the stage
 inclusions of the splitting-chain algebra. -/
 @[reassoc]
 theorem chainBdegι_chainBdegZeroIso_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') (k : ℕ) :
     chainBdegι A M M' d 0 0 k ≫
         (chainBdegZeroIso A M M' d).hom =
@@ -293,7 +427,15 @@ end ZeroDegreeMul
 section GradedComm
 
 /-- The iterated shift commutes with the offset transports. -/
-theorem chainBdegShiftIso_hom_cast (d : ModDualityDatum A M M')
+theorem chainBdegShiftIso_hom_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     {p₀ q₀ p₀' q₀' n n' : ℕ}
     (hp : p₀ = p₀') (hq : q₀ = q₀') (hn : n = n') :
     chainBdegCast A M M' d
@@ -308,6 +450,13 @@ theorem chainBdegShiftIso_hom_cast (d : ModDualityDatum A M M')
 
 /-- Degree transports on a component are offset transports. -/
 theorem chainBGrComponent_eqToHom_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') {x y : ℤ} (h : x = y) :
     eqToHom (congrArg (chainBGrComponent A M M' d) h) =
       chainBdegCast A M M' d
@@ -318,7 +467,15 @@ theorem chainBGrComponent_eqToHom_cast
 
 /-- Line transports along paired offset equalities are offset
 transports. -/
-theorem chainBdeg_eqToHom_cast (d : ModDualityDatum A M M')
+theorem chainBdeg_eqToHom_cast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     {p₀ q₀ p₀' q₀' : ℕ} (hp : p₀ = p₀') (hq : q₀ = q₀') :
     eqToHom (congrArg₂ (chainBdeg A M M' d) hp hq) =
       chainBdegCast A M M' d hp hq := by
@@ -327,7 +484,15 @@ theorem chainBdeg_eqToHom_cast (d : ModDualityDatum A M M')
 
 /-- The normaliser decomposes as an offset transport followed by
 the iterated shift. -/
-theorem chainBGrCompNormIso_hom_eq (d : ModDualityDatum A M M')
+theorem chainBGrCompNormIso_hom_eq
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) :
     (chainBGrCompNormIso A M M' d a b).hom =
       chainBdegCast A M M' d
@@ -348,7 +513,15 @@ theorem chainBGrCompNormIso_hom_eq (d : ModDualityDatum A M M')
 /-- **The offset normalisation is braiding-compatible**: the
 normaliser of the swapped degrees followed by the sum-degree
 transport is the offset transport followed by the normaliser. -/
-theorem chainBGrCompNormIso_comm (d : ModDualityDatum A M M')
+theorem chainBGrCompNormIso_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) :
     (chainBGrCompNormIso A M M' d b a).hom ≫
         eqToHom (congrArg (chainBGrComponent A M M' d)
@@ -389,15 +562,20 @@ theorem chainBGrCompNormIso_comm (d : ModDualityDatum A M M')
 
 section MulColimit2
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
 /-- **Commutativity of the pairwise graded product**: the
 braiding followed by the swapped product is the product, up to
 the sum-degree transport. -/
-theorem chainBGrCompMul_comm (d : ModDualityDatum A M M')
+theorem chainBGrCompMul_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) :
     (β_ (chainBGrComponent A M M' d a)
         (chainBGrComponent A M M' d b)).hom ≫
@@ -427,41 +605,34 @@ end MulColimit2
 
 section CarrierComm
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [HasColimitsOfShape (Discrete ℤ) D]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)]
-
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Degree transports are absorbed by the inclusions. -/
-theorem eqToHom_chainBGrι (d : ModDualityDatum A M M')
+theorem eqToHom_chainBGrι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    (d : ModDualityDatum A M M')
     {x y : ℤ} (h : x = y) :
     eqToHom (congrArg (chainBGrComponent A M M' d) h) ≫
       chainBGrι A M M' d y = chainBGrι A M M' d x := by
   subst h
   simp
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Maps out of the carrier tensored on the right are determined
 by their restrictions to the components. -/
-theorem chainBGr_tensorRight_hom_ext (d : ModDualityDatum A M M')
+theorem chainBGr_tensorRight_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     {X Z : D} {f g : chainBGr A M M' d ⊗ X ⟶ Z}
     (w : ∀ a : ℤ, (chainBGrι A M M' d a ▷ X) ≫ f =
       (chainBGrι A M M' d a ▷ X) ≫ g) : f = g := by
@@ -475,15 +646,18 @@ theorem chainBGr_tensorRight_hom_ext (d : ModDualityDatum A M M')
     ι_preservesColimitIso_inv_assoc]
   exact w a
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Maps out of the carrier tensored on the left are determined
 by their restrictions to the components. -/
-theorem tensorLeft_chainBGr_hom_ext (d : ModDualityDatum A M M')
+theorem tensorLeft_chainBGr_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     {X Z : D} {f g : X ⊗ chainBGr A M M' d ⟶ Z}
     (w : ∀ b : ℤ, (X ◁ chainBGrι A M M' d b) ≫ f =
       (X ◁ chainBGrι A M M' d b) ≫ g) : f = g := by
@@ -497,15 +671,18 @@ theorem tensorLeft_chainBGr_hom_ext (d : ModDualityDatum A M M')
     ι_preservesColimitIso_inv_assoc]
   exact w b
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Maps out of a tensor square of the carrier agree once they
 agree on all pairs of components. -/
-theorem chainBGr_pair_hom_ext (d : ModDualityDatum A M M')
+theorem chainBGr_pair_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     {Z : D}
     {f g : chainBGr A M M' d ⊗ chainBGr A M M' d ⟶ Z}
     (w : ∀ a b : ℤ,
@@ -523,11 +700,21 @@ theorem chainBGr_pair_hom_ext (d : ModDualityDatum A M M')
         (tensorHom_def _ _).symm]
   exact w a b
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **The graded multiplication is commutative**: the braiding
 followed by the multiplication is the multiplication. -/
-theorem chainBGrMul_comm (d : ModDualityDatum A M M') :
+theorem chainBGrMul_comm
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     (β_ (chainBGr A M M' d) (chainBGr A M M' d)).hom ≫
         chainBGrMul A M M' d =
       chainBGrMul A M M' d := by
@@ -547,11 +734,17 @@ end GradedComm
 
 /-! ## The stage-level seed law on the left -/
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- **The left unit law of the seed** at two indices: multiplying
 by the seed on the left is the transition, through the unit
 braiding. -/
-theorem chainSeed_mul2_left (d : ModDualityDatum A M M')
+theorem chainSeed_mul2_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (p q : ℕ) :
     (chainSeed A M M' d ▷ chainStage2 A M M' p q) ≫
         chainMul2 A M M' 0 0 p q =
@@ -590,7 +783,15 @@ theorem chainSeed_mul2_left (d : ModDualityDatum A M M')
 /-! ## Stage computation of the shift and the normalisation -/
 
 /-- The iterated shift peels off one raise at a time. -/
-theorem chainBdegShiftIso_succ (d : ModDualityDatum A M M')
+theorem chainBdegShiftIso_succ
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ n : ℕ) :
     chainBdegShiftIso A M M' d p₀ q₀ (n + 1) =
       chainBdegSuccIso A M M' d (p₀ + n) (q₀ + n) ≪≫
@@ -604,6 +805,13 @@ raised line are the stage transports followed by the next stage
 insertions of the line. -/
 @[reassoc]
 theorem chainBdegι_chainBdegSuccIso_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') (p₀ q₀ k : ℕ) :
     chainBdegι A M M' d (p₀ + 1) (q₀ + 1) k ≫
         (chainBdegSuccIso A M M' d p₀ q₀).hom =
@@ -628,6 +836,13 @@ set_option maxHeartbeats 1600000 in
 line are the stage transports followed by the shifted stage
 insertions of the line. -/
 theorem chainBdegι_chainBdegShiftIso_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') (p₀ q₀ : ℕ) :
     ∀ n k : ℕ,
     chainBdegι A M M' d (p₀ + n) (q₀ + n) k ≫
@@ -650,7 +865,7 @@ theorem chainBdegι_chainBdegShiftIso_hom
         (p₀ + n) (q₀ + n) k) _) ?_
     refine Eq.trans (Category.assoc _ _ _) ?_
     refine Eq.trans (whisker_eq _
-      (chainBdegι_chainBdegShiftIso_hom d p₀ q₀ n (k + 1))) ?_
+      (chainBdegι_chainBdegShiftIso_hom A M M' d p₀ q₀ n (k + 1))) ?_
     refine Eq.trans (Category.assoc _ _ _).symm ?_
     refine Eq.trans (eq_whisker
       (chainStage2Cast_trans A M M' _ _ _ _) _) ?_
@@ -665,6 +880,13 @@ summed line are the stage transports followed by the shifted stage
 insertions of the sum-degree component. -/
 @[reassoc]
 theorem chainBdegι_chainBGrCompNormIso_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') (a b : ℤ) (k : ℕ) :
     chainBdegι A M M' d ((-a).toNat + (-b).toNat)
         (a.toNat + b.toNat) k ≫
@@ -693,16 +915,9 @@ theorem chainBdegι_chainBGrCompNormIso_hom
 
 /-! ## Tensor surgery -/
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- Absorb a whiskered morphism into the first tensor factor. -/
 private theorem tensorHom_whiskerRight_comp
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₁ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (f : Y₁ ⟶ Z₁) (r : Z₁ ⊗ Y₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (f ▷ Y₂) ≫ r = ((a ≫ f) ⊗ₘ b) ≫ r := by
@@ -710,16 +925,8 @@ private theorem tensorHom_whiskerRight_comp
     MonoidalCategory.tensorHom_comp_tensorHom_assoc,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- Absorb a whiskered morphism into the second tensor factor. -/
-private theorem tensorHom_whiskerLeft_comp
+private theorem tensorHom_whiskerLeft_comp [Category.{v} D] [MonoidalCategory D]
     {X₁ X₂ Y₁ Y₂ Z₂ W : D} (a : X₁ ⟶ Y₁) (b : X₂ ⟶ Y₂)
     (g : Y₂ ⟶ Z₂) (r : Y₁ ⊗ Z₂ ⟶ W) :
     (a ⊗ₘ b) ≫ (Y₁ ◁ g) ≫ r = (a ⊗ₘ (b ≫ g)) ≫ r := by
@@ -727,16 +934,9 @@ private theorem tensorHom_whiskerLeft_comp
     MonoidalCategory.tensorHom_comp_tensorHom_assoc,
     Category.comp_id]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- Extract a prefix of the first tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerRight_split
+    [Category.{v} D] [MonoidalCategory D]
     {V₁ W₁ U₁ X₂ U₂ Z : D} (x : V₁ ⟶ W₁) (q₁ : W₁ ⟶ U₁)
     (q₂ : X₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     ((x ≫ q₁) ⊗ₘ q₂) ≫ r = (x ▷ X₂) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -744,16 +944,9 @@ private theorem compTensorHom_whiskerRight_split
     MonoidalCategory.tensorHom_def, comp_whiskerRight]
   simp only [Category.assoc]
 
-omit [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D] [Linear ℂ D]
-  [MonoidalLinear ℂ D]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorLeft Z)]
-  [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- Extract a prefix of the second tensor factor as a whisker. -/
 private theorem compTensorHom_whiskerLeft_split
+    [Category.{v} D] [MonoidalCategory D]
     {X₁ U₁ V₂ W₂ U₂ Z : D} (q₁ : X₁ ⟶ U₁) (x : V₂ ⟶ W₂)
     (q₂ : W₂ ⟶ U₂) (r : U₁ ⊗ U₂ ⟶ Z) :
     (q₁ ⊗ₘ (x ≫ q₂)) ≫ r = (X₁ ◁ x) ≫ (q₁ ⊗ₘ q₂) ≫ r := by
@@ -765,7 +958,15 @@ private theorem compTensorHom_whiskerLeft_split
 /-! ## Component insertions -/
 
 /-- The stage insertion of a graded component. -/
-noncomputable def chainBGrCompι (d : ModDualityDatum A M M')
+noncomputable def chainBGrCompι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (a : ℤ) (k : ℕ) :
     chainStage2 A M M' ((-a).toNat + k) (a.toNat + k) ⟶
       chainBGrComponent A M M' d a :=
@@ -774,6 +975,13 @@ noncomputable def chainBGrCompι (d : ModDualityDatum A M M')
 /-- Stage transports along a stage equality are absorbed by the
 component insertions. -/
 theorem chainStage2Cast_chainBGrCompι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') (x : ℤ) {a b : ℕ} (h : a = b) :
     chainStage2Cast A M M'
         (by omega : (-x).toNat + a = (-x).toNat + b)
@@ -782,7 +990,15 @@ theorem chainStage2Cast_chainBGrCompι
   chainStage2Cast_chainBdegι A M M' d (-x).toNat x.toNat h
 
 /-- The component insertions absorb the transitions. -/
-theorem chainDelta2_chainBGrCompι (d : ModDualityDatum A M M')
+theorem chainDelta2_chainBGrCompι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (x : ℤ) (k : ℕ) :
     chainDelta2 A M M' d ((-x).toNat + k) (x.toNat + k) ≫
         chainBGrCompι A M M' d x (k + 1) =
@@ -791,7 +1007,15 @@ theorem chainDelta2_chainBGrCompι (d : ModDualityDatum A M M')
 
 /-- Degree transports intertwine the component insertions with
 the stage transports. -/
-theorem chainBGrCompι_eqToHom (d : ModDualityDatum A M M')
+theorem chainBGrCompι_eqToHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     {x y : ℤ} (h : x = y) (k : ℕ) :
     chainBGrCompι A M M' d x k ≫
         eqToHom (congrArg (chainBGrComponent A M M' d) h) =
@@ -809,16 +1033,17 @@ product -/
 
 section CompMulStages
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)] in
 /-- Maps out of a component tensored on the left are determined
 by the stages. -/
 theorem tensorLeft_chainBGrComp_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
     (d : ModDualityDatum A M M') (b : ℤ) {X Z : D}
     {f g : X ⊗ chainBGrComponent A M M' d b ⟶ Z}
     (w : ∀ j : ℕ, (X ◁ chainBGrCompι A M M' d b j) ≫ f =
@@ -831,7 +1056,17 @@ theorem tensorLeft_chainBGrComp_hom_ext
 
 /-- Maps out of a triple tensor of components agree once they
 agree on all triples of stages. -/
-theorem chainBGrComp_triple_hom_ext (d : ModDualityDatum A M M')
+theorem chainBGrComp_triple_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a b c : ℤ) {Z : D}
     {f g : (chainBGrComponent A M M' d a ⊗
       chainBGrComponent A M M' d b) ⊗
@@ -851,7 +1086,17 @@ theorem chainBGrComp_triple_hom_ext (d : ModDualityDatum A M M')
 stages**: the two-index stage multiplication, transported and
 inserted at the shifted stage of the sum-degree component. -/
 @[reassoc]
-theorem ι_tensorHom_chainBGrCompMul (d : ModDualityDatum A M M')
+theorem ι_tensorHom_chainBGrCompMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a b : ℤ) (i j : ℕ) :
     (chainBGrCompι A M M' d a i ⊗ₘ
         chainBGrCompι A M M' d b j) ≫
@@ -895,7 +1140,17 @@ theorem ι_tensorHom_chainBGrCompMul (d : ModDualityDatum A M M')
 /-- **Associativity of the pairwise graded product**: the two
 bracketings of a triple product agree up to the sum-degree
 transport reassociating the degrees. -/
-theorem chainBGrCompMul_assoc (d : ModDualityDatum A M M')
+theorem chainBGrCompMul_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (a b c : ℤ) :
     (chainBGrCompMul A M M' d a b ▷
         chainBGrComponent A M M' d c) ≫
@@ -974,26 +1229,19 @@ end CompMulStages
 
 section CarrierAssoc
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [HasColimitsOfShape (Discrete ℤ) D]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)]
-
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Sandwich extensionality: maps out of a tensor product with
 the carrier in the middle slot are determined by the components
 there. -/
-theorem chainBGr_sandwich_hom_ext (d : ModDualityDatum A M M')
+theorem chainBGr_sandwich_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (X Y : D) {Z : D}
     {f g : X ⊗ (chainBGr A M M' d ⊗ Y) ⟶ Z}
     (w : ∀ b : ℤ, (X ◁ chainBGrι A M M' d b ▷ Y) ≫ f =
@@ -1009,15 +1257,17 @@ theorem chainBGr_sandwich_hom_ext (d : ModDualityDatum A M M')
     ι_preservesColimitIso_inv_assoc]
   exact w b
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Maps out of a tensor square of the carrier whiskered on the
 right agree once they agree on all pairs of components. -/
 theorem chainBGr_pair_whiskerRight_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
     (d : ModDualityDatum A M M') {X Z : D}
     {f g : (chainBGr A M M' d ⊗ chainBGr A M M' d) ⊗ X ⟶ Z}
     (w : ∀ a b : ℤ,
@@ -1047,15 +1297,18 @@ theorem chainBGr_pair_whiskerRight_hom_ext
   rw [reassoc_of% hpre, reassoc_of% hpre]
   exact congrArg (CategoryStruct.comp _) (w a b)
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- Maps out of a triple tensor of the carrier agree once they
 agree on all triples of components. -/
-theorem chainBGr_triple_hom_ext (d : ModDualityDatum A M M')
+theorem chainBGr_triple_hom_ext
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D] [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     {Z : D}
     {f g : (chainBGr A M M' d ⊗ chainBGr A M M' d) ⊗
       chainBGr A M M' d ⟶ Z}
@@ -1077,11 +1330,21 @@ theorem chainBGr_triple_hom_ext (d : ModDualityDatum A M M')
         chainBGrι A M M' d c from (tensorHom_def _ _).symm]
   exact w a b c
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **Associativity of the graded multiplication**: the two
 bracketings of a triple product agree. -/
-theorem chainBGrMul_assoc (d : ModDualityDatum A M M') :
+theorem chainBGrMul_assoc
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     (chainBGrMul A M M' d ▷ chainBGr A M M' d) ≫
         chainBGrMul A M M' d =
       (α_ (chainBGr A M M' d) (chainBGr A M M' d)
@@ -1111,15 +1374,6 @@ end CarrierAssoc
 
 section UnitLaws
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)] in
 -- Raised budget: the graded chain's structure maps unfold
 -- through the colimit cocone and the duality datum together.
 set_option maxHeartbeats 1600000 in
@@ -1127,6 +1381,13 @@ set_option maxHeartbeats 1600000 in
 degree-zero identification, the unit of the balanced algebra is
 the seed at the bottom stage of the degree-zero component. -/
 theorem chainBUnit_chainBGrComponentZeroIso_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
     (d : ModDualityDatum A M M') :
     chainBUnit A M M' d ≫
         (chainBGrComponentZeroIso A M M' d).inv =
@@ -1141,6 +1402,15 @@ theorem chainBUnit_chainBGrComponentZeroIso_inv
 /-- The stage rule of the pairwise product at degree zero on the
 left, with the balanced-line arities normalised. -/
 theorem ι_tensorHom_chainBGrCompMul_zero_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
     (d : ModDualityDatum A M M') (b : ℤ) (j : ℕ) :
     (chainBGrCompι A M M' d 0 0 ⊗ₘ
         chainBGrCompι A M M' d b j) ≫
@@ -1167,7 +1437,17 @@ set_option maxHeartbeats 1600000 in
 included unit against a component multiplies as the left unitor,
 through the sum-degree transport. -/
 @[reassoc]
-theorem chainBGrCompMul_unit_left (d : ModDualityDatum A M M')
+theorem chainBGrCompMul_unit_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (b : ℤ) :
     ((chainBUnit A M M' d ≫
         (chainBGrComponentZeroIso A M M' d).inv) ▷
@@ -1217,21 +1497,21 @@ end UnitLaws
 
 section CarrierUnit
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-variable [HasColimitsOfShape (Discrete ℤ) D]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorLeft X)]
-variable [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-  (tensorRight X)]
-
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **The left unit law of the graded splitting algebra**: the
 unit against the carrier is the left unitor. -/
-theorem chainBGrUnit_mul (d : ModDualityDatum A M M') :
+theorem chainBGrUnit_mul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     (chainBGrUnit A M M' d ▷ chainBGr A M M' d) ≫
         chainBGrMul A M M' d =
       (λ_ (chainBGr A M M' d)).hom := by
@@ -1248,11 +1528,21 @@ theorem chainBGrUnit_mul (d : ModDualityDatum A M M') :
     chainBGrCompMul_unit_left_assoc A M M' d b,
     leftUnitor_naturality]
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **The right unit law of the graded splitting algebra**: the
 carrier against the unit is the right unitor. -/
-theorem chainBGrMul_unit (d : ModDualityDatum A M M') :
+theorem chainBGrMul_unit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     (chainBGr A M M' d ◁ chainBGrUnit A M M' d) ≫
         chainBGrMul A M M' d =
       (ρ_ (chainBGr A M M' d)).hom := by
@@ -1264,13 +1554,23 @@ theorem chainBGrMul_unit (d : ModDualityDatum A M M') :
 
 /-! ## The monoid object -/
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **The graded splitting algebra is a monoid object**: the
 degree-zero unit and the graded multiplication satisfy the
 monoid laws. -/
 @[reducible]
-noncomputable def chainBGrMonObj (d : ModDualityDatum A M M') :
+noncomputable def chainBGrMonObj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     MonObj (chainBGr A M M' d) where
   one := chainBGrUnit A M M' d
   mul := chainBGrMul A M M' d
@@ -1278,10 +1578,20 @@ noncomputable def chainBGrMonObj (d : ModDualityDatum A M M') :
   mul_one := chainBGrMul_unit A M M' d
   mul_assoc := chainBGrMul_assoc A M M' d
 
-omit [∀ X : D, PreservesColimitsOfShape (Discrete ℤ)
-    (tensorRight X)] in
 /-- **The graded splitting algebra is commutative**. -/
-theorem chainBGr_isCommMonObj (d : ModDualityDatum A M M') :
+theorem chainBGr_isCommMonObj
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    [HasColimitsOfShape (Discrete ℤ) D]
+    [∀ X : D, PreservesColimitsOfShape (Discrete ℤ) (tensorLeft X)]
+    (d : ModDualityDatum A M M') :
     letI := chainBGrMonObj A M M' d
     IsCommMonObj (chainBGr A M M' d) :=
   letI := chainBGrMonObj A M M' d

@@ -16,9 +16,7 @@ open CategoryTheory MonoidalCategory Limits
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [HasFiniteBiproducts D]
+variable {D : Type u}
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
@@ -27,9 +25,11 @@ unit indices unchanged. -/
 def mixShiftL (p q : ℕ) : Fin p ⊕ Fin q → Fin p ⊕ Fin (q + 1) :=
   Sum.elim Sum.inl (fun j => Sum.inr j.succ)
 
-omit [HasFiniteBiproducts D] in
 /-- Shifting an index does not change the associated summand. -/
-theorem OddLine.mixShiftL_summand (L : OddLine D) (p q : ℕ)
+theorem OddLine.mixShiftL_summand
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D]
+    (L : OddLine D) (p q : ℕ)
     (j : Fin p ⊕ Fin q) :
     L.mixFun p (q + 1) (mixShiftL p q j) = L.mixFun p q j := by
   rcases j with i | k <;> rfl
@@ -52,7 +52,10 @@ theorem mixShiftL_injective (p q : ℕ) :
 
 /-- Project a mixed sum onto its first line summand together
 with the remaining, downshifted, mixed sum. -/
-noncomputable def OddLine.mixLineSuccHom (L : OddLine D)
+noncomputable def OddLine.mixLineSuccHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D)
     (p q : ℕ) :
     (⨁ L.mixFun p (q + 1)) ⟶ L.obj ⊞ (⨁ L.mixFun p q) :=
   biprod.lift
@@ -64,7 +67,10 @@ noncomputable def OddLine.mixLineSuccHom (L : OddLine D)
 
 /-- Rebuild a mixed sum from its first line summand and the
 remaining, downshifted, mixed sum. -/
-noncomputable def OddLine.mixLineSuccInv (L : OddLine D)
+noncomputable def OddLine.mixLineSuccInv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D)
     (p q : ℕ) :
     L.obj ⊞ (⨁ L.mixFun p q) ⟶ ⨁ L.mixFun p (q + 1) :=
   biprod.desc
@@ -77,7 +83,10 @@ noncomputable def OddLine.mixLineSuccInv (L : OddLine D)
 /-- The peeling map restricted to the first line summand is the
 left biproduct inclusion. -/
 @[reassoc]
-theorem OddLine.ι_inr_zero_mixLineSuccHom (L : OddLine D)
+theorem OddLine.ι_inr_zero_mixLineSuccHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D)
     (p q : ℕ) :
     biproduct.ι (L.mixFun p (q + 1)) (Sum.inr 0) ≫
         L.mixLineSuccHom p q =
@@ -98,7 +107,10 @@ theorem OddLine.ι_inr_zero_mixLineSuccHom (L : OddLine D)
 /-- The peeling map restricted to a shifted summand is the right
 inclusion of the corresponding summand of the smaller sum. -/
 @[reassoc]
-theorem OddLine.ι_mixShiftL_mixLineSuccHom (L : OddLine D)
+theorem OddLine.ι_mixShiftL_mixLineSuccHom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D)
     (p q : ℕ) (j : Fin p ⊕ Fin q) :
     biproduct.ι (L.mixFun p (q + 1)) (mixShiftL p q j) ≫
         L.mixLineSuccHom p q =
@@ -135,7 +147,10 @@ theorem mixShiftL_cases (p q : ℕ) (i : Fin p ⊕ Fin (q + 1)) :
 
 /-- The peeling map followed by the rebuilding map is the
 identity on the longer mixed sum. -/
-theorem OddLine.mixLineSucc_hom_inv (L : OddLine D) (p q : ℕ) :
+theorem OddLine.mixLineSucc_hom_inv
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.mixLineSuccHom p q ≫ L.mixLineSuccInv p q =
       𝟙 (⨁ L.mixFun p (q + 1)) := by
   apply biproduct.hom_ext'
@@ -152,7 +167,10 @@ theorem OddLine.mixLineSucc_hom_inv (L : OddLine D) (p q : ℕ) :
 
 /-- The rebuilding map followed by the peeling map is the
 identity on the peeled form. -/
-theorem OddLine.mixLineSucc_inv_hom (L : OddLine D) (p q : ℕ) :
+theorem OddLine.mixLineSucc_inv_hom
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D) (p q : ℕ) :
     L.mixLineSuccInv p q ≫ L.mixLineSuccHom p q =
       𝟙 (L.obj ⊞ (⨁ L.mixFun p q)) := by
   apply biprod.hom_ext'
@@ -170,7 +188,10 @@ theorem OddLine.mixLineSucc_inv_hom (L : OddLine D) (p q : ℕ) :
 /-- Peeling one line summand off a mixed sum: the mixed sum of
 `p` units and `q + 1` lines is a line plus the mixed sum of `p`
 units and `q` lines. -/
-noncomputable def OddLine.mixLineSuccIso (L : OddLine D)
+noncomputable def OddLine.mixLineSuccIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [HasFiniteBiproducts D]
+    (L : OddLine D)
     (p q : ℕ) :
     L.mix p (q + 1) ≅ L.obj ⊞ L.mix p q where
   hom := L.mixLineSuccHom p q

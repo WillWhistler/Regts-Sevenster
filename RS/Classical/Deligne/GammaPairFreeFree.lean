@@ -19,17 +19,16 @@ universe v u
 
 section
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable [SymmetricCategory D] [Preadditive D] [MonoidalPreadditive D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D] [HasCoequalizers D]
-variable [HasFiniteBiproducts D]
-variable [∀ X : D,
-  PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
-variable (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+variable {D : Type u}
 
 /-- **The comparison map at the odd line against the unit** is the
 right unitor. -/
-instance isIso_gammaPairComparison_freeL_freeUnit :
+instance isIso_gammaPairComparison_freeL_freeUnit
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R] :
     IsIso (gammaPairComparison L R (freeMod R L.obj)
       (freeMod R (𝟙_ D))) :=
   gammaPairComparison_isIso_of_iso L R (Iso.refl _)
@@ -38,7 +37,13 @@ instance isIso_gammaPairComparison_freeL_freeUnit :
 
 /-- **The comparison map at the odd line against the free module of
 a mixed sum.** -/
-theorem isIso_gammaPairComparison_freeL_mix (p q : ℕ) :
+theorem isIso_gammaPairComparison_freeL_mix
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    (p q : ℕ) :
     IsIso (gammaPairComparison L R (freeMod R L.obj)
       (freeMod R (L.mix p q))) := by
   classical
@@ -53,7 +58,13 @@ theorem isIso_gammaPairComparison_freeL_mix (p q : ℕ) :
 
 /-- **The comparison map at the odd line against any free module
 that becomes a mixed sum.** -/
-theorem isIso_gammaPairComparison_freeL_free {Y : D} {p q : ℕ}
+theorem isIso_gammaPairComparison_freeL_free
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {Y : D} {p q : ℕ}
     (eY : freeMod R Y ≅ freeMod R (L.mix p q)) :
     IsIso (gammaPairComparison L R (freeMod R L.obj)
       (freeMod R Y)) :=
@@ -61,7 +72,13 @@ theorem isIso_gammaPairComparison_freeL_free {Y : D} {p q : ℕ}
     (isIso_gammaPairComparison_freeL_mix L R p q)
 
 /-- **The comparison map of (2.11.1) at a pair of free modules.** -/
-theorem isIso_gammaPairComparison_freeFree {X Y : D}
+theorem isIso_gammaPairComparison_freeFree
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {X Y : D}
     {p q p' q' : ℕ}
     (eX : freeMod R X ≅ freeMod R (L.mix p q))
     (eY : freeMod R Y ≅ freeMod R (L.mix p' q')) :
@@ -71,7 +88,13 @@ theorem isIso_gammaPairComparison_freeFree {X Y : D}
 
 /-- **The monoidal comparison of the fibre functor is an
 isomorphism** at any pair of objects that become mixed sums. -/
-theorem isIso_fibreMu_of_mix {X Y : D} {p q p' q' : ℕ}
+theorem isIso_fibreMu_of_mix
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [Linear ℂ D]
+    [MonoidalLinear ℂ D] [HasCoequalizers D] [HasFiniteBiproducts D]
+    [∀ X : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft X)]
+    (L : OddLine D) (R : D) [MonObj R] [IsCommMonObj R]
+    {X Y : D} {p q p' q' : ℕ}
     (eX : freeMod R X ≅ freeMod R (L.mix p q))
     (eY : freeMod R Y ≅ freeMod R (L.mix p' q')) :
     IsIso (fibreMu L R X Y) :=

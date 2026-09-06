@@ -37,7 +37,7 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
+variable {D : Type u}
 
 /-! ## The boundary-insertion carrier
 
@@ -48,39 +48,47 @@ prefixes on the nose. -/
 
 section CrossDefs
 
-variable (A : D) [MonObj A]
-
 /-- The boundary-insertion object: the monoid between the folds of
 two blocks, whiskered under a prefix. -/
-def modCrossMid (Xs Ys : List (Mod D A)) :
+def modCrossMid [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs Ys : List (Mod D A)) :
     List (Mod D A) → D
   | [] => (modList A Xs ⊗ A) ⊗ modList A Ys
-  | P :: rest => P.X ⊗ modCrossMid Xs Ys rest
+  | P :: rest => P.X ⊗ modCrossMid A Xs Ys rest
 
-@[simp] lemma modCrossMid_nil (Xs Ys : List (Mod D A)) :
+@[simp] lemma modCrossMid_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs Ys : List (Mod D A)) :
     modCrossMid A Xs Ys [] = (modList A Xs ⊗ A) ⊗ modList A Ys :=
   rfl
 
-@[simp] lemma modCrossMid_cons (Xs Ys : List (Mod D A))
+@[simp] lemma modCrossMid_cons
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs Ys : List (Mod D A))
     (P : Mod D A) (pre : List (Mod D A)) :
     modCrossMid A Xs Ys (P :: pre) =
       P.X ⊗ modCrossMid A Xs Ys pre :=
   rfl
 
 /-- Assemble a boundary window into a prefix-whiskered leg. -/
-def modCrossLegOf (Xs Ys : List (Mod D A))
+def modCrossLegOf [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs Ys : List (Mod D A))
     (w : (modList A Xs ⊗ A) ⊗ modList A Ys ⟶ modList A (Xs ++ Ys)) :
     (pre : List (Mod D A)) →
       modCrossMid A Xs Ys pre ⟶ modList A (pre ++ (Xs ++ Ys))
   | [] => w
-  | P :: rest => P.X ◁ modCrossLegOf Xs Ys w rest
+  | P :: rest => P.X ◁ modCrossLegOf A Xs Ys w rest
 
-@[simp] lemma modCrossLegOf_nil (Xs Ys : List (Mod D A))
+@[simp] lemma modCrossLegOf_nil
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs Ys : List (Mod D A))
     (w : (modList A Xs ⊗ A) ⊗ modList A Ys ⟶ modList A (Xs ++ Ys)) :
     modCrossLegOf A Xs Ys w [] = w :=
   rfl
 
-@[simp] lemma modCrossLegOf_cons (Xs Ys : List (Mod D A))
+@[simp] lemma modCrossLegOf_cons
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs Ys : List (Mod D A))
     (w : (modList A Xs ⊗ A) ⊗ modList A Ys ⟶ modList A (Xs ++ Ys))
     (P : Mod D A) (pre : List (Mod D A)) :
     modCrossLegOf A Xs Ys w (P :: pre) =
@@ -93,13 +101,11 @@ end CrossDefs
 
 section CrossWindows
 
-variable (A : D) [MonObj A]
-
-variable [BraidedCategory D]
-
 /-- The crossing window: the monoid braids over the whole first
 block and acts on its head. -/
-def modCrossHeadWin (X : Mod D A) (l Ys : List (Mod D A)) :
+def modCrossHeadWin [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D]
+    (X : Mod D A) (l Ys : List (Mod D A)) :
     (modList A (X :: l) ⊗ A) ⊗ modList A Ys ⟶
       modList A ((X :: l) ++ Ys) :=
   (((β_ (modList A (X :: l)) A).hom ≫ modListHeadAct A X l) ▷
@@ -108,7 +114,8 @@ def modCrossHeadWin (X : Mod D A) (l Ys : List (Mod D A)) :
 
 /-- The stationary window: the monoid acts on the head of the
 second block. -/
-def modCrossYWin (Xs : List (Mod D A)) (Y : Mod D A)
+def modCrossYWin [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (Xs : List (Mod D A)) (Y : Mod D A)
     (m : List (Mod D A)) :
     (modList A Xs ⊗ A) ⊗ modList A (Y :: m) ⟶
       modList A (Xs ++ (Y :: m)) :=
@@ -127,20 +134,22 @@ at the relation object of the slot. -/
 
 section CrossBase
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-
 /-- The base bridge: absorb the unit seed of a singleton first
 block and reassociate onto the relation window of the head slot. -/
-def modCrossBridge (X Y : Mod D A) (m : List (Mod D A)) :
+def modCrossBridge [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X Y : Mod D A) (m : List (Mod D A)) :
     (pre : List (Mod D A)) →
       modCrossMid A [X] (Y :: m) pre ⟶ modMultiMid A pre X Y m
   | [] => (((ρ_ X.X).hom ▷ A) ▷ modList A (Y :: m)) ≫
       (α_ (X.X ⊗ A) Y.X (modList A m)).inv
-  | P :: rest => P.X ◁ modCrossBridge X Y m rest
+  | P :: rest => P.X ◁ modCrossBridge A X Y m rest
 
 /-- **The crossing window of a singleton block is the first
 relation leg** of the head slot, through the bridge. -/
-lemma modCrossBridge_legM (X Y : Mod D A) (m : List (Mod D A)) :
+lemma modCrossBridge_legM
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D]
+    (X Y : Mod D A) (m : List (Mod D A)) :
     ∀ pre : List (Mod D A),
       modCrossLegOf A [X] (Y :: m)
           (modCrossHeadWin A X [] (Y :: m)) pre =
@@ -178,13 +187,14 @@ lemma modCrossBridge_legM (X Y : Mod D A) (m : List (Mod D A)) :
       (P.X ◁ modCrossBridge A X Y m rest) ≫
         (P.X ◁ modMultiLegM A rest X Y m)
     rw [← MonoidalCategory.whiskerLeft_comp,
-      modCrossBridge_legM X Y m rest]
+      modCrossBridge_legM A X Y m rest]
     rfl
 
-omit [BraidedCategory D] in
 /-- **The stationary window of a singleton block is the second
 relation leg** of the head slot, through the bridge. -/
-lemma modCrossBridge_legN (X Y : Mod D A) (m : List (Mod D A)) :
+lemma modCrossBridge_legN
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X Y : Mod D A) (m : List (Mod D A)) :
     ∀ pre : List (Mod D A),
       modCrossLegOf A [X] (Y :: m)
           (modCrossYWin A [X] Y m) pre =
@@ -226,7 +236,7 @@ lemma modCrossBridge_legN (X Y : Mod D A) (m : List (Mod D A)) :
       (P.X ◁ modCrossBridge A X Y m rest) ≫
         (P.X ◁ modMultiLegN A rest X Y m)
     rw [← MonoidalCategory.whiskerLeft_comp,
-      modCrossBridge_legN X Y m rest]
+      modCrossBridge_legN A X Y m rest]
     rfl
 
 end CrossBase
@@ -241,21 +251,21 @@ tail block under a prefix extended by the head. -/
 
 section CrossStep
 
-variable (A : D) [MonObj A]
-
 /-- Peel the head of the first block into the prefix. -/
-def modCrossPeel (X : Mod D A) (Xs' Ys : List (Mod D A)) :
+def modCrossPeel [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : Mod D A) (Xs' Ys : List (Mod D A)) :
     (pre : List (Mod D A)) →
       modCrossMid A (X :: Xs') Ys pre ⟶
         modCrossMid A Xs' Ys (pre ++ [X])
   | [] => ((α_ X.X (modList A Xs') A).hom ▷ modList A Ys) ≫
       (α_ X.X (modList A Xs' ⊗ A) (modList A Ys)).hom
-  | P :: rest => P.X ◁ modCrossPeel X Xs' Ys rest
+  | P :: rest => P.X ◁ modCrossPeel A X Xs' Ys rest
 
 /-- **Peeling passes the stationary window**: the stationary window
 of the extended block is the peel followed by the whiskered
 stationary window of the tail block. -/
-lemma modCrossPeel_yWin (X : Mod D A) (Xs' : List (Mod D A))
+lemma modCrossPeel_yWin [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    (X : Mod D A) (Xs' : List (Mod D A))
     (Y : Mod D A) (m : List (Mod D A)) :
     ∀ (pre : List (Mod D A))
       (h : (pre ++ [X]) ++ (Xs' ++ (Y :: m)) =
@@ -296,16 +306,16 @@ lemma modCrossPeel_yWin (X : Mod D A) (Xs' : List (Mod D A))
         modListCast A h =
       P.X ◁ modCrossLegOf A (X :: Xs') (Y :: m)
         (modCrossYWin A (X :: Xs') Y m) rest
-    rw [← modCrossPeel_yWin X Xs' Y m rest (by simp)]
+    rw [← modCrossPeel_yWin A X Xs' Y m rest (by simp)]
     simp only [MonoidalCategory.whiskerLeft_comp]
     rw [modListCast_whiskerLeft]
     rfl
 
-variable [BraidedCategory D]
-
 /-- The step bridge: braid the monoid over the tail of the first
 block and retype at the relation window of the head slot. -/
-def modCrossStepBridge (X P : Mod D A) (l' Ys : List (Mod D A)) :
+def modCrossStepBridge [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D]
+    (X P : Mod D A) (l' Ys : List (Mod D A)) :
     (pre : List (Mod D A)) →
       modCrossMid A (X :: P :: l') Ys pre ⟶
         modMultiMid A pre X P (l' ++ Ys)
@@ -318,12 +328,15 @@ def modCrossStepBridge (X P : Mod D A) (l' Ys : List (Mod D A)) :
         (α_ P.X (modList A l') (modList A Ys)).hom) ≫
       ((X.X ⊗ A) ◁ (P.X ◁ (modListConcat A l' Ys).hom)) ≫
       (α_ (X.X ⊗ A) P.X (modList A (l' ++ Ys))).inv
-  | Q :: rest => Q.X ◁ modCrossStepBridge X P l' Ys rest
+  | Q :: rest => Q.X ◁ modCrossStepBridge A X P l' Ys rest
 
 /-- **The crossing window decomposes over the head slot**: by the
 hexagon, the full crossing is the step bridge followed by the first
 relation leg of the head slot. -/
-lemma modCrossStepBridge_legM (X P : Mod D A)
+lemma modCrossStepBridge_legM
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D]
+    (X P : Mod D A)
     (l' Ys : List (Mod D A)) :
     ∀ pre : List (Mod D A),
       modCrossLegOf A (X :: P :: l') Ys
@@ -365,13 +378,16 @@ lemma modCrossStepBridge_legM (X P : Mod D A)
       (Q.X ◁ modCrossStepBridge A X P l' Ys rest) ≫
         (Q.X ◁ modMultiLegM A rest X P (l' ++ Ys))
     rw [← MonoidalCategory.whiskerLeft_comp,
-      modCrossStepBridge_legM X P l' Ys rest]
+      modCrossStepBridge_legM A X P l' Ys rest]
     rfl
 
 /-- **The step bridge against the second relation leg**: past the
 head slot, what remains is the crossing of the tail block, under
 the prefix extended by the head. -/
-lemma modCrossStepBridge_legN (X P : Mod D A)
+lemma modCrossStepBridge_legN
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D]
+    (X P : Mod D A)
     (l' Ys : List (Mod D A)) :
     ∀ (pre : List (Mod D A))
       (h : (pre ++ [X]) ++ ((P :: l') ++ Ys) =
@@ -456,7 +472,7 @@ lemma modCrossStepBridge_legN (X P : Mod D A)
       (modCrossStepBridge A X P l' Ys rest)
       (modMultiLegN A rest X P (l' ++ Ys))).symm
     have e2 := congrArg (fun t => Q.X ◁ t)
-      (modCrossStepBridge_legN X P l' Ys rest h')
+      (modCrossStepBridge_legN A X P l' Ys rest h')
     have e3 := MonoidalCategory.whiskerLeft_comp Q.X
       (modCrossPeel A X (P :: l') Ys rest)
       (modCrossLegOf A (P :: l') Ys
@@ -481,15 +497,15 @@ end CrossStep
 
 section CrossRel
 
-variable (A : D) [MonObj A] [BraidedCategory D]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
 /-- **The fold-level crossing relation**: after the projection of
 the multi-tensor, braiding the monoid over the whole first block
 and acting on its head agrees with acting on the head of the second
 block, at every ambient prefix.  The crossing is consumed one
 factor at a time, one slot relation per factor. -/
-theorem modCross_rel (Y : Mod D A) (m : List (Mod D A)) :
+theorem modCross_rel [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (Y : Mod D A) (m : List (Mod D A)) :
     ∀ (l : List (Mod D A)) (X : Mod D A)
       (pr Zs : List (Mod D A))
       (h : Zs = pr ++ ((X :: l) ++ (Y :: m))),
@@ -557,7 +573,7 @@ theorem modCross_rel (Y : Mod D A) (m : List (Mod D A)) :
       (modListCast_comp_assoc A h2 h.symm (modMultiπ A Zs))
     have b9 := congrArg
       (fun t => modCrossPeel A X (P :: l') (Y :: m) pr ≫ t)
-      (modCross_rel Y m l' P (pr ++ [X]) Zs h'')
+      (modCross_rel A Y m l' P (pr ++ [X]) Zs h'')
     have c1 := congrArg
       (fun t => modCrossPeel A X (P :: l') (Y :: m) pr ≫
         (modCrossLegOf A (P :: l') (Y :: m)
@@ -587,7 +603,10 @@ theorem modCross_rel (Y : Mod D A) (m : List (Mod D A)) :
 over the first block and acting on its head agrees, after the
 projection, with acting on the head of the second block.  This is
 the typed form consumed by the `modTensor` descent below. -/
-theorem modListCross (X Y : Mod D A) (l m : List (Mod D A)) :
+theorem modListCross [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [Preadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D]
+    (X Y : Mod D A) (l m : List (Mod D A)) :
     (((β_ (modList A (X :: l)) A).hom ≫ modListHeadAct A X l) ▷
         modList A (Y :: m)) ≫
       (modListConcat A (X :: l) (Y :: m)).hom ≫
@@ -628,18 +647,18 @@ legs — by the crossing relation — and so descends. -/
 
 section TensorMulti
 
-variable (A : D) [MonObj A] [BraidedCategory D] [IsCommMonObj A]
-variable [Preadditive D] [MonoidalPreadditive D]
-variable [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorRight Y)]
-variable [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
-  (MonoidalCategory.tensorLeft Y)]
-
 /-- The concatenation coequalizes the binary module-tensor legs of
 two bundled multi-tensors: the crossing relation, lifted through
 the projections. -/
-lemma modTensorLeg_multi (X Y : Mod D A) (l m : List (Mod D A)) :
+lemma modTensorLeg_multi
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X Y : Mod D A) (l m : List (Mod D A)) :
     modTensorLegM A (modMultiMod A X l) (modMultiMod A Y m) ≫
         modMultiConcat A (X :: l) (Y :: m) =
       modTensorLegN A (modMultiMod A X l) (modMultiMod A Y m) ≫
@@ -713,7 +732,15 @@ lemma modTensorLeg_multi (X Y : Mod D A) (l m : List (Mod D A)) :
 
 /-- **The concatenation descends to the binary module tensor
 product of two multi-tensors.** -/
-noncomputable def modTensorMulti (X Y : Mod D A)
+noncomputable def modTensorMulti
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X Y : Mod D A)
     (l m : List (Mod D A)) :
     modTensor A (modMultiMod A X l) (modMultiMod A Y m) ⟶
       modMulti A ((X :: l) ++ (Y :: m)) :=
@@ -724,7 +751,14 @@ noncomputable def modTensorMulti (X Y : Mod D A)
 /-- Defining equation of the descended concatenation against the
 module-tensor projection. -/
 @[reassoc (attr := simp)]
-lemma modTensorπ_multi (X Y : Mod D A) (l m : List (Mod D A)) :
+lemma modTensorπ_multi [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X Y : Mod D A) (l m : List (Mod D A)) :
     modTensorπ A (modMultiMod A X l) (modMultiMod A Y m) ≫
         modTensorMulti A X Y l m =
       modMultiConcat A (X :: l) (Y :: m) :=
@@ -734,7 +768,15 @@ lemma modTensorπ_multi (X Y : Mod D A) (l m : List (Mod D A)) :
 multi-tensor projections: on the folds it is the fold
 concatenation. -/
 @[reassoc]
-lemma tensorHom_modTensorπ_multi (X Y : Mod D A)
+lemma tensorHom_modTensorπ_multi
+    [Category.{v} D] [MonoidalCategory D] (A : D) [MonObj A]
+    [BraidedCategory D] [IsCommMonObj A] [Preadditive D]
+    [MonoidalPreadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorRight Y)]
+    [∀ Y : D, PreservesColimitsOfShape WalkingParallelPair
+      (MonoidalCategory.tensorLeft Y)]
+    (X Y : Mod D A)
     (l m : List (Mod D A)) :
     (modMultiπ A (X :: l) ⊗ₘ modMultiπ A (Y :: m)) ≫
         modTensorπ A (modMultiMod A X l) (modMultiMod A Y m) ≫
@@ -758,19 +800,22 @@ slot exchange, at two distinct modules. -/
 
 section WinSwapMod
 
-variable [SymmetricCategory D]
-variable (A : D) [MonObj A]
-
 /-- Exchange of the two module factors of a relation window,
 carrying the monoid along: `(x ⊗ c) ⊗ y ↦ (y ⊗ c) ⊗ x`. -/
-def modWinSwap (M N : Mod D A) :
+def modWinSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (M N : Mod D A) :
     (M.X ⊗ A) ⊗ N.X ⟶ (N.X ⊗ A) ⊗ M.X :=
   (β_ (M.X ⊗ A) N.X).hom ≫ (N.X ◁ (β_ M.X A).hom) ≫
     (α_ N.X A M.X).inv
 
 /-- The window exchange is an involution. -/
 @[reassoc (attr := simp)]
-lemma modWinSwap_modWinSwap (M N : Mod D A) :
+lemma modWinSwap_modWinSwap
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (M N : Mod D A) :
     modWinSwap A M N ≫ modWinSwap A N M = 𝟙 _ := by
   simp only [modWinSwap, BraidedCategory.braiding_tensor_left_hom,
     Category.assoc, Iso.inv_hom_id_assoc]
@@ -789,7 +834,10 @@ lemma modWinSwap_modWinSwap (M N : Mod D A) :
 braiding**: acting on the first factor and braiding is exchanging
 and acting on the second factor. -/
 @[reassoc]
-lemma modWinSwap_legM (M N : Mod D A) :
+lemma modWinSwap_legM
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (M N : Mod D A) :
     modTensorLegM A M N ≫ (β_ M.X N.X).hom =
       modWinSwap A M N ≫ modTensorLegN A N M := by
   rw [modTensorLegM, BraidedCategory.braiding_naturality_left,
@@ -800,7 +848,10 @@ lemma modWinSwap_legM (M N : Mod D A) :
 /-- **The second leg intertwines the window exchange with the
 braiding**, by the involutivity of both. -/
 @[reassoc]
-lemma modWinSwap_legN (M N : Mod D A) :
+lemma modWinSwap_legN
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A]
+    (M N : Mod D A) :
     modTensorLegN A M N ≫ (β_ M.X N.X).hom =
       modWinSwap A M N ≫ modTensorLegM A N M := by
   have h1 : modTensorLegN A M N =
@@ -817,14 +868,13 @@ end WinSwapMod
 
 section SwapPair
 
-variable [SymmetricCategory D]
-variable (A : D) [MonObj A]
-variable [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
-
 /-- **The braiding of a two-element multi-tensor**: the exchange of
 the two factors descends, the single slot relation consumed through
 the window exchange. -/
-noncomputable def modMultiSwapPair (M N : Mod D A) :
+noncomputable def modMultiSwapPair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    (M N : Mod D A) :
     modMulti A [M, N] ⟶ modMulti A [N, M] :=
   modMultiDesc A (pairResolve A M N ≫ (β_ M.X N.X).hom ≫
       pairResolveInv A N M ≫ modMultiπ A [N, M])
@@ -851,7 +901,10 @@ noncomputable def modMultiSwapPair (M N : Mod D A) :
 /-- Defining equation of the two-element swap: on the fold it is
 the braiding of the factors, conjugated by the unit seeds. -/
 @[reassoc (attr := simp)]
-lemma modMultiπ_swapPair (M N : Mod D A) :
+lemma modMultiπ_swapPair
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D] (A : D)
+    [MonObj A] [Preadditive D] [HasFiniteBiproducts D] [HasCoequalizers D]
+    (M N : Mod D A) :
     modMultiπ A [M, N] ≫ modMultiSwapPair A M N =
       pairResolve A M N ≫ (β_ M.X N.X).hom ≫
         pairResolveInv A N M ≫ modMultiπ A [N, M] :=

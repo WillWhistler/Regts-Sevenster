@@ -20,29 +20,34 @@ open scoped MonObj
 
 universe v u
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-  [SymmetricCategory D]
-variable [Preadditive D] [MonoidalPreadditive D]
-  [HasFiniteBiproducts D] [HasCoequalizers D]
-variable [Linear ℂ D] [MonoidalLinear ℂ D]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorLeft Z)]
-variable [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-  (tensorRight Z)]
-variable (A : D) [MonObj A] [IsCommMonObj A]
-variable (M M' : Mod D A)
-variable [HasColimitsOfShape SmallNat.{v} D]
+variable {D : Type u}
 
 /-- **The shifted graded component**: the colimit of the
 two-index stages along the line through the starting bidegree,
 climbing both arities by the seed transition. -/
-noncomputable def chainBdeg (d : ModDualityDatum A M M')
+noncomputable def chainBdeg
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) : D :=
   chainColimit (fun k => chainStage2 A M M' (p₀ + k) (q₀ + k))
     (fun k => chainDelta2 A M M' d (p₀ + k) (q₀ + k))
 
 /-- The stage insertion of a shifted graded component. -/
-noncomputable def chainBdegι (d : ModDualityDatum A M M')
+noncomputable def chainBdegι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ k : ℕ) :
     chainStage2 A M M' (p₀ + k) (q₀ + k) ⟶
       chainBdeg A M M' d p₀ q₀ :=
@@ -51,7 +56,15 @@ noncomputable def chainBdegι (d : ModDualityDatum A M M')
     (fun k => chainDelta2 A M M' d (p₀ + k) (q₀ + k)) k
 
 /-- The stage insertions commute with the transitions. -/
-theorem chainDelta2_chainBdegι (d : ModDualityDatum A M M')
+theorem chainDelta2_chainBdegι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ k : ℕ) :
     chainDelta2 A M M' d (p₀ + k) (q₀ + k) ≫
         chainBdegι A M M' d p₀ q₀ (k + 1) =
@@ -60,12 +73,15 @@ theorem chainDelta2_chainBdegι (d : ModDualityDatum A M M')
     (fun k => chainStage2 A M M' (p₀ + k) (q₀ + k))
     (fun k => chainDelta2 A M M' d (p₀ + k) (q₀ + k)) k
 
-omit [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair
-    (tensorRight Z)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- The family cast of a line agrees with the two-index stage
 transport. -/
-theorem chainCast_line (p₀ q₀ : ℕ) {a b : ℕ} (h : a = b) :
+theorem chainCast_line
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p₀ q₀ : ℕ) {a b : ℕ} (h : a = b) :
     chainCast (fun k => chainStage2 A M M' (p₀ + k) (q₀ + k))
         h =
       chainStage2Cast A M M' (by omega : p₀ + a = p₀ + b)
@@ -75,7 +91,14 @@ theorem chainCast_line (p₀ q₀ : ℕ) {a b : ℕ} (h : a = b) :
 
 /-- **The stagewise multiplication of two lines**: the two-index
 stage multiplication, transported onto the sum line. -/
-noncomputable def chainBdegMulStage (p₀ q₀ r₀ s₀ i j : ℕ) :
+noncomputable def chainBdegMulStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p₀ q₀ r₀ s₀ i j : ℕ) :
     chainStage2 A M M' (p₀ + i) (q₀ + i) ⊗
       chainStage2 A M M' (r₀ + j) (s₀ + j) ⟶
     chainStage2 A M M' (p₀ + r₀ + (i + 1 + j))
@@ -85,9 +108,14 @@ noncomputable def chainBdegMulStage (p₀ q₀ r₀ s₀ i j : ℕ) :
       (by omega : p₀ + i + 1 + (r₀ + j) = p₀ + r₀ + (i + 1 + j))
       (by omega : q₀ + i + 1 + (s₀ + j) = q₀ + s₀ + (i + 1 + j))
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- The right transition square of the line multiplication. -/
 theorem chainBdegMulStage_delta_right
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
     (d : ModDualityDatum A M M') (p₀ q₀ r₀ s₀ i j : ℕ) :
     (chainStage2 A M M' (p₀ + i) (q₀ + i) ◁
         chainDelta2 A M M' d (r₀ + j) (s₀ + j)) ≫
@@ -110,9 +138,14 @@ theorem chainBdegMulStage_delta_right
       (by omega : q₀ + i + 1 + (s₀ + j) =
         q₀ + s₀ + (i + 1 + j))]
 
-omit [HasColimitsOfShape SmallNat.{v} D] in
 /-- The left transition square of the line multiplication. -/
 theorem chainBdegMulStage_delta_left
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
     (d : ModDualityDatum A M M') (p₀ q₀ r₀ s₀ i j : ℕ) :
     (chainDelta2 A M M' d (p₀ + i) (q₀ + i) ▷
         chainStage2 A M M' (r₀ + j) (s₀ + j)) ≫
@@ -144,13 +177,14 @@ theorem chainBdegMulStage_delta_left
 
 section ZeroLine
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
 /-- The stage identification of the balanced line. -/
-noncomputable def chainBdegZeroStageIso (k : ℕ) :
+noncomputable def chainBdegZeroStageIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (k : ℕ) :
     chainStage2 A M M' (0 + k) (0 + k) ≅ chainStage A M M' k
     where
   hom := chainStage2Cast A M M' (Nat.zero_add k)
@@ -179,7 +213,15 @@ noncomputable def chainBdegZeroStageIso (k : ℕ) :
 set_option maxHeartbeats 1600000 in
 /-- **The balanced line is the degree-zero algebra carrier**: the
 zero-offset line's colimit is the splitting-chain algebra. -/
-noncomputable def chainBdegZeroIso (d : ModDualityDatum A M M') :
+noncomputable def chainBdegZeroIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M') :
     chainBdeg A M M' d 0 0 ≅ chainB A M M' d :=
   chainColimitMapIso
     (fun k => chainStage2 A M M' (0 + k) (0 + k))
@@ -201,6 +243,11 @@ end ZeroLine
 /-- The stages of the raised line are the shifted stages of the
 line. -/
 noncomputable def chainBdegSuccStageIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
     (p₀ q₀ k : ℕ) :
     chainStage2 A M M' (p₀ + 1 + k) (q₀ + 1 + k) ≅
       chainStage2 A M M' (p₀ + (k + 1)) (q₀ + (k + 1)) where
@@ -219,7 +266,15 @@ set_option maxHeartbeats 1600000 in
 /-- **The raised line is the line**: shifting both offsets by one
 is passing to the tail of the chain, which has the same
 colimit. -/
-noncomputable def chainBdegSuccIso (d : ModDualityDatum A M M')
+noncomputable def chainBdegSuccIso
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) :
     chainBdeg A M M' d (p₀ + 1) (q₀ + 1) ≅
       chainBdeg A M M' d p₀ q₀ :=
@@ -246,14 +301,19 @@ noncomputable def chainBdegSuccIso (d : ModDualityDatum A M M')
 
 section MulColimit
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorRight X)]
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
 /-- **The graded multiplication**: two lines multiply into the
 sum line at the colimit level. -/
-noncomputable def chainBdegMul (d : ModDualityDatum A M M')
+noncomputable def chainBdegMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ r₀ s₀ : ℕ) :
     chainBdeg A M M' d p₀ q₀ ⊗ chainBdeg A M M' d r₀ s₀ ⟶
       chainBdeg A M M' d (p₀ + r₀) (q₀ + s₀) :=
@@ -269,34 +329,46 @@ noncomputable def chainBdegMul (d : ModDualityDatum A M M')
     (chainBdegMulStage_delta_left A M M' d p₀ q₀ r₀ s₀)
     (chainBdegMulStage_delta_right A M M' d p₀ q₀ r₀ s₀)
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)] in
 /-- Transport of a graded component along offset equalities. -/
-noncomputable def chainBdegCast (d : ModDualityDatum A M M')
+noncomputable def chainBdegCast
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     {p₀ q₀ p₀' q₀' : ℕ} (hp : p₀ = p₀') (hq : q₀ = q₀') :
     chainBdeg A M M' d p₀ q₀ ⟶ chainBdeg A M M' d p₀' q₀' :=
   eqToHom (by rw [hp, hq])
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)] in
 /-- The trivial offset transport is the identity. -/
 @[simp]
-theorem chainBdegCast_rfl (d : ModDualityDatum A M M')
+theorem chainBdegCast_rfl
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) :
     chainBdegCast A M M' d (rfl : p₀ = p₀) (rfl : q₀ = q₀) =
       𝟙 _ := rfl
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorRight X)]
-  [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)] in
 /-- Offset transports compose. -/
 @[reassoc (attr := simp)]
-theorem chainBdegCast_trans (d : ModDualityDatum A M M')
+theorem chainBdegCast_trans
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     {p₀ q₀ p₀' q₀' p₀'' q₀'' : ℕ}
     (hp : p₀ = p₀') (hq : q₀ = q₀')
     (hp' : p₀' = p₀'') (hq' : q₀' = q₀'') :
@@ -309,7 +381,17 @@ theorem chainBdegCast_trans (d : ModDualityDatum A M M')
 /-- On stages, the graded multiplication is the stagewise line
 multiplication. -/
 @[reassoc]
-theorem ι_tensorHom_chainBdegMul (d : ModDualityDatum A M M')
+theorem ι_tensorHom_chainBdegMul
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorRight X)]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ r₀ s₀ i j : ℕ) :
     (chainBdegι A M M' d p₀ q₀ i ⊗ₘ
       chainBdegι A M M' d r₀ s₀ j) ≫
@@ -322,14 +404,14 @@ end MulColimit
 
 section LineIns
 
-variable [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-  (tensorLeft X)]
-
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- The stage insertion transported onto the line. -/
-noncomputable def chainBdegInsPStage (p₀ q₀ k : ℕ) :
+noncomputable def chainBdegInsPStage
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (p₀ q₀ k : ℕ) :
     M'.X ⊗ chainStage2 A M M' (p₀ + k) (q₀ + k) ⟶
       chainStage2 A M M' (p₀ + 1 + k) (q₀ + k) :=
   chainInsP A M M' (p₀ + k) (q₀ + k) ≫
@@ -337,11 +419,15 @@ noncomputable def chainBdegInsPStage (p₀ q₀ k : ℕ) :
       (by omega : p₀ + k + 1 = p₀ + 1 + k)
       (by omega : q₀ + k = q₀ + k)
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)]
-  [HasColimitsOfShape SmallNat.{v} D] in
 /-- The line insertion commutes with the transitions. -/
-theorem chainBdegInsPStage_delta (d : ModDualityDatum A M M')
+theorem chainBdegInsPStage_delta
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    (d : ModDualityDatum A M M')
     (p₀ q₀ k : ℕ) :
     (M'.X ◁ chainDelta2 A M M' d (p₀ + k) (q₀ + k)) ≫
         chainBdegInsPStage A M M' p₀ q₀ (k + 1) =
@@ -358,11 +444,17 @@ theorem chainBdegInsPStage_delta (d : ModDualityDatum A M M')
       (by omega : p₀ + k + 1 = p₀ + 1 + k)
       (by omega : q₀ + k = q₀ + k)]
 
-omit [∀ X : D, PreservesColimitsOfShape SmallNat.{v}
-    (tensorLeft X)] in
 /-- The line insertion absorbs the chain maps under the
 inclusions. -/
-theorem lineIns_chainMap_ι (d : ModDualityDatum A M M')
+theorem lineIns_chainMap_ι
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) {a b : ℕ} (h : a ≤ b) :
     (M'.X ◁ chainMap
         (fun k => chainStage2 A M M' (p₀ + k) (q₀ + k))
@@ -385,7 +477,15 @@ theorem lineIns_chainMap_ι (d : ModDualityDatum A M M')
     exact ih
 
 /-- The insertion cocone over the line diagram. -/
-noncomputable def chainBdegInsPCocone (d : ModDualityDatum A M M')
+noncomputable def chainBdegInsPCocone
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) :
     Cocone (chainDiagram
         (fun k => chainStage2 A M M' (p₀ + k) (q₀ + k))
@@ -416,7 +516,16 @@ noncomputable def chainBdegInsPCocone (d : ModDualityDatum A M M')
           (leOfHom (smallNatEquiv.inverse.map f)) }
 
 /-- **The colimit-level line insertion.** -/
-noncomputable def chainBdegInsP (d : ModDualityDatum A M M')
+noncomputable def chainBdegInsP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ : ℕ) :
     M'.X ⊗ chainBdeg A M M' d p₀ q₀ ⟶
       chainBdeg A M M' d (p₀ + 1) q₀ :=
@@ -429,7 +538,16 @@ noncomputable def chainBdegInsP (d : ModDualityDatum A M M')
 
 /-- On a stage, the line insertion is insert-then-include. -/
 @[reassoc]
-theorem whiskerLeft_ι_chainBdegInsP (d : ModDualityDatum A M M')
+theorem whiskerLeft_ι_chainBdegInsP
+    [Category.{v} D] [MonoidalCategory D] [SymmetricCategory D]
+    [Preadditive D] [MonoidalPreadditive D] [HasFiniteBiproducts D]
+    [HasCoequalizers D] [Linear ℂ D] [MonoidalLinear ℂ D]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorLeft Z)]
+    [∀ Z : D, PreservesColimitsOfShape WalkingParallelPair (tensorRight Z)]
+    (A : D) [MonObj A] [IsCommMonObj A] (M : Mod D A) (M' : Mod D A)
+    [HasColimitsOfShape SmallNat.{v} D]
+    [∀ X : D, PreservesColimitsOfShape SmallNat.{v} (tensorLeft X)]
+    (d : ModDualityDatum A M M')
     (p₀ q₀ k : ℕ) :
     (M'.X ◁ chainBdegι A M M' d p₀ q₀ k) ≫
         chainBdegInsP A M M' d p₀ q₀ =

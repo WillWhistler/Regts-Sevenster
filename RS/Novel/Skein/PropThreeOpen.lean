@@ -24,12 +24,13 @@ theorem pairedValueLedger : PairedValueLedger :=
 
 namespace EdgeSubset
 
-variable {α : Type} [LinearOrder α] {W : Fragment α}
-  {F : EdgeSubset W}
+variable {α : Type}
 
 /-- Signed values agree across equal chord diagrams,
 unconditionally. -/
-theorem signedValueAt_of_labelChords_eq_pairing {k ℓ : ℕ}
+theorem signedValueAt_of_labelChords_eq_pairing
+    [LinearOrder α] {W : Fragment α} {F : EdgeSubset W}
+    {k ℓ : ℕ}
     (hM : MixedFunctional k ℓ) (st : GenBoundaryState k ℓ α)
     (hbnd : genBoundarySubsetMatches W F.flags st)
     {κ κ' : F.RelTransitionSystem}

@@ -75,17 +75,19 @@ abbrev Tower : Type v := AsSmall.{v} ℕ
 instance countable_tower : Countable Tower.{v} :=
   inferInstanceAs (Countable (ULift ℕ))
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- The diagram of a tower of objects of `C`. -/
-noncomputable def towerDiagram {Y : ℕ → C} (u : ∀ n, Y n ⟶ Y (n + 1)) :
+noncomputable def towerDiagram [SmallCategory C]
+    {Y : ℕ → C} (u : ∀ n, Y n ⟶ Y (n + 1)) :
     Tower.{v} ⥤ C :=
   AsSmall.down ⋙ Functor.ofSequence u
 
 /-- **The colimit of a tower of embedded objects is countably
 presented.**  This is the shape in which countable presentation is
 produced below: no bookkeeping beyond the tower itself. -/
-theorem countablyPresented_colimit_tower {Y : ℕ → C}
+theorem countablyPresented_colimit_tower [SmallCategory C]
+    {Y : ℕ → C}
     (u : ∀ n, Y n ⟶ Y (n + 1)) :
     CountablyPresented (colimit (towerDiagram u ⋙ indOf)) :=
   ⟨Tower.{v}, inferInstance, inferInstance, inferInstance,
@@ -103,21 +105,24 @@ embedded object through one of them. -/
 
 section Presentation
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- The diagram of embedded objects presenting an ind-object. -/
-noncomputable abbrev presDiagram (A : Ind C) : A.presentation.I ⥤ Ind C :=
+noncomputable abbrev presDiagram [SmallCategory C]
+    (A : Ind C) : A.presentation.I ⥤ Ind C :=
   A.presentation.F ⋙ indOf
 
 /-- The structural map of a stage of the chosen presentation into the
 ind-object it presents. -/
-noncomputable def presStage (A : Ind C) (i : A.presentation.I) :
+noncomputable def presStage [SmallCategory C]
+    (A : Ind C) (i : A.presentation.I) :
     indOf.obj (A.presentation.F.obj i) ⟶ A :=
   colimit.ι (presDiagram A) i ≫ (Ind.colimitPresentationCompYoneda A).hom
 
 /-- The structural maps are compatible with the transition maps of
 the presentation. -/
-theorem presStage_naturality (A : Ind C) {i j : A.presentation.I}
+theorem presStage_naturality [SmallCategory C]
+    (A : Ind C) {i j : A.presentation.I}
     (α : i ⟶ j) :
     indOf.map (A.presentation.F.map α) ≫ presStage A j = presStage A i := by
   rw [presStage, presStage, ← Category.assoc]
@@ -125,7 +130,8 @@ theorem presStage_naturality (A : Ind C) {i j : A.presentation.I}
 
 /-- **A map out of an embedded object factors through a stage of the
 presentation**: this is compactness of the embedded objects. -/
-theorem exists_presStage_factor (A : Ind C) {Y : C}
+theorem exists_presStage_factor [SmallCategory C]
+    (A : Ind C) {Y : C}
     (f : indOf.obj Y ⟶ A) :
     ∃ (i : A.presentation.I) (g : Y ⟶ A.presentation.F.obj i),
       indOf.map g ≫ presStage A i = f := by
@@ -139,7 +145,8 @@ theorem exists_presStage_factor (A : Ind C) {Y : C}
   rw [Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
 /-- **A point of an ind-object factors through a stage.** -/
-theorem exists_presStage_point [MonoidalCategory C] (A : Ind C)
+theorem exists_presStage_point [SmallCategory C]
+    [MonoidalCategory C] (A : Ind C)
     (f : 𝟙_ (Ind C) ⟶ A) :
     ∃ (i : A.presentation.I) (e : 𝟙_ (Ind C) ⟶
       indOf.obj (A.presentation.F.obj i)), e ≫ presStage A i = f := by
@@ -161,86 +168,113 @@ is closed under multiplication one rung at a time. -/
 
 section Generate
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-variable (A : Ind C) [MonObj A]
+variable {C : Type v}
 
 /-- The square of a stage of the presentation, multiplied into the
 algebra. -/
-noncomputable def stageMulToAlg (i : A.presentation.I) :
+noncomputable def stageMulToAlg
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) :
     indOf.obj (A.presentation.F.obj i ⊗ A.presentation.F.obj i) ⟶ A :=
   (indOfTensorIso _ _).inv ≫ (presStage A i ⊗ₘ presStage A i) ≫ μ[A]
 
 /-- A stage of the presentation absorbing the square of the given
 stage. -/
-noncomputable def mulStage (i : A.presentation.I) : A.presentation.I :=
+noncomputable def mulStage
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) : A.presentation.I :=
   (exists_presStage_factor A (stageMulToAlg A i)).choose
 
 /-- The multiplication of a stage with itself, landing in the
 absorbing stage. -/
-noncomputable def mulStageMap (i : A.presentation.I) :
+noncomputable def mulStageMap
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) :
     A.presentation.F.obj i ⊗ A.presentation.F.obj i ⟶
       A.presentation.F.obj (mulStage A i) :=
   (exists_presStage_factor A (stageMulToAlg A i)).choose_spec.choose
 
 /-- The comparison of the embedding with the tensor product turns the
 square of a stage into the product of its two structural maps. -/
-theorem indOfTensorIso_stageMulToAlg (i : A.presentation.I) :
+theorem indOfTensorIso_stageMulToAlg
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) :
     (indOfTensorIso (A.presentation.F.obj i)
         (A.presentation.F.obj i)).hom ≫ stageMulToAlg A i =
       (presStage A i ⊗ₘ presStage A i) ≫ μ[A] := by
   rw [stageMulToAlg, ← Category.assoc, Iso.hom_inv_id, Category.id_comp]
 
-theorem mulStageMap_spec (i : A.presentation.I) :
+theorem mulStageMap_spec
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) :
     indOf.map (mulStageMap A i) ≫ presStage A (mulStage A i) =
       stageMulToAlg A i :=
   (exists_presStage_factor A (stageMulToAlg A i)).choose_spec.choose_spec
 
 /-- The next rung: a stage above the given one and above the stage
 absorbing its square. -/
-noncomputable def nextStage (i : A.presentation.I) : A.presentation.I :=
+noncomputable def nextStage
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) : A.presentation.I :=
   IsFiltered.max i (mulStage A i)
 
 /-- The transition map of the tower, at the level of the index
 category of the presentation. -/
-noncomputable def stageStep (i : A.presentation.I) : i ⟶ nextStage A i :=
+noncomputable def stageStep
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) : i ⟶ nextStage A i :=
   IsFiltered.leftToMax _ _
 
 /-- The multiplication of a stage with itself, landing in the next
 rung. -/
-noncomputable def stageMul (i : A.presentation.I) :
+noncomputable def stageMul
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) :
     A.presentation.F.obj i ⊗ A.presentation.F.obj i ⟶
       A.presentation.F.obj (nextStage A i) :=
   mulStageMap A i ≫
     A.presentation.F.map (IsFiltered.rightToMax i (mulStage A i))
 
-theorem stageMul_spec (i : A.presentation.I) :
+theorem stageMul_spec
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i : A.presentation.I) :
     indOf.map (stageMul A i) ≫ presStage A (nextStage A i) =
       stageMulToAlg A i := by
   rw [stageMul, CategoryTheory.Functor.map_comp, Category.assoc,
     presStage_naturality, mulStageMap_spec]
 
-variable (i₀ : A.presentation.I)
-
 /-- The stages of the generated tower. -/
-noncomputable def towerIdx : ℕ → A.presentation.I
+noncomputable def towerIdx
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I) : ℕ → A.presentation.I
   | 0 => i₀
-  | n + 1 => nextStage A (towerIdx n)
+  | n + 1 => nextStage A (towerIdx A i₀ n)
 
 /-- The rungs of the generated tower, as objects of `C`. -/
-@[reducible] noncomputable def towerObj (n : ℕ) : C :=
+@[reducible] noncomputable def towerObj
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I)
+    (n : ℕ) : C :=
   A.presentation.F.obj (towerIdx A i₀ n)
 
 /-- The transition maps of the generated tower. -/
-noncomputable def towerStep (n : ℕ) :
+noncomputable def towerStep
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I)
+    (n : ℕ) :
     towerObj A i₀ n ⟶ towerObj A i₀ (n + 1) :=
   A.presentation.F.map (stageStep A (towerIdx A i₀ n))
 
 /-- The tower as a diagram of ind-objects. -/
-noncomputable def towerSeq : ℕ ⥤ Ind C :=
+noncomputable def towerSeq
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I) : ℕ ⥤ Ind C :=
   Functor.ofSequence (towerStep A i₀) ⋙ indOf
 
 /-- The cocone of the tower under the algebra. -/
-noncomputable def towerNatTrans :
+noncomputable def towerNatTrans
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I) :
     towerSeq A i₀ ⟶ (Functor.const ℕ).obj A :=
   NatTrans.ofSequence (fun n => presStage A (towerIdx A i₀ n)) (by
     intro n
@@ -259,32 +293,47 @@ tower.  It is not known to be a subobject of the algebra — see
 the module documentation — but it is countably presented, it maps to
 the algebra, it contains the unit and it is closed under
 multiplication rung by rung. -/
-noncomputable def stageSubalgebra : Ind C :=
+noncomputable def stageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I) : Ind C :=
   colimit (towerDiagram (towerStep A i₀) ⋙ indOf)
 
 /-- **The generated tower is countably presented.** -/
-theorem countablyPresented_stageSubalgebra :
+theorem countablyPresented_stageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I) :
     CountablyPresented (stageSubalgebra A i₀) :=
   countablyPresented_colimit_tower _
 
 /-- The map of the generated tower into the algebra. -/
-noncomputable def stageSubalgebraHom : stageSubalgebra A i₀ ⟶ A :=
+noncomputable def stageSubalgebraHom
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I) : stageSubalgebra A i₀ ⟶ A :=
   colimit.desc _ (Cocone.whisker AsSmall.down
     (Cocone.mk A (towerNatTrans A i₀)))
 
 /-- The rungs of the generated tower map into it. -/
-noncomputable def stageRung (n : ℕ) :
+noncomputable def stageRung
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I)
+    (n : ℕ) :
     indOf.obj (towerObj A i₀ n) ⟶ stageSubalgebra A i₀ :=
   colimit.ι (towerDiagram (towerStep A i₀) ⋙ indOf) ⟨n⟩
 
-@[simp] theorem stageRung_comp_hom (n : ℕ) :
+@[simp] theorem stageRung_comp_hom
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I)
+    (n : ℕ) :
     stageRung A i₀ n ≫ stageSubalgebraHom A i₀ =
       presStage A (towerIdx A i₀ n) :=
   colimit.ι_desc _ _
 
 /-- The multiplication of a rung of the generated tower with itself,
 landing in the next rung. -/
-noncomputable def stageRungMul (n : ℕ) :
+noncomputable def stageRungMul
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I)
+    (n : ℕ) :
     indOf.obj (towerObj A i₀ n) ⊗ indOf.obj (towerObj A i₀ n) ⟶
       stageSubalgebra A i₀ :=
   (indOfTensorIso (towerObj A i₀ n) (towerObj A i₀ n)).hom ≫
@@ -293,7 +342,10 @@ noncomputable def stageRungMul (n : ℕ) :
 /-- **The generated tower is closed under multiplication, rung by
 rung**: the product of a rung with itself, taken in the algebra,
 factors through the tower. -/
-theorem stageRungMul_comp_hom (n : ℕ) :
+theorem stageRungMul_comp_hom
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A]
+    (i₀ : A.presentation.I)
+    (n : ℕ) :
     stageRungMul A i₀ n ≫ stageSubalgebraHom A i₀ =
       (presStage A (towerIdx A i₀ n) ⊗ₘ
         presStage A (towerIdx A i₀ n)) ≫ μ[A] :=
@@ -315,20 +367,25 @@ Generating the tower at a stage through which the unit of the algebra
 factors puts the unit into the tower. -/
 
 /-- A stage of the presentation through which the unit factors. -/
-noncomputable def unitStage : A.presentation.I :=
+noncomputable def unitStage
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A] :
+    A.presentation.I :=
   (exists_presStage_point A η[A]).choose
 
 /-- The unit, read at the stage that absorbs it. -/
-noncomputable def unitStagePoint :
+noncomputable def unitStagePoint
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A] :
     𝟙_ (Ind C) ⟶ indOf.obj (A.presentation.F.obj (unitStage A)) :=
   (exists_presStage_point A η[A]).choose_spec.choose
 
-theorem unitStagePoint_spec :
+theorem unitStagePoint_spec
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A] :
     unitStagePoint A ≫ presStage A (unitStage A) = η[A] :=
   (exists_presStage_point A η[A]).choose_spec.choose_spec
 
 /-- **The tower generated at the unit stage contains the unit.** -/
-theorem exists_unit_stageSubalgebra :
+theorem exists_unit_stageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] (A : Ind C) [MonObj A] :
     ∃ e : 𝟙_ (Ind C) ⟶ stageSubalgebra A (unitStage A),
       e ≫ stageSubalgebraHom A (unitStage A) = η[A] := by
   refine ⟨unitStagePoint A ≫ stageRung A (unitStage A) 0, ?_⟩
@@ -352,14 +409,15 @@ on the embedded objects. -/
 
 section Detect
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type v}
 
 /-- **Monomorphisms are detected on the embedded objects**: a map of
 ind-objects along which maps out of embedded objects cancel is a
 monomorphism.  Every ind-object is a filtered colimit of embedded
 objects, so a pair of maps into the source is determined by its
 restrictions to embedded objects. -/
-theorem mono_of_hom_indOf_injective {Y Z : Ind C} (f : Y ⟶ Z)
+theorem mono_of_hom_indOf_injective [SmallCategory C]
+    {Y Z : Ind C} (f : Y ⟶ Z)
     (h : ∀ (W : C) (u v : indOf.obj W ⟶ Y), u ≫ f = v ≫ f → u = v) :
     Mono f := by
   refine ⟨fun {T} u v huv => ?_⟩
@@ -382,38 +440,44 @@ end Detect
 
 section StageImage
 
-variable {C : Type v} [SmallCategory C] [Abelian C]
-variable (A : Ind C)
+variable {C : Type v}
 
 /-- The image in the ind-object of a stage of its presentation. -/
-noncomputable def stageImage (i : A.presentation.I) : Ind C :=
+noncomputable def stageImage [SmallCategory C] [Abelian C] (A : Ind C)
+    (i : A.presentation.I) : Ind C :=
   Limits.image (presStage A i)
 
 /-- The image of a stage, as a subobject of the ind-object. -/
-noncomputable def stageImageι (i : A.presentation.I) :
+noncomputable def stageImageι [SmallCategory C] [Abelian C] (A : Ind C)
+    (i : A.presentation.I) :
     stageImage A i ⟶ A :=
   Limits.image.ι (presStage A i)
 
-instance mono_stageImageι (i : A.presentation.I) :
+instance mono_stageImageι [SmallCategory C] [Abelian C] (A : Ind C)
+    (i : A.presentation.I) :
     Mono (stageImageι A i) :=
   inferInstanceAs (Mono (Limits.image.ι (presStage A i)))
 
 /-- The stage maps through its image. -/
-noncomputable def stageToImage (i : A.presentation.I) :
+noncomputable def stageToImage [SmallCategory C] [Abelian C] (A : Ind C)
+    (i : A.presentation.I) :
     indOf.obj (A.presentation.F.obj i) ⟶ stageImage A i :=
   Limits.factorThruImage (presStage A i)
 
-instance epi_stageToImage (i : A.presentation.I) :
+instance epi_stageToImage [SmallCategory C] [Abelian C] (A : Ind C)
+    (i : A.presentation.I) :
     Epi (stageToImage A i) :=
   inferInstanceAs (Epi (Limits.factorThruImage (presStage A i)))
 
-@[simp] theorem stageToImage_comp_ι (i : A.presentation.I) :
+@[simp] theorem stageToImage_comp_ι [SmallCategory C] [Abelian C] (A : Ind C)
+    (i : A.presentation.I) :
     stageToImage A i ≫ stageImageι A i = presStage A i :=
   Limits.image.fac (presStage A i)
 
 /-- A transition map of the presentation includes one image into the
 next. -/
-noncomputable def stageImageMap {i j : A.presentation.I} (α : i ⟶ j) :
+noncomputable def stageImageMap [SmallCategory C] [Abelian C] (A : Ind C)
+    {i j : A.presentation.I} (α : i ⟶ j) :
     stageImage A i ⟶ stageImage A j :=
   Limits.image.lift
     { I := stageImage A j
@@ -423,7 +487,8 @@ noncomputable def stageImageMap {i j : A.presentation.I} (α : i ⟶ j) :
         rw [Category.assoc, stageToImage_comp_ι]
         exact presStage_naturality A α }
 
-@[simp] theorem stageImageMap_comp_ι {i j : A.presentation.I}
+@[simp] theorem stageImageMap_comp_ι [SmallCategory C] [Abelian C] (A : Ind C)
+    {i j : A.presentation.I}
     (α : i ⟶ j) :
     stageImageMap A α ≫ stageImageι A j = stageImageι A i :=
   Limits.image.lift_fac _
@@ -432,30 +497,40 @@ end StageImage
 
 section ImageTower
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C]
-variable (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
+variable {C : Type v}
 
 /-- The rungs of the image tower. -/
-noncomputable def imageRung (n : ℕ) : Ind C :=
+noncomputable def imageRung
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) : Ind C :=
   stageImage A (towerIdx A i₀ n)
 
 /-- The transition maps of the image tower. -/
-noncomputable def imageRungStep (n : ℕ) :
+noncomputable def imageRungStep
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     imageRung A i₀ n ⟶ imageRung A i₀ (n + 1) :=
   stageImageMap A (stageStep A (towerIdx A i₀ n))
 
 /-- The image tower as a diagram of ind-objects. -/
-noncomputable def imageSeq : ℕ ⥤ Ind C :=
+noncomputable def imageSeq
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) : ℕ ⥤ Ind C :=
   Functor.ofSequence (imageRungStep A i₀)
 
 /-- **The subalgebra generated by a stage, realised inside the
 algebra**: the colimit of the tower of images. -/
-noncomputable def imageSubalgebra : Ind C :=
+noncomputable def imageSubalgebra
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) : Ind C :=
   colimit (AsSmall.down ⋙ imageSeq A i₀)
 
 /-- The cocone of the image tower under the algebra. -/
-noncomputable def imageNatTrans :
+noncomputable def imageNatTrans
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) :
     imageSeq A i₀ ⟶ (Functor.const ℕ).obj A :=
   NatTrans.ofSequence (fun n => stageImageι A (towerIdx A i₀ n)) (by
     intro n
@@ -469,16 +544,24 @@ noncomputable def imageNatTrans :
     exact (eq_whisker h1 _).trans (h2.trans (Category.comp_id _).symm))
 
 /-- The map of the image tower into the algebra. -/
-noncomputable def imageSubalgebraHom : imageSubalgebra A i₀ ⟶ A :=
+noncomputable def imageSubalgebraHom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) : imageSubalgebra A i₀ ⟶ A :=
   colimit.desc _ (Cocone.whisker AsSmall.down
     (Cocone.mk A (imageNatTrans A i₀)))
 
 /-- The rungs of the image tower map into it. -/
-noncomputable def imageRungι (n : ℕ) :
+noncomputable def imageRungι
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     imageRung A i₀ n ⟶ imageSubalgebra A i₀ :=
   colimit.ι (AsSmall.down ⋙ imageSeq A i₀) ⟨n⟩
 
-@[simp] theorem imageRungι_comp_hom (n : ℕ) :
+@[simp] theorem imageRungι_comp_hom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (n : ℕ) :
     imageRungι A i₀ n ≫ imageSubalgebraHom A i₀ =
       stageImageι A (towerIdx A i₀ n) :=
   colimit.ι_desc _ _
@@ -487,7 +570,9 @@ noncomputable def imageRungι (n : ℕ) :
 an embedded object into the colimit factors through a rung, two such
 factorisations are merged at a later rung, and the rung maps into the
 algebra are monomorphisms. -/
-theorem mono_imageSubalgebraHom : Mono (imageSubalgebraHom A i₀) := by
+theorem mono_imageSubalgebraHom
+    [SmallCategory C] [MonoidalCategory C] [Abelian C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I) : Mono (imageSubalgebraHom A i₀) := by
   refine mono_of_hom_indOf_injective _ (fun W u v huv => ?_)
   obtain ⟨s, u', hu'⟩ := exists_factor_of_hom_colimit
     (AsSmall.down ⋙ imageSeq A i₀) W u
@@ -545,22 +630,22 @@ hypothesis of `RS.Classical.Deligne.GammaCountable` supplies. -/
 
 section PresentedTower
 
-variable {C : Type v} [SmallCategory C] [Abelian C]
+variable {C : Type v}
 
 variable (C) in
 /-- **Embedded images**: the image in the ind-completion of a map out
 of an embedded object is again embedded. -/
-def IndImageEmbedded : Prop :=
+def IndImageEmbedded [SmallCategory C] [Abelian C] : Prop :=
   ∀ (Y : C) (Z : Ind C) (f : indOf.obj Y ⟶ Z),
     ∃ W : C, Nonempty (Limits.image f ≅ indOf.obj W)
-
-variable [MonoidalCategory C]
-variable (A : Ind C) [MonObj A] (i₀ : A.presentation.I)
 
 /-- **The image tower is countably presented** when the images of
 embedded objects are embedded: the tower is an ℕ-tower, and each rung
 is by hypothesis an embedded object. -/
-theorem countablyPresented_imageSubalgebra (h : IndImageEmbedded C) :
+theorem countablyPresented_imageSubalgebra
+    [SmallCategory C] [Abelian C] [MonoidalCategory C] (A : Ind C)
+    [MonObj A] (i₀ : A.presentation.I)
+    (h : IndImageEmbedded C) :
     CountablyPresented (imageSubalgebra A i₀) := by
   classical
   choose Z hZ using fun n : ℕ =>
@@ -615,16 +700,18 @@ single stage. -/
 
 section Untwist
 
-variable {D : Type u} [Category.{v} D] [MonoidalCategory D]
-variable {L : D} (e : L ⊗ L ≅ 𝟙_ D)
+variable {D : Type u}
 
 /-- **Untwisting**: along a trivialisation of the square of `L`, a
 point of `L ⊗ W` becomes a map `L ⟶ W`. -/
-def oddUntwist {W : D} (h : 𝟙_ D ⟶ L ⊗ W) : L ⟶ W :=
+def oddUntwist [Category.{v} D] [MonoidalCategory D] {L : D} (e : L ⊗ L ≅ 𝟙_ D)
+    {W : D} (h : 𝟙_ D ⟶ L ⊗ W) : L ⟶ W :=
   (ρ_ L).inv ≫ L ◁ h ≫ (α_ L L W).inv ≫ e.hom ▷ W ≫ (λ_ W).hom
 
 /-- Untwisting is natural in the target. -/
-theorem oddUntwist_comp {W W' : D} (h : 𝟙_ D ⟶ L ⊗ W) (k : W ⟶ W') :
+theorem oddUntwist_comp
+    [Category.{v} D] [MonoidalCategory D] {L : D} (e : L ⊗ L ≅ 𝟙_ D)
+    {W W' : D} (h : 𝟙_ D ⟶ L ⊗ W) (k : W ⟶ W') :
     oddUntwist e (h ≫ L ◁ k) = oddUntwist e h ≫ k := by
   simp only [oddUntwist, MonoidalCategory.whiskerLeft_comp,
     Category.assoc, associator_inv_naturality_right_assoc,
@@ -632,12 +719,15 @@ theorem oddUntwist_comp {W W' : D} (h : 𝟙_ D ⟶ L ⊗ W) (k : W ⟶ W') :
 
 /-- The zigzag automorphism of `L` attached to a trivialisation of
 its square: untwisting the twist of the identity. -/
-def oddZigzag : L ≅ L :=
+def oddZigzag
+    [Category.{v} D] [MonoidalCategory D] {L : D} (e : L ⊗ L ≅ 𝟙_ D) : L ≅ L :=
   (ρ_ L).symm ≪≫ whiskerLeftIso L e.symm ≪≫ (α_ L L L).symm ≪≫
     whiskerRightIso e L ≪≫ λ_ L
 
 /-- Untwisting undoes twisting, up to the zigzag automorphism. -/
-theorem oddUntwist_twist {W : D} (g : L ⟶ W) :
+theorem oddUntwist_twist
+    [Category.{v} D] [MonoidalCategory D] {L : D} (e : L ⊗ L ≅ 𝟙_ D)
+    {W : D} (g : L ⟶ W) :
     oddUntwist e (e.inv ≫ L ◁ g) = (oddZigzag e).hom ≫ g :=
   oddUntwist_comp e e.inv g
 
@@ -645,16 +735,16 @@ end Untwist
 
 section OddCompact
 
-variable {C : Type v} [SmallCategory C] [MonoidalCategory C]
-  [Abelian C] [RigidCategory C] [MonoidalPreadditive C]
+variable {C : Type v}
 
-omit [Abelian C] [RigidCategory C] [MonoidalPreadditive C] in
 /-- **An object whose square is the unit is compact**: a map from it
 into a filtered colimit factors through a stage.  Tensoring with the
 object preserves the colimit, and the unit is compact, so the
 translated point factors; untwisting brings the factorisation
 back. -/
-theorem exists_factor_of_sq_unit_hom_colimit {L : Ind C}
+theorem exists_factor_of_sq_unit_hom_colimit
+    [SmallCategory C] [MonoidalCategory C]
+    {L : Ind C}
     (e : L ⊗ L ≅ 𝟙_ (Ind C)) {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) (f : L ⟶ colimit D) :
     ∃ (i : I) (g : L ⟶ D.obj i), g ≫ colimit.ι D i = f := by
@@ -682,21 +772,21 @@ theorem exists_factor_of_sq_unit_hom_colimit {L : Ind C}
   rw [Category.assoc, h1, ← Category.assoc, Iso.inv_hom_id,
     Category.id_comp]
 
-omit [Abelian C] [RigidCategory C] [MonoidalPreadditive C] in
 /-- Twisting a map out of an object with unit square into a point of
 a translate turns composition into whiskering. -/
-theorem oddTwist_comp {L : Ind C} (e : L ⊗ L ≅ 𝟙_ (Ind C))
+theorem oddTwist_comp [SmallCategory C] [MonoidalCategory C]
+    {L : Ind C} (e : L ⊗ L ≅ 𝟙_ (Ind C))
     {Z Z' : Ind C} (x : L ⟶ Z) (y : Z ⟶ Z') :
     e.inv ≫ L ◁ (x ≫ y) = (e.inv ≫ L ◁ x) ≫ L ◁ y := by
   rw [MonoidalCategory.whiskerLeft_comp, Category.assoc]
 
-omit [Abelian C] [RigidCategory C] [MonoidalPreadditive C] in
 /-- **Merging of stage factorisations out of an object with unit
 square**: two factorisations that agree after passing to a filtered
 colimit are merged by transition maps of the diagram.  With the
 previous theorem this is the whole compactness formula for the odd
 line. -/
-theorem factor_eq_of_sq_unit_hom_colimit {L : Ind C}
+theorem factor_eq_of_sq_unit_hom_colimit [SmallCategory C] [MonoidalCategory C]
+    {L : Ind C}
     (e : L ⊗ L ≅ 𝟙_ (Ind C)) {I : Type v} [SmallCategory I]
     [IsFiltered I] (D : I ⥤ Ind C) {i j : I} (g₁ : L ⟶ D.obj i)
     (g₂ : L ⟶ D.obj j)
@@ -736,19 +826,21 @@ theorem factor_eq_of_sq_unit_hom_colimit {L : Ind C}
     (congrArg (fun t : 𝟙_ (Ind C) ⟶ L ⊗ D.obj k => oddUntwist e t)
       hk')).trans (oddUntwist_twist e (g₂ ≫ D.map β))
 
-variable [SymmetricCategory (Ind C)] [HasFiniteBiproducts (Ind C)]
-
 /-- The summands of a mixed sum. -/
-noncomputable def mixFamily (L : OddLine (Ind C)) (p q : ℕ) :
+noncomputable def mixFamily [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [SymmetricCategory (Ind C)]
+    (L : OddLine (Ind C)) (p q : ℕ) :
     Fin p ⊕ Fin q → Ind C :=
   fun i => Sum.elim (fun _ => 𝟙_ (Ind C)) (fun _ => L.obj) i
 
-omit [RigidCategory C] [MonoidalPreadditive C] in
 /-- **The mixed sums are compact**: a map from a mixed sum of the
 unit and the odd line into a filtered colimit factors through a
 stage.  Each summand factors, and a finite family of stages of a
 filtered diagram is dominated by a single one. -/
-theorem exists_factor_of_mix_hom_colimit (L : OddLine (Ind C))
+theorem exists_factor_of_mix_hom_colimit
+    [SmallCategory C] [MonoidalCategory C] [Abelian C]
+    [SymmetricCategory (Ind C)] [HasFiniteBiproducts (Ind C)]
+    (L : OddLine (Ind C))
     (p q : ℕ) {I : Type v} [SmallCategory I] [IsFiltered I]
     (D : I ⥤ Ind C) (f : L.mix p q ⟶ colimit D) :
     ∃ (i : I) (g : L.mix p q ⟶ D.obj i), g ≫ colimit.ι D i = f := by
